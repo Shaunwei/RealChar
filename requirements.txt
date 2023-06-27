@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+sqlalchemy
+aiofiles
+websockets
+alembic
+python-dotenv
+aioconsole

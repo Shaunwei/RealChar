@@ -1,6 +1,21 @@
 # GPTinterviewer
 Practice your interview skills with GPT interviewer
 
+## Prerequisites
+
+Before you begin setting up this project, please ensure you have completed the following tasks:
+
+### 1. Prepare OpenAI API Token
+
+This application utilizes the OpenAI API to access its powerful language model capabilities. In order to use the OpenAI API, you will need to obtain an API token.
+
+To get your OpenAI API token, follow these steps:
+
+1. Go to the [OpenAI website](https://beta.openai.com/signup/) and sign up for an account if you haven't already.
+2. Once you're logged in, navigate to the [API keys page](https://beta.openai.com/account/api-keys).
+3. Generate a new API key by clicking on the "Create API Key" button.
+4. Copy the API key and store it safely.
+5. Add the API key to your environment variable, e.g. `export OPENAI_API_KEY=<your API key>`
 
 ## Installation
 1. Clone the repo

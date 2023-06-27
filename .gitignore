@@ -161,3 +161,4 @@ cython_debug/
 
 # local database
 *.db
+*.prompt

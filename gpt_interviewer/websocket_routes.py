@@ -3,9 +3,9 @@ from fastapi import Depends, Path, WebSocket, WebSocketDisconnect, APIRouter
 from typing import List
 from requests import Session
 from starlette.websockets import WebSocketState
-from app.logger import get_logger
-from app.database.connection import get_db
-from app.models.interaction import Interaction
+from gpt_interviewer.logger import get_logger
+from gpt_interviewer.database.connection import get_db
+from gpt_interviewer.models.interaction import Interaction
 
 logger = get_logger(__name__)
 

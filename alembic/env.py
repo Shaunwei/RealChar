@@ -1,6 +1,6 @@
-from app.models.user import User
-from app.models.interaction import Interaction
-from app.database.base import Base  # import the Base model
+from gpt_interviewer.models.user import User
+from gpt_interviewer.models.interaction import Interaction
+from gpt_interviewer.database.base import Base  # import the Base model
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context

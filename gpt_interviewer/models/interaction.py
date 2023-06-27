@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime
 import datetime
-from app.database.base import Base
+from gpt_interviewer.database.base import Base
 
 
 class Interaction(Base):

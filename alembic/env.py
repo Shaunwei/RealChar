@@ -1,4 +1,5 @@
 from app.models.user import User
+from app.models.interaction import Interaction
 from app.database.base import Base  # import the Base model
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool

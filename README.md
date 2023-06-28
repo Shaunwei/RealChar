@@ -1,5 +1,5 @@
-# GPTinterviewer
-Practice your interview skills with GPT interviewer
+# Realtime AI Companion
+Realtime AI Companion is a revolutionary project enabling dynamic audio-visual interactions between humans and AI. Powered by Language Learning Model (LLM), it offers instant, natural, and context-aware responses, paving the way for a new era of interactive AI experiences.
 
 ## Prerequisites
 
@@ -32,10 +32,9 @@ To get your OpenAI API token, follow these steps:
     ```
 4. Run the app
     ```sh
-    uvicorn app.main:app --reload
+    uvicorn gpt_interviewer.main:app --reload
     ```
 5. Run client
     ```sh
     python client.py
     ```
-    

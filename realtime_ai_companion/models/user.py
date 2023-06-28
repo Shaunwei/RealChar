@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from gpt_interviewer.database.base import Base
+from realtime_ai_companion.database.base import Base
 
 
 class User(Base):

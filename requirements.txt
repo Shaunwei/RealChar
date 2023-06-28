@@ -6,3 +6,5 @@ websockets
 alembic
 python-dotenv
 aioconsole
+llama_index
+ipywidgets

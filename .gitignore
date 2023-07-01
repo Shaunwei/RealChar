@@ -162,3 +162,7 @@ cython_debug/
 # local database
 *.db
 *.prompt
+
+
+training_data/*
+.DS_Store

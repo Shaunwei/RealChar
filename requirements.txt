@@ -8,3 +8,7 @@ python-dotenv
 aioconsole
 llama_index
 ipywidgets
+pydantic
+chromadb
+langchain
+typing

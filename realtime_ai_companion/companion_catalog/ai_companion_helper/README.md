@@ -1,4 +1,4 @@
-Use Loki Marvel as an example
+Use this template to create your own AI companion.
 ---
 
 - system

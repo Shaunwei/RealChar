@@ -34,19 +34,20 @@ async def websocket_endpoint(
             receive_and_echo_client_message(websocket, client_id, db, llm, catalog_manager, speech_to_text))
         send_task = asyncio.create_task(send_generated_numbers(websocket))
 
-        done, pending = await asyncio.wait(
-            [receive_task, send_task],
-            return_when=asyncio.FIRST_COMPLETED,
-        )
+        # done, pending = await asyncio.wait(
+        #     [receive_task, send_task],
+        #     return_when=asyncio.FIRST_COMPLETED,
+        # )
 
-        for task in done:
-            # This will re-raise the exception if one was raised within the task.
-            if exc := task.exception():
-                print(
-                    f"Task {task.get_name()} raised exception: {exc}")
+        # for task in done:
+        #     # This will re-raise the exception if one was raised within the task.
+        #     if exc := task.exception():
+        #         print(
+        #             f"Task {task.get_name()} raised exception: {exc}")
 
-        for task in pending:
-            task.cancel()
+        # for task in pending:
+        #     task.cancel()
+        await asyncio.gather(receive_task, send_task)
 
     except WebSocketDisconnect:
         await manager.disconnect(websocket)
@@ -73,23 +74,26 @@ async def receive_and_echo_client_message(
 
         await manager.send_message(message=f"Select your companion [{', '.join(catalog_manager.companions.keys())}]\n", websocket=websocket)
 
+        companion = None
         while True:
             data = await websocket.receive()
             if data['type'] != 'websocket.receive':
                 raise WebSocketDisconnect('disconnected')
 
+            # 1. Check if the user selected a companion
+            if not companion and \
+                'text' in data and \
+                    data['text'] in catalog_manager.companions.keys():
+                companion = catalog_manager.get_companion(data['text'])
+                conversation_history.system_prompt = companion.llm_system_prompt
+                user_input_template = companion.llm_user_prompt
+                logger.info(
+                    f"Client #{client_id} selected companion: {data['text']}")
+                await manager.send_message(message=f"Selected companion: {data['text']}\n", websocket=websocket)
+                continue
+
             if 'text' in data:
                 msg_data = data['text']
-                # 1. Check if the user selected a companion
-                if msg_data in catalog_manager.companions.keys():
-                    companion = catalog_manager.get_companion(msg_data)
-                    conversation_history.system_prompt = companion.llm_system_prompt
-                    user_input_template = companion.llm_user_prompt
-                    logger.info(
-                        f"Client #{client_id} selected companion: {msg_data}")
-                    continue
-                logger.info(f"Client #{client_id} said: {msg_data}")
-
                 # 2. Send message to LLM
                 response = await llm.achat(
                     history=llm.build_history(conversation_history),
@@ -112,25 +116,36 @@ async def receive_and_echo_client_message(
             elif 'bytes' in data:
                 # Here is where you handle binary messages (like audio data).
                 binary_data = data['bytes']
-                print(len(binary_data))
                 start = time.time()
                 print('transimission time: ', start)
-                # wf.writeframes(binary_data)
-                # await manager.send_message(message='Received audio data', websocket=websocket)
                 transcript = speech_to_text.transcribe(binary_data)
-                # record transcription time
                 end = time.time()
                 print('transcription time: ', end)
                 print('Total time: ', end - start)
                 print(transcript)
-                await manager.send_message(message=transcript, websocket=websocket)
+                await manager.send_message(message=f'[+]You said: {transcript}', websocket=websocket)
+
+                # ignore audio that picks up background noise
+                if not transcript or len(transcript) < 2:
+                    continue
+                # 2. Send message to LLM
+                response = await llm.achat(
+                    history=llm.build_history(conversation_history),
+                    user_input=transcript,
+                    user_input_template=user_input_template,
+                    callback=AsyncCallbackHandler(on_new_token),
+                    companion=companion)
+                # 3. Send response to client
+                await manager.send_message(message='[end]\n', websocket=websocket)
+
+                # 4. Update conversation history
+                conversation_history.user.append(transcript)
+                conversation_history.ai.append(response)
                 continue
 
     except WebSocketDisconnect:
         logger.info(f"Client #{client_id} closed the connection")
         await manager.disconnect(websocket)
-        # wf.close()
-        # Remember to close the file when you're done.
         return
 
 

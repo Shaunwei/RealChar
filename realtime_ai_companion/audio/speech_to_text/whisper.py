@@ -18,8 +18,8 @@ DEBUG = False
 
 class Whisper(Singleton):
     def __init__(self):
-        logger.info("Loading Local Whisper model: [base]...")
-        self.model = whisper.load_model('base')
+        logger.info("Loading Local Whisper model: [small]...")
+        self.model = whisper.load_model('small')
         self.recognizer = sr.Recognizer()
         if DEBUG:
             self.wf = wave.open('output.wav', 'wb')
@@ -32,9 +32,10 @@ class Whisper(Singleton):
         logger.info("Transcribing audio...")
         text = self.recognizer.recognize_whisper(
             audio,
-            model="base",
+            model="small",
             language='en',
             show_dict=True,
+            # TODO: pass in prompt during conversation
             initial_prompt='WebScoket,ChatGPT,Raiden Shogun,Ei'
         )['text']
         return text

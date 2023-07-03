@@ -54,7 +54,8 @@ class ConnectionManager(Singleton):
 
     async def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
-        await self.broadcast_message(f"Client #{id(websocket)} left the chat")
+        print(f"Client #{id(websocket)} left the chat")
+        # await self.broadcast_message(f"Client #{id(websocket)} left the chat")
 
     async def send_message(self, message: str, websocket: WebSocket):
         if websocket.application_state == WebSocketState.CONNECTED:

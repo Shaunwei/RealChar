@@ -44,10 +44,10 @@ async def handle_audio(websocket, device_id):
 
         print('Okay, start talking!')
         while True:
-            print('\n**Listening...')
+            print('[*]')  # indicate that we are listening
             audio = await asyncio.get_event_loop().run_in_executor(executor, listen_func)
             await websocket.send(audio.frame_data)
-            print('Sending audio data...')
+            print('[-]')  # indicate that we are done listening
             await asyncio.sleep(2)
 
 
@@ -60,17 +60,34 @@ async def handle_text(websocket):
 
 async def receive_message(websocket):
     while True:
-        message = await websocket.recv()
+        try:
+            message = await websocket.recv()
+        except websockets.exceptions.ConnectionClosedError as e:
+            print("Connection closed unexpectedly: ", e)
+            break
+        except Exception as e:
+            print("An error occurred: ", e)
+            break
+
         if message == '[end]\n':
             print('\nYou: ', end="", flush=True)
+        elif message.startswith('[+]'):
+            # indicate the transcription is done
+            print(f"{message}", end="\n", flush=True)
         else:
             print(f"{message}", end="", flush=True)
 
 
 async def start_client(client_id):
     uri = f"ws://localhost:8000/ws/{client_id}"
-    mode = input('Select mode (a: audio, t: text): ')
     async with websockets.connect(uri) as websocket:
+        print(f"Client #{client_id} connected to server")
+        welcome_message = await websocket.recv()
+        print(f"{welcome_message}")
+        companion = input('Select companion: ')
+        await websocket.send(companion)
+
+        mode = input('Select mode (a: audio, t: text): ')
         if mode.lower() == 'a':
             device_id = get_input_device_id()
             send_task = asyncio.create_task(handle_audio(websocket, device_id))
@@ -79,17 +96,18 @@ async def start_client(client_id):
 
         receive_task = asyncio.create_task(receive_message(websocket))
 
-        done, pending = await asyncio.wait(
-            [receive_task, send_task],
-            return_when=asyncio.FIRST_COMPLETED,
-        )
+        # done, pending = await asyncio.wait(
+        #     [receive_task, send_task],
+        #     return_when=asyncio.FIRST_COMPLETED,
+        # )
 
-        for task in done:
-            if exc := task.exception():
-                print(f"Task raised exception: {exc}")
+        # for task in done:
+        #     if exc := task.exception():
+        #         print(f"Task raised exception: {exc}")
 
-        for task in pending:
-            task.cancel()
+        # for task in pending:
+        #     task.cancel()
+        await asyncio.gather(receive_task, send_task)
 
 
 async def main():

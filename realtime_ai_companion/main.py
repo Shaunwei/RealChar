@@ -15,7 +15,8 @@ app.include_router(restful_router)
 app.include_router(websocket_router)
 
 # initializations
-CatalogManager.initialize(overwrite=False)
+# use overwrite=True to overwrite existing data in the chroma
+CatalogManager.initialize(overwrite=True)
 Whisper.initialize()
 ConnectionManager.initialize()
 

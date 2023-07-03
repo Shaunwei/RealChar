@@ -12,3 +12,7 @@ pydantic
 chromadb
 langchain
 typing
+openai-whisper
+pyaudio
+SpeechRecognition
+soundfile

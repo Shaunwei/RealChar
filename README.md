@@ -32,12 +32,14 @@ To get your OpenAI API token, follow these steps:
     ```
 4. Run the app
     ```sh
-    uvicorn gpt_interviewer.main:app --reload
+    uvicorn realtime_ai_companion.main:app --reload
     ```
 5. Run client
     ```sh
     python client.py
     ```
+6. Select one companion to talk to, then start talking
+
 
 ## Tech Stack
 Lip Sync: Wav2Lip model

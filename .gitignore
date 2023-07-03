@@ -166,3 +166,6 @@ cython_debug/
 
 training_data/*
 .DS_Store
+.python-version
+.chroma
+*.ipynb

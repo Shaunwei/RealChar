@@ -4,15 +4,19 @@ from aioconsole import ainput  # for async input
 
 
 async def send_message(websocket):
+    print('You: ', end="", flush=True)
     while True:
-        message = await ainput("Your message: ")  # Reading input
+        message = await ainput()  # Reading input
         await websocket.send(message)
 
 
 async def receive_message(websocket):
     while True:
         response = await websocket.recv()
-        print(f"Received from server: {response}")
+        if response == '\n':
+            print('\nYou: ', end="", flush=True)
+        else:
+            print(f"{response}", end="", flush=True)
 
 
 async def start_client():

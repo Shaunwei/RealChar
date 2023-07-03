@@ -8,6 +8,9 @@ python-dotenv
 aioconsole
 llama_index
 ipywidgets
-google-cloud-texttospeech
 elevenlabs
 replicate
+pydantic
+chromadb
+langchain
+typing

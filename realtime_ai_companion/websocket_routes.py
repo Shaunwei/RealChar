@@ -9,6 +9,7 @@ from realtime_ai_companion.models.interaction import Interaction
 from realtime_ai_companion.llm.openai_llm import OpenaiLlm, AsyncCallbackHandler, get_llm
 from realtime_ai_companion.utils import ConversationHistory
 from realtime_ai_companion.companion_catalog.catalog_manager import CatalogManager, get_catalog_manager
+from realtime_ai_companion.tools.tts import Text2Audio, get_tts
 
 logger = get_logger(__name__)
 
@@ -41,11 +42,11 @@ manager = ConnectionManager()
 
 
 @router.websocket("/ws/{client_id}")
-async def websocket_endpoint(websocket: WebSocket, client_id: int = Path(...), db: Session = Depends(get_db), llm: OpenaiLlm = Depends(get_llm), catalog_manager=Depends(get_catalog_manager)):
+async def websocket_endpoint(websocket: WebSocket, client_id: int = Path(...), db: Session = Depends(get_db), llm: OpenaiLlm = Depends(get_llm), catalog_manager=Depends(get_catalog_manager), tts=Depends(get_tts)):
     await manager.connect(websocket)
     try:
         receive_task = asyncio.create_task(
-            receive_and_echo_client_message(websocket, client_id, db, llm, catalog_manager))
+            receive_and_echo_client_message(websocket, client_id, db, llm, catalog_manager, tts))
         send_task = asyncio.create_task(send_generated_numbers(websocket))
 
         done, pending = await asyncio.wait(
@@ -61,7 +62,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int = Path(...), d
         await manager.broadcast_message(f"Client #{client_id} left the chat")
 
 
-async def receive_and_echo_client_message(websocket: WebSocket, client_id: int, db: Session, llm: OpenaiLlm, catalog_manager: CatalogManager):
+async def receive_and_echo_client_message(websocket: WebSocket, client_id: int, db: Session, llm: OpenaiLlm, catalog_manager: CatalogManager, tts: Text2Audio):
     try:
         conversation_history = ConversationHistory(
             system_prompt='',
@@ -87,6 +88,7 @@ async def receive_and_echo_client_message(websocket: WebSocket, client_id: int, 
             query = data
             response = await llm.achat(
                 history=llm.build_history(conversation_history), user_input=query, user_input_template=user_input_template, callback=AsyncCallbackHandler(on_new_token), companion=companion)
+            await tts.speak(response)
             await manager.send_message(message='\n', websocket=websocket)
             conversation_history.user.append(query)
             conversation_history.ai.append(response)

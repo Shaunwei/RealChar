@@ -24,7 +24,8 @@ class Text2Audio(Singleton):
             voice=self.raiden_voice,
             stream=True
         )
-        stream(audio_stream)
+        audio_bytes = b''.join(audio_stream)
+        return audio_bytes
 
 def get_tts():
     return Text2Audio.get_instance()

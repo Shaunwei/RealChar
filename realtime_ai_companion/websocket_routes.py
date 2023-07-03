@@ -88,8 +88,11 @@ async def receive_and_echo_client_message(websocket: WebSocket, client_id: int, 
             query = data
             response = await llm.achat(
                 history=llm.build_history(conversation_history), user_input=query, user_input_template=user_input_template, callback=AsyncCallbackHandler(on_new_token), companion=companion)
-            await tts.speak(response)
+            audio_data = await tts.speak(response)
             await manager.send_message(message='\n', websocket=websocket)
+            await websocket.send_text("type:audio")
+            await websocket.send_bytes(audio_data)
+            
             conversation_history.user.append(query)
             conversation_history.ai.append(response)
             interaction = Interaction(

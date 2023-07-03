@@ -14,3 +14,5 @@ pydantic
 chromadb
 langchain
 typing
+pydub
+ffmpeg

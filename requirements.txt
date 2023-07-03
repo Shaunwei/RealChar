@@ -10,3 +10,4 @@ llama_index
 ipywidgets
 google-cloud-texttospeech
 elevenlabs
+replicate

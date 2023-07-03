@@ -38,3 +38,7 @@ To get your OpenAI API token, follow these steps:
     ```sh
     python client.py
     ```
+
+## Tech Stack
+Lip Sync: Wav2Lip model
+Voice Clone and Sound Synthesis: ElevenLabs

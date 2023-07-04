@@ -11,7 +11,6 @@ from realtime_ai_companion.logger import get_logger
 from langchain.schema import AIMessage, BaseMessage, HumanMessage, SystemMessage
 from realtime_ai_companion.utils import Companion, Singleton, ConversationHistory
 from realtime_ai_companion.database.chroma import get_chroma
-from realtime_ai_companion.tools.tts import Text2Audio
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -88,7 +87,6 @@ def get_llm():
 if __name__ == '__main__':
     import asyncio
     llm = OpenaiLlm()
-    tts = Text2Audio()
     conversation_history = ConversationHistory(
         system_prompt='You are a helpful AI companion.',
         user=['Hello'],
@@ -100,5 +98,4 @@ if __name__ == '__main__':
     response = asyncio.get_event_loop().run_until_complete(
         llm.achat(history, 'Hello',
                   'context: {context} \n ---\n User question: {query}', AsyncCallbackHandler()))
-    tts.speak(response)
     print(response)

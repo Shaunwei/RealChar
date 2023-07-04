@@ -66,23 +66,6 @@ async def handle_text(websocket):
 
 async def receive_message(websocket):
     while True:
-        # response = await websocket.recv()
-        # if response == "type:audio":
-        #     audio_response = await websocket.recv()
-        #     audio_data = io.BytesIO(audio_response)
-        #     audio = AudioSegment.from_mp3(audio_data)
-
-        #     # Convert to wav format and play the chunk immediately
-        #     wav_data = io.BytesIO()
-        #     audio.export(wav_data, format="wav")
-        #     wave_obj = WaveObject.from_wave_file(wav_data)
-        #     play_obj = wave_obj.play()
-        #     play_obj.wait_done()
-        # else:  # text data
-        #     if response == '\n':
-        #         print('\nYou: ', end="", flush=True)
-        #     else:
-        #         print(f"{response}", end="", flush=True)
         try:
             message = await websocket.recv()
         except websockets.exceptions.ConnectionClosedError as e:
@@ -92,13 +75,27 @@ async def receive_message(websocket):
             print("An error occurred: ", e)
             break
 
-        if message == '[end]\n':
-            print('\nYou: ', end="", flush=True)
-        elif message.startswith('[+]'):
-            # indicate the transcription is done
-            print(f"{message}", end="\n", flush=True)
+        if isinstance(message, str):
+            if message == '[end]\n':
+                print('\nYou: ', end="", flush=True)
+            elif message.startswith('[+]'):
+                # indicate the transcription is done
+                print(f"{message}", end="\n", flush=True)
+            else:
+                print(f"{message}", end="", flush=True)
+        elif isinstance(message, bytes):
+            print("\nYour companion is speaking...", flush=True)
+            audio_data = io.BytesIO(message)
+            audio = AudioSegment.from_mp3(audio_data)
+            wav_data = io.BytesIO()
+            audio.export(wav_data, format="wav")
+            wave_obj = WaveObject.from_wave_file(wav_data)
+            play_obj = wave_obj.play()
+            play_obj.wait_done()
         else:
-            print(f"{message}", end="", flush=True)
+            print("Unexpected message")
+            break
+
 
 async def start_client(client_id):
     uri = f"ws://localhost:8000/ws/{client_id}"

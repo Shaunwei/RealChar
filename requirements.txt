@@ -18,3 +18,7 @@ pydub
 ffmpeg
 httpx
 simpleaudio
+openai-whisper
+pyaudio
+SpeechRecognition
+soundfile

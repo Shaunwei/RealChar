@@ -10,6 +10,8 @@ from realtime_ai_companion.llm.openai_llm import OpenaiLlm, AsyncCallbackHandler
 from realtime_ai_companion.utils import ConversationHistory
 from realtime_ai_companion.companion_catalog.catalog_manager import CatalogManager, get_catalog_manager
 from realtime_ai_companion.tools.tts import Text2Audio, get_tts
+import time
+
 
 logger = get_logger(__name__)
 
@@ -75,8 +77,11 @@ async def receive_and_echo_client_message(websocket: WebSocket, client_id: int, 
             return await manager.send_message(message=token, websocket=websocket)
         await manager.send_message(message=f"Select your companion [{', '.join(catalog_manager.companions.keys())}]\n", websocket=websocket)
         while True:
+            print("receiving text \ n")
             data = await websocket.receive_text()
+            print("received text \ n")
             if data in catalog_manager.companions.keys():
+                print("1 in 3 \ n")
                 companion = catalog_manager.get_companion(data)
                 conversation_history.system_prompt = companion.llm_system_prompt
                 user_input_template = companion.llm_user_prompt
@@ -86,12 +91,17 @@ async def receive_and_echo_client_message(websocket: WebSocket, client_id: int, 
             logger.info(f"Client #{client_id} said: {data}")
 
             query = data
+            print("start generating answer \ n")
             response = await llm.achat(
                 history=llm.build_history(conversation_history), user_input=query, user_input_template=user_input_template, callback=AsyncCallbackHandler(on_new_token), companion=companion)
-            audio_data = await tts.speak(response)
+            
+            # print("--------- start generating speak ---------")
+            # start_time = time.time()
+            # await tts.stream(response, websocket)
+            # print("--- speech generated in %s seconds ---" % (time.time() - start_time))
+            print("sending \ n")
             await manager.send_message(message='\n', websocket=websocket)
-            await websocket.send_text("type:audio")
-            await websocket.send_bytes(audio_data)
+            print("sent \ n")
             
             conversation_history.user.append(query)
             conversation_history.ai.append(response)
@@ -101,7 +111,10 @@ async def receive_and_echo_client_message(websocket: WebSocket, client_id: int, 
             db.commit()
     except WebSocketDisconnect:
         logger.info(f"Client #{client_id} closed the connection")
-
+        raise  # re-raise the exception after logging
+    except Exception as e:
+        logger.error(f"Exception occurred: {e}")
+        raise  # re-raise the exception after logging
 
 async def send_generated_numbers(websocket: WebSocket):
     index = 1

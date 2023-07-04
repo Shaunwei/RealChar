@@ -1,11 +1,11 @@
 import io
-import os
-import sys
 import asyncio
 import websockets
 from aioconsole import ainput  # for async input
 from pydub import AudioSegment
 from pydub.playback import play
+from simpleaudio import WaveObject
+
 
 async def send_message(websocket):
     print('You: ', end="", flush=True)
@@ -21,8 +21,14 @@ async def receive_message(websocket):
             audio_response = await websocket.recv()
             audio_data = io.BytesIO(audio_response)
             audio = AudioSegment.from_mp3(audio_data)
-            play(audio)
-        else: # text data
+
+            # Convert to wav format and play the chunk immediately
+            wav_data = io.BytesIO()
+            audio.export(wav_data, format="wav")
+            wave_obj = WaveObject.from_wave_file(wav_data)
+            play_obj = wave_obj.play()
+            play_obj.wait_done()
+        else:  # text data
             if response == '\n':
                 print('\nYou: ', end="", flush=True)
             else:

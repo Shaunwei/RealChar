@@ -16,3 +16,5 @@ langchain
 typing
 pydub
 ffmpeg
+httpx
+simpleaudio

@@ -8,10 +8,16 @@ python-dotenv
 aioconsole
 llama_index
 ipywidgets
+elevenlabs
+replicate
 pydantic
 chromadb
 langchain
 typing
+pydub
+ffmpeg
+httpx
+simpleaudio
 openai-whisper
 pyaudio
 SpeechRecognition

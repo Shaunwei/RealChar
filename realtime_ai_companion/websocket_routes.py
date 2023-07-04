@@ -6,12 +6,15 @@ from typing import List
 from requests import Session
 from starlette.websockets import WebSocketState
 from realtime_ai_companion.audio.speech_to_text.whisper import Whisper, get_speech_to_text
+from realtime_ai_companion.audio.text_to_speech.elevenlabs import MyElevenLabs, get_text_to_speech
 from realtime_ai_companion.logger import get_logger
 from realtime_ai_companion.database.connection import get_db
 from realtime_ai_companion.models.interaction import Interaction
 from realtime_ai_companion.llm.openai_llm import OpenaiLlm, AsyncCallbackHandler, get_llm
 from realtime_ai_companion.utils import ConversationHistory, get_connection_manager
 from realtime_ai_companion.companion_catalog.catalog_manager import CatalogManager, get_catalog_manager
+import time
+
 
 logger = get_logger(__name__)
 
@@ -27,11 +30,12 @@ async def websocket_endpoint(
         db: Session = Depends(get_db),
         llm: OpenaiLlm = Depends(get_llm),
         catalog_manager=Depends(get_catalog_manager),
-        speech_to_text=Depends(get_speech_to_text)):
+        speech_to_text=Depends(get_speech_to_text), 
+        text_to_speech=Depends(get_text_to_speech)):
     await manager.connect(websocket)
     try:
         receive_task = asyncio.create_task(
-            receive_and_echo_client_message(websocket, client_id, db, llm, catalog_manager, speech_to_text))
+            receive_and_echo_client_message(websocket, client_id, db, llm, catalog_manager, speech_to_text, text_to_speech))
         send_task = asyncio.create_task(send_generated_numbers(websocket))
 
         # done, pending = await asyncio.wait(
@@ -60,7 +64,8 @@ async def receive_and_echo_client_message(
         db: Session,
         llm: OpenaiLlm,
         catalog_manager: CatalogManager,
-        speech_to_text: Whisper):
+        speech_to_text: Whisper,
+        text_to_speech: MyElevenLabs):
     try:
         conversation_history = ConversationHistory(
             system_prompt='',
@@ -101,14 +106,19 @@ async def receive_and_echo_client_message(
                     user_input_template=user_input_template,
                     callback=AsyncCallbackHandler(on_new_token),
                     companion=companion)
-                # 3. Send response to client
+            
+                # 3. Generate and send audio stream to client
+                reply = response.split('>', 1)[1] # remove the name
+                await text_to_speech.stream(reply, companion.name, websocket)
+
+                # 4. Send response to client
                 await manager.send_message(message='[end]\n', websocket=websocket)
 
-                # 4. Update conversation history
+                # 5. Update conversation history
                 conversation_history.user.append(msg_data)
                 conversation_history.ai.append(response)
 
-                # 5. Persist interaction in the database
+                # 6. Persist interaction in the database
                 interaction = Interaction(
                     client_id=client_id, client_message=msg_data, server_message=response)
                 db.add(interaction)
@@ -135,10 +145,15 @@ async def receive_and_echo_client_message(
                     user_input_template=user_input_template,
                     callback=AsyncCallbackHandler(on_new_token),
                     companion=companion)
-                # 3. Send response to client
+
+                # 3. Generate and send audio stream to client
+                reply = response.split('>', 1)[1] # remove the name
+                await text_to_speech.stream(reply, companion.name, websocket)
+
+                # 4. Send response to client
                 await manager.send_message(message='[end]\n', websocket=websocket)
 
-                # 4. Update conversation history
+                # 5. Update conversation history
                 conversation_history.user.append(transcript)
                 conversation_history.ai.append(response)
                 continue

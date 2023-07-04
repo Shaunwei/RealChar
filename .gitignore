@@ -162,6 +162,8 @@ cython_debug/
 # local database
 *.db
 *.prompt
+
+.DS_Store
 .python-version
 .chroma
 *.ipynb

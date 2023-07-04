@@ -1,11 +1,17 @@
+import io
 import random
 import asyncio
-import websockets
 import pyaudio
-from aioconsole import ainput
-import speech_recognition as sr
-import concurrent.futures
 import functools
+import websockets
+import concurrent.futures
+from aioconsole import ainput  # for async input
+from pydub import AudioSegment
+from pydub.playback import play
+from simpleaudio import WaveObject
+import speech_recognition as sr
+
+
 
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=3)
 
@@ -69,13 +75,26 @@ async def receive_message(websocket):
             print("An error occurred: ", e)
             break
 
-        if message == '[end]\n':
-            print('\nYou: ', end="", flush=True)
-        elif message.startswith('[+]'):
-            # indicate the transcription is done
-            print(f"{message}", end="\n", flush=True)
+        if isinstance(message, str):
+            if message == '[end]\n':
+                print('\nYou: ', end="", flush=True)
+            elif message.startswith('[+]'):
+                # indicate the transcription is done
+                print(f"{message}", end="\n", flush=True)
+            else:
+                print(f"{message}", end="", flush=True)
+        elif isinstance(message, bytes):
+            print("\nYour companion is speaking...", flush=True)
+            audio_data = io.BytesIO(message)
+            audio = AudioSegment.from_mp3(audio_data)
+            wav_data = io.BytesIO()
+            audio.export(wav_data, format="wav")
+            wave_obj = WaveObject.from_wave_file(wav_data)
+            play_obj = wave_obj.play()
+            play_obj.wait_done()
         else:
-            print(f"{message}", end="", flush=True)
+            print("Unexpected message")
+            break
 
 
 async def start_client(client_id):

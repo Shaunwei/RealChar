@@ -36,7 +36,7 @@ To get your OpenAI API token, follow these steps:
     ```
 5. Run client
     ```sh
-    python client.py
+    python client/client.py
     ```
 6. Select one character to talk to, then start talking
 

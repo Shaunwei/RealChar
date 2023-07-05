@@ -15,6 +15,7 @@ from realtime_ai_companion.companion_catalog.catalog_manager import (
     CatalogManager, get_catalog_manager)
 from realtime_ai_companion.database.connection import get_db
 from realtime_ai_companion.llm.openai_llm import (AsyncCallbackHandler,
+                                                  AsyncCallbackAudioHandler,
                                                   OpenaiLlm, get_llm)
 from realtime_ai_companion.logger import get_logger
 from realtime_ai_companion.models.interaction import Interaction
@@ -69,27 +70,39 @@ async def handle_receive(
         async def on_new_token(token):
             return await manager.send_message(message=token, websocket=websocket)
 
-        await manager.send_message(message=f"Select your companion [{', '.join(catalog_manager.companions.keys())}]\n", websocket=websocket)
-
+        # 1. User selected a companion
         companion = None
+        companion_list = list(catalog_manager.companions.keys())
+        while not companion:
+            companion_message = "\n".join(
+                [f"{i+1} - {companion}" for i, companion in enumerate(companion_list)])
+            await manager.send_message(message=f"Select your companion by entering the corresponding number:\n{companion_message}\n", websocket=websocket)
+            data = await websocket.receive()
+
+            if data['type'] != 'websocket.receive':
+                raise WebSocketDisconnect('disconnected')
+
+            if not companion and 'text' in data:
+                selection = int(data['text'])
+                if selection > len(companion_list) or selection < 1:
+                    await manager.send_message(message=f"Invalid selection. Select your companion [{', '.join(catalog_manager.companions.keys())}]\n", websocket=websocket)
+                    continue
+                companion = catalog_manager.get_companion(
+                    companion_list[selection - 1])
+                conversation_history.system_prompt = companion.llm_system_prompt
+                user_input_template = companion.llm_user_prompt
+                logger.info(
+                    f"Client #{client_id} selected companion: {companion.name}")
+
         tts_event = asyncio.Event()
         tts_task = None
+        tts_task_done = None
+        previous_transcript = None
+        token_buffer = []
         while True:
             data = await websocket.receive()
             if data['type'] != 'websocket.receive':
                 raise WebSocketDisconnect('disconnected')
-
-            # 1. Check if the user selected a companion
-            if not companion and \
-                'text' in data and \
-                    data['text'] in catalog_manager.companions.keys():
-                companion = catalog_manager.get_companion(data['text'])
-                conversation_history.system_prompt = companion.llm_system_prompt
-                user_input_template = companion.llm_user_prompt
-                logger.info(
-                    f"Client #{client_id} selected companion: {data['text']}")
-                await manager.send_message(message=f"Selected companion: {data['text']}\n", websocket=websocket)
-                continue
 
             if 'text' in data:
                 msg_data = data['text']
@@ -98,21 +111,19 @@ async def handle_receive(
                     history=llm.build_history(conversation_history),
                     user_input=msg_data,
                     user_input_template=user_input_template,
-                    callback=AsyncCallbackHandler(on_new_token),
+                    callback=AsyncCallbackHandler(on_new_token, token_buffer),
+                    audioCallback=AsyncCallbackAudioHandler(
+                        text_to_speech, websocket, tts_event, companion.name),
                     companion=companion)
 
-                # 3. Generate and send audio stream to client
-                reply = response.split('>', 1)[1]  # remove the name
-                await text_to_speech.stream(reply, companion.name, websocket)
-
-                # 4. Send response to client
+                # 3. Send response to client
                 await manager.send_message(message='[end]\n', websocket=websocket)
 
-                # 5. Update conversation history
+                # 4. Update conversation history
                 conversation_history.user.append(msg_data)
                 conversation_history.ai.append(response)
 
-                # 6. Persist interaction in the database
+                # 5. Persist interaction in the database
                 interaction = Interaction(
                     client_id=client_id, client_message=msg_data, server_message=response)
                 db.add(interaction)
@@ -132,36 +143,55 @@ async def handle_receive(
                 # ignore audio that picks up background noise
                 if not transcript or len(transcript) < 2:
                     continue
-                await manager.send_message(message=f'[+]You said: {transcript}', websocket=websocket)
+                await manager.send_message(message=f'\n[+]You said: {transcript}', websocket=websocket)
                 # stop the previous audio stream, if new transcript is received
                 if tts_task and not tts_task.done():
                     tts_event.set()
                     tts_task.cancel()
+                    if tts_task_done and not tts_task_done.done():
+                        tts_task_done.cancel()
+                    if previous_transcript:
+                        response = ' '.join(token_buffer)
+                        conversation_history.user.append(previous_transcript)
+                        conversation_history.ai.append(' '.join(token_buffer))
+                        token_buffer.clear()
                     try:
                         await tts_task
+                        await tts_task_done
                     except asyncio.CancelledError:
                         pass
+
+                    tts_event.clear()
+
+                previous_transcript = transcript
                 # 2. Send message to LLM
-                response = await llm.achat(
+                tts_task = asyncio.create_task(llm.achat(
                     history=llm.build_history(conversation_history),
                     user_input=transcript,
                     user_input_template=user_input_template,
                     callback=AsyncCallbackHandler(on_new_token),
+                    audioCallback=AsyncCallbackAudioHandler(
+                        text_to_speech, websocket, tts_event, companion.name),
                     companion=companion)
+                )
 
-                # 3. Generate and send audio stream to client
-                reply = response.split('>', 1)[1]  # remove the name
-                tts_event.clear()
-                tts_task = asyncio.create_task(text_to_speech.stream(
-                    reply, companion.name, websocket, tts_event))
+                async def tts_task_done_call_back(task):
+                    response = await task
+                    # 3. Send response to client
+                    await manager.send_message(message='[=]\n', websocket=websocket)
+                    # 4. Update conversation history
+                    conversation_history.user.append(transcript)
+                    conversation_history.ai.append(response)
+                    token_buffer.clear()
+                    # 5. Persist interaction in the database
+                    interaction = Interaction(
+                        client_id=client_id, client_message=transcript, server_message=response)
+                    db.add(interaction)
+                    db.commit()
 
-                # 4. Send response to client
-                await manager.send_message(message='[end]\n', websocket=websocket)
-
-                # 5. Update conversation history
-                conversation_history.user.append(transcript)
-                conversation_history.ai.append(response)
-                continue
+                # Schedule the callback with another task
+                tts_task_done = asyncio.create_task(
+                    tts_task_done_call_back(tts_task))
 
     except WebSocketDisconnect:
         logger.info(f"Client #{client_id} closed the connection")

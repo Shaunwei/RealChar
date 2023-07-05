@@ -1,3 +1,4 @@
+import queue
 import asyncio
 import concurrent.futures
 import functools
@@ -26,27 +27,40 @@ class AudioPlayer:
     def __init__(self):
         self.play_thread = None
         self.stop_flag = False
+        self.queue = queue.Queue()
 
-    def play_audio(self, wav_data):
-        wave_obj = WaveObject.from_wave_file(wav_data)
-        play_obj = wave_obj.play()
+    def play_audio(self):
+        while not self.stop_flag or not self.queue.empty():
+            try:
+                wav_data = self.queue.get_nowait()
+            except queue.Empty:
+                continue
 
-        while play_obj.is_playing() and not self.stop_flag:
-            time.sleep(0.1)
+            wave_obj = WaveObject.from_wave_file(wav_data)
+            play_obj = wave_obj.play()
 
-        if self.stop_flag:
-            play_obj.stop()
+            while play_obj.is_playing() and not self.stop_flag:
+                time.sleep(0.1)
+
+            if self.stop_flag:
+                play_obj.stop()
 
     def start_playing(self, wav_data):
         self.stop_flag = False
-        self.play_thread = Thread(target=self.play_audio, args=(wav_data,))
-        self.play_thread.start()
+        self.queue.put(wav_data)
+
+        if self.play_thread is None or not self.play_thread.is_alive():
+            self.play_thread = Thread(target=self.play_audio)
+            self.play_thread.start()
 
     def stop_playing(self):
         if self.play_thread and self.play_thread.is_alive():
             self.stop_flag = True
             self.play_thread.join()
             self.play_thread = None
+
+    def add_to_queue(self, wav_data):
+        self.queue.put(wav_data)
 
 
 audio_player = AudioPlayer()
@@ -73,10 +87,11 @@ async def handle_audio(websocket, device_id):
         print('Adjusting for ambient noise...Wait for 2 seconds')
         recognizer.adjust_for_ambient_noise(source, duration=2)
         recognizer.energy_threshold = 5000
-        recognizer.dynamic_energy_ratio = 5
-        recognizer.dynamic_energy_adjustment_damping = 0.8
-        recognizer.non_speaking_duration = 0.2
-        recognizer.pause_threshold = 0.3
+        recognizer.dynamic_energy_ratio = 6
+        recognizer.dynamic_energy_adjustment_damping = 0.85
+        recognizer.non_speaking_duration = 0.5
+        recognizer.pause_threshold = 0.8
+        recognizer.phrase_threshold = 0.5
         listen_func = functools.partial(
             recognizer.listen, source, phrase_time_limit=30)
 
@@ -115,10 +130,12 @@ async def receive_message(websocket):
                 audio_player.stop_playing()
                 # indicate the transcription is done
                 print(f"{message}", end="\n", flush=True)
+            elif message.startswith('[=]'):
+                # indicate the response is done
+                pass
             else:
                 print(f"{message}", end="", flush=True)
         elif isinstance(message, bytes):
-            print("\nYour companion is speaking...", flush=True)
             audio_data = io.BytesIO(message)
             audio = AudioSegment.from_mp3(audio_data)
             wav_data = io.BytesIO()
@@ -139,8 +156,8 @@ async def start_client(client_id):
         companion = input('Select companion: ')
         await websocket.send(companion)
 
-        mode = input('Select mode (a: audio, t: text): ')
-        if mode.lower() == 'a':
+        mode = input('Select mode (1: audio, 2: text): ')
+        if mode.lower() == '1':
             device_id = get_input_device_id()
             send_task = asyncio.create_task(handle_audio(websocket, device_id))
         else:

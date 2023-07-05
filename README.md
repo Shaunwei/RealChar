@@ -42,5 +42,6 @@ To get your OpenAI API token, follow these steps:
 
 
 ## Tech Stack
-Lip Sync: Wav2Lip model
+Speech to Text: Whisper
+
 Voice Clone and Sound Synthesis: ElevenLabs

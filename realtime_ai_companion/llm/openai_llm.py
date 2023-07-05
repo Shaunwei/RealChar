@@ -35,6 +35,35 @@ class AsyncCallbackHandler(AsyncCallbackHandler):
         await self.on_new_token(token)
 
 
+class AsyncCallbackAudioHandler(AsyncCallbackHandler):
+    def __init__(self, text_to_speech=None, websocket=None, companion_name="", *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if text_to_speech is None:
+            def text_to_speech(token): return logger.info(f'New audio token: {token}')
+        self.text_to_speech = text_to_speech
+        self.websocket = websocket
+        self.current_sentence = ""
+        self.companion_name = companion_name
+        self.isReply = False # the start of the reply. i.e. the substring after '>'
+
+    async def on_chat_model_start(self, *args, **kwargs):
+        pass
+
+    async def on_llm_new_token(self, token: str, *args, **kwargs):
+        if not self.isReply and token == ">":
+            self.isReply = True
+        elif self.isReply:
+            if token != ".":
+                self.current_sentence += token
+            else:
+                await self.text_to_speech.stream(self.current_sentence, self.websocket, self.companion_name)
+                self.current_sentence = ""
+    
+    async def on_llm_end(self, *args, **kwargs):
+        if self.current_sentence != "":
+            await self.text_to_speech.stream(self.current_sentence, self.websocket, self.companion_name)
+
+
 class OpenaiLlm(Singleton):
     def __init__(self):
         super().__init__()
@@ -46,7 +75,7 @@ class OpenaiLlm(Singleton):
         )
         self.db = get_chroma()
 
-    async def achat(self, history: List[BaseMessage], user_input: str, user_input_template: str, callback: AsyncCallbackHandler, companion: Companion) -> str:
+    async def achat(self, history: List[BaseMessage], user_input: str, user_input_template: str, callback: AsyncCallbackHandler, audioCallback: AsyncCallbackAudioHandler, companion: Companion) -> str:
         # 1. Generate context
         context = self._generate_context(user_input, companion)
 
@@ -56,7 +85,7 @@ class OpenaiLlm(Singleton):
 
         # 3. Generate response
         response = await self.chat_open_ai.agenerate(
-            [history], callbacks=[callback, StreamingStdOutCallbackHandler()])
+            [history], callbacks=[callback, audioCallback, StreamingStdOutCallbackHandler()])
         logger.info(f'Response: {response}')
         return response.generations[0][0].text
 

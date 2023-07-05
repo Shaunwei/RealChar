@@ -84,7 +84,6 @@ async def receive_message(websocket):
             else:
                 print(f"{message}", end="", flush=True)
         elif isinstance(message, bytes):
-            print("\nYour companion is speaking...", flush=True)
             audio_data = io.BytesIO(message)
             audio = AudioSegment.from_mp3(audio_data)
             wav_data = io.BytesIO()

@@ -36,7 +36,7 @@ class ElevenLabs(Singleton):
             headers = {
                 "Accept": "audio/mpeg",
                 "Content-Type": "application/json",
-                "xi-api-key": os.environ['ELEVEN_LABS_API']
+                "xi-api-key": os.environ['ELEVEN_LABS_API_KEY']
             }
 
             data = {

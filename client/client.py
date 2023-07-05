@@ -1,3 +1,4 @@
+import queue
 import asyncio
 import concurrent.futures
 import functools
@@ -26,27 +27,40 @@ class AudioPlayer:
     def __init__(self):
         self.play_thread = None
         self.stop_flag = False
+        self.queue = queue.Queue()
 
-    def play_audio(self, wav_data):
-        wave_obj = WaveObject.from_wave_file(wav_data)
-        play_obj = wave_obj.play()
+    def play_audio(self):
+        while not self.stop_flag or not self.queue.empty():
+            try:
+                wav_data = self.queue.get_nowait()
+            except queue.Empty:
+                continue
 
-        while play_obj.is_playing() and not self.stop_flag:
-            time.sleep(0.1)
+            wave_obj = WaveObject.from_wave_file(wav_data)
+            play_obj = wave_obj.play()
 
-        if self.stop_flag:
-            play_obj.stop()
+            while play_obj.is_playing() and not self.stop_flag:
+                time.sleep(0.1)
+
+            if self.stop_flag:
+                play_obj.stop()
 
     def start_playing(self, wav_data):
         self.stop_flag = False
-        self.play_thread = Thread(target=self.play_audio, args=(wav_data,))
-        self.play_thread.start()
+        self.queue.put(wav_data)
+
+        if self.play_thread is None or not self.play_thread.is_alive():
+            self.play_thread = Thread(target=self.play_audio)
+            self.play_thread.start()
 
     def stop_playing(self):
         if self.play_thread and self.play_thread.is_alive():
             self.stop_flag = True
             self.play_thread.join()
             self.play_thread = None
+
+    def add_to_queue(self, wav_data):
+        self.queue.put(wav_data)
 
 
 audio_player = AudioPlayer()

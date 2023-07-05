@@ -1,13 +1,15 @@
 import asyncio
-import httpx
 import os
+
+import httpx
 from dotenv import load_dotenv
-from realtime_ai_companion.utils import Singleton
+
 from realtime_ai_companion.logger import get_logger
-import requests
+from realtime_ai_companion.utils import Singleton
 
 load_dotenv()
 logger = get_logger(__name__)
+DEBUG = True
 
 
 class ElevenLabs(Singleton):
@@ -29,6 +31,8 @@ class ElevenLabs(Singleton):
         return self.default_voice
 
     async def stream(self, text, websocket, tts_event: asyncio.Event, companion_name="") -> None:
+        if DEBUG:
+            return
         if websocket:
             voice_id = self.get_voice_id(companion_name)
             url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/stream"
@@ -51,6 +55,7 @@ class ElevenLabs(Singleton):
             async with httpx.AsyncClient() as client:
                 response = await client.post(url, json=data, headers=headers)
                 async for chunk in response.aiter_bytes():
+                    await asyncio.sleep(0.1)
                     if tts_event.is_set():
                         # stop streaming audio
                         break

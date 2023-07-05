@@ -22,16 +22,19 @@ StreamingStdOutCallbackHandler.on_chat_model_start = lambda *args, **kwargs: Non
 
 
 class AsyncCallbackHandler(AsyncCallbackHandler):
-    def __init__(self, on_new_token=None, *args, **kwargs):
+    def __init__(self, on_new_token=None, token_buffer=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if on_new_token is None:
             def on_new_token(token): return logger.info(f'New token: {token}')
         self.on_new_token = on_new_token
+        self.token_buffer = token_buffer
 
     async def on_chat_model_start(self, *args, **kwargs):
         pass
 
     async def on_llm_new_token(self, token: str, *args, **kwargs):
+        if self.token_buffer is not None:
+            self.token_buffer.append(token)
         await self.on_new_token(token)
 
 

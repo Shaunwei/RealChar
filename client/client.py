@@ -87,10 +87,11 @@ async def handle_audio(websocket, device_id):
         print('Adjusting for ambient noise...Wait for 2 seconds')
         recognizer.adjust_for_ambient_noise(source, duration=2)
         recognizer.energy_threshold = 5000
-        recognizer.dynamic_energy_ratio = 5
-        recognizer.dynamic_energy_adjustment_damping = 0.8
-        recognizer.non_speaking_duration = 0.2
-        recognizer.pause_threshold = 0.3
+        recognizer.dynamic_energy_ratio = 6
+        recognizer.dynamic_energy_adjustment_damping = 0.85
+        recognizer.non_speaking_duration = 0.5
+        recognizer.pause_threshold = 0.8
+        recognizer.phrase_threshold = 0.5
         listen_func = functools.partial(
             recognizer.listen, source, phrase_time_limit=30)
 
@@ -129,6 +130,9 @@ async def receive_message(websocket):
                 audio_player.stop_playing()
                 # indicate the transcription is done
                 print(f"{message}", end="\n", flush=True)
+            elif message.startswith('[=]'):
+                # indicate the response is done
+                pass
             else:
                 print(f"{message}", end="", flush=True)
         elif isinstance(message, bytes):
@@ -152,8 +156,8 @@ async def start_client(client_id):
         companion = input('Select companion: ')
         await websocket.send(companion)
 
-        mode = input('Select mode (a: audio, t: text): ')
-        if mode.lower() == 'a':
+        mode = input('Select mode (1: audio, 2: text): ')
+        if mode.lower() == '1':
             device_id = get_input_device_id()
             send_task = asyncio.create_task(handle_audio(websocket, device_id))
         else:

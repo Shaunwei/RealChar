@@ -4,12 +4,12 @@ import os
 import httpx
 from dotenv import load_dotenv
 
-from realtime_ai_companion.logger import get_logger
-from realtime_ai_companion.utils import Singleton
+from realtime_ai_character.logger import get_logger
+from realtime_ai_character.utils import Singleton
 
 load_dotenv()
 logger = get_logger(__name__)
-DEBUG = True
+DEBUG = False
 
 
 class ElevenLabs(Singleton):

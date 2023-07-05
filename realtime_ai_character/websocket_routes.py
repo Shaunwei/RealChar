@@ -7,19 +7,19 @@ from fastapi import APIRouter, Depends, Path, WebSocket, WebSocketDisconnect
 from requests import Session
 from starlette.websockets import WebSocketState
 
-from realtime_ai_companion.audio.speech_to_text.whisper import (
+from realtime_ai_character.audio.speech_to_text.whisper import (
     Whisper, get_speech_to_text)
-from realtime_ai_companion.audio.text_to_speech.elevenlabs import (
+from realtime_ai_character.audio.text_to_speech.elevenlabs import (
     ElevenLabs, get_text_to_speech)
-from realtime_ai_companion.companion_catalog.catalog_manager import (
+from realtime_ai_character.companion_catalog.catalog_manager import (
     CatalogManager, get_catalog_manager)
-from realtime_ai_companion.database.connection import get_db
-from realtime_ai_companion.llm.openai_llm import (AsyncCallbackHandler,
+from realtime_ai_character.database.connection import get_db
+from realtime_ai_character.llm.openai_llm import (AsyncCallbackHandler,
                                                   AsyncCallbackAudioHandler,
                                                   OpenaiLlm, get_llm)
-from realtime_ai_companion.logger import get_logger
-from realtime_ai_companion.models.interaction import Interaction
-from realtime_ai_companion.utils import (ConversationHistory,
+from realtime_ai_character.logger import get_logger
+from realtime_ai_character.models.interaction import Interaction
+from realtime_ai_character.utils import (ConversationHistory,
                                          get_connection_manager)
 
 logger = get_logger(__name__)

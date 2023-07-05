@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from langchain.vectorstores import Chroma
 from langchain.embeddings import OpenAIEmbeddings
-from realtime_ai_companion.logger import get_logger
+from realtime_ai_character.logger import get_logger
 
 load_dotenv()
 logger = get_logger(__name__)

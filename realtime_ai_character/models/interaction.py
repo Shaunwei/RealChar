@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime
 import datetime
-from realtime_ai_companion.database.base import Base
+from realtime_ai_character.database.base import Base
 
 
 class Interaction(Base):

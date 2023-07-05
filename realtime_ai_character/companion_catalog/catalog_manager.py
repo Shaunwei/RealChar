@@ -2,9 +2,9 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 from contextlib import ExitStack
-from realtime_ai_companion.logger import get_logger
-from realtime_ai_companion.utils import Singleton, Companion
-from realtime_ai_companion.database.chroma import get_chroma
+from realtime_ai_character.logger import get_logger
+from realtime_ai_character.utils import Singleton, Companion
+from realtime_ai_character.database.chroma import get_chroma
 from llama_index import SimpleDirectoryReader
 from langchain.text_splitter import CharacterTextSplitter
 

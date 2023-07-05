@@ -7,10 +7,10 @@ from langchain.callbacks.base import AsyncCallbackHandler
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chat_models import ChatOpenAI
 from langchain.vectorstores import Chroma
-from realtime_ai_companion.logger import get_logger
+from realtime_ai_character.logger import get_logger
 from langchain.schema import AIMessage, BaseMessage, HumanMessage, SystemMessage
-from realtime_ai_companion.utils import Companion, Singleton, ConversationHistory
-from realtime_ai_companion.database.chroma import get_chroma
+from realtime_ai_character.utils import Companion, Singleton, ConversationHistory
+from realtime_ai_character.database.chroma import get_chroma
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -61,7 +61,6 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
             if token != ".":
                 self.current_sentence += token
             else:
-                print(self.tts_event)
                 await self.text_to_speech.stream(self.current_sentence, self.websocket, self.tts_event, self.companion_name)
                 self.current_sentence = ""
 

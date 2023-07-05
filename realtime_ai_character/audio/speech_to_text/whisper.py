@@ -8,8 +8,8 @@ import openai
 import speech_recognition as sr
 import whisper
 
-from realtime_ai_companion.logger import get_logger
-from realtime_ai_companion.utils import Singleton
+from realtime_ai_character.logger import get_logger
+from realtime_ai_character.utils import Singleton
 
 logger = get_logger(__name__)
 

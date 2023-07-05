@@ -1,5 +1,5 @@
-# Realtime AI Companion
-Realtime AI Companion is a revolutionary project enabling dynamic audio-visual interactions between humans and AI. Powered by Language Learning Model (LLM), it offers instant, natural, and context-aware responses, paving the way for a new era of interactive AI experiences.
+# Realtime AI Character
+Realtime AI Character is a revolutionary project enabling dynamic audio-visual interactions between humans and AI. Powered by Language Learning Model (LLM), it offers instant, natural, and context-aware responses, paving the way for a new era of interactive AI experiences.
 
 ## Prerequisites
 
@@ -32,13 +32,13 @@ To get your OpenAI API token, follow these steps:
     ```
 4. Run the app
     ```sh
-    uvicorn realtime_ai_companion.main:app --reload
+    uvicorn realtime_ai_character.main:app --reload
     ```
 5. Run client
     ```sh
     python client.py
     ```
-6. Select one companion to talk to, then start talking
+6. Select one character to talk to, then start talking
 
 
 ## Tech Stack

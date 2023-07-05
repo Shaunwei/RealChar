@@ -36,7 +36,7 @@ class AsyncCallbackHandler(AsyncCallbackHandler):
 
 
 class AsyncCallbackAudioHandler(AsyncCallbackHandler):
-    def __init__(self, text_to_speech=None, websocket=None, companion_name="", *args, **kwargs):
+    def __init__(self, text_to_speech=None, websocket=None, tts_event=None, companion_name="", *args, **kwargs):
         super().__init__(*args, **kwargs)
         if text_to_speech is None:
             def text_to_speech(token): return logger.info(f'New audio token: {token}')
@@ -45,6 +45,7 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
         self.current_sentence = ""
         self.companion_name = companion_name
         self.isReply = False # the start of the reply. i.e. the substring after '>'
+        self.tts_event = tts_event
 
     async def on_chat_model_start(self, *args, **kwargs):
         pass
@@ -56,11 +57,15 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
             if token != ".":
                 self.current_sentence += token
             else:
+                if self.tts_event.is_set():
+                    return
                 await self.text_to_speech.stream(self.current_sentence, self.websocket, self.companion_name)
                 self.current_sentence = ""
     
     async def on_llm_end(self, *args, **kwargs):
         if self.current_sentence != "":
+            if self.tts_event.is_set():
+                return
             await self.text_to_speech.stream(self.current_sentence, self.websocket, self.companion_name)
 
 

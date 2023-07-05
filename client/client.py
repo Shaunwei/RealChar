@@ -1,17 +1,18 @@
+import asyncio
+import concurrent.futures
+import functools
 import io
 import random
-import asyncio
+from threading import Thread
+import time
+
 import pyaudio
-import functools
+import speech_recognition as sr
 import websockets
-import concurrent.futures
 from aioconsole import ainput  # for async input
 from pydub import AudioSegment
 from pydub.playback import play
 from simpleaudio import WaveObject
-import speech_recognition as sr
-
-
 
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=3)
 
@@ -19,6 +20,36 @@ CHUNK = 1024
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
+
+
+class AudioPlayer:
+    def __init__(self):
+        self.play_thread = None
+        self.stop_flag = False
+
+    def play_audio(self, wav_data):
+        wave_obj = WaveObject.from_wave_file(wav_data)
+        play_obj = wave_obj.play()
+
+        while play_obj.is_playing() and not self.stop_flag:
+            time.sleep(0.1)
+
+        if self.stop_flag:
+            play_obj.stop()
+
+    def start_playing(self, wav_data):
+        self.stop_flag = False
+        self.play_thread = Thread(target=self.play_audio, args=(wav_data,))
+        self.play_thread.start()
+
+    def stop_playing(self):
+        if self.play_thread and self.play_thread.is_alive():
+            self.stop_flag = True
+            self.play_thread.join()
+            self.play_thread = None
+
+
+audio_player = AudioPlayer()
 
 
 def get_input_device_id():
@@ -41,19 +72,20 @@ async def handle_audio(websocket, device_id):
         print('Source width: ', source.SAMPLE_WIDTH)
         print('Adjusting for ambient noise...Wait for 2 seconds')
         recognizer.adjust_for_ambient_noise(source, duration=2)
-        recognizer.energy_threshold = 1000
-        recognizer.dynamic_energy_ratio = 3
-        recognizer.dynamic_energy_adjustment_damping = 0.2
-        recognizer.pause_threshold = 0.5
+        recognizer.energy_threshold = 5000
+        recognizer.dynamic_energy_ratio = 5
+        recognizer.dynamic_energy_adjustment_damping = 0.8
+        recognizer.non_speaking_duration = 0.2
+        recognizer.pause_threshold = 0.3
         listen_func = functools.partial(
             recognizer.listen, source, phrase_time_limit=30)
 
         print('Okay, start talking!')
         while True:
-            print('[*]')  # indicate that we are listening
+            print('[*]', end="")  # indicate that we are listening
             audio = await asyncio.get_event_loop().run_in_executor(executor, listen_func)
             await websocket.send(audio.frame_data)
-            print('[-]')  # indicate that we are done listening
+            print('[-]', end="")  # indicate that we are done listening
             await asyncio.sleep(2)
 
 
@@ -79,6 +111,8 @@ async def receive_message(websocket):
             if message == '[end]\n':
                 print('\nYou: ', end="", flush=True)
             elif message.startswith('[+]'):
+                # stop playing audio
+                audio_player.stop_playing()
                 # indicate the transcription is done
                 print(f"{message}", end="\n", flush=True)
             else:
@@ -88,9 +122,8 @@ async def receive_message(websocket):
             audio = AudioSegment.from_mp3(audio_data)
             wav_data = io.BytesIO()
             audio.export(wav_data, format="wav")
-            wave_obj = WaveObject.from_wave_file(wav_data)
-            play_obj = wave_obj.play()
-            play_obj.wait_done()
+            # Start playing audio
+            audio_player.start_playing(wav_data)
         else:
             print("Unexpected message")
             break
@@ -113,18 +146,6 @@ async def start_client(client_id):
             send_task = asyncio.create_task(handle_text(websocket))
 
         receive_task = asyncio.create_task(receive_message(websocket))
-
-        # done, pending = await asyncio.wait(
-        #     [receive_task, send_task],
-        #     return_when=asyncio.FIRST_COMPLETED,
-        # )
-
-        # for task in done:
-        #     if exc := task.exception():
-        #         print(f"Task raised exception: {exc}")
-
-        # for task in pending:
-        #     task.cancel()
         await asyncio.gather(receive_task, send_task)
 
 

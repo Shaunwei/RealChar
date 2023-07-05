@@ -1,3 +1,4 @@
+import asyncio
 import httpx
 import os
 from dotenv import load_dotenv
@@ -10,13 +11,14 @@ load_dotenv()
 logger = get_logger(__name__)
 
 
-class MyElevenLabs(Singleton):
+class ElevenLabs(Singleton):
     def __init__(self):
         logger.info("Initializing ElevenLabs voices...")
 
         self.default_voice = "Bella"
         self.raiden_voice = "GQbV9jBB6X50z0S6R2d0"
-        self.loki_voice = "ErXwobaYiN019PkySvjV" #TODO: replace this with trained Loki voice id. Currently it's Antoni voice
+        # TODO: replace this with trained Loki voice id. Currently it's Antoni voice
+        self.loki_voice = "ErXwobaYiN019PkySvjV"
         self.custom_voice = None
         self.chunk_size = 1024
 
@@ -27,7 +29,7 @@ class MyElevenLabs(Singleton):
             return self.loki_voice
         return self.default_voice
 
-    async def stream(self, text, companion, websocket) -> None:
+    async def stream(self, text, companion, websocket, tts_event: asyncio.Event) -> None:
         voice_id = self.get_voice_id(companion)
 
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/stream"
@@ -35,7 +37,7 @@ class MyElevenLabs(Singleton):
         headers = {
             "Accept": "audio/mpeg",
             "Content-Type": "application/json",
-            "xi-api-key": os.environ['ELEVEN_LABS_API']
+            "xi-api-key": os.environ['ELEVEN_LABS_API_KEY']
         }
 
         data = {
@@ -50,8 +52,11 @@ class MyElevenLabs(Singleton):
         async with httpx.AsyncClient() as client:
             response = await client.post(url, json=data, headers=headers)
             async for chunk in response.aiter_bytes():
-                 await websocket.send_bytes(chunk)
+                if tts_event.is_set():
+                    # stop streaming audio
+                    break
+                await websocket.send_bytes(chunk)
 
 
 def get_text_to_speech():
-    return MyElevenLabs.get_instance()
+    return ElevenLabs.get_instance()

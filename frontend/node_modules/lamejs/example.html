@@ -1,0 +1,52 @@
+<html>
+<body>Encoding mp3 from <code>testdata/Left44100.wav</code>
+</body>
+<script src="lame.all.js"></script>
+<script>
+    function encodeMono(channels, sampleRate, samples) {
+        var buffer = [];
+        var mp3enc = new lamejs.Mp3Encoder(channels, sampleRate, 128);
+        var remaining = samples.length;
+        var maxSamples = 1152;
+        for (var i = 0; remaining >= maxSamples; i += maxSamples) {
+            var mono = samples.subarray(i, i + maxSamples);
+            var mp3buf = mp3enc.encodeBuffer(mono);
+            if (mp3buf.length > 0) {
+                buffer.push(new Int8Array(mp3buf));
+            }
+            remaining -= maxSamples;
+        }
+        var d = mp3enc.flush();
+        if(d.length > 0){
+            buffer.push(new Int8Array(d));
+        }
+
+        console.log('done encoding, size=', buffer.length);
+        var blob = new Blob(buffer, {type: 'audio/mp3'});
+        var bUrl = window.URL.createObjectURL(blob);
+        console.log('Blob created, URL:', bUrl);
+        window.myAudioPlayer = document.createElement('audio');
+        window.myAudioPlayer.src = bUrl;
+        window.myAudioPlayer.setAttribute('controls', '');
+        window.myAudioPlayer.play();
+    }
+
+    var wavFile = "testdata/Left44100.wav";
+
+    var request = new XMLHttpRequest();
+    request.open("GET", wavFile, true);
+    request.responseType = "arraybuffer";
+
+    // Our asynchronous callback
+    request.onload = function () {
+        var audioData = request.response;
+        var wav = lamejs.WavHeader.readHeader(new DataView(audioData));
+        console.log('wav:', wav);
+        var samples = new Int16Array(audioData, wav.dataOffset, wav.dataLen / 2);
+        encodeMono(wav.channels, wav.sampleRate, samples);
+    };
+    request.send();
+
+    //    var encoder = lib.Mp3Encoder(1, 44100, 128);
+</script>
+</html>

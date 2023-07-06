@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel layout="BorderLayout">
+	<vbox constraints="BorderLayout.CENTER">
+		<panel layout="BorderLayout">
+			<hbox constraints="BorderLayout.NORTH">
+				<button text="Add..." action="add" />
+				<button text="Remove" action="remove" id="doRemove" />
+				<button text="Encode/Decode" action="encodeDecode" id="doEncodeDecode" />
+			</hbox>
+			<tabbedpane titles="Input / Output,LAME Settings"
+				constraints="BorderLayout.CENTER">
+				<vbox border="TitledBorder(Input files:)">
+					<scrollpane>
+						<table initclass="ui.InputTableModel" CellSelectionEnabled="false"
+							ColumnSelectionAllowed="false" RowSelectionAllowed="true" id="files"></table>
+					</scrollpane>
+					<panel border="TitledBorder(Output directory:)" layout="GridLayout(3,1)">
+						<buttongroup>
+							<radiobutton label="Output directory = Input directory"
+								Selected="true" id="outputIsInput"></radiobutton>
+							<radiobutton label="Use below:" id="customOutputDir"></radiobutton>
+						</buttongroup>
+						<panel>
+							<textfield columns="30" Editable="false" id="outputDir"></textfield>
+							<button text="Browse..." action="chooseOutputDir"></button>
+						</panel>
+					</panel>
+					<panel layout="GridLayout(3,1)">
+						<checkbox text="Overwrite existing files" id="overwrite"></checkbox>
+					</panel>
+				</vbox>
+				<vbox>
+					<panel layout="GridLayout(4,3)">
+						<buttongroup>
+							<radiobutton text="Presets" selected="true" action="setPresets">
+							</radiobutton>
+							<label text="Preset:">
+							</label>
+							<combobox id="presets">
+							</combobox>
+
+							<radiobutton text="Custom" action="setCustom">
+							</radiobutton>
+						</buttongroup>
+						<buttongroup>
+							<radiobutton text="VBR - variable bitrate:" Selected="true"
+								Enabled="false" id="setVBR">
+							</radiobutton>
+							<combobox id="vbr" Enabled="false">
+							</combobox>
+							<label></label>
+							<radiobutton text="ABR - average bitrate:" Enabled="false"
+								id="setABR">
+							</radiobutton>
+							<combobox MaximumRowCount="1" Enabled="false" id="abr">
+							</combobox>
+							<label></label>
+							<radiobutton text="CBR - constant bitrate:" Enabled="false"
+								id="setCBR">
+							</radiobutton>
+							<combobox Enabled="false" id="cbr">
+							</combobox>
+						</buttongroup>
+					</panel>
+					<panel border="TitledBorder(Channel Mode)">
+						<buttongroup>
+							<radiobutton text="Stereo" Selected="true" id="setStereo"></radiobutton>
+							<radiobutton text="Joint stereo" id="setJointStereo"></radiobutton>
+							<radiobutton text="Forced joint stereo" id="setForcedJointStereo"></radiobutton>
+							<radiobutton text="Dual channels" id="setDualChannels"></radiobutton>
+							<radiobutton text="Mono" id="setMono"></radiobutton>
+							<radiobutton text="Auto" Selected="true" id="setAuto"></radiobutton>
+						</buttongroup>
+					</panel>
+					<panel border="TitledBorder(Encoding algorithm quality)">
+						<combobox id="algorithm">
+						</combobox>
+					</panel>
+				</vbox>
+			</tabbedpane>
+		</panel>
+	</vbox>
+	<hbox constraints="BorderLayout.WEST">
+		<panel border="TitledBorder(Tag Settings)">
+			<vbox>
+				<panel layout="BorderLayout(10,10)">
+					<label text="Title:" />					
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<combobox Editable="true" />
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<label text="Interpret:"/>
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<combobox Editable="true"  />
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<label text="Album:"/>
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<combobox Editable="true" />
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<label text="Year:"/>
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<combobox Editable="true" />
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<label text="Track:"/>
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<combobox Editable="true" />
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<label text="Genre:"/>
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<combobox Editable="true" />
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<label text="Comment:"/>
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<combobox Editable="true" />
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<label text="Album Interpret:"/>
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<combobox Editable="true" />
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<label text="Komponist:"/>
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<combobox Editable="true" />
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<label text="CD Number:"/>
+				</panel>
+				<panel layout="BorderLayout(10,10)">
+					<combobox Editable="true" />
+				</panel>
+				<picture id="picture" />
+			</vbox>
+		</panel>
+	</hbox>
+</panel>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container text-center">
+    <h1>Mic Recorder to Mp3 Example</h1>
+    <p>Check your web developer tool console.</p>
+
+    <hr />
+
+    <button class="btn btn-primary">Start recording</button>
+
+    <br />
+    <br />
+    <br />
+
+    <ul id="playlist"></ul>
+  </div>
+
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <!-- <script src="https://unpkg.com/mic-recorder-to-mp3"></script> -->
+  <script src="../dist/index.js"></script>
+  <script>
+    const button = document.querySelector('button');
+    const recorder = new MicRecorder({
+      bitRate: 128
+    });
+
+    button.addEventListener('click', startRecording);
+
+    function startRecording() {
+      recorder.start().then(() => {
+        button.textContent = 'Stop recording';
+        button.classList.toggle('btn-danger');
+        button.removeEventListener('click', startRecording);
+        button.addEventListener('click', stopRecording);
+      }).catch((e) => {
+        console.error(e);
+      });
+    }
+
+    function stopRecording() {
+      recorder.stop().getMp3().then(([buffer, blob]) => {
+        console.log(buffer, blob);
+        const file = new File(buffer, 'music.mp3', {
+          type: blob.type,
+          lastModified: Date.now()
+        });
+
+        const li = document.createElement('li');
+        const player = new Audio(URL.createObjectURL(file));
+        player.controls = true;
+        li.appendChild(player);
+        document.querySelector('#playlist').appendChild(li);
+
+        button.textContent = 'Start recording';
+        button.classList.toggle('btn-danger');
+        button.removeEventListener('click', stopRecording);
+        button.addEventListener('click', startRecording);
+      }).catch((e) => {
+        console.error(e);
+      });
+    }
+  </script>
+</body>
+</html>

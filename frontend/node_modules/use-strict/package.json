@@ -1,0 +1,24 @@
+{
+  "name": "use-strict",
+  "version": "1.0.1",
+  "description": "Makes all modules in Node get loaded in strict mode.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/isaacs/use-strict"
+  },
+  "keywords": [
+    "use strict",
+    "strict mode"
+  ],
+  "author": "Isaac Z. Schlueter <i@izs.me> (http://blog.izs.me/)",
+  "license": "ISC",
+  "readmeFilename": "README.md",
+  "gitHead": "a7cdf43563a5ac514c96b6f781d9018e0b7a68e8",
+  "bugs": {
+    "url": "https://github.com/isaacs/use-strict/issues"
+  }
+}

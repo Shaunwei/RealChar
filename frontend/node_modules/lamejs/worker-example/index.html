@@ -1,0 +1,123 @@
+<html>
+<head>
+    <title>Lame.js Upload Example</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+</head>
+
+<body style="padding-top: 30px">
+<div class="container">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <form method="post" enctype="multipart/form-data" action="" class="form-horizontal" id="inputForm">
+                <div class="control-group">
+                    <label class="control-label col-sm-4">
+                        Select Wave File
+                    </label>
+
+                    <div class="col-sm-3">
+                        <input type="file" id="audioReceiver" name="audioReceiver" accept="audio" class="form-control"/>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            <select id="bitRate" class="form-control">
+                                <option>32</option>
+                                <option>40</option>
+                                <option>48</option>
+                                <option>56</option>
+                                <option>64</option>
+                                <option>80</option>
+                                <option>96</option>
+                                <option>112</option>
+                                <option selected="">128</option>
+                                <option>192</option>
+                                <option>224</option>
+                                <option>256</option>
+                                <option>320</option>
+                            </select>
+                            <span class="input-group-addon">kbit/s</span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <button class="btn btn-primary">
+                            Convert File
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+
+            <div class="clearfix"></div>
+            <br/>
+            <br/>
+            <div id='StatusMessage' class="alert alert-info" style="display: none;"></div>
+            <div id="AudioArea"></div>
+            <ol class="convertedList"></ol>
+
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="index.js"></script>
+<script>
+    //on document ready
+    $(function () {
+        var converter = new MP3Converter();
+        var file;
+        $('#audioReceiver').on('change', function () {
+            file = this.files[0];
+            $('#StatusMessage').html(
+                    "File Size in bytes: " + file.size
+            ).show();
+        });
+
+        $('#inputForm').on('submit', function (e) {
+            e.preventDefault();
+            if (!file || file.size < 1) {
+                alert('Specified file is not valid');
+                return;
+            }
+
+            //convert
+            var onComplete = function () {
+                $('#StatusMessage').html('').hide();
+                file = null;
+                $('#inputForm').show();
+            };
+
+            $('#StatusMessage').html(
+                    '<div class="progress">' +
+                    '<div class="progress-bar" style="width: 0%;">' +
+                    '</div></div>'
+            ).show();
+            $('#inputForm').hide();
+
+            var bitRate = parseInt($('#bitRate').val(), 10);
+
+            converter.convert(file, {
+                bitRate: bitRate
+            }, function (blob) {
+                //log blog
+                var blobUrl = window.URL.createObjectURL(blob);
+                $('ol.convertedList')
+                        .append('<li><strong>' +
+                        file.name +
+                        '</strong><br/>' +
+                        '<audio controls src="' + blobUrl + '"></audio>' +
+                        '</li>');
+                onComplete();
+            }, function (progress) {
+                $('#StatusMessage')
+                        .find('.progress-bar')
+                        .css('width', (progress * 100) + '%')
+            });
+
+        });
+
+    });
+</script>
+</body>
+
+</html>

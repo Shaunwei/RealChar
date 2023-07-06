@@ -1,0 +1,47 @@
+{
+  "name": "mic-recorder-to-mp3",
+  "version": "2.2.2",
+  "description": "Record your microphone audio input and get an audio/mp3 ouput buffer/blob.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "minify": "minify=true rollup -c",
+    "watch": "rollup -c -w"
+  },
+  "repository": "git@github.com:closeio/mic-recorder-to-mp3.git",
+  "author": "Djalma Araujo <djalma@close.io>",
+  "contributors": [
+    "Vitor Buzinaro <vitor@close.io>"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.25.0",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "^1.5.2",
+    "rollup": "^0.43.0",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-uglify": "^2.0.1",
+    "rollup-watch": "^4.0.0"
+  },
+  "babel": {
+    "presets": [
+      [
+        "env",
+        {
+          "modules": false
+        }
+      ]
+    ],
+    "plugins": [
+      "external-helpers"
+    ]
+  },
+  "dependencies": {
+    "lamejs": "^1.2.0"
+  },
+  "peerDependencies": {
+    "webrtc-adapter": ">=4.1.1"
+  }
+}

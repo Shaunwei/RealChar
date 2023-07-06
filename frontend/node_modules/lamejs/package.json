@@ -1,0 +1,32 @@
+{
+  "name": "lamejs",
+  "version": "1.2.1",
+  "description": "Pure JavaScript MP3 Encoder",
+  "main": "src/js/index.js",
+  "directories": {
+    "doc": "doc",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node src/js/Tests.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhuker/lamejs.git"
+  },
+  "keywords": [
+    "mp3",
+    "encoder",
+    "audio",
+    "webaudio"
+  ],
+  "author": "Alex Zhukov",
+  "license": "LGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/zhuker/lamejs/issues"
+  },
+  "homepage": "https://github.com/zhuker/lamejs#readme",
+  "dependencies": {
+    "use-strict": "1.0.1"
+  }
+}

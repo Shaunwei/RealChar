@@ -84,14 +84,14 @@ async def handle_audio(websocket, device_id):
         recognizer = sr.Recognizer()
         print('Source sample rate: ', source.SAMPLE_RATE)
         print('Source width: ', source.SAMPLE_WIDTH)
-        print('Adjusting for ambient noise...Wait for 2 seconds')
-        recognizer.adjust_for_ambient_noise(source, duration=2)
+        print('Adjusting for ambient noise...Wait for 5 seconds')
         recognizer.energy_threshold = 5000
         recognizer.dynamic_energy_ratio = 6
         recognizer.dynamic_energy_adjustment_damping = 0.85
         recognizer.non_speaking_duration = 0.5
         recognizer.pause_threshold = 0.8
         recognizer.phrase_threshold = 0.5
+        recognizer.adjust_for_ambient_noise(source, duration=5)
         listen_func = functools.partial(
             recognizer.listen, source, phrase_time_limit=30)
 

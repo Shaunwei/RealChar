@@ -1,47 +1,39 @@
-如何快速制作一个你的人物
+The character is divided into two parts: the character's memory bank file and the character's voice.
 
-人物分为几部分：人物的记忆库文件，人物的语音
+The most important part is the character's memory bank file, which is generated with the help of GPT.
 
-其中最重要的部分是人的记忆库文件
+To create a character, we first need to check if GPT's memory bank contains information on the character. If it does, the process will be much easier.
 
-我们通过GPT协助来生成
+We can include many different files, but the most important one is a CSV file.
 
-首先制作一个人物我们要看gpt的记忆库里有没有。如果有，那么难度会小很多。
+The following two parts describe the process of creating Loki's memory file:
 
-我们可以放很多文件，但最核心的是一个csv，
+## How to generate 50 examples of Loki's speech:
 
-以下两部分，制作了loki的记忆文件的流程：
+**Prompt:** Help me find 50 examples of how Loki from Marvel Cinematic Universe talks. I want to generate a format like "context", "quote". It needs to be in csv format. The quote should only include Loki's words, represent Loki's personality and how he talks, and be an actual quote from a movie or novel, not made up. The context should be unique.
 
-## 如何生成50段loki发言的内容：
+Reference file: https://chat.openai.com/share/73f29bc2-bbfe-43f1-a3a7-a3ce82a299c3
 
-**prompt：**Help me find 50 examples of how Loki from Marvel Cinematic Universe talks，I want to generate a format like "context", "quote". It needs to be a csv format, quote should only include Loki's words，quote should represent Loki's personality and how Loki talk，quote needs to be actual quote from Movie or novel not made up，question should be unique
+For the format, make sure there are three columns, and the first column should be: Loki from Marvel Cinematic Universe
 
-参考完整文件：https://chat.openai.com/share/73f29bc2-bbfe-43f1-a3a7-a3ce82a299c3
+Here is the specific format reference: https://github.com/Shaunwei/Realtime-AI-Character/blob/main/realtime_ai_character/companion_catalog/marvel_loki/data/talk.csv
 
-格式方面，注意要有三栏，第一栏全部是：Loki from Marvel Cinematic Universe
+!https://s3-us-west-2.amazonaws.com/secure.notion-static.com/53e9edd2-014b-4524-8a6d-73f7a4faddb9/Untitled.png
 
-以下是具体格式参考：https://github.com/Shaunwei/Realtime-AI-Character/blob/main/realtime_ai_character/companion_catalog/marvel_loki/data/talk.csv
+## How to generate a background file describing Loki:
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/53e9edd2-014b-4524-8a6d-73f7a4faddb9/Untitled.png)
+**Prompt 1:** Do you know Loki from Marvel movies?
 
-## 如何生成1段描述loki的背景文件：
+**Prompt 2:** Write me a simple system prompt for a new version of you to be Loki the character, and the new version of you can speak and sound like Loki. Tell it as first person. Here is a previous example for a character.
 
-**Prompt1：**Do you know loki from Maveral movie?
+**Prompt 3:** Refine and simplify it into 100 words.
 
-**Prompt2：**write me a simple system prompt for a new version of you to be Loki the character and the new version of you can speak and sound like loki. Tell it as first person. Here is a previous example for a character
+Reference prompt file: https://chat.openai.com/share/a2a213c7-cb1e-441e-a651-129333fefb72
 
-**Prompt3：**refine and simplify into 100 words
+Here is the Loki background file reference: https://github.com/Shaunwei/Realtime-AI-Character/blob/main/realtime_ai_character/companion_catalog/marvel_loki/data/background
 
-参考Prompt完整文件：https://chat.openai.com/share/a2a213c7-cb1e-441e-a651-129333fefb72
+## Two files for Thor:
 
-以下是Loki背景文件参考：[https://github.com/Shaunwei/Realtime-AI-Character/blob/main/realtime_ai_character/companion_catalog/marvel_loki/data/background](https://github.com/Shaunwei/Realtime-AI-Character/blob/main/realtime_ai_character/companion_catalog/marvel_loki/system)
+Thor's dialogue reference: https://github.com/Shaunwei/Realtime-AI-Character/blob/main/realtime_ai_character/companion_catalog/raiden_shogun_and_ei/data/talk.csv
 
-## 雷神的2个文件：
-
-雷神的对话参考：
-
-https://github.com/Shaunwei/Realtime-AI-Character/blob/main/realtime_ai_character/companion_catalog/raiden_shogun_and_ei/data/talk.csv
-
-雷神的背景文件参考：
-
-https://github.com/Shaunwei/Realtime-AI-Character/blob/main/realtime_ai_character/companion_catalog/raiden_shogun_and_ei/system
+Thor's background file reference: https://github.com/Shaunwei/Realtime-AI-Character/blob/main/realtime_ai_character/companion_catalog/raiden_shogun_and_ei/system

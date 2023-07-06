@@ -17,6 +17,18 @@ To get your OpenAI API token, follow these steps:
 4. Copy the API key and store it safely.
 5. Add the API key to your environment variable, e.g. `export OPENAI_API_KEY=<your API key>`
 
+### 2. Prepare ElevenLabs API Key
+
+1. Creating an ElevenLabs Account
+Visit [ElevenLabs](https://beta.elevenlabs.io/) to create an account. You'll need this to access the speech synthesis and voice cloning features.
+
+2. In your Profile Setting, you can get an API Key. Save it in a safe place.
+
+3. Set API key in your .env file:
+```
+XI_API_KEY=<api key>
+```
+
 ## Installation
 1. Clone the repo
    ```sh

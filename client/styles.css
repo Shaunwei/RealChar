@@ -1,0 +1,12 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+button {
+    margin: 10px;
+}
+
+#log {
+    width: 100%;
+    height: 300px;
+}

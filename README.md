@@ -46,7 +46,11 @@ XI_API_KEY=<api key>
     ```sh
     uvicorn realtime_ai_character.main:app --reload
     ```
-5. Run client
+5. Run frontend, then go to http://localhost:8001/client/client.html
+    ```sh
+    python -m http.server 8001
+    ```
+5.1 (optional) Run client - python cli
     ```sh
     python client/client.py
     ```

@@ -1,5 +1,28 @@
-# Realtime AI Character
-Realtime AI Character is a revolutionary project enabling dynamic audio-visual interactions between humans and AI. Powered by Language Learning Model (LLM), it offers instant, natural, and context-aware responses, paving the way for a new era of interactive AI experiences.
+<p align="center">
+  <img src="https://pic8.58cdn.com.cn/nowater/webim/big/n_v296d1faa2a0664e26b4ad2db2b17a83f9.png" height="300" alt="AgentGPT Logo"/>
+</p>
+<p align="center">
+  <em>🤖 enabling dynamic audio-visual interactions between humans and AI. 🤖   </em>
+</p>
+
+Realtime AI Character is a revolutionary project enabling dynamic audio-visual interactions between humans and AI. Powered by Language Learning Model (LLM), it offers instant, natural, and context-aware responses, paving the way for a new era of interactive AI experiences 🚀.
+
+## ✨ Demo
+For the best demo experience,  try [our site](link) directly :)
+[Demo Video](link)
+
+## 👨‍🚀 Getting Started
+
+The easiest way to get started with RAC is automatic setup CLI bundled with the project.
+The cli sets up the following for AgentGPT:
+- 🔐 [Environment variables](link) (and API Keys)
+- 🗂️ [Database](link) (Mysql)
+- 🤖 [Backend](link) (FastAPI)
+- 🎨 [Frontend](link) (Nextjs)
+
+
+
+
 
 ## Prerequisites
 

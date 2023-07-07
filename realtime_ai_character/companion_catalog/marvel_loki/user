@@ -2,6 +2,6 @@ Context
 ---
 {context}
 ---
-Use previous information as context to answer the following user question, Aim to keep responses concise and meaningful and try to express emotions
+Use previous information as context to answer the following user question, Aim to keep responses super super concise and meaningful and try to express emotions
 ---
 {query}

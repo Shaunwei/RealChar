@@ -16,7 +16,7 @@ app.include_router(restful_router)
 app.include_router(websocket_router)
 
 # initializations
-CatalogManager.initialize(overwrite=False)
+CatalogManager.initialize(overwrite=True)
 Whisper.initialize()
 ConnectionManager.initialize()
 ElevenLabs.initialize()

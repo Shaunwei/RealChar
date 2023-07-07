@@ -7,29 +7,30 @@
 </head>
 <body>
   <div class="container text-center mt-5">
-    <!-- <div>
-      <video id="talk-video" width="400" height="400" autoplay></video>
-    </div> -->
     <div class="row">
       <div class="col-12 col-md-6 col-xl-6 mx-auto">
         <h1 class="mb-4">Realtime AI Character</h1>
-        <form id="image-upload-form">
-          <input type="file" id="image-upload" accept="image/*">
-          <button type="submit" class="btn btn-primary">Upload Image</button>
-        </form>
         <img id="image-display" class="mb-3" src="/static/raiden.jpeg" alt="" style="height:250px">
+
         <div id="network-buttons">
           <button id="connect" class="btn btn-primary">Connect</button>
           <button id="end-connection" class="btn btn-danger">End</button>
         </div>
+        <!-- Audio device selection -->
+        <div class="form-group mt-3">
+          <label for="audio-device-selection">Select an audio input device:</label>
+          <select id="audio-device-selection" class="form-select"></select>
+        </div>
+        
         <textarea id="log" readonly></textarea>
         <form>
           <div class="form-group mb-3">
             <input id="message-input" type="text" placeholder="Type your message" class="w-100">
+            <button type="button" class="btn btn-primary" style="width:48%" id="send">Send</button>
           </div>
           <div class="form-group d-flex justify-content-between">
-              <button type="button" class="btn btn-danger" style="width:48%" id="start-talking">Start Talking</button>
-              <button type="button" class="btn btn-primary" style="width:48%" id="send">Send</button>
+              <button type="button" class="btn btn-primary" style="width:48%" id="start-audio">Start Audio</button>
+              <button type="button" class="btn btn-primary" style="width:48%" id="stop-audio">Stop Audio</button>
           </div>
         </form>
         <br>
@@ -37,6 +38,6 @@
     </div>
   </div>
   
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

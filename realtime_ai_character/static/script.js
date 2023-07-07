@@ -63,7 +63,11 @@ connectButton.addEventListener("click", () => {
   log.value = "";
   log.value += "Connecting...\n";
 
-  socket = new WebSocket(`ws://localhost:8000/ws/${clientId}`);
+  var clientId = Math.floor(Math.random() * 101);
+  var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+  var ws_path = ws_scheme + '://' + window.location.host + `/ws/${clientId}`;
+  socket = new WebSocket(ws_path);
+  // socket = new WebSocket(`ws://5649-98-42-233-44.ngrok-free.app/ws/${clientId}`);
   socket.binaryType = 'arraybuffer';  // necessary to receive binary data
 
   socket.onopen = (event) => {

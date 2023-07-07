@@ -1,10 +1,11 @@
+from dataclasses import field
 from pydantic.dataclasses import dataclass
 from starlette.websockets import WebSocketState, WebSocket
 from typing import List
 
 
 @dataclass
-class Companion:
+class Character:
     name: str
     llm_system_prompt: str
     llm_user_prompt: str
@@ -12,9 +13,9 @@ class Companion:
 
 @dataclass
 class ConversationHistory:
-    system_prompt: str
-    user: list[str]
-    ai: list[str]
+    system_prompt: str = ''
+    user: list[str] = field(default_factory=list)
+    ai: list[str] = field(default_factory=list)
 
     def __iter__(self):
         yield self.system_prompt

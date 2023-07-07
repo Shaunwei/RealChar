@@ -37,8 +37,7 @@ class Whisper(Singleton):
             model="small",
             language='en',
             show_dict=True,
-            # TODO: pass in prompt during conversation
-            initial_prompt='ChatGPT,Raiden Shogun,Ei'
+            initial_prompt=prompt
         )['text']
         return text
 

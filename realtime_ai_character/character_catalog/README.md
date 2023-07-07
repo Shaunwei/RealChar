@@ -1,13 +1,17 @@
-Use this template to create your own AI companion.
+How to use character catalog
 ---
 
-- system
+- Each folder is an AI character
+- Just copy paste `example` folder and rename it to your character's name
+- In `example` folder, there are two files and one folder
+
+- system file
     - the system prompt used in OpenAI call
-    - used to define the AI companion's personality
-- user
+    - used to define the AI character's personality
+- user file
     - the user template used for user input
-    - used to provide context for the AI companion conversation
-- /data
+    - used to provide context for the AI character conversation
+- /data folder
     - used to pull relevant information during conversation
     - stored in memory vector database(Chroma) for fast retrieval
     - supports following file types

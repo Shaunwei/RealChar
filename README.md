@@ -52,12 +52,6 @@ XI_API_KEY=<api key>
     ```
 6. Select one character to talk to, then start talking
 
-Note: an alternative to step 5 is opening the web frontend for client side. Here're the steps.
-1. Run Python http server
-    ```sh
-    python -m http.server 8001
-    ```
-2. Open http://localhost:8001/ in your browser. Remember not to use http://[::]:8001/ directly, as it does not allow audio input for security reasons.  
 
 ## Tech Stack
 Speech to Text: Whisper

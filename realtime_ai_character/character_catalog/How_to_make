@@ -16,7 +16,7 @@ Reference file: https://chat.openai.com/share/73f29bc2-bbfe-43f1-a3a7-a3ce82a299
 
 For the format, make sure there are three columns, and the first column should be: Loki from Marvel Cinematic Universe
 
-Here is the specific format reference: https://github.com/Shaunwei/Realtime-AI-Character/blob/main/realtime_ai_character/companion_catalog/marvel_loki/data/talk.csv
+Here is the specific format reference: https://github.com/Shaunwei/Realtime-AI-Character/blob/main/realtime_ai_character/chacater_catalog/marvel_loki/data/talk.csv
 
 !https://s3-us-west-2.amazonaws.com/secure.notion-static.com/53e9edd2-014b-4524-8a6d-73f7a4faddb9/Untitled.png
 
@@ -30,10 +30,10 @@ Here is the specific format reference: https://github.com/Shaunwei/Realtime-AI-C
 
 Reference prompt file: https://chat.openai.com/share/a2a213c7-cb1e-441e-a651-129333fefb72
 
-Here is the Loki background file reference: https://github.com/Shaunwei/Realtime-AI-Character/blob/main/realtime_ai_character/companion_catalog/marvel_loki/data/background
+Here is the Loki background file reference: https://github.com/Shaunwei/Realtime-AI-Character/blob/main/realtime_ai_character/chacater_catalog/marvel_loki/data/background
 
 ## Two files for Thor:
 
-Thor's dialogue reference: https://github.com/Shaunwei/Realtime-AI-Character/blob/main/realtime_ai_character/companion_catalog/raiden_shogun_and_ei/data/talk.csv
+Thor's dialogue reference: https://github.com/Shaunwei/Realtime-AI-Character/blob/main/realtime_ai_character/chacater_catalog/raiden_shogun_and_ei/data/talk.csv
 
-Thor's background file reference: https://github.com/Shaunwei/Realtime-AI-Character/blob/main/realtime_ai_character/companion_catalog/raiden_shogun_and_ei/system
+Thor's background file reference: https://github.com/Shaunwei/Realtime-AI-Character/blob/main/realtime_ai_character/chacater_catalog/raiden_shogun_and_ei/system

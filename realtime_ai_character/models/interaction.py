@@ -11,3 +11,7 @@ class Interaction(Base):
     client_message = Column(String)
     server_message = Column(String)
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+
+    def save(self, db):
+        db.add(self)
+        db.commit()

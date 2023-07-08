@@ -42,11 +42,11 @@ XI_API_KEY=<api key>
     ```sh
     alembic upgrade head
     ```
-4. Run the app
+4. Run the app & then go to http://localhost:8000/static/client.html
     ```sh
     uvicorn realtime_ai_character.main:app --reload
     ```
-5. Run client
+5 (optional) Run client - python cli
     ```sh
     python client/client.py
     ```

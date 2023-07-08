@@ -1,16 +1,19 @@
 import os
 from typing import List
-from dotenv import load_dotenv
+
 import openai
-from langchain.embeddings import OpenAIEmbeddings
+from dotenv import load_dotenv
 from langchain.callbacks.base import AsyncCallbackHandler
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chat_models import ChatOpenAI
-from langchain.vectorstores import Chroma
-from realtime_ai_character.logger import get_logger
-from langchain.schema import AIMessage, BaseMessage, HumanMessage, SystemMessage
-from realtime_ai_character.utils import Companion, Singleton, ConversationHistory
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.schema import (AIMessage, BaseMessage, HumanMessage,
+                              SystemMessage)
+
 from realtime_ai_character.database.chroma import get_chroma
+from realtime_ai_character.logger import get_logger
+from realtime_ai_character.utils import (Character, ConversationHistory,
+                                         Singleton)
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -22,11 +25,10 @@ StreamingStdOutCallbackHandler.on_chat_model_start = lambda *args, **kwargs: Non
 
 
 class AsyncCallbackHandler(AsyncCallbackHandler):
-    def __init__(self, on_new_token=None, token_buffer=None, *args, **kwargs):
+    def __init__(self, on_new_token=None, token_buffer=None, on_llm_end=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if on_new_token is None:
-            def on_new_token(token): return logger.info(f'New token: {token}')
         self.on_new_token = on_new_token
+        self._on_llm_end = on_llm_end
         self.token_buffer = token_buffer
 
     async def on_chat_model_start(self, *args, **kwargs):
@@ -37,9 +39,14 @@ class AsyncCallbackHandler(AsyncCallbackHandler):
             self.token_buffer.append(token)
         await self.on_new_token(token)
 
+    async def on_llm_end(self, *args, **kwargs):
+        if self._on_llm_end is not None:
+            await self._on_llm_end(''.join(self.token_buffer))
+            self.token_buffer.clear()
+
 
 class AsyncCallbackAudioHandler(AsyncCallbackHandler):
-    def __init__(self, text_to_speech=None, websocket=None, tts_event=None, companion_name="", *args, **kwargs):
+    def __init__(self, text_to_speech=None, websocket=None, tts_event=None, character_name="", *args, **kwargs):
         super().__init__(*args, **kwargs)
         if text_to_speech is None:
             def text_to_speech(token): return logger.info(
@@ -47,26 +54,37 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
         self.text_to_speech = text_to_speech
         self.websocket = websocket
         self.current_sentence = ""
-        self.companion_name = companion_name
-        self.isReply = False  # the start of the reply. i.e. the substring after '>'
+        self.character_name = character_name
+        self.is_reply = False  # the start of the reply. i.e. the substring after '>'
         self.tts_event = tts_event
+        # optimization: trade off between latency and quality for the first sentence
+        self.is_first_sentence = True
 
     async def on_chat_model_start(self, *args, **kwargs):
         pass
 
     async def on_llm_new_token(self, token: str, *args, **kwargs):
-        if not self.isReply and token == ">":
-            self.isReply = True
-        elif self.isReply:
+        if not self.is_reply and token == ">":
+            self.is_reply = True
+        elif self.is_reply:
             if token != ".":
                 self.current_sentence += token
             else:
-                await self.text_to_speech.stream(self.current_sentence, self.websocket, self.tts_event, self.companion_name)
+                await self.text_to_speech.stream(
+                    self.current_sentence,
+                    self.websocket,
+                    self.tts_event,
+                    self.character_name,
+                    self.is_first_sentence)
                 self.current_sentence = ""
+                if self.is_first_sentence:
+                    self.is_first_sentence = False
 
     async def on_llm_end(self, *args, **kwargs):
         if self.current_sentence != "":
-            await self.text_to_speech.stream(self.current_sentence, self.websocket, self.tts_event, self.companion_name)
+            await self.text_to_speech.stream(
+                self.current_sentence,
+                self.websocket, self.tts_event, self.character_name, self.is_first_sentence)
 
 
 class OpenaiLlm(Singleton):
@@ -80,9 +98,15 @@ class OpenaiLlm(Singleton):
         )
         self.db = get_chroma()
 
-    async def achat(self, history: List[BaseMessage], user_input: str, user_input_template: str, callback: AsyncCallbackHandler, audioCallback: AsyncCallbackAudioHandler, companion: Companion) -> str:
+    async def achat(self,
+                    history: List[BaseMessage],
+                    user_input: str,
+                    user_input_template: str,
+                    callback: AsyncCallbackHandler,
+                    audioCallback: AsyncCallbackAudioHandler,
+                    character: Character) -> str:
         # 1. Generate context
-        context = self._generate_context(user_input, companion)
+        context = self._generate_context(user_input, character)
 
         # 2. Add user input to history
         history.append(HumanMessage(content=user_input_template.format(
@@ -105,9 +129,9 @@ class OpenaiLlm(Singleton):
                 history.append(HumanMessage(content=message))
         return history
 
-    def _generate_context(self, query, companion: Companion) -> str:
+    def _generate_context(self, query, character: Character) -> str:
         docs = self.db.similarity_search(query)
-        docs = [d for d in docs if d.metadata['companion_name'] == companion.name]
+        docs = [d for d in docs if d.metadata['character_name'] == character.name]
         logger.info(f'Found {len(docs)} documents')
 
         context = '\n'.join([d.page_content for d in docs])
@@ -122,7 +146,7 @@ if __name__ == '__main__':
     import asyncio
     llm = OpenaiLlm()
     conversation_history = ConversationHistory(
-        system_prompt='You are a helpful AI companion.',
+        system_prompt='You are a helpful AI character.',
         user=['Hello'],
         ai=['Hello from AI'],
     )

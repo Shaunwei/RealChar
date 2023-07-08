@@ -8,8 +8,10 @@ const endButton = document.getElementById("end-connection");
 const startAudioButton = document.getElementById("start-audio");
 const stopAudioButton = document.getElementById("stop-audio");
 const sendButton = document.getElementById("send");
+
 const messageInput = document.getElementById("message-input");
 const log = document.getElementById("log");
+
 const imageDisplay = document.getElementById("image-display");
 const audioDeviceSelection = document.getElementById('audio-device-selection');
 
@@ -22,6 +24,10 @@ let audioQueue = [];
 // MediaStream API
 let mediaRecorder;
 let chunks = [];
+
+// Audio buttons
+startAudioButton.disabled = true;
+stopAudioButton.disabled = true;
 
 window.addEventListener("load", function() {
   // Get the list of media devices
@@ -78,6 +84,7 @@ function connectMicrophone(deviceId) {
       }
     }
 
+    startAudioButton.disabled = false;
   })
   .catch(function(err) {
     console.log('An error occurred: ' + err);
@@ -88,6 +95,9 @@ startAudioButton.addEventListener("click", function() {
   if (mediaRecorder) {
     mediaRecorder.start();
     log.value += "\nListening...\n";
+
+    startAudioButton.disabled = true;
+    stopAudioButton.disabled = false;
   }
 });
 
@@ -95,6 +105,9 @@ stopAudioButton.addEventListener("click", function() {
   if (mediaRecorder) {
     mediaRecorder.stop();
     log.value += "Thinking...\n";
+
+    startAudioButton.disabled = false;
+    stopAudioButton.disabled = true;
   }
 });
 
@@ -176,6 +189,9 @@ endButton.addEventListener("click", () => {
   if (socket) {
     socket.close();
     log.value += "Connection Ended.\n";
+
+    startAudioButton.disabled = true;
+    stopAudioButton.disabled = true;
   }
 });
 

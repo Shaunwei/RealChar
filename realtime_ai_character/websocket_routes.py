@@ -22,6 +22,16 @@ from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.utils import (ConversationHistory,
                                          get_connection_manager)
 
+from pydub import AudioSegment
+import io
+
+def convert_webm_to_wav(webm_data):
+    print("convert_webm_to_wav")
+    webm_audio = AudioSegment.from_file(webm_data, format="webm")
+    wav_data = io.BytesIO()
+    webm_audio.export(wav_data, format="wav")
+    return wav_data
+
 logger = get_logger(__name__)
 
 router = APIRouter()
@@ -134,6 +144,7 @@ async def handle_receive(
                 print(len(binary_data))
                 start = time.time()
                 print('transimission time: ', start)
+                binary_data = convert_webm_to_wav(io.BytesIO(binary_data))
                 transcript = speech_to_text.transcribe(binary_data)
                 end = time.time()
                 print('transcription time: ', end)
@@ -143,7 +154,7 @@ async def handle_receive(
                 # ignore audio that picks up background noise
                 if not transcript or len(transcript) < 2:
                     continue
-                await manager.send_message(message=f'\n[+]You said: {transcript}', websocket=websocket)
+                await manager.send_message(message=f'\n[+]You said: {transcript}\n', websocket=websocket)
                 # stop the previous audio stream, if new transcript is received
                 if tts_task and not tts_task.done():
                     tts_event.set()

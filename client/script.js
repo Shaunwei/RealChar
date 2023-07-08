@@ -1,3 +1,7 @@
+// We use MediaStream Recording API more suitable for longer recordings as it's designed to 
+// handle streaming of media data as opposed to the Web Audio API which is more suitable for 
+// processing and synthesizing audio in web applications.
+
 // Buttons
 const connectButton = document.getElementById("connect");
 const endButton = document.getElementById("end-connection");
@@ -7,6 +11,7 @@ const sendButton = document.getElementById("send");
 const messageInput = document.getElementById("message-input");
 const log = document.getElementById("log");
 const imageDisplay = document.getElementById("image-display");
+const audioDeviceSelection = document.getElementById('audio-device-selection');
 
 let recognition;
 let socket;
@@ -14,9 +19,11 @@ let clientId = Math.floor(Math.random() * 1000);
 // Queue for audio data
 let audioQueue = [];
 
-window.addEventListener("load", function() {
-  let audioDeviceSelection = document.getElementById('audio-device-selection');
+// MediaStream API
+let mediaRecorder;
+let chunks = [];
 
+window.addEventListener("load", function() {
   // Get the list of media devices
   navigator.mediaDevices.enumerateDevices()
     .then(function(devices) {
@@ -44,6 +51,52 @@ window.addEventListener("load", function() {
     });
 });
 
+audioDeviceSelection.addEventListener('change', function(e) {
+  connectMicrophone(e.target.value);
+});
+
+function connectMicrophone(deviceId) {
+  navigator.mediaDevices.getUserMedia({
+    audio: {
+      deviceId: deviceId ? {exact: deviceId} : undefined,
+      sampleRate: 44100
+    }
+  })
+  .then(function(stream) {
+    mediaRecorder = new MediaRecorder(stream);
+
+    mediaRecorder.ondataavailable = function(e) {
+      chunks.push(e.data);
+    }
+
+    mediaRecorder.onstop = function(e) {
+      let blob = new Blob(chunks, {'type' : 'audio/webm'});
+      chunks = [];
+
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(blob);
+      }
+    }
+
+  })
+  .catch(function(err) {
+    console.log('An error occurred: ' + err);
+  });
+}
+
+startAudioButton.addEventListener("click", function() {
+  if (mediaRecorder) {
+    mediaRecorder.start();
+    log.value += "\nListening...\n";
+  }
+});
+
+stopAudioButton.addEventListener("click", function() {
+  if (mediaRecorder) {
+    mediaRecorder.stop();
+    log.value += "Thinking...\n";
+  }
+});
 
 // Play audio function
 async function playAudios() {
@@ -77,10 +130,11 @@ connectButton.addEventListener("click", () => {
 
   socket.onopen = (event) => {
     log.value += "Successfully Connected.\n\n";
+
+    connectMicrophone(audioDeviceSelection.value);
   };
 
   socket.onmessage = (event) => {
-    console.trace(`Message received:${event.data}`);
     if (typeof event.data === 'string') {
       const message = event.data;
       if (message == '[end]\n') {

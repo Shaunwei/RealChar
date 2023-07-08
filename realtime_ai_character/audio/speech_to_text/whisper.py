@@ -29,8 +29,11 @@ class Whisper(Singleton):
             self.wf.setsampwidth(2)  # Assuming 16-bit audio
             self.wf.setframerate(RATE)  # Assuming 44100Hz sample rate
 
-    def transcribe(self, audio_bytes, prompt=''):
-        audio = sr.AudioData(audio_bytes, RATE, 2)
+    def transcribe(self, wav_io, prompt=''):
+        # if DEBUG:
+        #     self.wf.writeframes(audio_bytes)
+        with sr.AudioFile(wav_io) as source:
+            audio = self.recognizer.record(source)
         logger.info("Transcribing audio...")
         text = self.recognizer.recognize_whisper(
             audio,
@@ -42,10 +45,11 @@ class Whisper(Singleton):
         )['text']
         return text
 
-    def transcribe_api(self, audio_bytes, prompt=''):
-        if DEBUG:
-            self.wf.writeframes(audio_bytes)
-        audio = sr.AudioData(audio_bytes, RATE, 2)
+    def transcribe_api(self, wav_io, prompt=''):
+        # if DEBUG:
+        #     self.wf.writeframes(audio_bytes)
+        with sr.AudioFile(wav_io) as source:
+            audio = self.recognizer.record(source)
         logger.info("Transcribing audio...")
         text = self.recognizer.recognize_whisper_api(
             audio,

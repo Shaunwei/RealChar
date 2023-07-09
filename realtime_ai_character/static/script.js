@@ -5,8 +5,7 @@
 // Buttons
 const connectButton = document.getElementById("connect");
 const endButton = document.getElementById("end-connection");
-const startAudioButton = document.getElementById("start-audio");
-const stopAudioButton = document.getElementById("stop-audio");
+const startCallButton = document.getElementById("start-call");
 const sendButton = document.getElementById("send");
 
 const messageInput = document.getElementById("message-input");
@@ -18,16 +17,15 @@ const audioDeviceSelection = document.getElementById('audio-device-selection');
 let recognition;
 let socket;
 let clientId = Math.floor(Math.random() * 1000);
-// Queue for audio data
 let audioQueue = [];
 
 // MediaStream API
 let mediaRecorder;
 let chunks = [];
 
-// Audio buttons
-startAudioButton.disabled = true;
-stopAudioButton.disabled = true;
+let debug = true;
+
+startCallButton.disabled = true;
 
 window.addEventListener("load", function() {
   // Get the list of media devices
@@ -61,11 +59,39 @@ audioDeviceSelection.addEventListener('change', function(e) {
   connectMicrophone(e.target.value);
 });
 
+function speechRecognition() {
+  // Initialize SpeechRecognition
+  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+
+  // Stop the recorder when user stops talking
+  recognition.onspeechend = function() {
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+      mediaRecorder.stop();
+      console.log("user stops talking");
+    }
+  };
+
+  // Handle the case where user does not speak
+  recognition.onend = function() {
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+      mediaRecorder.stop();
+      console.log("recognizer ends");
+    }
+  };
+
+  recognition.onstart = function() {
+    console.log("start recognizing");
+  }
+}
+
+
 function connectMicrophone(deviceId) {
   navigator.mediaDevices.getUserMedia({
     audio: {
       deviceId: deviceId ? {exact: deviceId} : undefined,
-      sampleRate: 44100
+      sampleRate: 44100,
+      echoCancellation: true
     }
   })
   .then(function(stream) {
@@ -75,39 +101,47 @@ function connectMicrophone(deviceId) {
       chunks.push(e.data);
     }
 
+    mediaRecorder.onstart = function() {
+      log.value += "\nListening...\n";
+      console.log("start media recorder");
+    }
+
     mediaRecorder.onstop = function(e) {
+      log.value += "\nThinking...\n";
+      console.log("stops media recorder")
       let blob = new Blob(chunks, {'type' : 'audio/webm'});
       chunks = [];
+      
+      if (debug) {
+          // Save the audio
+          let url = URL.createObjectURL(blob);
+          let a = document.createElement("a");
+          document.body.appendChild(a);
+          a.style = "display: none";
+          a.href = url;
+          a.download = 'test.webm';
+          a.click();
+      }
 
       if (socket && socket.readyState === WebSocket.OPEN) {
         socket.send(blob);
       }
     }
 
-    startAudioButton.disabled = false;
+    startCallButton.disabled = false;
   })
   .catch(function(err) {
     console.log('An error occurred: ' + err);
   });
 }
 
-startAudioButton.addEventListener("click", function() {
+startCallButton.addEventListener("click", function() {
   if (mediaRecorder) {
     mediaRecorder.start();
-    log.value += "\nListening...\n";
 
-    startAudioButton.disabled = true;
-    stopAudioButton.disabled = false;
-  }
-});
-
-stopAudioButton.addEventListener("click", function() {
-  if (mediaRecorder) {
-    mediaRecorder.stop();
-    log.value += "Thinking...\n";
-
-    startAudioButton.disabled = false;
-    stopAudioButton.disabled = true;
+    startCallButton.disabled = true;
+    speechRecognition();
+    recognition.start();
   }
 });
 
@@ -119,6 +153,15 @@ async function playAudios() {
     let audioUrl = URL.createObjectURL(blob);
     await playAudio(audioUrl);
     audioQueue.shift();
+  }
+  
+  // Start recording again after audio is done playing
+  if (mediaRecorder && mediaRecorder.state !== "recording") {
+    mediaRecorder.start();
+
+    if (recognition) {
+      recognition.start();
+    }
   }
 }
 
@@ -168,6 +211,7 @@ connectButton.addEventListener("click", () => {
         log.value += `${event.data}`;
       }
     } else {  // binary data
+      console.log("start playing received audio");
       audioQueue.push(event.data);
       if (audioQueue.length === 1) {
         playAudios();
@@ -190,8 +234,7 @@ endButton.addEventListener("click", () => {
     socket.close();
     log.value += "Connection Ended.\n";
 
-    startAudioButton.disabled = true;
-    stopAudioButton.disabled = true;
+    startCallButton.disabled = true;
   }
 });
 

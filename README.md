@@ -51,7 +51,7 @@ XI_API_KEY=<api key>
     ```sh
     uvicorn realtime_ai_character.main:app --reload
     ```
-5 (optional) Run client - python cli
+5. (Optional) Run client - python cli
     ```sh
     python client/client.py
     ```

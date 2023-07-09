@@ -157,14 +157,19 @@ startTalkingButton.addEventListener("click", () => {
 //   // socket.close();
 // });
 
-
-sendButton.addEventListener("click", () => {
+const sendMessage = () => {
   const message = messageInput.value;
   log.value += `\nYou> ${message}\n`;
   socket.send(message);
   messageInput.value = "";
-});
+}
 
+sendButton.addEventListener("click", sendMessage);
+messageInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    sendMessage();
+  }
+});
 
 window.addEventListener("beforeunload", function(event) {
   console.trace("Page is about to unload");

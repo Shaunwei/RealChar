@@ -1,13 +1,11 @@
-import io
 import os
-import tempfile
+import types
 import wave
 
-import numpy as np
-import openai
 import speech_recognition as sr
 import whisper
 
+from realtime_ai_character.audio.speech_to_text.base import SpeechToText
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Singleton
 
@@ -17,12 +15,21 @@ RATE = 44100  # 44100
 SECONDS = 2  # 2 seconds
 DEBUG = False
 
+config = types.SimpleNamespace(**{
+    'model': 'small',
+    'language': 'en',
+    'api_key': os.getenv("OPENAI_API_KEY"),
+})
 
-class Whisper(Singleton):
-    def __init__(self):
-        logger.info("Loading Local Whisper model: [small]...")
-        self.model = whisper.load_model('small')
+
+class Whisper(Singleton, SpeechToText):
+    def __init__(self, use='local'):
+        super().__init__()
+        if use == 'local':
+            logger.info(f"Loading Local Whisper model: [{config.model}]...")
+            self.model = whisper.load_model(config.model)
         self.recognizer = sr.Recognizer()
+        self.use = use
         if DEBUG:
             self.wf = wave.open('output.wav', 'wb')
             self.wf.setnchannels(1)  # Assuming mono audio
@@ -30,28 +37,30 @@ class Whisper(Singleton):
             self.wf.setframerate(RATE)  # Assuming 44100Hz sample rate
 
     def transcribe(self, audio_bytes, prompt=''):
+        if self.use == 'local':
+            return self._transcribe(audio_bytes, prompt)
+        elif self.use == 'api':
+            return self._transcribe_api(audio_bytes, prompt)
+
+    def _transcribe(self, audio_bytes, prompt=''):
         audio = sr.AudioData(audio_bytes, RATE, 2)
         logger.info("Transcribing audio...")
         text = self.recognizer.recognize_whisper(
             audio,
-            model="small",
-            language='en',
+            model=config.model,
+            language=config.language,
             show_dict=True,
             initial_prompt=prompt
         )['text']
         return text
 
-    def transcribe_api(self, audio_bytes, prompt=''):
+    def _transcribe_api(self, audio_bytes, prompt=''):
         if DEBUG:
             self.wf.writeframes(audio_bytes)
         audio = sr.AudioData(audio_bytes, RATE, 2)
         logger.info("Transcribing audio...")
         text = self.recognizer.recognize_whisper_api(
             audio,
-            api_key=os.getenv("OPENAI_API_KEY"),
+            api_key=config.api_key,
         )
         return text
-
-
-def get_speech_to_text():
-    return Whisper.get_instance()

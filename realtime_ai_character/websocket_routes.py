@@ -5,10 +5,8 @@ from fastapi import APIRouter, Depends, Path, WebSocket, WebSocketDisconnect
 from requests import Session
 from starlette.websockets import WebSocketState
 
-from realtime_ai_character.audio.speech_to_text.whisper import (
-    Whisper, get_speech_to_text)
-from realtime_ai_character.audio.text_to_speech.elevenlabs import (
-    ElevenLabs, get_text_to_speech)
+from realtime_ai_character.audio.speech_to_text import get_speech_to_text, SpeechToText
+from realtime_ai_character.audio.text_to_speech import get_text_to_speech, TextToSpeech
 from realtime_ai_character.character_catalog.catalog_manager import (
     CatalogManager, get_catalog_manager)
 from realtime_ai_character.database.connection import get_db
@@ -38,11 +36,10 @@ async def websocket_endpoint(
         text_to_speech=Depends(get_text_to_speech)):
     await manager.connect(websocket)
     try:
-        receive_task = asyncio.create_task(
+        main_task = asyncio.create_task(
             handle_receive(websocket, client_id, db, llm, catalog_manager, speech_to_text, text_to_speech))
-        send_task = asyncio.create_task(send_generated_numbers(websocket))
 
-        await asyncio.gather(receive_task, send_task)
+        await asyncio.gather(main_task)
 
     except WebSocketDisconnect:
         await manager.disconnect(websocket)
@@ -55,13 +52,10 @@ async def handle_receive(
         db: Session,
         llm: OpenaiLlm,
         catalog_manager: CatalogManager,
-        speech_to_text: Whisper,
-        text_to_speech: ElevenLabs):
+        speech_to_text: SpeechToText,
+        text_to_speech: TextToSpeech):
     try:
         conversation_history = ConversationHistory()
-
-        async def on_new_token(token):
-            return await manager.send_message(message=token, websocket=websocket)
 
         # 1. User selected a character
         character = None
@@ -96,14 +90,18 @@ async def handle_receive(
         tts_task = None
         previous_transcript = None
         token_buffer = []
+
+        async def on_new_token(token):
+            return await manager.send_message(message=token, websocket=websocket)
         while True:
             data = await websocket.receive()
             if data['type'] != 'websocket.receive':
                 raise WebSocketDisconnect('disconnected')
 
+            # handle text message
             if 'text' in data:
                 msg_data = data['text']
-                # 2. Send message to LLM
+                # 1. Send message to LLM
                 response = await llm.achat(
                     history=llm.build_history(conversation_history),
                     user_input=msg_data,
@@ -113,30 +111,33 @@ async def handle_receive(
                         text_to_speech, websocket, tts_event, character.name),
                     character=character)
 
-                # 3. Send response to client
+                # 2. Send response to client
                 await manager.send_message(message='[end]\n', websocket=websocket)
 
-                # 4. Update conversation history
+                # 3. Update conversation history
                 conversation_history.user.append(msg_data)
                 conversation_history.ai.append(response)
                 token_buffer.clear()
-                # 5. Persist interaction in the database
+                # 4. Persist interaction in the database
                 Interaction(
                     client_id=client_id, client_message=msg_data, server_message=response).save(db)
 
+            # handle binary message(audio)
             elif 'bytes' in data:
-                # Here is where you handle binary messages (like audio data).
                 binary_data = data['bytes']
+                # 1. Transcribe audio
                 transcript: str = speech_to_text.transcribe(
                     binary_data, prompt=character.name)
-                print(transcript)
+                logger.info(f'transcript: {transcript}')
 
                 # ignore audio that picks up background noise
                 if (not transcript or len(transcript) < 2):
                     continue
 
+                # 2. Send transcript to client
                 await manager.send_message(message=f'[+]You said: {transcript}', websocket=websocket)
-                # stop the previous audio stream, if new transcript is received
+
+                # 3. stop the previous audio stream, if new transcript is received
                 if tts_task and not tts_task.done():
                     tts_event.set()
                     tts_task.cancel()
@@ -155,17 +156,17 @@ async def handle_receive(
                 previous_transcript = transcript
 
                 async def tts_task_done_call_back(response):
-                    # 3. Send response to client, [=] indicates the response is done
+                    # Send response to client, [=] indicates the response is done
                     await manager.send_message(message='[=]', websocket=websocket)
-                    # 4. Update conversation history
+                    # Update conversation history
                     conversation_history.user.append(transcript)
                     conversation_history.ai.append(response)
                     token_buffer.clear()
-                    # 5. Persist interaction in the database
+                    # Persist interaction in the database
                     Interaction(
                         client_id=client_id, client_message=transcript, server_message=response).save(db)
 
-                # 2. Send message to LLM
+                # 4. Send message to LLM
                 tts_task = asyncio.create_task(llm.achat(
                     history=llm.build_history(conversation_history),
                     user_input=transcript,
@@ -181,14 +182,3 @@ async def handle_receive(
         logger.info(f"Client #{client_id} closed the connection")
         await manager.disconnect(websocket)
         return
-
-
-async def send_generated_numbers(websocket: WebSocket):
-    index = 1
-    try:
-        while True:
-            # await manager.send_message(f"Generated Number: {index}", websocket)
-            index += 1
-            await asyncio.sleep(1)
-    except WebSocketDisconnect:
-        logger.info("Connection closed while sending generated numbers.")

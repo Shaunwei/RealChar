@@ -1,6 +1,6 @@
 import logging
 
-formatter = '%(asctime)s - %(funcName)s - %(levelname)s - %(message)s'
+formatter = '%(asctime)s - %(funcName)s - %(filename)s - %(levelname)s - %(message)s'
 
 
 def get_logger(logger_name):

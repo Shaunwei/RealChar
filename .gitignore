@@ -167,3 +167,4 @@ cython_debug/
 .python-version
 .chroma
 *.ipynb
+google_credentials.json

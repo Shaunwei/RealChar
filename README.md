@@ -38,6 +38,11 @@ XI_API_KEY=<api key>
     ```sh
     pip install -r requirements.txt
     ```
+   (Optional) Install portaudio for Mac: if you're on mac and failed on previous step with error like `Building wheel for pyaudio (pyproject.toml) did not run successfully`, run the following then retry previous command:
+    ```sh
+    brew install portaudio
+    pip install -r requirements.txt
+    ```
 3. Run db upgrade
     ```sh
     alembic upgrade head

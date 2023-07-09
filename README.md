@@ -35,12 +35,13 @@ XI_API_KEY=<api key>
    git clone
     ```
 2. Install requirements
-    ```sh
-    pip install -r requirements.txt
-    ```
-   (Optional) Install portaudio for Mac: if you're on mac and failed on previous step with error like `Building wheel for pyaudio (pyproject.toml) did not run successfully`, run the following then retry previous command:
+   - (For Mac) Install portaudio and ffmpeg
     ```sh
     brew install portaudio
+    brew install ffmpeg
+    ```
+    Then install all python requirements
+    ```sh
     pip install -r requirements.txt
     ```
 3. Run db upgrade

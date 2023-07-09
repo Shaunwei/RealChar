@@ -20,14 +20,7 @@ from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.utils import (ConversationHistory,
                                          get_connection_manager)
 
-from pydub import AudioSegment
 import io
-
-def convert_webm_to_wav(webm_data):
-    webm_audio = AudioSegment.from_file(webm_data, format="webm")
-    wav_data = io.BytesIO()
-    webm_audio.export(wav_data, format="wav")
-    return wav_data
 
 logger = get_logger(__name__)
 
@@ -135,7 +128,7 @@ async def handle_receive(
 
             elif 'bytes' in data:
                 # Here is where you handle binary messages (like audio data).
-                binary_data = convert_webm_to_wav(io.BytesIO(data['bytes']))
+                binary_data = data['bytes']
                 transcript: str = speech_to_text.transcribe(
                       binary_data, prompt=character.name)
                 print(transcript)

@@ -7,6 +7,7 @@ import numpy as np
 import openai
 import speech_recognition as sr
 import whisper
+from pydub import AudioSegment
 
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Singleton
@@ -29,7 +30,8 @@ class Whisper(Singleton):
             self.wf.setsampwidth(2)  # Assuming 16-bit audio
             self.wf.setframerate(RATE)  # Assuming 44100Hz sample rate
 
-    def transcribe(self, wav_io, prompt=''):
+    def transcribe(self, audio_bytes, prompt=''):
+        wav_io = self.convert_webm_to_wav(io.BytesIO(audio_bytes))
         # if DEBUG:
         #     self.wf.writeframes(audio_bytes)
         with sr.AudioFile(wav_io) as source:
@@ -44,7 +46,8 @@ class Whisper(Singleton):
         )['text']
         return text
 
-    def transcribe_api(self, wav_io, prompt=''):
+    def transcribe_api(self, audio_bytes, prompt=''):
+        wav_io = self.convert_webm_to_wav(io.BytesIO(audio_bytes))
         # if DEBUG:
         #     self.wf.writeframes(audio_bytes)
         with sr.AudioFile(wav_io) as source:
@@ -55,6 +58,12 @@ class Whisper(Singleton):
             api_key=os.getenv("OPENAI_API_KEY"),
         )
         return text
+    
+    def _convert_webm_to_wav(webm_data):
+        webm_audio = AudioSegment.from_file(webm_data, format="webm")
+        wav_data = io.BytesIO()
+        webm_audio.export(wav_data, format="wav")
+        return wav_data
 
 
 def get_speech_to_text():

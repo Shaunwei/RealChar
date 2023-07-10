@@ -16,7 +16,9 @@ struct RootView: View {
                 if interactive {
                     InteractiveView()
                 } else {
-                    WelcomeView()
+                    WelcomeView { option in
+                        interactive = true
+                    }
                 }
             }
             .navigationBarTitleDisplayMode(.inline)

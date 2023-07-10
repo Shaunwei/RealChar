@@ -25,11 +25,26 @@ struct CtaButton: View {
                 .background(Color(red: 0.01, green: 0.03, blue: 0.11))
                 .cornerRadius(4)
         }
+        .buttonStyle(CustomButtonStyle())
+    }
+}
+
+struct CustomButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) var isEnabled: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(!isEnabled ? 0.25 : configuration.isPressed ? 0.8 : 1.0)
     }
 }
 
 struct CtaButton_Previews: PreviewProvider {
     static var previews: some View {
-        CtaButton(action: { }, text: "Contribute")
+        VStack {
+            CtaButton(action: { }, text: "Contribute")
+
+            CtaButton(action: { }, text: "Contribute")
+                .disabled(true)
+        }
     }
 }

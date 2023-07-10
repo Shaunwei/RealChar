@@ -13,6 +13,8 @@ struct WelcomeView: View {
     }
     @State var tab = Tab.about
 
+    let onConfirmConfig: (CharacterOption) -> Void
+
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
@@ -36,7 +38,12 @@ struct WelcomeView: View {
                     AboutView()
                         .padding(.horizontal, 60)
                 case .config:
-                    ConfigView()
+                    // TODO: Load characters from server
+                    ConfigView(options: [.init(id: 0, name: "Mythical god", description: "Rogue"),
+                                         .init(id: 1, name: "Anime hero", description: "Noble"),
+                                         .init(id: 2, name: "Realtime AI", description: "Kind")],
+                               onConfirmConfig: onConfirmConfig)
+                        .padding(.horizontal, 60)
                 }
             }
         }
@@ -45,7 +52,7 @@ struct WelcomeView: View {
 
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
-        WelcomeView()
+        WelcomeView(onConfirmConfig: { _ in })
     }
 }
 

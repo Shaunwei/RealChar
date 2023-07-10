@@ -8,17 +8,36 @@
 
 /* Begin PBXBuildFile section */
 		26FE4D092A5B6F0D006A1882 /* racApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D082A5B6F0D006A1882 /* racApp.swift */; };
-		26FE4D0B2A5B6F0D006A1882 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D0A2A5B6F0D006A1882 /* ContentView.swift */; };
+		26FE4D0B2A5B6F0D006A1882 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D0A2A5B6F0D006A1882 /* RootView.swift */; };
 		26FE4D0D2A5B6F0E006A1882 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26FE4D0C2A5B6F0E006A1882 /* Assets.xcassets */; };
 		26FE4D102A5B6F0E006A1882 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26FE4D0F2A5B6F0E006A1882 /* Preview Assets.xcassets */; };
+		26FE4D1D2A5B7009006A1882 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D1C2A5B7009006A1882 /* WelcomeView.swift */; };
+		26FE4D1F2A5B704C006A1882 /* InteractiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D1E2A5B704C006A1882 /* InteractiveView.swift */; };
+		26FE4D212A5B7074006A1882 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D202A5B7074006A1882 /* AboutView.swift */; };
+		26FE4D232A5B707B006A1882 /* ConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D222A5B707B006A1882 /* ConfigView.swift */; };
+		26FE4D272A5BBFD7006A1882 /* Prompt-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 26FE4D252A5BBFD7006A1882 /* Prompt-SemiBold.ttf */; };
+		26FE4D282A5BBFD7006A1882 /* Prompt-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 26FE4D262A5BBFD7006A1882 /* Prompt-Regular.ttf */; };
+		26FE4D2C2A5BC25C006A1882 /* CtaButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D2B2A5BC25C006A1882 /* CtaButton.swift */; };
+		26FE4D2E2A5BC3D2006A1882 /* Prompt-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 26FE4D2D2A5BC3D2006A1882 /* Prompt-Medium.ttf */; };
+		26FE4D312A5BC6B0006A1882 /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D302A5BC6B0006A1882 /* View+Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		26FE4D052A5B6F0D006A1882 /* rac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = rac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		26FE4D082A5B6F0D006A1882 /* racApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = racApp.swift; sourceTree = "<group>"; };
-		26FE4D0A2A5B6F0D006A1882 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		26FE4D0A2A5B6F0D006A1882 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		26FE4D0C2A5B6F0E006A1882 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		26FE4D0F2A5B6F0E006A1882 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		26FE4D1C2A5B7009006A1882 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		26FE4D1E2A5B704C006A1882 /* InteractiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractiveView.swift; sourceTree = "<group>"; };
+		26FE4D202A5B7074006A1882 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		26FE4D222A5B707B006A1882 /* ConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigView.swift; sourceTree = "<group>"; };
+		26FE4D252A5BBFD7006A1882 /* Prompt-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Prompt-SemiBold.ttf"; sourceTree = "<group>"; };
+		26FE4D262A5BBFD7006A1882 /* Prompt-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Prompt-Regular.ttf"; sourceTree = "<group>"; };
+		26FE4D292A5BC094006A1882 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		26FE4D2B2A5BC25C006A1882 /* CtaButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CtaButton.swift; sourceTree = "<group>"; };
+		26FE4D2D2A5BC3D2006A1882 /* Prompt-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Prompt-Medium.ttf"; sourceTree = "<group>"; };
+		26FE4D302A5BC6B0006A1882 /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,9 +70,14 @@
 		26FE4D072A5B6F0D006A1882 /* rac */ = {
 			isa = PBXGroup;
 			children = (
+				26FE4D292A5BC094006A1882 /* Info.plist */,
 				26FE4D082A5B6F0D006A1882 /* racApp.swift */,
-				26FE4D0A2A5B6F0D006A1882 /* ContentView.swift */,
-				26FE4D0C2A5B6F0E006A1882 /* Assets.xcassets */,
+				26FE4D0A2A5B6F0D006A1882 /* RootView.swift */,
+				26FE4D192A5B6FBD006A1882 /* Interactive */,
+				26FE4D162A5B6F89006A1882 /* Welcome */,
+				26FE4D2A2A5BC1D5006A1882 /* SharedUI */,
+				26FE4D2F2A5BC6A4006A1882 /* Extension */,
+				26FE4D242A5BBF94006A1882 /* Assets */,
 				26FE4D0E2A5B6F0E006A1882 /* Preview Content */,
 			);
 			path = rac;
@@ -65,6 +89,83 @@
 				26FE4D0F2A5B6F0E006A1882 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		26FE4D162A5B6F89006A1882 /* Welcome */ = {
+			isa = PBXGroup;
+			children = (
+				26FE4D172A5B6FA4006A1882 /* About */,
+				26FE4D182A5B6FAA006A1882 /* Config */,
+				26FE4D1C2A5B7009006A1882 /* WelcomeView.swift */,
+			);
+			path = Welcome;
+			sourceTree = "<group>";
+		};
+		26FE4D172A5B6FA4006A1882 /* About */ = {
+			isa = PBXGroup;
+			children = (
+				26FE4D202A5B7074006A1882 /* AboutView.swift */,
+			);
+			path = About;
+			sourceTree = "<group>";
+		};
+		26FE4D182A5B6FAA006A1882 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				26FE4D222A5B707B006A1882 /* ConfigView.swift */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		26FE4D192A5B6FBD006A1882 /* Interactive */ = {
+			isa = PBXGroup;
+			children = (
+				26FE4D1B2A5B6FCE006A1882 /* Text */,
+				26FE4D1A2A5B6FC4006A1882 /* Voice */,
+				26FE4D1E2A5B704C006A1882 /* InteractiveView.swift */,
+			);
+			path = Interactive;
+			sourceTree = "<group>";
+		};
+		26FE4D1A2A5B6FC4006A1882 /* Voice */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Voice;
+			sourceTree = "<group>";
+		};
+		26FE4D1B2A5B6FCE006A1882 /* Text */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Text;
+			sourceTree = "<group>";
+		};
+		26FE4D242A5BBF94006A1882 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				26FE4D262A5BBFD7006A1882 /* Prompt-Regular.ttf */,
+				26FE4D2D2A5BC3D2006A1882 /* Prompt-Medium.ttf */,
+				26FE4D252A5BBFD7006A1882 /* Prompt-SemiBold.ttf */,
+				26FE4D0C2A5B6F0E006A1882 /* Assets.xcassets */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		26FE4D2A2A5BC1D5006A1882 /* SharedUI */ = {
+			isa = PBXGroup;
+			children = (
+				26FE4D2B2A5BC25C006A1882 /* CtaButton.swift */,
+			);
+			path = SharedUI;
+			sourceTree = "<group>";
+		};
+		26FE4D2F2A5BC6A4006A1882 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				26FE4D302A5BC6B0006A1882 /* View+Extensions.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -125,8 +226,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				26FE4D272A5BBFD7006A1882 /* Prompt-SemiBold.ttf in Resources */,
 				26FE4D102A5B6F0E006A1882 /* Preview Assets.xcassets in Resources */,
 				26FE4D0D2A5B6F0E006A1882 /* Assets.xcassets in Resources */,
+				26FE4D2E2A5BC3D2006A1882 /* Prompt-Medium.ttf in Resources */,
+				26FE4D282A5BBFD7006A1882 /* Prompt-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,8 +241,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				26FE4D0B2A5B6F0D006A1882 /* ContentView.swift in Sources */,
+				26FE4D232A5B707B006A1882 /* ConfigView.swift in Sources */,
+				26FE4D0B2A5B6F0D006A1882 /* RootView.swift in Sources */,
+				26FE4D1F2A5B704C006A1882 /* InteractiveView.swift in Sources */,
+				26FE4D2C2A5BC25C006A1882 /* CtaButton.swift in Sources */,
+				26FE4D1D2A5B7009006A1882 /* WelcomeView.swift in Sources */,
 				26FE4D092A5B6F0D006A1882 /* racApp.swift in Sources */,
+				26FE4D312A5BC6B0006A1882 /* View+Extensions.swift in Sources */,
+				26FE4D212A5B7074006A1882 /* AboutView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -270,6 +380,7 @@
 				DEVELOPMENT_TEAM = T4PLTPSZ3V;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = rac/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -299,6 +410,7 @@
 				DEVELOPMENT_TEAM = T4PLTPSZ3V;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = rac/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

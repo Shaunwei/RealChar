@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  InteractiveView.swift
 //  rac
 //
 //  Created by ZongZiWang on 7/9/23.
@@ -7,20 +7,21 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct InteractiveView: View {
+
     var body: some View {
         VStack {
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundColor(.accentColor)
-            Text("Hello, world!")
+            Text("Interactive")
         }
         .padding()
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct InteractiveView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        InteractiveView()
     }
 }

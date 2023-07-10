@@ -106,16 +106,24 @@ function connectMicrophone() {
     }
 
     mediaRecorder.onstart = function() {
+<<<<<<< HEAD
       chatWindow.value += "\nListening...\n";
+=======
+      chat.value += "\nListening...\n";
+>>>>>>> 671568513fd36f0cd00746899000c28d84879b08
       console.log("start media recorder");
     }
 
     mediaRecorder.onstop = function(e) {
+<<<<<<< HEAD
       chatWindow.value += "\nThinking...\n";
+=======
+      chat.value += "\nThinking...\n";
+>>>>>>> 671568513fd36f0cd00746899000c28d84879b08
       console.log("stops media recorder")
       let blob = new Blob(chunks, {'type' : 'audio/webm'});
       chunks = [];
-      
+
       if (debug) {
           // Save the audio
           let url = URL.createObjectURL(blob);
@@ -157,7 +165,7 @@ async function playAudios() {
     await playAudio(audioUrl);
     audioQueue.shift();
   }
-  
+
   // Start recording again after audio is done playing
   if (mediaRecorder && mediaRecorder.state !== "recording") {
     mediaRecorder.start();
@@ -168,6 +176,7 @@ async function playAudios() {
   }
 }
 
+<<<<<<< HEAD
 talkButton.addEventListener("click", function() {
   if (mediaRecorder) {
     mediaRecorder.start();
@@ -183,6 +192,76 @@ messageButton.addEventListener('click', function() {
   sendButton.style.display = 'block';
   messageInput.style.display = "block";
 });
+=======
+// Function to play an audio and return a Promise that resolves when the audio finishes playing
+function playAudio(url) {
+  return new Promise((resolve) => {
+    let audio = new Audio();
+    audio.controls = true;
+    audio.src = url;
+    audio.onended = resolve;
+    audio.play();
+  });
+}
+
+// websocket connection
+connectButton.addEventListener("click", () => {
+chat.value = "";
+chat.value += "Connecting...\n";
+
+  var clientId = Math.floor(Math.random() * 101);
+  var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+  var ws_path = ws_scheme + '://' + window.location.host + `/ws/${clientId}`;
+  socket = new WebSocket(ws_path);
+  socket.binaryType = 'arraybuffer';  // necessary to receive binary data
+
+  socket.onopen = (event) => {
+    chat.value += "Successfully Connected.\n\n";
+    // send the client platform to the server
+    socket.send("web");
+    connectMicrophone(audioDeviceSelection.value);
+  };
+
+  socket.onmessage = (event) => {
+    if (typeof event.data === 'string') {
+      const message = event.data;
+      if (message == '[end]\n') {
+        console.log('\nYou> \n');
+      } else if (message.startsWith('[+]')) {
+        // stop playing audio
+        // Note: JavaScript doesn't have built-in audio stop functionality for the Audio object.
+        // You need to implement it manually if you have a playing audio track.
+        console.log(message);
+      } else if (message.startsWith('[=]')) {
+        // indicate the response is done
+        console.log(message);
+      } else {
+      chat.value += `${event.data}`;
+      }
+    } else {  // binary data
+      console.log("start playing received audio");
+      audioQueue.push(event.data);
+      if (audioQueue.length === 1) {
+        playAudios();
+      }
+    }
+  };
+
+  socket.onerror = (error) => {
+    console.trace("Socket closed");
+    console.log(`WebSocket Error: ${error}`);
+  };
+
+  socket.onclose = (event) => {
+    console.trace("Socket closed");
+  };
+});
+
+endButton.addEventListener("click", () => {
+  if (socket) {
+    socket.close();
+  chat.value += "Connection Ended.\n";
+>>>>>>> 671568513fd36f0cd00746899000c28d84879b08
 
 callButton.addEventListener("click", () => {
   microphoneContainer.style.display = 'flex';
@@ -194,7 +273,11 @@ callButton.addEventListener("click", () => {
 
 const sendMessage = () => {
   const message = messageInput.value;
+<<<<<<< HEAD
   chatWindow.value += `\nYou> ${message}\n`;
+=======
+chat.value += `\nYou> ${message}\n`;
+>>>>>>> 671568513fd36f0cd00746899000c28d84879b08
   socket.send(message);
   messageInput.value = "";
 }
@@ -202,9 +285,12 @@ const sendMessage = () => {
 sendButton.addEventListener("click", sendMessage);
 messageInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
-    event.preventDefault(); 
+    event.preventDefault();
     sendMessage();
   }
 });
+<<<<<<< HEAD
 
 connectSocket();
+=======
+>>>>>>> 671568513fd36f0cd00746899000c28d84879b08

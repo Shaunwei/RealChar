@@ -19,7 +19,6 @@ from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.utils import (ConversationHistory,
                                          get_connection_manager)
 
-import io
 
 logger = get_logger(__name__)
 
@@ -59,6 +58,13 @@ async def handle_receive(
         text_to_speech: TextToSpeech):
     try:
         conversation_history = ConversationHistory()
+
+        # 0. Recieve client platform info (web, mobile, terminal)
+        data = await websocket.receive()
+        if data['type'] != 'websocket.receive':
+            raise WebSocketDisconnect('disconnected')
+        platform = data['text']
+        logger.info(f"Client #{client_id}:{platform} connected to server")
 
         # 1. User selected a character
         character = None
@@ -130,7 +136,7 @@ async def handle_receive(
                 binary_data = data['bytes']
                 # 1. Transcribe audio
                 transcript: str = speech_to_text.transcribe(
-                    binary_data, prompt=character.name)
+                    binary_data, platform=platform, prompt=character.name)
                 logger.info(f'transcript: {transcript}')
 
                 # ignore audio that picks up background noise

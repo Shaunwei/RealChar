@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Singleton
+from realtime_ai_character.audio.text_to_speech.base import TextToSpeech
 
 load_dotenv()
 logger = get_logger(__name__)
@@ -32,8 +33,9 @@ config = types.SimpleNamespace(**{
 })
 
 
-class ElevenLabs(Singleton):
+class ElevenLabs(Singleton, TextToSpeech):
     def __init__(self):
+        super().__init__()
         logger.info("Initializing ElevenLabs voices...")
         self.custom_voice = None
         self.chunk_size = 1024
@@ -65,7 +67,3 @@ class ElevenLabs(Singleton):
                     # stop streaming audio
                     break
                 await websocket.send_bytes(chunk)
-
-
-def get_text_to_speech():
-    return ElevenLabs.get_instance()

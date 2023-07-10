@@ -5,30 +5,32 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from realtime_ai_character.audio.speech_to_text.whisper import Whisper
-from realtime_ai_character.audio.text_to_speech.elevenlabs import ElevenLabs
+from realtime_ai_character.audio.speech_to_text import get_speech_to_text
+from realtime_ai_character.audio.text_to_speech import get_text_to_speech
 from realtime_ai_character.character_catalog.catalog_manager import \
     CatalogManager
 from realtime_ai_character.restful_routes import router as restful_router
 from realtime_ai_character.utils import ConnectionManager
 from realtime_ai_character.websocket_routes import router as websocket_router
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_DIR = os.path.join(BASE_DIR, 'static')
+from realtime_ai_character.logger import get_logger
 
 load_dotenv()
+logger = get_logger(__name__)
+
 app = FastAPI()
 
 app.include_router(restful_router)
 app.include_router(websocket_router)
 
 # initializations
-CatalogManager.initialize(overwrite=False)
-Whisper.initialize()
+CatalogManager.initialize(overwrite=True)
 ConnectionManager.initialize()
-ElevenLabs.initialize()
+get_text_to_speech()
+get_speech_to_text()
 
 # suppress deprecation warnings
 warnings.filterwarnings("ignore", module="whisper")
 
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+app.mount("/static", StaticFiles(directory=os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 'static')), name="static")
+logger.info('Open http://localhost:8000/static/index.html to start the app')

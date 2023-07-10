@@ -41,9 +41,6 @@ class Singleton:
         if cls not in cls._instances:
             cls._instances[cls] = cls(*args, **kwargs)
 
-    def __init__(self):
-        pass
-
 
 class ConnectionManager(Singleton):
     def __init__(self):

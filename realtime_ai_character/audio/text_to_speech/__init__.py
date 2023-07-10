@@ -1,10 +1,6 @@
 import os
 
-from dotenv import load_dotenv
-
 from realtime_ai_character.audio.text_to_speech.base import TextToSpeech
-
-load_dotenv()
 
 
 def get_text_to_speech() -> TextToSpeech:

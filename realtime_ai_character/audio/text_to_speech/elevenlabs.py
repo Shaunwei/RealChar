@@ -2,13 +2,11 @@ import asyncio
 import os
 import types
 import httpx
-from dotenv import load_dotenv
 
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Singleton
 from realtime_ai_character.audio.text_to_speech.base import TextToSpeech
 
-load_dotenv()
 logger = get_logger(__name__)
 DEBUG = False
 
@@ -36,7 +34,7 @@ config = types.SimpleNamespace(**{
 class ElevenLabs(Singleton, TextToSpeech):
     def __init__(self):
         super().__init__()
-        logger.info("Initializing ElevenLabs voices...")
+        logger.info("Initializing [ElevenLabs Text To Speech] voices...")
         self.custom_voice = None
         self.chunk_size = 1024
 

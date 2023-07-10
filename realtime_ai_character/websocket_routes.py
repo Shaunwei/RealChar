@@ -1,12 +1,13 @@
 import asyncio
-from typing import List
 
 from fastapi import APIRouter, Depends, Path, WebSocket, WebSocketDisconnect
 from requests import Session
 from starlette.websockets import WebSocketState
 
-from realtime_ai_character.audio.speech_to_text import get_speech_to_text, SpeechToText
-from realtime_ai_character.audio.text_to_speech import get_text_to_speech, TextToSpeech
+from realtime_ai_character.audio.speech_to_text import (SpeechToText,
+                                                        get_speech_to_text)
+from realtime_ai_character.audio.text_to_speech import (TextToSpeech,
+                                                        get_text_to_speech)
 from realtime_ai_character.character_catalog.catalog_manager import (
     CatalogManager, get_catalog_manager)
 from realtime_ai_character.database.connection import get_db

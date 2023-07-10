@@ -129,7 +129,7 @@ async def receive_message(websocket):
                 # stop playing audio
                 audio_player.stop_playing()
                 # indicate the transcription is done
-                print(f"\n{message}", end="", flush=True)
+                print(f"\n{message}", end="\n", flush=True)
             elif message.startswith('[=]'):
                 # indicate the response is done
                 print(f"{message}", end="\n", flush=True)
@@ -150,6 +150,8 @@ async def receive_message(websocket):
 async def start_client(client_id):
     uri = f"ws://localhost:8000/ws/{client_id}"
     async with websockets.connect(uri) as websocket:
+        # send client platform info
+        await websocket.send('terminal')
         print(f"Client #{client_id} connected to server")
         welcome_message = await websocket.recv()
         print(f"{welcome_message}")

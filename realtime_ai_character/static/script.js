@@ -9,7 +9,7 @@ const startCallButton = document.getElementById("start-call");
 const sendButton = document.getElementById("send");
 
 const messageInput = document.getElementById("message-input");
-const log = document.getElementById("log");
+const chat = document.getElementById("chat");
 
 const imageDisplay = document.getElementById("image-display");
 const audioDeviceSelection = document.getElementById('audio-device-selection');
@@ -102,16 +102,16 @@ function connectMicrophone(deviceId) {
     }
 
     mediaRecorder.onstart = function() {
-      log.value += "\nListening...\n";
+      chat.value += "\nListening...\n";
       console.log("start media recorder");
     }
 
     mediaRecorder.onstop = function(e) {
-      log.value += "\nThinking...\n";
+      chat.value += "\nThinking...\n";
       console.log("stops media recorder")
       let blob = new Blob(chunks, {'type' : 'audio/webm'});
       chunks = [];
-      
+
       if (debug) {
           // Save the audio
           let url = URL.createObjectURL(blob);
@@ -154,7 +154,7 @@ async function playAudios() {
     await playAudio(audioUrl);
     audioQueue.shift();
   }
-  
+
   // Start recording again after audio is done playing
   if (mediaRecorder && mediaRecorder.state !== "recording") {
     mediaRecorder.start();
@@ -178,19 +178,19 @@ function playAudio(url) {
 
 // websocket connection
 connectButton.addEventListener("click", () => {
-  log.value = "";
-  log.value += "Connecting...\n";
+chat.value = "";
+chat.value += "Connecting...\n";
 
   var clientId = Math.floor(Math.random() * 101);
   var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
   var ws_path = ws_scheme + '://' + window.location.host + `/ws/${clientId}`;
   socket = new WebSocket(ws_path);
-  // socket = new WebSocket(`ws://5649-98-42-233-44.ngrok-free.app/ws/${clientId}`);
   socket.binaryType = 'arraybuffer';  // necessary to receive binary data
 
   socket.onopen = (event) => {
-    log.value += "Successfully Connected.\n\n";
-
+    chat.value += "Successfully Connected.\n\n";
+    // send the client platform to the server
+    socket.send("web");
     connectMicrophone(audioDeviceSelection.value);
   };
 
@@ -208,7 +208,7 @@ connectButton.addEventListener("click", () => {
         // indicate the response is done
         console.log(message);
       } else {
-        log.value += `${event.data}`;
+      chat.value += `${event.data}`;
       }
     } else {  // binary data
       console.log("start playing received audio");
@@ -223,7 +223,7 @@ connectButton.addEventListener("click", () => {
     console.trace("Socket closed");
     console.log(`WebSocket Error: ${error}`);
   };
-  
+
   socket.onclose = (event) => {
     console.trace("Socket closed");
   };
@@ -232,7 +232,7 @@ connectButton.addEventListener("click", () => {
 endButton.addEventListener("click", () => {
   if (socket) {
     socket.close();
-    log.value += "Connection Ended.\n";
+  chat.value += "Connection Ended.\n";
 
     startCallButton.disabled = true;
   }
@@ -240,7 +240,7 @@ endButton.addEventListener("click", () => {
 
 const sendMessage = () => {
   const message = messageInput.value;
-  log.value += `\nYou> ${message}\n`;
+chat.value += `\nYou> ${message}\n`;
   socket.send(message);
   messageInput.value = "";
 }
@@ -248,7 +248,7 @@ const sendMessage = () => {
 sendButton.addEventListener("click", sendMessage);
 messageInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
-    event.preventDefault(); 
+    event.preventDefault();
     sendMessage();
   }
 });

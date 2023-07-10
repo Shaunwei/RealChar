@@ -38,14 +38,18 @@ class Whisper(Singleton, SpeechToText):
             self.wf.setsampwidth(2)  # Assuming 16-bit audio
             self.wf.setframerate(RATE)  # Assuming 44100Hz sample rate
 
-    def transcribe(self, audio_bytes, prompt=''):
+    def transcribe(self, audio_bytes, platform, prompt=''):
+        logger.info('platform: ' + platform)
+        if platform == 'web':
+            audio = self._convert_webm_to_wav(audio_bytes)
+        else:
+            audio = sr.AudioData(audio_bytes, RATE, 2)
         if self.use == 'local':
-            return self._transcribe(audio_bytes, prompt)
+            return self._transcribe(audio, prompt)
         elif self.use == 'api':
-            return self._transcribe_api(audio_bytes, prompt)
+            return self._transcribe_api(audio, prompt)
 
-    def _transcribe(self, audio_bytes, prompt=''):
-        audio = self._convert_webm_to_wav(audio_bytes)
+    def _transcribe(self, audio, platform, prompt=''):
         logger.info("Transcribing audio...")
         text = self.recognizer.recognize_whisper(
             audio,
@@ -56,19 +60,19 @@ class Whisper(Singleton, SpeechToText):
         )['text']
         return text
 
-    def _transcribe_api(self, audio_bytes, prompt=''):
+    def _transcribe_api(self, audio, platform, prompt=''):
         if DEBUG:
-            self.wf.writeframes(audio_bytes)
-        audio = self._convert_webm_to_wav(audio_bytes)
+            self.wf.writeframes(audio)
         logger.info("Transcribing audio...")
         text = self.recognizer.recognize_whisper_api(
             audio,
             api_key=config.api_key,
         )
         return text
-    
+
     def _convert_webm_to_wav(self, webm_data):
-        webm_audio = AudioSegment.from_file(io.BytesIO(webm_data), format="webm")
+        webm_audio = AudioSegment.from_file(
+            io.BytesIO(webm_data), format="webm")
         wav_data = io.BytesIO()
         webm_audio.export(wav_data, format="wav")
         with sr.AudioFile(wav_data) as source:

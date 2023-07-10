@@ -11,12 +11,8 @@ from realtime_ai_character.audio.speech_to_text.base import SpeechToText
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Singleton
 
-logger = get_logger(__name__)
-
-RATE = 44100  # 44100
-SECONDS = 2  # 2 seconds
 DEBUG = False
-
+logger = get_logger(__name__)
 config = types.SimpleNamespace(**{
     'model': 'small',
     'language': 'en',
@@ -36,21 +32,20 @@ class Whisper(Singleton, SpeechToText):
             self.wf = wave.open('output.wav', 'wb')
             self.wf.setnchannels(1)  # Assuming mono audio
             self.wf.setsampwidth(2)  # Assuming 16-bit audio
-            self.wf.setframerate(RATE)  # Assuming 44100Hz sample rate
+            self.wf.setframerate(44100)  # Assuming 44100Hz sample rate
 
     def transcribe(self, audio_bytes, platform, prompt=''):
-        logger.info('platform: ' + platform)
+        logger.info("Transcribing audio...")
         if platform == 'web':
             audio = self._convert_webm_to_wav(audio_bytes)
         else:
-            audio = sr.AudioData(audio_bytes, RATE, 2)
+            audio = sr.AudioData(audio_bytes, 44100, 2)
         if self.use == 'local':
             return self._transcribe(audio, prompt)
         elif self.use == 'api':
             return self._transcribe_api(audio, prompt)
 
-    def _transcribe(self, audio, platform, prompt=''):
-        logger.info("Transcribing audio...")
+    def _transcribe(self, audio, prompt=''):
         text = self.recognizer.recognize_whisper(
             audio,
             model=config.model,
@@ -60,10 +55,7 @@ class Whisper(Singleton, SpeechToText):
         )['text']
         return text
 
-    def _transcribe_api(self, audio, platform, prompt=''):
-        if DEBUG:
-            self.wf.writeframes(audio)
-        logger.info("Transcribing audio...")
+    def _transcribe_api(self, audio, prompt=''):
         text = self.recognizer.recognize_whisper_api(
             audio,
             api_key=config.api_key,

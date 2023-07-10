@@ -6,7 +6,6 @@ from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Singleton
 
 logger = get_logger(__name__)
-
 config = types.SimpleNamespace(**{
     'encoding': speech.RecognitionConfig.AudioEncoding.LINEAR16,
     'sample_rate_hertz': 44100,

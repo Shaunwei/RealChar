@@ -238,9 +238,17 @@ endButton.addEventListener("click", () => {
   }
 });
 
-sendButton.addEventListener("click", () => {
+const sendMessage = () => {
   const message = messageInput.value;
   log.value += `\nYou> ${message}\n`;
   socket.send(message);
   messageInput.value = "";
+}
+
+sendButton.addEventListener("click", sendMessage);
+messageInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault(); 
+    sendMessage();
+  }
 });

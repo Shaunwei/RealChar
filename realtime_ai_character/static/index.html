@@ -1,45 +1,34 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-  <title>Realtime AI Character</title>
-  <link rel="stylesheet" type="text/css" href="styles.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-
-<body>
-  <div class="container text-center mt-5">
-    <div class="row">
-      <div class="col-12 col-md-6 col-xl-6 mx-auto">
-        <h1 class="mb-4">Realtime AI Character</h1>
-        <img id="image-display" class="mb-3" src="/static/raiden.jpeg" alt="" style="height:250px">
-
-        <div id="network-buttons">
-          <button id="connect" class="btn btn-primary">Connect</button>
-          <button id="end-connection" class="btn btn-danger">End</button>
-        </div>
-        <!-- Audio device selection -->
-        <div class="form-group mt-3">
-          <label for="audio-device-selection">Select an audio input device:</label>
-          <select id="audio-device-selection" class="form-select"></select>
-        </div>
-        
-        <textarea id="log" readonly></textarea>
-        <form>
-          <div class="form-group mb-3">
-            <input id="message-input" type="text" placeholder="Type your message" class="w-100">
-            <button type="button" class="btn btn-primary" style="width:48%" id="send">Send</button>
-          </div>
-          <div class="form-group d-flex justify-content-between">
-              <button type="button" class="btn btn-primary" style="width:48%" id="start-call">Start Calling</button>
-          </div>
-        </form>
-        <br>
+  <head>
+    <title>Realtime AI Character</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+  </head>
+  <body>
+    <div class="logo-container">
+      <img
+        alt="Logo"
+        src="logo.png"
+      />
+    </div>
+    <div class="text-container">
+      <p>Hello stranger, what's your name?</p>
+    </div>
+    <div class="chat-screen">
+      <div class="microphone-container">
+        <img src="microphone.svg" alt="Microphone Icon" height="24" width="24"/>
       </div>
     </div>
-  </div>
-  
-  <script src="script.js"></script>
-</body>
-
+    </div>
+    <button class="talk-btn">Talk to me</button>
+    <div class="options-container">
+      <div class="connect">
+        <img src="connect.svg" alt="Connect Icon" class="power-01-1 icon-instance-node" height="24" width="24"/>
+      </div>
+      <div class="message">
+        <img src="message.svg" alt="Message Icon" height="24" width="24"/>
+      </div>
+    </div>
+  </body>
 </html>

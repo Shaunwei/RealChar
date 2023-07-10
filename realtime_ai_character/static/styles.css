@@ -1,12 +1,88 @@
 body {
-    font-family: Arial, sans-serif;
+  background-color: #02081d;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-button {
-    margin: 10px;
+.logo-container {
+  margin-top: 80px;
+  margin-bottom: 30px;
 }
 
-#log {
-    width: 100%;
-    height: 300px;
+.text-container p {
+  color: #ffffff;
+  font-family: "Prompt", Helvetica;
+  font-size: 20px;
+  font-weight: 300;
+}
+
+.chat-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50vw;
+  height: 50vh; 
+}
+
+.microphone-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #6785d3;
+  border-radius: 50px;
+  padding: 12px;
+  width: 60px;
+  height: 60px;
+}
+
+.talk-btn {
+  font-family: "Prompt", Helvetica;
+  font-size: 16px;
+  background-color: #6785d3;
+  color: white;
+  border-radius: 50px;
+  cursor: pointer;
+  padding: 15px 30px;
+}
+
+.talk-btn:hover {
+  background-color: #ffffff;
+  color: #6785d3;
+}
+
+.options-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+ 
+  background-color: #060e29;
+  padding: 30px 60px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.connect {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #bccffe1a;
+  border-radius: 50px;
+  padding: 8px;
+  height: 50px;
+  width: 50px;
+  margin-right: 20px;
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #bccffe1a;
+  border-radius: 50px;
+  padding: 8px;
+  height: 50px;
+  width: 50px;
 }

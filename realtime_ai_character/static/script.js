@@ -23,7 +23,7 @@ let audioQueue = [];
 let mediaRecorder;
 let chunks = [];
 
-let debug = true;
+let debug = false;
 
 startCallButton.disabled = true;
 

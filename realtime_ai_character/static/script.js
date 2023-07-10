@@ -1,37 +1,147 @@
+// We use MediaStream Recording API more suitable for longer recordings as it's designed to 
+// handle streaming of media data as opposed to the Web Audio API which is more suitable for 
+// processing and synthesizing audio in web applications.
+
 // Buttons
 const connectButton = document.getElementById("connect");
 const endButton = document.getElementById("end-connection");
-const startTalkingButton = document.getElementById("start-talking");
+const startCallButton = document.getElementById("start-call");
 const sendButton = document.getElementById("send");
 
 const messageInput = document.getElementById("message-input");
-const log = document.getElementById("log");
+const chat = document.getElementById("chat");
 
-const imageUploadForm = document.getElementById("image-upload-form");
-const imageUpload = document.getElementById("image-upload");
 const imageDisplay = document.getElementById("image-display");
-
+const audioDeviceSelection = document.getElementById('audio-device-selection');
 
 let recognition;
 let socket;
 let clientId = Math.floor(Math.random() * 1000);
-// Queue for audio data
 let audioQueue = [];
 
+// MediaStream API
+let mediaRecorder;
+let chunks = [];
 
-// Initially disable 'Start Talking' and 'Send' buttons
-startTalkingButton.disabled = true;
-sendButton.disabled = true;
+let debug = false;
 
-imageUploadForm.addEventListener("submit", function(event) {
-  event.preventDefault();  // prevent the form from submitting normally
-  if (imageUpload.files && imageUpload.files[0]) {
-      let reader = new FileReader();
-      reader.onload = function(e) {
-          // Set the source of the image element to the uploaded file
-          imageDisplay.src = e.target.result;
+startCallButton.disabled = true;
+
+window.addEventListener("load", function() {
+  // Get the list of media devices
+  navigator.mediaDevices.enumerateDevices()
+    .then(function(devices) {
+      // Filter out the audio input devices
+      let audioInputDevices = devices.filter(function(device) {
+        return device.kind === 'audioinput';
+      });
+
+      // If there are no audio input devices, display an error and return
+      if (audioInputDevices.length === 0) {
+        console.log('No audio input devices found');
+        return;
       }
-      reader.readAsDataURL(imageUpload.files[0]);
+
+      // Add the audio input devices to the dropdown
+      audioInputDevices.forEach(function(device, index) {
+        let option = document.createElement('option');
+        option.value = device.deviceId;
+        option.textContent = device.label || `Microphone ${index + 1}`;
+        audioDeviceSelection.appendChild(option);
+      });
+    })
+    .catch(function(err) {
+      console.log('An error occurred: ' + err);
+    });
+});
+
+audioDeviceSelection.addEventListener('change', function(e) {
+  connectMicrophone(e.target.value);
+});
+
+function speechRecognition() {
+  // Initialize SpeechRecognition
+  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+
+  // Stop the recorder when user stops talking
+  recognition.onspeechend = function() {
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+      mediaRecorder.stop();
+      console.log("user stops talking");
+    }
+  };
+
+  // Handle the case where user does not speak
+  recognition.onend = function() {
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+      mediaRecorder.stop();
+      console.log("recognizer ends");
+    }
+  };
+
+  recognition.onstart = function() {
+    console.log("start recognizing");
+  }
+}
+
+
+function connectMicrophone(deviceId) {
+  navigator.mediaDevices.getUserMedia({
+    audio: {
+      deviceId: deviceId ? {exact: deviceId} : undefined,
+      sampleRate: 44100,
+      echoCancellation: true
+    }
+  })
+  .then(function(stream) {
+    mediaRecorder = new MediaRecorder(stream);
+
+    mediaRecorder.ondataavailable = function(e) {
+      chunks.push(e.data);
+    }
+
+    mediaRecorder.onstart = function() {
+      chat.value += "\nListening...\n";
+      console.log("start media recorder");
+    }
+
+    mediaRecorder.onstop = function(e) {
+      chat.value += "\nThinking...\n";
+      console.log("stops media recorder")
+      let blob = new Blob(chunks, {'type' : 'audio/webm'});
+      chunks = [];
+
+      if (debug) {
+          // Save the audio
+          let url = URL.createObjectURL(blob);
+          let a = document.createElement("a");
+          document.body.appendChild(a);
+          a.style = "display: none";
+          a.href = url;
+          a.download = 'test.webm';
+          a.click();
+      }
+
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(blob);
+      }
+    }
+
+    startCallButton.disabled = false;
+  })
+  .catch(function(err) {
+    console.log('An error occurred: ' + err);
+  });
+}
+
+startCallButton.addEventListener("click", function() {
+  if (mediaRecorder) {
+    mediaRecorder.start();
+
+    startCallButton.disabled = true;
+    speechRecognition();
+    recognition.start();
   }
 });
 
@@ -43,6 +153,15 @@ async function playAudios() {
     let audioUrl = URL.createObjectURL(blob);
     await playAudio(audioUrl);
     audioQueue.shift();
+  }
+
+  // Start recording again after audio is done playing
+  if (mediaRecorder && mediaRecorder.state !== "recording") {
+    mediaRecorder.start();
+
+    if (recognition) {
+      recognition.start();
+    }
   }
 }
 
@@ -57,29 +176,25 @@ function playAudio(url) {
   });
 }
 
-
 // websocket connection
 connectButton.addEventListener("click", () => {
-  log.value = "";
-  log.value += "Connecting...\n";
+chat.value = "";
+chat.value += "Connecting...\n";
 
   var clientId = Math.floor(Math.random() * 101);
   var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
   var ws_path = ws_scheme + '://' + window.location.host + `/ws/${clientId}`;
   socket = new WebSocket(ws_path);
-  // socket = new WebSocket(`ws://5649-98-42-233-44.ngrok-free.app/ws/${clientId}`);
   socket.binaryType = 'arraybuffer';  // necessary to receive binary data
 
   socket.onopen = (event) => {
-    log.value += "Successfully Connected.\n\n";
-
-    // Enable 'Start Talking' and 'Send' buttons on successful connection
-    startTalkingButton.disabled = false;
-    sendButton.disabled = false;
+    chat.value += "Successfully Connected.\n\n";
+    // send the client platform to the server
+    socket.send("web");
+    connectMicrophone(audioDeviceSelection.value);
   };
 
   socket.onmessage = (event) => {
-    console.trace(`Message received:${event.data}`);
     if (typeof event.data === 'string') {
       const message = event.data;
       if (message == '[end]\n') {
@@ -93,9 +208,10 @@ connectButton.addEventListener("click", () => {
         // indicate the response is done
         console.log(message);
       } else {
-        log.value += `${event.data}`;
+      chat.value += `${event.data}`;
       }
     } else {  // binary data
+      console.log("start playing received audio");
       audioQueue.push(event.data);
       if (audioQueue.length === 1) {
         playAudios();
@@ -106,72 +222,33 @@ connectButton.addEventListener("click", () => {
   socket.onerror = (error) => {
     console.trace("Socket closed");
     console.log(`WebSocket Error: ${error}`);
-
-    // Disable 'Start Talking' and 'Send' buttons on error
-    startTalkingButton.disabled = true;
-    sendButton.disabled = true;
   };
-  
+
   socket.onclose = (event) => {
     console.trace("Socket closed");
-
-    // Disable 'Start Talking' and 'Send' buttons when connection closes
-    startTalkingButton.disabled = true;
-    sendButton.disabled = true;
   };
 });
 
 endButton.addEventListener("click", () => {
   if (socket) {
     socket.close();
-    log.value += "Connection Ended.\n";
+  chat.value += "Connection Ended.\n";
 
-    // Disable 'Start Talking' and 'Send' buttons when connection closes
-    startTalkingButton.disabled = true;
-    sendButton.disabled = true;
+    startCallButton.disabled = true;
   }
 });
 
-
-startTalkingButton.addEventListener("click", () => {
-  log.value += "Starting...\n";
-
-  recognition = new window.webkitSpeechRecognition();
-  recognition.interimResults = true;
-  recognition.lang = "en-US";
-  recognition.start();
-
-  recognition.onresult = (event) => {
-    const speechResult = event.results[event.results.length - 1][0].transcript;
-    log.value += `\nYou> ${speechResult}\n`;
-  };
-
-  recognition.onerror = (event) => {
-    log.value += `Error occurred in recognition: ${event.error}\n`;
-  }
-});
-
-// stopTalkingButton.addEventListener("click", () => {
-//   log.value += "Stopping...\n";
-//   recognition.stop();
-//   // socket.close();
-// });
-
-
-sendButton.addEventListener("click", () => {
+const sendMessage = () => {
   const message = messageInput.value;
-  log.value += `\nYou> ${message}\n`;
+chat.value += `\nYou> ${message}\n`;
   socket.send(message);
   messageInput.value = "";
-});
+}
 
-
-window.addEventListener("beforeunload", function(event) {
-  console.trace("Page is about to unload");
-  console.log(event);
-});
-
-window.addEventListener("unload", function(event) {
-  console.trace("Page is unloading");
-  console.log(event);
+sendButton.addEventListener("click", sendMessage);
+messageInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    sendMessage();
+  }
 });

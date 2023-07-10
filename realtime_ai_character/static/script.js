@@ -1,63 +1,72 @@
-// We use MediaStream Recording API more suitable for longer recordings as it's designed to 
-// handle streaming of media data as opposed to the Web Audio API which is more suitable for 
-// processing and synthesizing audio in web applications.
-
 // Buttons
-const connectButton = document.getElementById("connect");
-const endButton = document.getElementById("end-connection");
-const startCallButton = document.getElementById("start-call");
-const sendButton = document.getElementById("send");
-
-const messageInput = document.getElementById("message-input");
-const log = document.getElementById("log");
-
-const imageDisplay = document.getElementById("image-display");
-const audioDeviceSelection = document.getElementById('audio-device-selection');
+const microphoneContainer = document.getElementById('microphone-container');
+const chatWindow = document.getElementById('chat-window');
+const callButton =  document.getElementById('call');
+const messageButton = document.getElementById('message');
+const talkButton = document.getElementById('talk-btn');
+const sendButton = document.getElementById('send-btn');
+const messageInput = document.getElementById('message-input');
+const audioPlayer = document.getElementById('audio-player')
+var playerControls = document.querySelector(".player-controls");
 
 let recognition;
 let socket;
 let clientId = Math.floor(Math.random() * 1000);
 let audioQueue = [];
-
-// MediaStream API
 let mediaRecorder;
 let chunks = [];
-
 let debug = false;
 
-startCallButton.disabled = true;
+function connectSocket() {
+  chatWindow.value = "";
+  chatWindow.value += "Connecting...\n";
 
-window.addEventListener("load", function() {
-  // Get the list of media devices
-  navigator.mediaDevices.enumerateDevices()
-    .then(function(devices) {
-      // Filter out the audio input devices
-      let audioInputDevices = devices.filter(function(device) {
-        return device.kind === 'audioinput';
-      });
+  var clientId = Math.floor(Math.random() * 101);
+  var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+  var ws_path = ws_scheme + '://' + window.location.host + `/ws/${clientId}`;
+  socket = new WebSocket(ws_path);
+  socket.binaryType = 'arraybuffer';  // necessary to receive binary data
 
-      // If there are no audio input devices, display an error and return
-      if (audioInputDevices.length === 0) {
-        console.log('No audio input devices found');
-        return;
+  socket.onopen = (event) => {
+    chatWindow.value += "Successfully Connected.\n\n";
+
+    connectMicrophone();
+  };
+
+  socket.onmessage = (event) => {
+    if (typeof event.data === 'string') {
+      const message = event.data;
+      if (message == '[end]\n') {
+        console.log('\nYou> \n');
+      } else if (message.startsWith('[+]')) {
+        // stop playing audio
+        // Note: JavaScript doesn't have built-in audio stop functionality for the Audio object.
+        // You need to implement it manually if you have a playing audio track.
+        console.log(message);
+      } else if (message.startsWith('[=]')) {
+        // indicate the response is done
+        console.log(message);
+      } else {
+        chatWindow.value += `${event.data}`;
       }
+    } else {  // binary data
+      console.log("start playing received audio");
+      audioQueue.push(event.data);
+      if (audioQueue.length === 1) {
+        playAudios();
+      }
+    }
+  };
 
-      // Add the audio input devices to the dropdown
-      audioInputDevices.forEach(function(device, index) {
-        let option = document.createElement('option');
-        option.value = device.deviceId;
-        option.textContent = device.label || `Microphone ${index + 1}`;
-        audioDeviceSelection.appendChild(option);
-      });
-    })
-    .catch(function(err) {
-      console.log('An error occurred: ' + err);
-    });
-});
-
-audioDeviceSelection.addEventListener('change', function(e) {
-  connectMicrophone(e.target.value);
-});
+  socket.onerror = (error) => {
+    console.trace("Socket closed");
+    console.log(`WebSocket Error: ${error}`);
+  };
+  
+  socket.onclose = (event) => {
+    console.trace("Socket closed");
+  };
+}
 
 function speechRecognition() {
   // Initialize SpeechRecognition
@@ -86,14 +95,9 @@ function speechRecognition() {
 }
 
 
-function connectMicrophone(deviceId) {
-  navigator.mediaDevices.getUserMedia({
-    audio: {
-      deviceId: deviceId ? {exact: deviceId} : undefined,
-      sampleRate: 44100,
-      echoCancellation: true
-    }
-  })
+function connectMicrophone() {
+  console.log("connectMicrophone");
+  navigator.mediaDevices.getUserMedia({ audio: true })
   .then(function(stream) {
     mediaRecorder = new MediaRecorder(stream);
 
@@ -102,12 +106,12 @@ function connectMicrophone(deviceId) {
     }
 
     mediaRecorder.onstart = function() {
-      log.value += "\nListening...\n";
+      chatWindow.value += "\nListening...\n";
       console.log("start media recorder");
     }
 
     mediaRecorder.onstop = function(e) {
-      log.value += "\nThinking...\n";
+      chatWindow.value += "\nThinking...\n";
       console.log("stops media recorder")
       let blob = new Blob(chunks, {'type' : 'audio/webm'});
       chunks = [];
@@ -124,26 +128,25 @@ function connectMicrophone(deviceId) {
       }
 
       if (socket && socket.readyState === WebSocket.OPEN) {
+        console.log("sent audio")
         socket.send(blob);
       }
     }
-
-    startCallButton.disabled = false;
   })
   .catch(function(err) {
     console.log('An error occurred: ' + err);
   });
 }
 
-startCallButton.addEventListener("click", function() {
-  if (mediaRecorder) {
-    mediaRecorder.start();
-
-    startCallButton.disabled = true;
-    speechRecognition();
-    recognition.start();
-  }
-});
+// Function to play an audio and return a Promise that resolves when the audio finishes playing
+function playAudio(url) {
+  return new Promise((resolve) => {
+    audioPlayer.controls = true;
+    audioPlayer.src = url;
+    audioPlayer.onended = resolve;
+    audioPlayer.play();
+  });
+}
 
 // Play audio function
 async function playAudios() {
@@ -165,82 +168,33 @@ async function playAudios() {
   }
 }
 
-// Function to play an audio and return a Promise that resolves when the audio finishes playing
-function playAudio(url) {
-  return new Promise((resolve) => {
-    let audio = new Audio();
-    audio.controls = true;
-    audio.src = url;
-    audio.onended = resolve;
-    audio.play();
-  });
-}
-
-// websocket connection
-connectButton.addEventListener("click", () => {
-  log.value = "";
-  log.value += "Connecting...\n";
-
-  var clientId = Math.floor(Math.random() * 101);
-  var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-  var ws_path = ws_scheme + '://' + window.location.host + `/ws/${clientId}`;
-  socket = new WebSocket(ws_path);
-  // socket = new WebSocket(`ws://5649-98-42-233-44.ngrok-free.app/ws/${clientId}`);
-  socket.binaryType = 'arraybuffer';  // necessary to receive binary data
-
-  socket.onopen = (event) => {
-    log.value += "Successfully Connected.\n\n";
-
-    connectMicrophone(audioDeviceSelection.value);
-  };
-
-  socket.onmessage = (event) => {
-    if (typeof event.data === 'string') {
-      const message = event.data;
-      if (message == '[end]\n') {
-        console.log('\nYou> \n');
-      } else if (message.startsWith('[+]')) {
-        // stop playing audio
-        // Note: JavaScript doesn't have built-in audio stop functionality for the Audio object.
-        // You need to implement it manually if you have a playing audio track.
-        console.log(message);
-      } else if (message.startsWith('[=]')) {
-        // indicate the response is done
-        console.log(message);
-      } else {
-        log.value += `${event.data}`;
-      }
-    } else {  // binary data
-      console.log("start playing received audio");
-      audioQueue.push(event.data);
-      if (audioQueue.length === 1) {
-        playAudios();
-      }
-    }
-  };
-
-  socket.onerror = (error) => {
-    console.trace("Socket closed");
-    console.log(`WebSocket Error: ${error}`);
-  };
-  
-  socket.onclose = (event) => {
-    console.trace("Socket closed");
-  };
+talkButton.addEventListener("click", function() {
+  if (mediaRecorder) {
+    mediaRecorder.start();
+    speechRecognition();
+    recognition.start();
+  }
 });
 
-endButton.addEventListener("click", () => {
-  if (socket) {
-    socket.close();
-    log.value += "Connection Ended.\n";
+messageButton.addEventListener('click', function() {
+  microphoneContainer.style.display = 'none';
+  chatWindow.style.display = 'block';
+  talkButton.style.display = 'none';
+  sendButton.style.display = 'block';
+  messageInput.style.display = "block";
+});
 
-    startCallButton.disabled = true;
-  }
+callButton.addEventListener("click", () => {
+  microphoneContainer.style.display = 'flex';
+  chatWindow.style.display = 'none';
+  talkButton.style.display = 'block';
+  sendButton.style.display = 'none';
+  messageInput.style.display = "none";
 });
 
 const sendMessage = () => {
   const message = messageInput.value;
-  log.value += `\nYou> ${message}\n`;
+  chatWindow.value += `\nYou> ${message}\n`;
   socket.send(message);
   messageInput.value = "";
 }
@@ -252,3 +206,5 @@ messageInput.addEventListener("keydown", (event) => {
     sendMessage();
   }
 });
+
+connectSocket();

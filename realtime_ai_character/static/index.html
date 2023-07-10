@@ -15,20 +15,34 @@
     <div class="text-container">
       <p>Hello stranger, what's your name?</p>
     </div>
-    <div class="chat-screen">
-      <div class="microphone-container">
-        <img src="microphone.svg" alt="Microphone Icon" height="24" width="24"/>
+    <div class="main-screen">
+      <div id="microphone-container" class="microphone-container">
+        <div class="player-controls playing">
+            <span class="play"></span>
+            <span class="pause"></span>
+        </div>
+        <audio id="audio-player" class="audio-player">
+            <source src="" type="audio/mp3">
+        </audio>
       </div>
+      <textarea id="chat-window" class="chat-window" readonly></textarea>
     </div>
     </div>
-    <button class="talk-btn">Talk to me</button>
+    <div>
+      <button id="talk-btn" class="talk-btn">Talk to me</button>
+      <input id="message-input" class="message-input" type="text" placeholder="Type your message">
+      <button id="send-btn" class="send-btn">Send Message</button>
+    </div>
+    
     <div class="options-container">
-      <div class="connect">
+      <div id="call" class="call">
         <img src="connect.svg" alt="Connect Icon" class="power-01-1 icon-instance-node" height="24" width="24"/>
       </div>
-      <div class="message">
+      <div id="message" class="message">
         <img src="message.svg" alt="Message Icon" height="24" width="24"/>
       </div>
     </div>
+
+    <script src="script.js"></script>
   </body>
 </html>

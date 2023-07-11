@@ -16,7 +16,7 @@ struct CharacterOption: Identifiable, Equatable {
 struct ConfigView: View {
 
     let options: [CharacterOption]
-    @State var selectedOption: CharacterOption? = nil
+    @Binding var selectedOption: CharacterOption?
     let onConfirmConfig: (CharacterOption) -> Void
 
     var body: some View {
@@ -96,6 +96,7 @@ struct ConfigView_Previews: PreviewProvider {
         ConfigView(options: [.init(id: 0, name: "Mythical god", description: "Rogue"),
                              .init(id: 1, name: "Anime hero", description: "Noble"),
                              .init(id: 2, name: "Realtime AI", description: "Kind")],
+                   selectedOption: .constant(nil),
                    onConfirmConfig: { _ in })
         .frame(width: 310)
     }

@@ -9,22 +9,77 @@ import SwiftUI
 
 struct RootView: View {
     @State var interactive = false
+    @State var welcomeTab: WelcomeView.Tab = .about
+    @State var character: CharacterOption? = nil
 
     var body: some View {
         NavigationView {
             VStack {
                 if interactive {
-                    InteractiveView()
+                    InteractiveView(character: character) {
+                        welcomeTab = .about
+                        character = nil
+                        withAnimation {
+                            interactive.toggle()
+                        }
+                    }
+                    .transition(.moveAndFade2)
                 } else {
-                    WelcomeView { option in
-                        interactive = true
+                    WelcomeView(tab: $welcomeTab, character: $character) { selected in
+                        character = selected
+                        // TODO: figure out why animation does not work well
+//                        withAnimation {
+                            interactive.toggle()
+//                        }
+                    }
+                    .transition(.moveAndFade)
+                }
+            }
+            .toolbar {
+                if interactive {
+                    ToolbarItem(placement: .principal) {
+                        Image("logo")
+                            .preferredColorScheme(.dark)
+                    }
+
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button {
+                            withAnimation {
+                                interactive.toggle()
+                            }
+                        } label: {
+                            Image("menu")
+                                .tint(.white)
+                                .padding(12)
+                                .padding(.trailing, 20)
+                        }
+
+                    }
+                } else {
+                    ToolbarItemGroup(placement: .navigation) {
+                            Image("logo")
+                                .resizable()
+                                .padding(.leading, 32)
                     }
                 }
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarItems(leading: LogoView().padding(.leading, 44),
-                                trailing: EmptyView())
         }
+    }
+}
+
+extension AnyTransition {
+    static var moveAndFade: AnyTransition {
+        .asymmetric(
+            insertion: .move(edge: .top).combined(with: .opacity),
+            removal: .move(edge: .bottom).combined(with: .opacity)
+        )
+    }
+
+    static var moveAndFade2: AnyTransition {
+        .asymmetric(
+            insertion: .move(edge: .bottom).combined(with: .opacity),
+            removal: .move(edge: .top).combined(with: .opacity)
+        )
     }
 }
 

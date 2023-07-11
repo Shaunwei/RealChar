@@ -11,7 +11,8 @@ struct WelcomeView: View {
     enum Tab {
         case about, config
     }
-    @State var tab = Tab.about
+    @Binding var tab: WelcomeView.Tab
+    @Binding var character: CharacterOption?
 
     let onConfirmConfig: (CharacterOption) -> Void
 
@@ -29,21 +30,22 @@ struct WelcomeView: View {
                             tab = .config
                         }
                 }
-                .padding(.horizontal, 44)
+                .padding(.horizontal, 32)
                 .padding(.top, 24)
                 .frame(width: geometry.size.width, alignment: .leading)
 
                 switch tab {
                 case .about:
                     AboutView()
-                        .padding(.horizontal, 60)
+                        .padding(.horizontal, 48)
                 case .config:
                     // TODO: Load characters from server
                     ConfigView(options: [.init(id: 0, name: "Mythical god", description: "Rogue"),
                                          .init(id: 1, name: "Anime hero", description: "Noble"),
                                          .init(id: 2, name: "Realtime AI", description: "Kind")],
+                               selectedOption: $character,
                                onConfirmConfig: onConfirmConfig)
-                        .padding(.horizontal, 60)
+                        .padding(.horizontal, 48)
                 }
             }
         }
@@ -52,11 +54,18 @@ struct WelcomeView: View {
 
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
-        WelcomeView(onConfirmConfig: { _ in })
+        WelcomeView(tab: .constant(.about),
+                    character: .constant(nil),
+                    onConfirmConfig: { _ in })
+        WelcomeView(tab: .constant(.config),
+                    character: .constant(nil),
+                    onConfirmConfig: { _ in })
     }
 }
 
 struct TabView: View {
+    @Environment(\.colorScheme) var colorScheme
+
     let text: String
     @Binding var currentTab: WelcomeView.Tab
     let tab: WelcomeView.Tab
@@ -69,7 +78,7 @@ struct TabView: View {
                 view.modifier(UnderlineModifier(spacing: 8, thickness: 2))
             }
             .padding(16)
-            .foregroundColor(Color(red: 0.01, green: 0.03, blue: 0.11))
+            .foregroundColor(colorScheme == .dark ? .white : Color(red: 0.01, green: 0.03, blue: 0.11))
     }
 }
 

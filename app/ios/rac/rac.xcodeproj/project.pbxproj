@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2600B06F2A5D0872003E8388 /* ChatMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B06E2A5D0872003E8388 /* ChatMessagesView.swift */; };
+		2600B0712A5D11DD003E8388 /* VoiceMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B0702A5D11DD003E8388 /* VoiceMessageView.swift */; };
 		26FE4D092A5B6F0D006A1882 /* racApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D082A5B6F0D006A1882 /* racApp.swift */; };
 		26FE4D0B2A5B6F0D006A1882 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D0A2A5B6F0D006A1882 /* RootView.swift */; };
 		26FE4D0D2A5B6F0E006A1882 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26FE4D0C2A5B6F0E006A1882 /* Assets.xcassets */; };
@@ -23,6 +25,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2600B06E2A5D0872003E8388 /* ChatMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessagesView.swift; sourceTree = "<group>"; };
+		2600B0702A5D11DD003E8388 /* VoiceMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageView.swift; sourceTree = "<group>"; };
 		26FE4D052A5B6F0D006A1882 /* rac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = rac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		26FE4D082A5B6F0D006A1882 /* racApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = racApp.swift; sourceTree = "<group>"; };
 		26FE4D0A2A5B6F0D006A1882 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -130,6 +134,7 @@
 		26FE4D1A2A5B6FC4006A1882 /* Voice */ = {
 			isa = PBXGroup;
 			children = (
+				2600B0702A5D11DD003E8388 /* VoiceMessageView.swift */,
 			);
 			path = Voice;
 			sourceTree = "<group>";
@@ -137,6 +142,7 @@
 		26FE4D1B2A5B6FCE006A1882 /* Text */ = {
 			isa = PBXGroup;
 			children = (
+				2600B06E2A5D0872003E8388 /* ChatMessagesView.swift */,
 			);
 			path = Text;
 			sourceTree = "<group>";
@@ -245,8 +251,10 @@
 				26FE4D0B2A5B6F0D006A1882 /* RootView.swift in Sources */,
 				26FE4D1F2A5B704C006A1882 /* InteractiveView.swift in Sources */,
 				26FE4D2C2A5BC25C006A1882 /* CtaButton.swift in Sources */,
+				2600B06F2A5D0872003E8388 /* ChatMessagesView.swift in Sources */,
 				26FE4D1D2A5B7009006A1882 /* WelcomeView.swift in Sources */,
 				26FE4D092A5B6F0D006A1882 /* racApp.swift in Sources */,
+				2600B0712A5D11DD003E8388 /* VoiceMessageView.swift in Sources */,
 				26FE4D312A5BC6B0006A1882 /* View+Extensions.swift in Sources */,
 				26FE4D212A5B7074006A1882 /* AboutView.swift in Sources */,
 			);

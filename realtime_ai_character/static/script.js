@@ -13,11 +13,13 @@ const chat = document.getElementById("chat");
 
 const imageDisplay = document.getElementById("image-display");
 const audioDeviceSelection = document.getElementById('audio-device-selection');
+let audioPlayer = document.getElementById('audio-player');
 
 let recognition;
 let socket;
 let clientId = Math.floor(Math.random() * 1000);
 let audioQueue = [];
+let audioContext;
 
 // MediaStream API
 let mediaRecorder;
@@ -145,6 +147,20 @@ startCallButton.addEventListener("click", function() {
   }
 });
 
+// Function to unlock the AudioContext
+function unlockAudioContext(audioContext) {
+  if (audioContext.state === 'suspended') {
+    var unlock = function() {
+      audioContext.resume().then(function() {
+        document.body.removeEventListener('touchstart', unlock);
+        document.body.removeEventListener('touchend', unlock);
+      });
+    };
+    document.body.addEventListener('touchstart', unlock, false);
+    document.body.addEventListener('touchend', unlock, false);
+  }
+}
+
 // Play audio function
 async function playAudios() {
   while (audioQueue.length > 0) {
@@ -167,25 +183,42 @@ async function playAudios() {
 
 // Function to play an audio and return a Promise that resolves when the audio finishes playing
 function playAudio(url) {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    unlockAudioContext(audioContext);
+  }
+  if (!audioPlayer) {
+    audioPlayer = document.getElementById('audio-player');
+  }
   return new Promise((resolve) => {
-    let audio = new Audio();
-    audio.controls = true;
-    audio.src = url;
-    audio.onended = resolve;
-    audio.play();
+    audioPlayer.src = url;
+    audioPlayer.muted = true;  // Start muted
+    audioPlayer.play()
+    audioPlayer.onended = resolve;
+    audioPlayer.play().then(() => {
+      audioPlayer.muted = false;  // Unmute after playback starts
+    }).catch(error => alert(`Playback failed because: ${error}`));
   });
 }
-
 // websocket connection
 connectButton.addEventListener("click", () => {
-chat.value = "";
-chat.value += "Connecting...\n";
+  chat.value = "";
+  chat.value += "Connecting...\n";
 
   var clientId = Math.floor(Math.random() * 101);
   var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
   var ws_path = ws_scheme + '://' + window.location.host + `/ws/${clientId}`;
   socket = new WebSocket(ws_path);
   socket.binaryType = 'arraybuffer';  // necessary to receive binary data
+
+  // // Start a silent audio context when the user clicks the "Connect" button
+  // if (!audioContext) {
+  //   audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  //   unlockAudioContext(audioContext);
+  //   let silentSource = audioContext.createConstantSource();
+  //   silentSource.connect(audioContext.destination);
+  //   silentSource.start();
+  // }
 
   socket.onopen = (event) => {
     chat.value += "Successfully Connected.\n\n";
@@ -232,7 +265,7 @@ chat.value += "Connecting...\n";
 endButton.addEventListener("click", () => {
   if (socket) {
     socket.close();
-  chat.value += "Connection Ended.\n";
+    chat.value += "Connection Ended.\n";
 
     startCallButton.disabled = true;
   }
@@ -240,7 +273,7 @@ endButton.addEventListener("click", () => {
 
 const sendMessage = () => {
   const message = messageInput.value;
-chat.value += `\nYou> ${message}\n`;
+  chat.value += `\nYou> ${message}\n`;
   socket.send(message);
   messageInput.value = "";
 }

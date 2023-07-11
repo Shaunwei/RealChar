@@ -1,8 +1,9 @@
 import asyncio
+import os
 
-from fastapi import APIRouter, Depends, Path, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, Path, Security, WebSocket, WebSocketDisconnect, Query
+from fastapi.security.api_key import APIKeyHeader
 from requests import Session
-from starlette.websockets import WebSocketState
 
 from realtime_ai_character.audio.speech_to_text import (SpeechToText,
                                                         get_speech_to_text)
@@ -31,11 +32,16 @@ manager = get_connection_manager()
 async def websocket_endpoint(
         websocket: WebSocket,
         client_id: int = Path(...),
+        api_key: str = Query(None),
         db: Session = Depends(get_db),
         llm: OpenaiLlm = Depends(get_llm),
         catalog_manager=Depends(get_catalog_manager),
         speech_to_text=Depends(get_speech_to_text),
         text_to_speech=Depends(get_text_to_speech)):
+    # basic authentication
+    if os.getenv('USE_AUTH', '') and api_key != os.getenv('AUTH_API_KEY'):
+        await websocket.close(code=1008, reason="Unauthorized")
+        return
     await manager.connect(websocket)
     try:
         main_task = asyncio.create_task(

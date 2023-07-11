@@ -20,7 +20,7 @@ class Google(Singleton, SpeechToText):
         logger.info("Setting up [Google Speech to Text]...")
         self.client = speech.SpeechClient()
 
-    def transcribe(self, audio_bytes, prompt='') -> str:
+    def transcribe(self, audio_bytes, platform, prompt='') -> str:
         batch_config = speech.RecognitionConfig({
             'speech_contexts': [speech.SpeechContext(phrases=prompt.split(','))],
             **config.__dict__})

@@ -2,14 +2,12 @@ import os
 
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 router = APIRouter()
 
-static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
-router.mount("/static", StaticFiles(directory=static_dir), name="static")
-templates = Jinja2Templates(directory=static_dir)
+templates = Jinja2Templates(directory=os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 'static'))
 
 
 @router.get("/status")

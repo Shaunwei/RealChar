@@ -16,4 +16,5 @@ RUN alembic upgrade head
 
 EXPOSE 8000
 
+# Run the application
 CMD ["uvicorn", "realtime_ai_character.main:app", "--host", "0.0.0.0"]

@@ -1,7 +1,9 @@
+import os
 import warnings
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from realtime_ai_character.audio.speech_to_text import get_speech_to_text
 from realtime_ai_character.audio.text_to_speech import get_text_to_speech
@@ -16,6 +18,9 @@ app = FastAPI()
 
 app.include_router(restful_router)
 app.include_router(websocket_router)
+app.mount("/static", StaticFiles(directory=os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 'static')), name="static")
+
 
 # initializations
 CatalogManager.initialize(overwrite=False)

@@ -16,6 +16,9 @@ let recognition;
 let socket;
 let clientId = Math.floor(Math.random() * 1000);
 let audioQueue = [];
+let audioContext;
+
+// MediaStream API
 let mediaRecorder;
 let chunks = [];
 let debug = false;
@@ -141,14 +144,18 @@ function connectMicrophone() {
   });
 }
 
-// Function to play an audio and return a Promise that resolves when the audio finishes playing
-function playAudio(url) {
-  return new Promise((resolve) => {
-    audioPlayer.controls = true;
-    audioPlayer.src = url;
-    audioPlayer.onended = resolve;
-    audioPlayer.play();
-  });
+// Function to unlock the AudioContext
+function unlockAudioContext(audioContext) {
+  if (audioContext.state === 'suspended') {
+    var unlock = function() {
+      audioContext.resume().then(function() {
+        document.body.removeEventListener('touchstart', unlock);
+        document.body.removeEventListener('touchend', unlock);
+      });
+    };
+    document.body.addEventListener('touchstart', unlock, false);
+    document.body.addEventListener('touchend', unlock, false);
+  }
 }
 
 // Play audio function
@@ -171,6 +178,25 @@ async function playAudios() {
   }
 }
 
+// Function to play an audio and return a Promise that resolves when the audio finishes playing
+function playAudio(url) {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    unlockAudioContext(audioContext);
+  }
+  if (!audioPlayer) {
+    audioPlayer = document.getElementById('audio-player');
+  }
+  return new Promise((resolve) => {
+    audioPlayer.src = url;
+    audioPlayer.muted = true;  // Start muted
+    audioPlayer.play();
+    audioPlayer.onended = resolve;
+    audioPlayer.play().then(() => {
+      audioPlayer.muted = false;  // Unmute after playback starts
+    }).catch(error => alert(`Playback failed because: ${error}`));
+  });
+}
 
 connectButton.addEventListener("click", function() {
   console.log("connectButton clicked");

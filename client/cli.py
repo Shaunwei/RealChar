@@ -1,3 +1,4 @@
+import os
 import queue
 import asyncio
 import concurrent.futures
@@ -7,13 +8,16 @@ import random
 from threading import Thread
 import time
 
+from dotenv import load_dotenv
+
 import pyaudio
 import speech_recognition as sr
 import websockets
 from aioconsole import ainput  # for async input
 from pydub import AudioSegment
-from pydub.playback import play
 from simpleaudio import WaveObject
+
+load_dotenv()
 
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=3)
 
@@ -148,7 +152,8 @@ async def receive_message(websocket):
 
 
 async def start_client(client_id):
-    uri = f"ws://localhost:8000/ws/{client_id}"
+    api_key = os.getenv('AUTH_API_KEY')
+    uri = f"ws://localhost:8000/ws/{client_id}?api_key={api_key}"
     async with websockets.connect(uri) as websocket:
         # send client platform info
         await websocket.send('terminal')

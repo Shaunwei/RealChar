@@ -12,7 +12,7 @@ body {
 }
 
 .text-container p {
-  color: #ffffff;
+  color: #e0e0e0;
   font-family: "Prompt", Helvetica;
   font-size: 20px;
   font-weight: 300;
@@ -23,17 +23,17 @@ body {
   align-items: center;
   justify-content: center;
   width: 50vw;
-  height: 50vh; 
+  height: 30vh; 
 }
 
 .microphone-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* background-color: #6785d3;
+  background-color: #6785d3;
   border-radius: 50px;
   width: 5em;
-  height: 5em; */
+  height: 5em;
 }
 
 .audio-player {
@@ -44,7 +44,7 @@ body {
   color: #FFF;
   background-color: #6785d3;
   border-radius: 50px;
-  display: block;
+  display: none;
   font-size: 40px;
   height: 1em;
   position: relative;
@@ -162,10 +162,13 @@ body {
 }
 
 .chat-window {
-  /* background-color: #02081d; */
+  background-color: #02081d;
   display: none;
+  color: white;
+  font-size: 17px;
   width: 100%;
   height: 80%; 
+  border: none;
 }
 
 .talk-btn {
@@ -191,6 +194,11 @@ body {
 
 .message-input {
   display: none;
+  border-radius: 5px;
+  border-color: #6785d3;
+  margin-bottom: 10px;
+  font-size: 20px;
+  width: 50vw;
 }
 
 .talk-btn:hover {
@@ -198,20 +206,24 @@ body {
   color: #6785d3;
 }
 
+.action-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
 .options-container {
   display: flex;
   align-items: center;
   justify-content: center;
- 
-  background-color: #060e29;
   padding: 30px 60px;
-  position: fixed;
   bottom: 0;
   width: 100%;
 }
 
 .call {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   background-color: #bccffe1a;
@@ -224,6 +236,23 @@ body {
 }
 
 .call:hover {
+  background-color: #bccffe;
+}
+
+.connect {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #bccffe1a;
+  border-radius: 50px;
+  padding: 8px;
+  height: 50px;
+  width: 50px;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.connect:hover {
   background-color: #bccffe;
 }
 
@@ -242,4 +271,118 @@ body {
 
 .message:hover {
   background-color: #bccffe;
+}
+
+
+@import url("https://fonts.googleapis.com/css?family=Raleway:300,400,400i,700");
+*
+{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+body 
+{
+  font-family: Raleway, sans-serif;
+}
+.main-container 
+{
+  /* height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column; */
+  margin-top: 30px;
+}
+
+.main-container h2 
+{
+  margin: 0 0 80px 0;
+  color: #cccccc;
+  font-size: 30px;
+  font-weight: 300;
+}
+
+.radio-buttons 
+{
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.custom-radio input 
+{
+  display: none;
+}
+
+.radio-btn 
+{
+  margin: 10px;
+  width: 220px;
+  height: 240px;
+  border: 3px solid transparent;
+  display: inline-block;
+  border-radius: 10px;
+  position: relative;
+  text-align: center;
+  box-shadow: 0 0 20px #c3c3c367;
+  cursor: pointer;
+}
+
+.radio-btn > i {
+  color: #ffffff;
+  background-color: #FFDAE9;
+  font-size: 20px;
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%) scale(2);
+  border-radius: 50px;
+  padding: 3px;
+  transition: 0.5s;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.radio-btn .hobbies-icon 
+{
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.radio-btn .hobbies-icon img
+{
+  display:block;
+  width:100%;
+  margin-bottom:20px;
+  
+}
+.radio-btn .hobbies-icon i 
+{
+  color: #FFDAE9;
+  line-height: 80px;
+  font-size: 60px;
+}
+
+.radio-btn .hobbies-icon h4
+{
+  color: rgb(214, 214, 214);
+  font-size: 15px;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing:1px;
+}
+
+.custom-radio input:checked + .radio-btn 
+{
+  border: 2px solid #FFDAE9;
+}
+
+.custom-radio input:checked + .radio-btn > i 
+{
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
 }

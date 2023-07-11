@@ -1,13 +1,16 @@
 // Buttons
 const microphoneContainer = document.getElementById('microphone-container');
 const chatWindow = document.getElementById('chat-window');
-const callButton =  document.getElementById('call');
+const connectButton =  document.getElementById('connect');
 const messageButton = document.getElementById('message');
+const callButton =  document.getElementById('call');
 const talkButton = document.getElementById('talk-btn');
 const sendButton = document.getElementById('send-btn');
 const messageInput = document.getElementById('message-input');
 const audioPlayer = document.getElementById('audio-player')
-var playerControls = document.querySelector(".player-controls");
+const playerControls = document.querySelector(".player-controls");
+const microphoneNode = document.getElementById('microphone-node');
+const textContainer = document.querySelector('.text-container p');
 
 let recognition;
 let socket;
@@ -16,21 +19,20 @@ let audioQueue = [];
 let mediaRecorder;
 let chunks = [];
 let debug = false;
+let selectedCharacter;
 
 function connectSocket() {
   chatWindow.value = "";
-  chatWindow.value += "Connecting...\n";
-
   var clientId = Math.floor(Math.random() * 101);
   var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
   var ws_path = ws_scheme + '://' + window.location.host + `/ws/${clientId}`;
   socket = new WebSocket(ws_path);
-  socket.binaryType = 'arraybuffer';  // necessary to receive binary data
+  socket.binaryType = 'arraybuffer';
 
   socket.onopen = (event) => {
-    chatWindow.value += "Successfully Connected.\n\n";
-
+    console.log("successfully connected");
     connectMicrophone();
+    socket.send("web"); // select web as the platform
   };
 
   socket.onmessage = (event) => {
@@ -45,7 +47,11 @@ function connectSocket() {
         console.log(message);
       } else if (message.startsWith('[=]')) {
         // indicate the response is done
+        chatWindow.value += "\n\n";
         console.log(message);
+      } else if (message.startsWith('Select')) {
+        console.log("message starts with select");
+        parseFisrtMessage(message);
       } else {
         chatWindow.value += `${event.data}`;
       }
@@ -94,7 +100,6 @@ function speechRecognition() {
   }
 }
 
-
 function connectMicrophone() {
   console.log("connectMicrophone");
   navigator.mediaDevices.getUserMedia({ audio: true })
@@ -105,13 +110,11 @@ function connectMicrophone() {
       chunks.push(e.data);
     }
 
-    mediaRecorder.onstart = function() {
-      chatWindow.value += "\nListening...\n";
+    mediaRecorder.onstart = function() {      
       console.log("start media recorder");
     }
 
     mediaRecorder.onstop = function(e) {
-      chatWindow.value += "\nThinking...\n";
       console.log("stops media recorder")
       let blob = new Blob(chunks, {'type' : 'audio/webm'});
       chunks = [];
@@ -168,8 +171,39 @@ async function playAudios() {
   }
 }
 
+
+connectButton.addEventListener("click", function() {
+  console.log("connectButton clicked");
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    socket.close();
+  } else {
+    connectSocket();
+    textContainer.textContent = "Please Select Your character";
+  }
+});
+
+
 talkButton.addEventListener("click", function() {
-  if (mediaRecorder) {
+  console.log("talkButton clicked");
+  if (socket && mediaRecorder) {
+    playerControls.style.display = "block";
+    microphoneNode.style.display = "none";
+    textContainer.textContent = "Hi my friend, what's your name?";
+
+    // Hide the radio buttons that are not selected
+    const radioButtons = document.querySelectorAll('.radio-buttons input[type="radio"]');
+    radioButtons.forEach(radioButton => {
+      if (radioButton.value != selectedCharacter) {
+        radioButton.parentElement.style.display = 'none';
+      }
+    });
+
+    if (selectedCharacter) {
+      socket.send(selectedCharacter);
+    } else {
+      console.log("character not selected");
+    }
+
     mediaRecorder.start();
     speechRecognition();
     recognition.start();
@@ -177,19 +211,25 @@ talkButton.addEventListener("click", function() {
 });
 
 messageButton.addEventListener('click', function() {
+  console.log("messageButton clicked");
   microphoneContainer.style.display = 'none';
   chatWindow.style.display = 'block';
   talkButton.style.display = 'none';
   sendButton.style.display = 'block';
   messageInput.style.display = "block";
+  callButton.style.display = "flex";
+  messageButton.style.display = 'none';
 });
 
 callButton.addEventListener("click", () => {
+  console.log("callButton clicked");
   microphoneContainer.style.display = 'flex';
   chatWindow.style.display = 'none';
   talkButton.style.display = 'block';
   sendButton.style.display = 'none';
   messageInput.style.display = "none";
+  callButton.style.display = "none";
+  messageButton.style.display = 'flex';
 });
 
 const sendMessage = () => {
@@ -207,4 +247,57 @@ messageInput.addEventListener("keydown", (event) => {
   }
 });
 
-connectSocket();
+// parse the first message that asks user to select the character and create select element
+function parseFisrtMessage(message) {
+  const options = message.split('\n').slice(1);
+
+  // Create a map from character name to image URL
+  // TODO: store image in database and let server send the image url to client.
+  const imageMap = {
+    'Raiden Shogun And Ei': 'raiden.jpeg',
+    'Marvel Loki': 'loki.jpeg',
+    'Ai Character Helper': 'ai_helper.png'
+  };
+
+  const radioButtonDiv = document.getElementsByClassName('radio-buttons')[0];
+  options.forEach(option => {
+    const match = option.match(/^(\d+)\s-\s(.+)$/);
+    if (match) {
+      const label = document.createElement('label');
+      label.className = 'custom-radio';
+
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = 'radio';
+      input.value = match[1];  // The option number is the value
+
+      const span = document.createElement('span');
+      span.className = 'radio-btn';
+      span.innerHTML = '<i class="las la-check"></i>';
+
+      const hobbiesIcon = document.createElement('div');
+      hobbiesIcon.className = 'hobbies-icon';
+
+      const img = document.createElement('img');
+      img.src = imageMap[match[2]];
+
+      // Create a h3 element
+      const h3 = document.createElement('h4');
+      h3.textContent = match[2];  // The option name is the text
+
+      hobbiesIcon.appendChild(img);
+      hobbiesIcon.appendChild(h3);
+      span.appendChild(hobbiesIcon);
+      label.appendChild(input);
+      label.appendChild(span);
+
+      radioButtonDiv.appendChild(label);
+    }
+  });
+
+  radioButtonDiv.addEventListener('change', (event) => {
+    if (event.target.value != "") {
+      selectedCharacter = event.target.value;
+    }
+  });
+}

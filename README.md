@@ -48,6 +48,10 @@ XI_API_KEY=<api key>
     ```sh
     alembic upgrade head
     ```
+4. Setup `.env`: update API keys and select component
+   ```sh
+   mv .env.example .env
+   ```
 4. Run the app & then go to http://localhost:8000/static/index.html
     ```sh
     uvicorn realtime_ai_character.main:app --reload

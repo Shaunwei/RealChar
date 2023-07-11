@@ -67,3 +67,14 @@ XI_API_KEY=<api key>
 Speech to Text: Whisper
 
 Voice Clone and Sound Synthesis: ElevenLabs
+
+## Docker
+1. Build docker image
+    ```sh
+    python cli.py docker-build
+    ```
+2. Run docker image
+    ```sh
+    python cli.py docker-run
+    ```
+3. Go to http://localhost:8000 to start talking (note: you need https to use microphone)

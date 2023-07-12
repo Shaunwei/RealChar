@@ -172,39 +172,28 @@ body {
   border: none;
 }
 
-.talk-btn {
+.talk-btn,
+.send-btn {
   font-family: "Prompt", Helvetica;
-  font-size: 16px;
-  background-color: #6785d3;
-  color: white;
-  border-radius: 50px;
+  font-size: 1rem;
+  border-color: #6785d3;
+  color: #fff;
+  box-shadow: 0 0 10px 0 #6785d3 inset, 0 0 10px 4px #6785d3;
+  transition: all 150ms ease-in-out;
   cursor: pointer;
-  padding: 10px 25px;
+  background-color: transparent;
+  padding: 0.6em 2em;
+  border-radius: 1.5em;
+}
+
+.talk-btn:hover,
+.send-btn:hover {
+  box-shadow: 0 0 40px 40px #6785d3 inset, 0 0 0 0 #6785d3;
+  outline: 0;
 }
 
 .send-btn {
-  font-family: "Prompt", Helvetica;
-  font-size: 16px;
-  background-color: #6785d3;
-  color: white;
-  border-radius: 50px;
-  cursor: pointer;
-  padding: 10px 25px;
   display: none;
-}
-
-.message-input {
-  display: none;
-  border-radius: 5px;
-  border-color: #6785d3;
-  margin-bottom: 10px;
-  font-size: 20px;
-  width: 50vw;
-}
-
-.talk-btn:hover {
-  background-color: #ffffff;
-  color: #6785d3;
 }
 
 .action-container {
@@ -437,3 +426,34 @@ body
   margin-bottom: 10px;
   color: #e0e0e0;
 }
+
+/* text input */
+input[type="text"]{font: 15px/24px 'Muli', sans-serif; color: white; width: 100%; box-sizing: border-box; letter-spacing: 1px;}
+:focus{outline: none;}
+.message-input-container{
+  float: left; 
+  width: 50vw;
+  margin: 30px 3%; 
+  position: relative;}
+input[type="text"]{font: 15px/24px "Lato", Arial, sans-serif; color: white; width: 100%; box-sizing: border-box; letter-spacing: 1px;}
+.message-input {
+  border: 1px solid #ccc; 
+  border-radius: 5px;
+  padding: 7px 14px 9px; 
+  transition: 0.4s;
+  font-size: 20px;
+  display: none;
+  color: white;
+  background-color: transparent;
+}
+
+.message-input ~ .focus-border:before,
+.message-input ~ .focus-border:after{content: ""; position: absolute; top: 0; left: 0; width: 0; height: 2px; background-color: #7598f0; transition: 0.3s;}
+.message-input ~ .focus-border:after{top: auto; bottom: 0; left: auto; right: 0;}
+.message-input ~ .focus-border i:before,
+.message-input ~ .focus-border i:after{content: ""; position: absolute; top: 0; left: 0; width: 2px; height: 0; background-color: #7598f0; transition: 0.4s;}
+.message-input ~ .focus-border i:after{left: auto; right: 0; top: auto; bottom: 0;}
+.message-input:focus ~ .focus-border:before,
+.message-input:focus ~ .focus-border:after{width: 100%; transition: 0.3s;}
+.message-input:focus ~ .focus-border i:before,
+.message-input:focus ~ .focus-border i:after{height: 100%; transition: 0.4s;}

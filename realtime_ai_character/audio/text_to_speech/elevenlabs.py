@@ -55,8 +55,6 @@ class ElevenLabs(Singleton, TextToSpeech):
             **config.data,
         }
         voice_id = self.get_voice_id(characater_name)
-        print("characater_name: ", characater_name)
-        print("voice_id: ", voice_id)
         url = config.url.format(voice_id=voice_id)
         if first_sentence:
             url = url + '?optimize_streaming_latency=4'

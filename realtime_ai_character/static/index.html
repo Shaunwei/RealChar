@@ -44,7 +44,12 @@
   </div>
   <div class="action-container">
     <button id="talk-btn" class="talk-btn">Talk to me</button>
-    <input id="message-input" class="message-input" type="text" placeholder="Type your message">
+    <div class="message-input-container">
+      <input id="message-input" class="message-input" type="text" placeholder="Type your message">
+        <span class="focus-border">
+        <i></i>
+      </span>
+    </div>
     <button id="send-btn" class="send-btn">Send Message</button>
   </div>
 
@@ -59,6 +64,8 @@
       <img src="/static/microphone.svg" alt="Connect Icon" class="icon-instance-node" height="24" width="24" />
     </div>
   </div>
+
+
 
   <script src="/static/script.js"></script>
 </body>

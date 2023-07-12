@@ -26,6 +26,7 @@ function connectSocket() {
         console.log('\nYou> \n');
       } else if (message.startsWith('[+]')) {
         // [+] indicates the transcription is done. stop playing audio
+        stopAudioPlayback();
         console.log(message);
       } else if (message.startsWith('[=]')) {
         // [=] indicates the response is done
@@ -355,4 +356,11 @@ function playAudio(url) {
       audioPlayer.muted = false;  // Unmute after playback starts
     }).catch(error => alert(`Playback failed because: ${error}`));
   });
+}
+
+function stopAudioPlayback() {
+  if (audioPlayer) {
+    audioPlayer.pause(); // pause current audio
+  }
+  audioQueue = []; // clear the audio queue
 }

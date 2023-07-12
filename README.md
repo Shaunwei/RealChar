@@ -44,23 +44,27 @@ XI_API_KEY=<api key>
     ```sh
     pip install -r requirements.txt
     ```
-3. Run db upgrade
+3. Create an empty database if you have not done so before
+    ```sh
+    sqlite3 test.db "VACUUM;"
+    ```
+4. Run db upgrade
     ```sh
     alembic upgrade head
     ```
-4. Setup `.env`: update API keys and select component
+5. Setup `.env`: update API keys and select component
    ```sh
    mv .env.example .env
    ```
-4. Run the app with web client on http://localhost:8000
+6. Run the app with web client on http://localhost:8000
     ```sh
     uvicorn realtime_ai_character.main:app --reload
     ```
-5. (Optional) Run terminal client - python cli
+7. (Optional) Run terminal client - python cli
     ```sh
     python client/cli.py
     ```
-6. Select one character to talk to, then start talking
+8. Select one character to talk to, then start talking
 
 
 ## Tech Stack
@@ -78,3 +82,5 @@ Voice Clone and Sound Synthesis: ElevenLabs
     python cli.py docker-run
     ```
 3. Go to http://localhost:8000 to start talking (note: you need https to use microphone)
+
+If you have issues with docker (especially on a non-Linux machine), please refer to https://docs.docker.com/get-docker/ (installation) and https://docs.docker.com/desktop/troubleshoot/overview/ (troubleshooting).

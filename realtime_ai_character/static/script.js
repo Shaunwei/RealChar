@@ -74,7 +74,7 @@ connectButton.addEventListener("click", function() {
     socket.close();
   } else {
     connectSocket();
-    textContainer.textContent = "Please Select Your character";
+    textContainer.textContent = "Please select your character first";
   }
 });
 
@@ -450,3 +450,4 @@ function stopAudioPlayback() {
  * automatically connect socket at the beginning
  */
 connectSocket();
+textContainer.textContent = "Please select your character first";

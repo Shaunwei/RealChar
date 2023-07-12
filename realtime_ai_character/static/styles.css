@@ -12,12 +12,20 @@ body {
 }
 
 .text-container p {
-  color: #e0e0e0;
+  color: #cccccc;
   font-family: "Prompt", Helvetica;
-  font-size: 20px;
+  font-size: 30px;
   font-weight: 300;
   margin-top: 20px;
 }
+/* 
+h2 
+{
+  margin: 0 0 80px 0;
+  color: #cccccc;
+  font-size: 30px;
+  font-weight: 300;
+} */
 
 .main-screen {
   display: flex;
@@ -233,7 +241,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #bccffe1a;
+  background-color: #febcbc1a;
   border-radius: 50px;
   padding: 8px;
   height: 50px;
@@ -243,7 +251,7 @@ body {
 }
 
 .connect:hover {
-  background-color: #bccffe;
+  background-color: #ff4242;
 }
 
 .message {
@@ -260,7 +268,7 @@ body {
 
 
 .message:hover {
-  background-color: #bccffe;
+  background-color: #28c235;
 }
 
 
@@ -286,13 +294,6 @@ body
   margin-top: 30px;
 }
 
-.main-container h2 
-{
-  margin: 0 0 80px 0;
-  color: #cccccc;
-  font-size: 30px;
-  font-weight: 300;
-}
 
 .radio-buttons 
 {

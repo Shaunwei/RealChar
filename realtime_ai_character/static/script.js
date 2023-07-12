@@ -20,10 +20,10 @@ function connectSocket() {
   };
 
   socket.onmessage = (event) => {
-    console.log(typeof event.data);
     if (typeof event.data === 'string') {
       const message = event.data;
       if (message == '[end]\n') {
+        chatWindow.value += "\n\n";
         console.log('\nYou> \n');
       } else if (message.startsWith('[+]')) {
         // [+] indicates the transcription is done. stop playing audio
@@ -236,18 +236,12 @@ callButton.addEventListener("click", () => {
 
 talkButton.addEventListener("click", function() {
   console.log("talkButton clicked");
-  if (socket && mediaRecorder) {
+  if (socket && socket.readyState === WebSocket.OPEN && mediaRecorder && selectedCharacter) {
     playerControls.style.display = "block";
     microphoneNode.style.display = "none";
     textContainer.textContent = "Hi my friend, what's your name?";
 
-    // Hide the radio buttons that are not selected
-    const radioButtons = document.querySelectorAll('.radio-buttons input[type="radio"]');
-    radioButtons.forEach(radioButton => {
-      if (radioButton.value != selectedCharacter) {
-        radioButton.parentElement.style.display = 'none';
-      }
-    });
+    hideCharacters();
 
     if (selectedCharacter) {
       socket.send(selectedCharacter);
@@ -260,6 +254,16 @@ talkButton.addEventListener("click", function() {
     recognition.start();
   }
 });
+
+function hideCharacters() {
+  // Hide the radio buttons that are not selected
+  const radioButtons = document.querySelectorAll('.radio-buttons input[type="radio"]');
+  radioButtons.forEach(radioButton => {
+    if (radioButton.value != selectedCharacter) {
+      radioButton.parentElement.style.display = 'none';
+    }
+  });
+}
 
 /**
  * Text-based Chatting
@@ -287,15 +291,19 @@ const sendMessage = () => {
     if (selectedCharacter) {
       socket.send(selectedCharacter);
       characterSent = true;
+      hideCharacters();
+      textContainer.textContent = "Hi my friend, what's your name?";
     } else {
       console.log("character not selected");
     }
   }
 
-  const message = messageInput.value;
-  chatWindow.value += `\nYou> ${message}\n`;
-  socket.send(message);
-  messageInput.value = "";
+  if (selectedCharacter && socket && socket.readyState === WebSocket.OPEN) {
+    const message = messageInput.value;
+    chatWindow.value += `\nYou> ${message}\n`;
+    socket.send(message);
+    messageInput.value = "";
+  }
 }
 
 sendButton.addEventListener("click", sendMessage);

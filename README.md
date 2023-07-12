@@ -5,8 +5,8 @@ Realtime AI Character is a revolutionary project enabling dynamic audio-visual i
 
 Before you begin setting up this project, please ensure you have completed the following tasks:
 
-### 1. Prepare OpenAI API Token
-
+### 1. Prepare LLM -  OpenAI API Token
+<details><summary>click me</summary>
 This application utilizes the OpenAI API to access its powerful language model capabilities. In order to use the OpenAI API, you will need to obtain an API token.
 
 To get your OpenAI API token, follow these steps:
@@ -16,9 +16,14 @@ To get your OpenAI API token, follow these steps:
 3. Generate a new API key by clicking on the "Create API Key" button.
 4. Copy the API key and store it safely.
 5. Add the API key to your environment variable, e.g. `export OPENAI_API_KEY=<your API key>`
+</details>
 
-### 2. Prepare ElevenLabs API Key
+### 1.1 Prepare LLM -  Anthropic API Token
 
+### 2.(Optional) Prepare Speech to Text - Google Cloud API
+
+### 3. Prepare Text to Speech - ElevenLabs API Key
+<details><summary>click me</summary>
 1. Creating an ElevenLabs Account
 Visit [ElevenLabs](https://beta.elevenlabs.io/) to create an account. You'll need this to access the speech synthesis and voice cloning features.
 
@@ -28,15 +33,18 @@ Visit [ElevenLabs](https://beta.elevenlabs.io/) to create an account. You'll nee
 ```
 XI_API_KEY=<api key>
 ```
+</details>
 
-## Installation
+
+## Installation via Python
 1. Clone the repo
    ```sh
    git clone
     ```
 2. Install requirements
-   - (For Mac) Install portaudio and ffmpeg
+   - Install portaudio and ffmpeg
     ```sh
+    (For Mac)
     brew install portaudio
     brew install ffmpeg
     ```
@@ -52,7 +60,7 @@ XI_API_KEY=<api key>
     ```sh
     alembic upgrade head
     ```
-5. Setup `.env`: update API keys and select component
+5. Setup `.env`: update API keys and select module
    ```sh
    mv .env.example .env
    ```
@@ -67,12 +75,8 @@ XI_API_KEY=<api key>
 8. Select one character to talk to, then start talking
 
 
-## Tech Stack
-Speech to Text: Whisper
-
-Voice Clone and Sound Synthesis: ElevenLabs
-
-## Docker
+## (Optional) Installation via Docker
+<details><summary>click me</summary>
 1. Build docker image
     ```sh
     python cli.py docker-build
@@ -84,3 +88,9 @@ Voice Clone and Sound Synthesis: ElevenLabs
 3. Go to http://localhost:8000 to start talking (note: you need https to use microphone)
 
 If you have issues with docker (especially on a non-Linux machine), please refer to https://docs.docker.com/get-docker/ (installation) and https://docs.docker.com/desktop/troubleshoot/overview/ (troubleshooting).
+</details>
+
+## Tech Stack
+Speech to Text: Whisper
+
+Voice Clone and Sound Synthesis: ElevenLabs

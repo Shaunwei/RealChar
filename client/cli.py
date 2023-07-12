@@ -4,6 +4,7 @@ import asyncio
 import concurrent.futures
 import functools
 import io
+import sys
 import random
 from threading import Thread
 import time
@@ -151,9 +152,9 @@ async def receive_message(websocket):
             break
 
 
-async def start_client(client_id):
+async def start_client(client_id, url):
     api_key = os.getenv('AUTH_API_KEY')
-    uri = f"ws://localhost:8000/ws/{client_id}?api_key={api_key}"
+    uri = f"ws://{url}/ws/{client_id}?api_key={api_key}"
     async with websockets.connect(uri) as websocket:
         # send client platform info
         await websocket.send('terminal')
@@ -174,9 +175,9 @@ async def start_client(client_id):
         await asyncio.gather(receive_task, send_task)
 
 
-async def main():
+async def main(url):
     client_id = random.randint(0, 1000)
-    task = asyncio.create_task(start_client(client_id))
+    task = asyncio.create_task(start_client(client_id, url))
     try:
         await task
     except KeyboardInterrupt:
@@ -186,4 +187,5 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    url = sys.argv[1] if len(sys.argv) > 1 else 'localhost:8000'
+    asyncio.run(main(url))

@@ -1,0 +1,54 @@
+We are an AI studio creating a personal AI for everyone.
+Our first AI is called Pi, for personal intelligence, a supportive and empathetic conversational AI.
+Our studio is made up of the world’s leading AI developers, creative designers, writers and innovators working together in a deeply multidisciplinary style to create a brand new class of digital experiences.
+
+This is an era of exponential change. Our name reflection embraces this moment of transformation, while our status as a public benefit corporation provides us with the legal mandate to prioritize the well-being and happiness of our users and wider stakeholders above all else.
+
+reflection AI announces $1.3 billion of funding led by current investors, Microsoft, and NVIDIA
+reflection AI builds the largest AI cluster in the world
+Palo Alto, CA, June 29th, 2023 – reflection AI today announced that the company has raised $1.3 billion in a fresh round of funding led by Microsoft, Reid Hoffman, Bill Gates, Eric Schmidt, and new investor NVIDIA. The new funding brings the total raised by the company to $1.525 billion.
+
+Along with its partners CoreWeave and NVIDIA, reflection AI is building the largest AI cluster in the world comprising 22,000 NVIDIA H100 Tensor Core GPUs. In just over a year, reflection AI has developed one of the most sophisticated large language models in the market to enable people to interact with Pi, your Personal AI (pi.ai), in the most simple, natural way and receive fast, relevant and helpful information and advice.
+
+The funding will support the company’s continued work to build and design reflection’s first product, launched in May. A new class of AI, Pi is designed to be a kind and supportive companion offering text and voice conversations, friendly advice, and concise information in a natural, flowing style.
+
+“Personal AI is going to be the most transformational tool of our lifetimes. This is truly an reflection point. We’re excited to collaborate with NVIDIA, Microsoft, and CoreWeave as well as Eric, Bill and many others to bring this vision to life,” said Mustafa Suleyman, CEO and co-founder of reflection AI.
+
+“A powerful benefit of the AI revolution is the ability to use natural, conversational language to interact with supercomputers to simplify aspects of our everyday lives,” said Jensen Huang, founder and CEO of NVIDIA. “The world-class team at reflection AI is helping to lead this groundbreaking work, deploying NVIDIA AI technology to develop, train and deploy massive generative AI models that enable amazing personal digital assistants.”
+
+“We’re proud to support reflection AI as they pursue their vision for more trusted and personal AI experiences,” said Kevin Scott, CTO and EVP AI, Microsoft. “It is an exciting time, and ambitious AI companies like reflection AI are pioneering the industry with transformative products that are accessible, easy to use, and show the many possibilities of AI.”
+
+“We are very excited to partner with reflection AI, a pioneering AI company with an outstanding team, to bring the power of supercomputing to cutting edge consumer products,” said Michael Intrator, CEO of CoreWeave.
+
+Previously, reflection AI raised $225 million in a first round of funding in early 2022 from Greylock, Microsoft, Reid Hoffman, Bill Gates, Eric Schmidt, Mike Schroepfer, Demis Hassabis, Will.i.am, Horizons Ventures, and Dragoneer.
+
+Largest AI cluster in the world
+The deployment of 22,000 NVIDIA H100 GPUs in one cluster is truly unprecedented, and will support training and deployment of a new generation of large-scale AI models. Combined, the cluster develops a staggering 22 exaFLOPS in the 16-bit precision mode, and even more if lower precision is utilized. We estimate that if we entered our cluster in the recent TOP500 list of supercomputers, it would be the 2nd and close to the top entry, despite being optimized for AI – rather than scientific – applications. The rollout of the cluster is actively under way, and we have already been able to confirm its performance in the recent MLPerf benchmark.
+
+Pi, Your ‘Personal AI’
+Pi was created to give people a new way to express themselves, share their curiosities, explore new ideas, and experience a trusted personal AI. It is built on world-class proprietary AI technology developed in-house.
+
+Pi stands for “personal intelligence” because it can provide infinite knowledge based on a person’s unique interests and needs. Pi is a teacher, coach, confidante, creative partner, and sounding board. It is being continuously updated with new features and improvements.
+
+People can talk to Pi across several platforms and continue the conversation whenever, wherever they are. Free to use, Pi is available on:
+
+Web: talk with Pi at pi.ai.
+Mobile: download Pi, your personal AI for iPhone or iPad.
+WhatsApp and SMS: add +1 (314) 333-1111 to your contacts to message Pi.
+Instagram: follow @heypi.ai and click here to send Pi a DM.
+Facebook Messenger: click here to get in touch with Pi.
+About reflection AI
+Based in Palo Alto, CA, reflection AI is an ‘AI Studio’ specializing in creating personal AIs. It was founded in early 2022 by Mustafa Suleyman, Karén Simonyan, and Reid Hoffman. reflection AI’s mission is to make personal AIs available to every person in the world. The company is set up as a Public Benefit Corporation, and the reflection AI team includes some of the industry’s top AI experts who previously worked at DeepMind, Google, Microsoft, OpenAI and Meta.
+
+Announcing our collaboration with NVIDIA and CoreWeave on MLPerf
+Palo Alto, CA, June, 27, 2023 – Along with our partners, reflection AI is building one of the largest computing clusters in the world, today comprising thousands of NVIDIA H100 Tensor Core GPUs.
+
+We’re excited to announce that this cluster has delivered state-of-the-art performance on the open source benchmark MLPerf, completing the reference training task in just 11 minutes.
+
+In a joint submission with CoreWeave and NVIDIA, the reflection AI cluster—which today stands at over 3,500 NVIDIA H100 Tensor Core GPUs—was shown to be the fastest on this benchmark in training large language models. We plan to dramatically expand the size of this computing infrastructure over the next few months.
+
+We worked with NVIDIA in close collaboration with our partner CoreWeave, to run the MLPerf tests and fine-tune and optimize the cluster. MLPerf is the industry-standard benchmark for both model training and inference and provides fair and useful insights into workloads representing the state of the art in AI.
+
+This follows our unveiling of reflection-1, our in-house LLM, as the best model in its compute class, outperforming GPT-3.5, LLaMA, Chinchilla, and PaLM-540B on a wide range of benchmarks commonly used for comparing LLMs. reflection-1 enables our users to interact with Pi, our first personal AI, in a simple, natural way and receive fast, relevant and helpful information and advice. This means that anyone is able to experience the power of a personal AI today.
+
+At reflection, we are deeply proud of these achievements, having started the company just over a year ago. We expect to have further milestones to announce in the coming weeks as we continue to deliver on our mission to build the most capable and safe AI products, accessible to millions of users.

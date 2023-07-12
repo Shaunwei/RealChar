@@ -73,6 +73,7 @@ connectButton.addEventListener("click", function() {
     microphoneNode.style.display = "flex";
     chatWindow.value = "";
     characterSent = false;
+    talkButton.textContent = "Talk to me";
     callButton.click();
     socket.close();
   } else {
@@ -165,8 +166,8 @@ function connectMicrophone(deviceId) {
       }
 
       if (socket && socket.readyState === WebSocket.OPEN) {
-        console.log("sending audio");
-        if (!audioSent) {
+        if (!audioSent && callActive) {
+          console.log("sending audio");
           socket.send(blob);
         }
         audioSent = false;
@@ -302,9 +303,9 @@ talkButton.addEventListener("click", function() {
       microphoneNode.style.display = "flex";
       talkButton.textContent = "Talk to me";
       
+      callActive = false;
       mediaRecorder.stop();
       recognition.stop();
-      callActive = false;
       stopAudioPlayback();
     }
   }

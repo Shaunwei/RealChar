@@ -280,9 +280,9 @@ function parseFisrtMessage(message) {
   // Create a map from character name to image URL
   // TODO: store image in database and let server send the image url to client.
   const imageMap = {
-    'Raiden Shogun And Ei': 'raiden.jpeg',
-    'Marvel Loki': 'loki.jpeg',
-    'Ai Character Helper': 'ai_helper.png'
+    'Raiden Shogun And Ei': '/static/raiden.jpeg',
+    'Marvel Loki': '/static/loki.jpeg',
+    'Ai Character Helper': '/static/ai_helper.png'
   };
 
   const radioButtonDiv = document.getElementsByClassName('radio-buttons')[0];

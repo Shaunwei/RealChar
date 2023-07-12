@@ -1,59 +1,59 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Realtime AI Character</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
-  </head>
-  <body>
-    <div class="logo-container">
-      <img
-        alt="Logo"
-        src="logo.png"
-      />
-    </div>
-    <div class="text-container">
-      <p>Please Connect</p>
-    </div>
-    <div class="main-container">
-      <!-- <h2>What subject do you want to improve today ?</h2> -->
-      <div class="radio-buttons"> 
-        <!-- this part will be dynamically rendered -->
-      </div>
-    </div>
-    <div class="main-screen">
-      <div id="microphone-container" class="microphone-container">
-        <div id="microphone-node">
-          <img src="microphone.svg" alt="Connect Icon" class="icon-instance-node" height="24" width="24"/>
-        </div>
-        <div class="player-controls playing">
-            <span class="play"></span>
-            <span class="pause"></span>
-        </div>
-        <audio id="audio-player" class="audio-player">
-            <source src="" type="audio/mp3">
-        </audio>
-      </div>
-      <textarea id="chat-window" class="chat-window" readonly></textarea>
-    </div>
-    </div>
-    <div class="action-container">
-      <button id="talk-btn" class="talk-btn">Talk to me</button>
-      <input id="message-input" class="message-input" type="text" placeholder="Type your message">
-      <button id="send-btn" class="send-btn">Send Message</button>
-    </div>
-    
-    <div class="options-container">
-      <div id="connect" class="connect">
-        <img src="connect.svg" alt="Connect Icon" class="icon-instance-node" height="24" width="24"/>
-      </div>
-      <div id="message" class="message">
-        <img src="message.svg" alt="Message Icon" height="24" width="24"/>
-      </div>
-      <div id="call" class="call">
-        <img src="microphone.svg" alt="Connect Icon" class="icon-instance-node" height="24" width="24"/>
-      </div>
-    </div>
 
-    <script src="script.js"></script>
-  </body>
+<head>
+  <title>Realtime AI Character</title>
+  <link rel="stylesheet" type="text/css" href="/static/styles.css">
+</head>
+
+<body>
+  <div class="logo-container">
+    <img alt="Logo" src="/static/logo.png" />
+  </div>
+  <div class="text-container">
+    <p>Please Connect</p>
+  </div>
+  <div class="main-container">
+    <!-- <h2>What subject do you want to improve today ?</h2> -->
+    <div class="radio-buttons">
+      <!-- this part will be dynamically rendered -->
+    </div>
+  </div>
+  <div class="main-screen">
+    <div id="microphone-container" class="microphone-container">
+      <div id="microphone-node">
+        <img src="/static/microphone.svg" alt="Connect Icon" class="icon-instance-node" height="24" width="24" />
+      </div>
+      <div class="player-controls playing">
+        <span class="play"></span>
+        <span class="pause"></span>
+      </div>
+      <audio id="audio-player" class="audio-player">
+        <source src="" type="audio/mp3">
+      </audio>
+    </div>
+    <textarea id="chat-window" class="chat-window" readonly></textarea>
+  </div>
+  </div>
+  <div class="action-container">
+    <button id="talk-btn" class="talk-btn">Talk to me</button>
+    <input id="message-input" class="message-input" type="text" placeholder="Type your message">
+    <button id="send-btn" class="send-btn">Send Message</button>
+  </div>
+
+  <div class="options-container">
+    <div id="connect" class="connect">
+      <img src="/static/connect.svg" alt="Connect Icon" class="icon-instance-node" height="24" width="24" />
+    </div>
+    <div id="message" class="message">
+      <img src="/static/message.svg" alt="Message Icon" height="24" width="24" />
+    </div>
+    <div id="call" class="call">
+      <img src="/static/microphone.svg" alt="Connect Icon" class="icon-instance-node" height="24" width="24" />
+    </div>
+  </div>
+
+  <script src="/static/script.js"></script>
+</body>
+
 </html>

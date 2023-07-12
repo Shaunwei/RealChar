@@ -82,3 +82,5 @@ Voice Clone and Sound Synthesis: ElevenLabs
     python cli.py docker-run
     ```
 3. Go to http://localhost:8000 to start talking (note: you need https to use microphone)
+
+If you have issues with docker (especially on a non-Linux machine), please refer to https://docs.docker.com/get-docker/ (installation) and https://docs.docker.com/desktop/troubleshoot/overview/ (troubleshooting).

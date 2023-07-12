@@ -23,4 +23,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: shaunly/real_char:${{ github.ref }}
+        tags: shaunly/real_char:latest

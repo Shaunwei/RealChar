@@ -328,7 +328,7 @@ function createCharacterGroups(message) {
   // TODO: store image in database and let server send the image url to client.
   const imageMap = {
     'Raiden Shogun And Ei': '/static/raiden.jpeg',
-    'Marvel Loki': '/static/loki.jpeg',
+    'Loki': '/static/loki.jpeg',
     'Ai Character Helper': '/static/ai_helper.png',
     'Reflection Pi': '/static/pi.jpeg'
   };

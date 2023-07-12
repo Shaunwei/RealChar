@@ -60,6 +60,7 @@ function connectSocket() {
 connectButton.addEventListener("click", function() {
   console.log("connectButton clicked");
   if (socket && socket.readyState === WebSocket.OPEN) {
+    stopAudioPlayback();
     socket.close();
   } else {
     connectSocket();
@@ -92,8 +93,12 @@ function connectMicrophone() {
       console.log("start media recorder");
     }
 
+    mediaRecorder.onresume = function() {      
+      console.log("resume media recorder");
+    }
+
     mediaRecorder.onstop = function(e) {
-      console.log("stops media recorder")
+      console.log("pause media recorder")
       let blob = new Blob(chunks, {'type' : 'audio/webm'});
       chunks = [];
 
@@ -111,7 +116,6 @@ function connectMicrophone() {
       if (socket && socket.readyState === WebSocket.OPEN) {
         console.log("sent audio")
         socket.send(blob);
-        // Restart the media recorder if user is still connected
         mediaRecorder.start();
       }
     }
@@ -132,21 +136,18 @@ function speechRecognition() {
   window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   recognition = new SpeechRecognition();
 
-  // Stop the recorder when user stops talking
-  recognition.onspeechend = function() {
-    if (mediaRecorder && mediaRecorder.state === "recording") {
-      mediaRecorder.stop();
-      console.log("user stops talking");
-    }
+  recognition.onspeechstart = function() {
+    console.log("recognition onspeech start");
   };
 
-  // Handle the case where user does not speak
+  recognition.onspeechend = function() {
+    console.log("recognition onspeechend");
+    mediaRecorder.stop();
+  };
+
   recognition.onend = function() {
-    if (mediaRecorder && mediaRecorder.state === "recording") {
-      mediaRecorder.stop();
-      console.log("recognizer ends");
-      recognition.start();
-    }
+    console.log("recognizer ends");
+    recognition.start();
   };
 
   recognition.onstart = function() {
@@ -327,15 +328,6 @@ async function playAudios() {
     let audioUrl = URL.createObjectURL(blob);
     await playAudio(audioUrl);
     audioQueue.shift();
-  }
-
-  // Start recording again after audio is done playing
-  if (mediaRecorder && mediaRecorder.state !== "recording") {
-    mediaRecorder.start();
-
-    if (recognition) {
-      recognition.start();
-    }
   }
 }
 

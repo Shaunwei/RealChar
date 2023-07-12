@@ -253,6 +253,7 @@ const messageInput = document.getElementById('message-input');
 const sendButton = document.getElementById('send-btn');
 const messageButton = document.getElementById('message');
 const chatWindow = document.getElementById('chat-window');
+let characterSent = false;
 
 messageButton.addEventListener('click', function() {
   console.log("messageButton clicked");
@@ -266,6 +267,15 @@ messageButton.addEventListener('click', function() {
 });
 
 const sendMessage = () => {
+  if (!characterSent){
+    if (selectedCharacter) {
+      socket.send(selectedCharacter);
+      characterSent = true;
+    } else {
+      console.log("character not selected");
+    }
+  }
+
   const message = messageInput.value;
   chatWindow.value += `\nYou> ${message}\n`;
   socket.send(message);

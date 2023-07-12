@@ -294,7 +294,8 @@ function parseFisrtMessage(message) {
   const imageMap = {
     'Raiden Shogun And Ei': '/static/raiden.jpeg',
     'Marvel Loki': '/static/loki.jpeg',
-    'Ai Character Helper': '/static/ai_helper.png'
+    'Ai Character Helper': '/static/ai_helper.png',
+    'Reflection Pi': '/static/pi.jpeg'
   };
 
   const radioButtonDiv = document.getElementsByClassName('radio-buttons')[0];

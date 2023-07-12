@@ -12,6 +12,7 @@ DEBUG = False
 
 config = types.SimpleNamespace(**{
     'default_voice': 'EXAVITQu4vr4xnSDxMaL',
+    'pi_voice': 'MF3mGyEYCl7XYWbV9V6O',
     'raiden_voice': 'GQbV9jBB6X50z0S6R2d0',
     'loki_voice': 'ErXwobaYiN019PkySvjV',  # TODO: train a new voice for Loki
     'chunk_size': 1024,
@@ -35,14 +36,14 @@ class ElevenLabs(Singleton, TextToSpeech):
     def __init__(self):
         super().__init__()
         logger.info("Initializing [ElevenLabs Text To Speech] voices...")
-        self.custom_voice = None
-        self.chunk_size = 1024
 
     def get_voice_id(self, name):
         if name == "Raiden Shogun And Ei":
             return config.raiden_voice
         if name == "Marvel Loki":
             return config.loki_voice
+        if name == "Reflection Pi":
+            return config.pi_voice
         return config.default_voice
 
     async def stream(self, text, websocket, tts_event: asyncio.Event, chacater_name="", first_sentence=False) -> None:

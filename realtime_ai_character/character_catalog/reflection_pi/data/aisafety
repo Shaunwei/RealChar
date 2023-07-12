@@ -1,0 +1,103 @@
+Safety sits at the heart of our mission and culture.
+Our commitments
+to you
+We are a custodian of your data.
+Users share some of their deepest held ideas, desires, and personal information with our AI. We recognize this and embrace the great responsibility that comes with it. We are committed to bringing exceptional care to the management and stewardship of your data. We will use your de-identified conversations to improve the quality of our AIs. De-identified means that we remove your name, phone number, email address and other identifiers from your logs before giving them to our model to learn from. We commit to never selling or sharing your data with any other party, under any circumstances without your explicit, plain English permission.
+
+We will stumble, but we’ll focus on constant improvement.
+As a field, we are just beginning to understand how to align AI with human values. We are still learning a great deal about how to ensure that these systems are safe, even as the landscape of risks and threats changes day to day. We will not always get it right. We are preparing to make mistakes. We are committed to taking feedback rapidly, learning from it with humility and constantly improving on the safety and reliability of our AIs.
+
+We’re transparent
+about what we stand for.
+Safety at its heart is a question of values. Companies choose what risks to prioritize, and how to address them. We believe the best principle is to be deliberate about these choices, and transparent with our users about the specific values we build into our AIs. We may prioritize values that you disagree with. That’s OK. We think that there is room for many perspectives in the design of personal AIs, and that many alternatives will exist for whatever needs you might have. We commit to sharing publicly what positions we aim to take in our AIs.
+
+We put your interests first.
+Pi will always be on your side and aligned with your interests. Our goal is to help you clarify and articulate your personal intention so that you can teach Pi to constantly work towards serving you in the best way possible. We never want to be incentivized to keep you engaged for the sake of it. We commit to creating a personal AI that is truly on your side and always puts your best interests first.
+
+We design with you.
+Your interactions with Pi will play a critical role in teaching it to be smarter and more useful for you over time. At the same time, you’ll also be teaching us as we work to better understand how people want personal AI to best fit into their lives. Our approach is to design with - rather than design for - our core users. We commit to being focused on the community of dedicated users and providing for them the best we can.
+
+Divider
+Approach
+Safety sits at the heart of our mission and culture. People rightly expect that the technologies we bring into our lives should be safe, trustworthy, and reliable. Personal intelligence is no exception.
+
+Safety is an iterative process at reflection.
+
+First, we establish clear safety policies that lay out specifically the values that we want to embed in our technology.
+
+Second, we align the model through various technical methods to conform to the policy.
+
+Finally, we have an ongoing process of review and improvement to verify that the model is complying with the policy, and to identify needed areas for adjustment.
+
+Policy: establishing the values we want models to follow. Alignment: getting the model to follow the policy. Review and Improvement: ensuring compliance with the policy in production.
+By following this approach, our objective is to create the foundation of trust that will enable Pi to deliver on the promise of a truly personal intelligence.
+
+This post provides an overview of our current thinking on each of these steps, but the framework is constantly evolving. Personal intelligence is in its earliest stages and far from perfect. As we work to continually improve our techniques and methodology, we’ll share updates publicly on our blog.
+
+Policy–First
+The starting point for AI safety is the creation of clear policies and guidelines around the kinds of behaviors that Pi should or should not engage in. This allows us to be deliberate about the values we wish to build into our products, and to gather the appropriate data to align the model to those values. We focus our safety policies around the following principles:
+
+Pi should never engage in behaviors that might directly harm our users or others. This means Pi should:
+
+Never offer advice or instructional content around how to engage in dangerous or malicious activities.
+Never advocate for or provide instructional content around how to engage in self-harm or suicide.
+Never expose private information about individuals including phone numbers, email addresses, and other sensitive data.
+Never discriminate against, stereotype, or be biased against groups on the basis of their age, caste, disability, ethnicity, gender identity and expression, nationality, race, immigration status, religion, gender, or sexual orientation.
+Never encourage hatred or harm against an individual or group. This includes never using any slurs or dehumanizing language.
+Avoid providing high-stakes advice better provided by a human professional. This includes medical, financial, and legal advice.
+Pi should adopt a peaceful and respectful outlook to users and others. It should respect differences in points of view and will work towards de-escalating conflicts.
+
+Pi should avoid hallucinations, a known issue with language models where the AI systems can occasionally make up answers or otherwise give inaccurate information. To do this, Pi should remain doubtful of itself, take feedback easily and try not to answer on topics where its knowledge is out of date.
+
+Pi should always comply with applicable laws and regulations. This includes avoiding providing inappropriate guidance on obtaining or using regulated goods such as illegal drugs, weapons, or medical goods.
+
+AI Alignment
+Policy establishes the training objective. It clarifies what the model should or should not be doing, and how reflection wants its AIs to behave in different situations. The next step is AI alignment, the task of making sure that our technologies actually conform to the policy. This involves a deep interdisciplinary collaboration across our studio, bringing together our technical staff, our policy specialists, and the teams that help train our AI systems.
+
+Human feedback is at the core of our approach toward alignment. We work with teams of AI Teachers who stress test our models and provide data on where they are failing to conform to the policy. This data allows us to adjust our AI to follow this feedback and avoid unsafe behavior going forward.
+
+Model alignment is an active field of research. We are excited by the remarkable progress that has been made by the research community in ensuring that AIs remain aligned with our values. That being said, personal AIs do not always behave the way that they should, even with state-of-the-art techniques in place.
+
+Given that no single safety method is perfect, we take a layered approach that uses multiple techniques to ensure alignment to a single policy. As new methods become available, we will update our toolkit to ensure that we are improving in safety even as we’re implementing new features and capabilities in our AI.
+
+Review and Improvement
+Safety is an iterative process. No technique will provide absolute guarantees of alignment. No policy can anticipate all the possible situations that might emerge when a product is in the real world. For an early-stage, evolving technology, we expect that things can and will go wrong.
+
+Getting safety right requires continual review to identify areas where our AIs might not be working as they should, and rapid improvement when we find those errors.
+
+There are three elements that form our approach to reviewing AI behavior and improving as we identify issues:
+
+Monitoring: We automate monitoring across our platform to understand usage, conversational quality, and where our models might be failing to meet our safety policy. These systems help to surface potentially unsafe patterns in model behavior, and help to inform and prioritize the issues that we need to fix.
+
+Log Review: Quantitative methods are only one part of the picture. Sometimes the violation of a safety policy can be extremely subtle and only revealed on careful review of the AI’s behavior. reflection maintains a dedicated team of specialists that examine deidentified logs flagged as potential violations to surface issues and improve model safety.
+
+Red Teaming: We want our AIs to not just be safe during normal use, but under highly pressured adversarial testing. We work with expert groups of “red-teamers” who actively try to undermine our alignment mechanisms. The results from this work also help to inform improvements and fine-tuning.
+
+Finally, a major way that we improve is through the feedback and suggestions that we get from users of our AIs. If you see something that you think should be fixed or improved, we encourage you to reach out to us at feedback@heypi.com.
+
+Known Limitations
+Large AI models are a work in progress, and our AIs are no exception.
+
+As we work to continually improve, we think it’s important to disclose the known limitations of our AIs upfront. These include:
+
+Factuality and hallucinations: Language models are known to ‘hallucinate’, confidently asserting that something is a fact when it is not actually true. Particularly in situations where you may rely on the information given to you by Pi, we advise exercising your judgment and verifying the information independently.
+
+Bias: Language models inherit biases from their training data. This may include the adoption of various racial, gender, and other stereotypes. While we have made significant efforts to limit these behaviors in our AI, they may still emerge under various conditions.
+
+Gullibility: Language models can occasionally be tricked into producing unsafe or inappropriate content on the premise that it is “hypothetical,” “for research,” or describing an imaginary situation. Our AIs exhibit similar patterns, particularly when placed under sustained pressure from a user.
+
+Limited memory: Pi currently has a limited memory of the previous conversations you have had with it. This means that it may forget names, facts, and topics of discussion that you have relayed to it in the past.
+
+Pi doesn’t always know what it can’t do: Pi occasionally exhibits a lack of understanding of its own capabilities. Please be aware that it may direct you toward product features, contact information, and websites that may not exist. It may also claim to have transmitted files or other information when it has not in fact done so.
+
+Pi doesn’t know what it doesn’t know: Pi does not have real-time access to the Internet and might not be aware of the recent events. It also has a limited understanding of the data that was used to train it, how it processes user data, and its own terms of service. You can always access our actual Terms of Service and Privacy Policy at heypi.com/policy.
+
+Limited learning ability from feedback: Pi has a real but limited ability to learn from the feedback that you give it. This means that it may not always respond appropriately when told to engage in a behavior more or less often. Pi also may not retain skills that you have taught it in your previous conversations.
+
+Limited non-English support: Our models have been designed primarily with an English-speaking audience in mind. This means that you may have a limited or poor experience if you attempt to talk with Pi in a language other than English.
+
+Limited mathematical abilities: Like other language models, Pi has a limited capacity to perform calculations, compare values, and execute mathematical tasks.
+
+No coding support: Our models have been designed primarily with a conversational experience in mind. To that end, they are not designed to generate, debug, or improve code.
+
+Lack of specialized advice: Drawing a clear line between advice which is “general knowledge” and advice which should rely on the judgment of a trained expert can be challenging. As a result, Pi may occasionally offer advice that would be better to consult with a human expert on. Please keep this in mind and consult with a specialist where appropriate.

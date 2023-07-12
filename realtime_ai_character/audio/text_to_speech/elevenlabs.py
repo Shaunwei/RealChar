@@ -40,7 +40,7 @@ class ElevenLabs(Singleton, TextToSpeech):
     def get_voice_id(self, name):
         if name == "Raiden Shogun And Ei":
             return config.raiden_voice
-        if name == "Marvel Loki":
+        if name == "Loki":
             return config.loki_voice
         if name == "Reflection Pi":
             return config.pi_voice

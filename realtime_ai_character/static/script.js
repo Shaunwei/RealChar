@@ -15,7 +15,7 @@ function connectSocket() {
 
   socket.onopen = (event) => {
     console.log("successfully connected");
-    connectMicrophone();
+    connectMicrophone(audioDeviceSelection.value);
     socket.send("web"); // select web as the platform
   };
 
@@ -68,6 +68,42 @@ connectButton.addEventListener("click", function() {
   }
 });
 
+/**
+ * Devices
+ * Get the list of media devices
+ */
+const audioDeviceSelection = document.getElementById('audio-device-selection');
+
+window.addEventListener("load", function() {
+  navigator.mediaDevices.enumerateDevices()
+    .then(function(devices) {
+      // Filter out the audio input devices
+      let audioInputDevices = devices.filter(function(device) {
+        return device.kind === 'audioinput';
+      });
+
+      // If there are no audio input devices, display an error and return
+      if (audioInputDevices.length === 0) {
+        console.log('No audio input devices found');
+        return;
+      }
+
+      // Add the audio input devices to the dropdown
+      audioInputDevices.forEach(function(device, index) {
+        let option = document.createElement('option');
+        option.value = device.deviceId;
+        option.textContent = device.label || `Microphone ${index + 1}`;
+        audioDeviceSelection.appendChild(option);
+      });
+    })
+    .catch(function(err) {
+      console.log('An error occurred: ' + err);
+    });
+});
+
+audioDeviceSelection.addEventListener('change', function(e) {
+  connectMicrophone(e.target.value);
+});
 
 /**
  * Audio Recording and Transmission
@@ -79,10 +115,15 @@ let mediaRecorder;
 let chunks = [];
 let debug = false;
 
-function connectMicrophone() {
+function connectMicrophone(deviceId) {
   console.log("connectMicrophone");
-  navigator.mediaDevices.getUserMedia({ audio: true })
-  .then(function(stream) {
+  navigator.mediaDevices.getUserMedia({
+    audio: {
+      deviceId: deviceId ? {exact: deviceId} : undefined,
+      sampleRate: 44100,
+      echoCancellation: true
+    }
+  }).then(function(stream) {
     mediaRecorder = new MediaRecorder(stream);
 
     mediaRecorder.ondataavailable = function(e) {

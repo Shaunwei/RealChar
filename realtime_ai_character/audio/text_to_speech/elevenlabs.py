@@ -46,7 +46,7 @@ class ElevenLabs(Singleton, TextToSpeech):
             return config.pi_voice
         return config.default_voice
 
-    async def stream(self, text, websocket, tts_event: asyncio.Event, chacater_name="", first_sentence=False) -> None:
+    async def stream(self, text, websocket, tts_event: asyncio.Event, characater_name="", first_sentence=False) -> None:
         if DEBUG:
             return
         headers = config.headers
@@ -54,7 +54,9 @@ class ElevenLabs(Singleton, TextToSpeech):
             "text": text,
             **config.data,
         }
-        voice_id = self.get_voice_id(chacater_name)
+        voice_id = self.get_voice_id(characater_name)
+        print("characater_name: ", characater_name)
+        print("voice_id: ", voice_id)
         url = config.url.format(voice_id=voice_id)
         if first_sentence:
             url = url + '?optimize_streaming_latency=4'

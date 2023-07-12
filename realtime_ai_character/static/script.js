@@ -20,6 +20,7 @@ function connectSocket() {
   };
 
   socket.onmessage = (event) => {
+    console.log(typeof event.data);
     if (typeof event.data === 'string') {
       const message = event.data;
       if (message == '[end]\n') {
@@ -34,7 +35,7 @@ function connectSocket() {
         console.log(message);
       } else if (message.startsWith('Select')) {
         console.log("message starts with select");
-        parseFisrtMessage(message);
+        createCharacterGroups(message);
       } else {
         chatWindow.value += `${event.data}`;
       }
@@ -61,6 +62,21 @@ connectButton.addEventListener("click", function() {
   console.log("connectButton clicked");
   if (socket && socket.readyState === WebSocket.OPEN) {
     stopAudioPlayback();
+    if (radioGroupsCreated) {
+      destroyRadioGroups();
+    }
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+    }
+    if (recognition) {
+      recognition.stop();
+    }
+    textContainer.textContent = "Please connect first";
+    playerControls.style.display = "none";
+    microphoneNode.style.display = "flex";
+    chatWindow.value = "";
+    characterSent = false;
+    callButton.click();
     socket.close();
   } else {
     connectSocket();
@@ -296,7 +312,8 @@ messageInput.addEventListener("keydown", (event) => {
  * character for the chat. creates radio buttons for the character selection.
  */
 let selectedCharacter;
-function parseFisrtMessage(message) {
+let radioGroupsCreated = false;
+function createCharacterGroups(message) {
   const options = message.split('\n').slice(1);
 
   // Create a map from character name to image URL
@@ -349,6 +366,17 @@ function parseFisrtMessage(message) {
       selectedCharacter = event.target.value;
     }
   });
+
+  radioGroupsCreated = true;
+}
+
+function destroyRadioGroups() {
+  const radioButtonDiv = document.getElementsByClassName('radio-buttons')[0];
+  while (radioButtonDiv.firstChild) {
+    radioButtonDiv.removeChild(radioButtonDiv.firstChild);
+  }
+  selectedCharacter = null;
+  radioGroupsCreated = false;
 }
 
 /**

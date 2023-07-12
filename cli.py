@@ -21,12 +21,12 @@ def docker_build(name, rebuild):
         subprocess.run(["docker", "build", "-t", name, "."])
     else:
         click.secho(
-            f"Docker image: {name} already exists. Skipping build.", fg='yellow')
+            f"Docker image: {name} already exists. Skipping build. To rebuild, use --rebuild option", fg='yellow')
 
 
 @click.command()
 @click.option('--name', default="realtime-ai-character", help='The name of the Docker image to run.')
-@click.option('--db-file', default="./test.db", help='Path to the database file to mount inside the container.')
+@click.option('--db-file', default=None, help='Path to the database file to mount inside the container.')
 def docker_run(name, db_file):
     click.secho(f"Running Docker image: {name}...", fg='green')
     if not os.path.isfile('.env'):
@@ -35,8 +35,11 @@ def docker_run(name, db_file):
     # Remove existing container if it exists
     subprocess.run(["docker", "rm", "-f", name],
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    subprocess.run(["docker", "run", "--env-file", ".env", "--name", name, "-p", "8000:8000",
-                   "-v", f"{os.path.abspath(db_file)}:/realtime_ai_character/test.db", name])
+    if db_file:
+        subprocess.run(["docker", "run", "--env-file", ".env", "--name", name, "-p", "8000:8000",
+                    "-v", f"{os.path.abspath(db_file)}:/realtime_ai_character/test.db", name])
+    else:
+        subprocess.run(["docker", "run", "--env-file", ".env", "--name", name, "-p", "8000:8000", name])
 
 
 @click.command()

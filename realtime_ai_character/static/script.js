@@ -110,6 +110,8 @@ function connectMicrophone() {
       if (socket && socket.readyState === WebSocket.OPEN) {
         console.log("sent audio")
         socket.send(blob);
+        // Restart the media recorder if user is still connected
+        mediaRecorder.start();
       }
     }
   })
@@ -142,6 +144,7 @@ function speechRecognition() {
     if (mediaRecorder && mediaRecorder.state === "recording") {
       mediaRecorder.stop();
       console.log("recognizer ends");
+      recognition.start();
     }
   };
 

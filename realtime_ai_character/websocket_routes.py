@@ -1,8 +1,7 @@
 import asyncio
 import os
 
-from fastapi import APIRouter, Depends, HTTPException, Path, Security, WebSocket, WebSocketDisconnect, Query
-from fastapi.security.api_key import APIKeyHeader
+from fastapi import APIRouter, Depends, Path, WebSocket, WebSocketDisconnect, Query
 from requests import Session
 
 from realtime_ai_character.audio.speech_to_text import (SpeechToText,
@@ -12,12 +11,11 @@ from realtime_ai_character.audio.text_to_speech import (TextToSpeech,
 from realtime_ai_character.character_catalog.catalog_manager import (
     CatalogManager, get_catalog_manager)
 from realtime_ai_character.database.connection import get_db
-from realtime_ai_character.llm.openai_llm import (AsyncCallbackAudioHandler,
-                                                  AsyncCallbackHandler,
-                                                  OpenaiLlm, get_llm)
+from realtime_ai_character.llm import (AsyncCallbackAudioHandler,
+                                       AsyncCallbackTextHandler, get_llm, LLM)
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.models.interaction import Interaction
-from realtime_ai_character.utils import (ConversationHistory,
+from realtime_ai_character.utils import (ConversationHistory, build_history,
                                          get_connection_manager)
 
 
@@ -34,7 +32,7 @@ async def websocket_endpoint(
         client_id: int = Path(...),
         api_key: str = Query(None),
         db: Session = Depends(get_db),
-        llm: OpenaiLlm = Depends(get_llm),
+        llm: LLM = Depends(get_llm),
         catalog_manager=Depends(get_catalog_manager),
         speech_to_text=Depends(get_speech_to_text),
         text_to_speech=Depends(get_text_to_speech)):
@@ -58,7 +56,7 @@ async def handle_receive(
         websocket: WebSocket,
         client_id: int,
         db: Session,
-        llm: OpenaiLlm,
+        llm: LLM,
         catalog_manager: CatalogManager,
         speech_to_text: SpeechToText,
         text_to_speech: TextToSpeech):
@@ -118,10 +116,11 @@ async def handle_receive(
                 msg_data = data['text']
                 # 1. Send message to LLM
                 response = await llm.achat(
-                    history=llm.build_history(conversation_history),
+                    history=build_history(conversation_history),
                     user_input=msg_data,
                     user_input_template=user_input_template,
-                    callback=AsyncCallbackHandler(on_new_token, token_buffer),
+                    callback=AsyncCallbackTextHandler(
+                        on_new_token, token_buffer),
                     audioCallback=AsyncCallbackAudioHandler(
                         text_to_speech, websocket, tts_event, character.name),
                     character=character)
@@ -183,10 +182,10 @@ async def handle_receive(
 
                 # 4. Send message to LLM
                 tts_task = asyncio.create_task(llm.achat(
-                    history=llm.build_history(conversation_history),
+                    history=build_history(conversation_history),
                     user_input=transcript,
                     user_input_template=user_input_template,
-                    callback=AsyncCallbackHandler(
+                    callback=AsyncCallbackTextHandler(
                         on_new_token, token_buffer, tts_task_done_call_back),
                     audioCallback=AsyncCallbackAudioHandler(
                         text_to_speech, websocket, tts_event, character.name),

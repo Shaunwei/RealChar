@@ -1,7 +1,9 @@
 from dataclasses import field
-from pydantic.dataclasses import dataclass
-from starlette.websockets import WebSocketState, WebSocket
 from typing import List
+
+from langchain.schema import AIMessage, BaseMessage, HumanMessage, SystemMessage
+from pydantic.dataclasses import dataclass
+from starlette.websockets import WebSocket, WebSocketState
 
 
 @dataclass
@@ -22,6 +24,18 @@ class ConversationHistory:
         for user_message, ai_message in zip(self.user, self.ai):
             yield user_message
             yield ai_message
+
+
+def build_history(conversation_history: ConversationHistory) -> List[BaseMessage]:
+    history = []
+    for i, message in enumerate(conversation_history):
+        if i == 0:
+            history.append(SystemMessage(content=message))
+        elif i % 2 == 0:
+            history.append(AIMessage(content=message))
+        else:
+            history.append(HumanMessage(content=message))
+    return history
 
 
 class Singleton:

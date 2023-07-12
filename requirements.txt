@@ -24,3 +24,4 @@ SpeechRecognition
 soundfile
 click
 google-cloud-speech
+anthropic

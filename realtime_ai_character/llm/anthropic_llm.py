@@ -1,7 +1,7 @@
 from typing import List
 
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from langchain.chat_models import ChatOpenAI
+from langchain.chat_models import ChatAnthropic
 from langchain.schema import BaseMessage, HumanMessage
 
 from realtime_ai_character.database.chroma import get_chroma
@@ -12,12 +12,12 @@ from realtime_ai_character.utils import Character, Singleton
 logger = get_logger(__name__)
 
 
-class OpenaiLlm(Singleton, LLM):
+class AnthropicLlm(Singleton, LLM):
     def __init__(self):
         super().__init__()
 
-        self.chat_open_ai = ChatOpenAI(
-            model='gpt-3.5-turbo-16k-0613',
+        self.chat_anthropic = ChatAnthropic(
+            model='claude-2',
             temperature=0.2,
             streaming=True
         )
@@ -38,7 +38,7 @@ class OpenaiLlm(Singleton, LLM):
             context=context, query=user_input)))
 
         # 3. Generate response
-        response = await self.chat_open_ai.agenerate(
+        response = await self.chat_anthropic.agenerate(
             [history], callbacks=[callback, audioCallback, StreamingStdOutCallbackHandler()])
         logger.info(f'Response: {response}')
         return response.generations[0][0].text

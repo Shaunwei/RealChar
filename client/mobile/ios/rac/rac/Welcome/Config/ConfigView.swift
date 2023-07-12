@@ -58,18 +58,20 @@ struct CharacterOptionView: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 22) {
-            Rectangle()
-                .foregroundColor(.clear)
-                .frame(width: 40, height: 40)
-                .background(Color(red: 0.76, green: 0.83, blue: 1))
-                .cornerRadius(43.75)
+            HStack(alignment: .center, spacing: 12) {
+                Rectangle()
+                    .foregroundColor(.clear)
+                    .frame(width: 40, height: 40)
+                    .background(Color(red: 0.76, green: 0.83, blue: 1))
+                    .cornerRadius(43.75)
 
-            Text(option.name)
-                .font(
-                    Font.custom("Prompt", size: 16).weight(.medium)
-                )
-                .foregroundColor(Color(red: 0.01, green: 0.03, blue: 0.11).opacity(0.8))
-                .frame(maxWidth: .infinity, alignment: .leading)
+                Text(option.name)
+                    .font(
+                        Font.custom("Prompt", size: 16).weight(.medium)
+                    )
+                    .foregroundColor(Color(red: 0.01, green: 0.03, blue: 0.11).opacity(0.8))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
 
             Text(option.description)
                 .font(

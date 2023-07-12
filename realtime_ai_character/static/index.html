@@ -4,43 +4,69 @@
 <head>
   <title>Realtime AI Character</title>
   <link rel="stylesheet" type="text/css" href="/static/styles.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
-  <div class="container text-center mt-5">
-    <div class="row">
-      <div class="col-12 col-md-6 col-xl-6 mx-auto">
-        <h1 class="mb-4">Realtime AI Character</h1>
-        <img id="image-display" class="mb-3" src="/static/raiden.jpeg" alt="" style="height:250px">
+  <div class="logo-container">
+    <img alt="Logo" src="/static/logo.svg" />
+  </div>
+  <!-- Audio device selection -->
+  <label class="audio-device-label" for="audio-device-selection">Select an audio input device:</label>
+  <div class="select-dropdown">
+    <select id="audio-device-selection" class="form-select"></select>
+  </div>
 
-        <div id="network-buttons">
-          <button id="connect" class="btn btn-primary">Connect</button>
-          <button id="end-connection" class="btn btn-danger">End</button>
-        </div>
-        <!-- Audio device selection -->
-        <div class="form-group mt-3">
-          <label for="audio-device-selection">Select an audio input device:</label>
-          <select id="audio-device-selection" class="form-select"></select>
-        </div>
-
-        <textarea id="chat" readonly></textarea>
-        <form>
-          <div class="form-group mb-3">
-            <input id="message-input" type="text" placeholder="Type your message" class="w-100">
-            <button type="button" class="btn btn-primary" style="width:48%" id="send">Send</button>
-          </div>
-          <div class="form-group d-flex justify-content-between">
-            <button type="button" class="btn btn-primary" style="width:48%" id="start-call">Start Calling</button>
-          </div>
-        </form>
-        <br>
+  <div class="text-container">
+    <p>Please connect first</p>
+  </div>
+  
+  <div class="main-container">
+    <div class="radio-buttons">
+      <!-- this part will be dynamically rendered -->
+    </div>
+  </div>
+  <div class="main-screen">
+    <div id="microphone-container" class="microphone-container">
+      <div id="microphone-node">
+        <img src="/static/microphone.svg" alt="Connect Icon" class="icon-instance-node" height="24" width="24" />
       </div>
+      <div class="player-controls playing">
+        <span class="play"></span>
+        <span class="pause"></span>
+      </div>
+      <audio id="audio-player" class="audio-player">
+        <source src="" type="audio/mp3">
+      </audio>
+    </div>
+    <textarea id="chat-window" class="chat-window" readonly></textarea>
+  </div>
+  </div>
+  <div class="action-container">
+    <button id="talk-btn" class="talk-btn">Talk to me</button>
+    <div class="message-input-container">
+      <input id="message-input" class="message-input" type="text" placeholder="Type your message">
+        <span class="focus-border">
+        <i></i>
+      </span>
+    </div>
+    <button id="send-btn" class="send-btn">Send Message</button>
+  </div>
+
+  <div class="options-container">
+    <div id="connect" class="connect">
+      <img src="/static/connect.svg" alt="Connect Icon" class="icon-instance-node" height="24" width="24" />
+    </div>
+    <div id="message" class="message">
+      <img src="/static/message.svg" alt="Message Icon" height="24" width="24" />
+    </div>
+    <div id="call" class="call">
+      <img src="/static/microphone.svg" alt="Connect Icon" class="icon-instance-node" height="24" width="24" />
     </div>
   </div>
 
+
+
   <script src="/static/script.js"></script>
-  <audio id="audio-player" controls autoplay></audio>
 </body>
 
 </html>

@@ -106,6 +106,21 @@ async def handle_receive(
 
         async def on_new_token(token):
             return await manager.send_message(message=token, websocket=websocket)
+
+        async def stop_audio():
+            if tts_task and not tts_task.done():
+                tts_event.set()
+                tts_task.cancel()
+                if previous_transcript:
+                    conversation_history.user.append(previous_transcript)
+                    conversation_history.ai.append(' '.join(token_buffer))
+                    token_buffer.clear()
+                try:
+                    await tts_task
+                except asyncio.CancelledError:
+                    pass
+                tts_event.clear()
+
         while True:
             data = await websocket.receive()
             if data['type'] != 'websocket.receive':
@@ -114,6 +129,18 @@ async def handle_receive(
             # handle text message
             if 'text' in data:
                 msg_data = data['text']
+                # 0. itermidiate transcript starts with [&]
+                if msg_data.startswith('[&]'):
+                    logger.info(f'intermediate transcript: {msg_data}')
+                    if not os.getenv('EXPERIMENT_CONVERSATION_UTTERANCE', ''):
+                        continue
+                    asyncio.create_task(stop_audio())
+                    asyncio.create_task(llm.achat_utterances(
+                        history=build_history(conversation_history),
+                        user_input=msg_data,
+                        callback=AsyncCallbackTextHandler(on_new_token, []),
+                        audioCallback=AsyncCallbackAudioHandler(text_to_speech, websocket, tts_event, character.name)))
+                    continue
                 # 1. Send message to LLM
                 response = await llm.achat(
                     history=build_history(conversation_history),
@@ -141,8 +168,7 @@ async def handle_receive(
                 binary_data = data['bytes']
                 # 1. Transcribe audio
                 transcript: str = speech_to_text.transcribe(
-                    binary_data, platform=platform, prompt=character.name)
-                logger.info(f'transcript: {transcript}')
+                    binary_data, platform=platform, prompt=character.name).strip()
 
                 # ignore audio that picks up background noise
                 if (not transcript or len(transcript) < 2):
@@ -152,20 +178,7 @@ async def handle_receive(
                 await manager.send_message(message=f'[+]You said: {transcript}', websocket=websocket)
 
                 # 3. stop the previous audio stream, if new transcript is received
-                if tts_task and not tts_task.done():
-                    tts_event.set()
-                    tts_task.cancel()
-                    if previous_transcript:
-                        response = ' '.join(token_buffer)
-                        conversation_history.user.append(previous_transcript)
-                        conversation_history.ai.append(' '.join(token_buffer))
-                        token_buffer.clear()
-                    try:
-                        await tts_task
-                    except asyncio.CancelledError:
-                        pass
-
-                    tts_event.clear()
+                await stop_audio()
 
                 previous_transcript = transcript
 

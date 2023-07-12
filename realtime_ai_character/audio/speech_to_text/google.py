@@ -7,10 +7,18 @@ from realtime_ai_character.utils import Singleton
 
 logger = get_logger(__name__)
 config = types.SimpleNamespace(**{
-    'encoding': speech.RecognitionConfig.AudioEncoding.LINEAR16,
-    'sample_rate_hertz': 44100,
-    'language_code': 'en-US',
-    'max_alternatives': 1,
+    'web': {
+        'encoding': speech.RecognitionConfig.AudioEncoding.WEBM_OPUS,
+        'sample_rate_hertz': 48000,
+        'language_code': 'en-US',
+        'max_alternatives': 1,
+    },
+    'terminal': {
+        'encoding': speech.RecognitionConfig.AudioEncoding.LINEAR16,
+        'sample_rate_hertz': 44100,
+        'language_code': 'en-US',
+        'max_alternatives': 1,
+    },
 })
 
 
@@ -23,7 +31,7 @@ class Google(Singleton, SpeechToText):
     def transcribe(self, audio_bytes, platform, prompt='') -> str:
         batch_config = speech.RecognitionConfig({
             'speech_contexts': [speech.SpeechContext(phrases=prompt.split(','))],
-            **config.__dict__})
+            **config.__dict__[platform]})
         response = self.client.recognize(
             config=batch_config,
             audio=speech.RecognitionAudio(content=audio_bytes)

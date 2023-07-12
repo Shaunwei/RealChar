@@ -1,36 +1,95 @@
-// We use MediaStream Recording API more suitable for longer recordings as it's designed to 
-// handle streaming of media data as opposed to the Web Audio API which is more suitable for 
-// processing and synthesizing audio in web applications.
-
-// Buttons
-const connectButton = document.getElementById("connect");
-const endButton = document.getElementById("end-connection");
-const startCallButton = document.getElementById("start-call");
-const sendButton = document.getElementById("send");
-
-const messageInput = document.getElementById("message-input");
-const chat = document.getElementById("chat");
-
-const imageDisplay = document.getElementById("image-display");
-const audioDeviceSelection = document.getElementById('audio-device-selection');
-let audioPlayer = document.getElementById('audio-player');
-
-let recognition;
+/**
+ * WebSocket Connection
+ * The client sends and receives messages through this WebSocket connection.
+ */
+const connectButton =  document.getElementById('connect');
 let socket;
 let clientId = Math.floor(Math.random() * 1000);
-let audioQueue = [];
-let audioContext;
+function connectSocket() {
+  chatWindow.value = "";
+  var clientId = Math.floor(Math.random() * 101);
+  var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+  var ws_path = ws_scheme + '://' + window.location.host + `/ws/${clientId}`;
+  socket = new WebSocket(ws_path);
+  socket.binaryType = 'arraybuffer';
 
-// MediaStream API
-let mediaRecorder;
-let chunks = [];
+  socket.onopen = (event) => {
+    console.log("successfully connected");
+    connectMicrophone(audioDeviceSelection.value);
+    speechRecognition();
+    socket.send("web"); // select web as the platform
+  };
 
-let debug = false;
+  socket.onmessage = (event) => {
+    if (typeof event.data === 'string') {
+      const message = event.data;
+      if (message == '[end]\n') {
+        chatWindow.value += "\n\n";
+      } else if (message.startsWith('[+]')) {
+        // [+] indicates the transcription is done. stop playing audio
+        stopAudioPlayback();
+      } else if (message.startsWith('[=]')) {
+        // [=] indicates the response is done
+        chatWindow.value += "\n\n";
+      } else if (message.startsWith('Select')) {
+        createCharacterGroups(message);
+      } else {
+        chatWindow.value += `${event.data}`;
+      }
+    } else {  // binary data
+      if (!shouldPlayAudio) {
+        return;
+      }
+      audioQueue.push(event.data);
+      if (audioQueue.length === 1) {
+        playAudios();
+      }
+    }
+  };
 
-startCallButton.disabled = true;
+  socket.onerror = (error) => {
+    console.log(`WebSocket Error: ${error}`);
+  };
+  
+  socket.onclose = (event) => {
+    console.log("Socket closed");
+  };
+}
+
+connectButton.addEventListener("click", function() {
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    stopAudioPlayback();
+    if (radioGroupsCreated) {
+      destroyRadioGroups();
+    }
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+    }
+    if (recognition) {
+      recognition.stop();
+    }
+    textContainer.textContent = "Please connect first";
+    playerControls.style.display = "none";
+    microphoneNode.style.display = "flex";
+    chatWindow.value = "";
+    characterSent = false;
+    talkButton.textContent = "Talk to me";
+    callButton.click();
+    socket.close();
+  } else {
+    connectSocket();
+    textContainer.textContent = "Please select your character first";
+  }
+});
+
+
+/**
+ * Devices
+ * Get the list of media devices
+ */
+const audioDeviceSelection = document.getElementById('audio-device-selection');
 
 window.addEventListener("load", function() {
-  // Get the list of media devices
   navigator.mediaDevices.enumerateDevices()
     .then(function(devices) {
       // Filter out the audio input devices
@@ -61,42 +120,25 @@ audioDeviceSelection.addEventListener('change', function(e) {
   connectMicrophone(e.target.value);
 });
 
-function speechRecognition() {
-  // Initialize SpeechRecognition
-  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SpeechRecognition();
-
-  // Stop the recorder when user stops talking
-  recognition.onspeechend = function() {
-    if (mediaRecorder && mediaRecorder.state === "recording") {
-      mediaRecorder.stop();
-      console.log("user stops talking");
-    }
-  };
-
-  // Handle the case where user does not speak
-  recognition.onend = function() {
-    if (mediaRecorder && mediaRecorder.state === "recording") {
-      mediaRecorder.stop();
-      console.log("recognizer ends");
-    }
-  };
-
-  recognition.onstart = function() {
-    console.log("start recognizing");
-  }
-}
-
+/**
+ * Audio Recording and Transmission
+ * captures audio from the user's microphone, which is then sent over the
+ * WebSocket connection then sent over the WebSocket connection to the server 
+ * when the recording stops.
+ */
+let mediaRecorder;
+let chunks = [];
+let finalTranscripts = [];
+let debug = false;
+let audioSent = false;
 
 function connectMicrophone(deviceId) {
   navigator.mediaDevices.getUserMedia({
     audio: {
       deviceId: deviceId ? {exact: deviceId} : undefined,
-      sampleRate: 44100,
       echoCancellation: true
     }
-  })
-  .then(function(stream) {
+  }).then(function(stream) {
     mediaRecorder = new MediaRecorder(stream);
 
     mediaRecorder.ondataavailable = function(e) {
@@ -104,13 +146,11 @@ function connectMicrophone(deviceId) {
     }
 
     mediaRecorder.onstart = function() {
-      chat.value += "\nListening...\n";
-      console.log("start media recorder");
+      console.log("recorder starts");
     }
 
     mediaRecorder.onstop = function(e) {
-      chat.value += "\nThinking...\n";
-      console.log("stops media recorder")
+      console.log("recorder stops");
       let blob = new Blob(chunks, {'type' : 'audio/webm'});
       chunks = [];
 
@@ -126,26 +166,291 @@ function connectMicrophone(deviceId) {
       }
 
       if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(blob);
+        if (!audioSent && callActive) {
+          console.log("sending audio");
+          socket.send(blob);
+        }
+        audioSent = false;
+        if (callActive) {
+          mediaRecorder.start();
+        }
       }
     }
-
-    startCallButton.disabled = false;
   })
   .catch(function(err) {
     console.log('An error occurred: ' + err);
   });
 }
 
-startCallButton.addEventListener("click", function() {
-  if (mediaRecorder) {
-    mediaRecorder.start();
 
-    startCallButton.disabled = true;
-    speechRecognition();
-    recognition.start();
+/** 
+ * Speech Recognition
+ * listens for when the user's speech ends and stops the recording.
+ */
+let recognition;
+let onresultTimeout;
+let onspeechTimeout;
+let confidence;
+function speechRecognition() {
+  // Initialize SpeechRecognition
+  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+  recognition.continuous = true;
+
+  recognition.onstart = function() {
+    console.log("recognition starts");
+  }
+
+  recognition.onresult = function(event) {
+    // Clear the timeout if a result is received
+    clearTimeout(onresultTimeout);
+    clearTimeout(onspeechTimeout);
+    stopAudioPlayback()
+    const result = event.results[event.results.length - 1];
+    const transcriptObj = result[0];
+    const transcript = transcriptObj.transcript;
+    const ifFinal = result.isFinal;
+    if (ifFinal) {
+      console.log(`final transcript: {${transcript}}`);
+      finalTranscripts.push(transcript);
+      confidence = transcriptObj.confidence;
+      socket.send(`[&]${transcript}`);
+    } else {
+      console.log(`interim transcript: {${transcript}}`);
+    }
+    // Set a new timeout
+    onresultTimeout = setTimeout(() => {
+      if (ifFinal) {
+        return;
+      }
+      // If the timeout is reached, send the interim transcript
+      console.log(`TIMEOUT: interim transcript: {${transcript}}`);
+      socket.send(`[&]${transcript}`);
+    }, 500); // 500 ms
+
+    onspeechTimeout = setTimeout(() => {
+      recognition.stop();
+    }, 2000); // 2 seconds
+  }
+
+  recognition.onspeechend = function() {
+    console.log("speech ends");
+
+    if (socket && socket.readyState === WebSocket.OPEN){
+      audioSent = true;
+      mediaRecorder.stop();
+      if (confidence > 0.8 && finalTranscripts.length > 0) {
+        console.log("send final transcript")
+        socket.send(finalTranscripts.join(' '))
+        shouldPlayAudio = true;
+      }
+    }
+    finalTranscripts = [];
+  };
+
+  recognition.onend = function() {
+    console.log("recognition ends");
+    if (socket && socket.readyState === WebSocket.OPEN && callActive){
+      recognition.start();
+    }
+  };
+}
+
+/**
+ * Voice-based Chatting
+ * allows users to start a voice chat.
+ */
+const talkButton = document.getElementById('talk-btn');
+const callButton =  document.getElementById('call');
+const playerControls = document.querySelector(".player-controls");
+const textContainer = document.querySelector('.text-container p');
+const microphoneContainer = document.getElementById('microphone-container');
+const microphoneNode = document.getElementById('microphone-node');
+let callActive = false;
+
+callButton.addEventListener("click", () => {
+  microphoneContainer.style.display = 'flex';
+  chatWindow.style.display = 'none';
+  talkButton.style.display = 'block';
+  sendButton.style.display = 'none';
+  messageInput.style.display = "none";
+  callButton.style.display = "none";
+  messageButton.style.display = 'flex';
+});
+
+talkButton.addEventListener("click", function() {
+  if (socket && socket.readyState === WebSocket.OPEN && mediaRecorder && selectedCharacter) {
+    if (!callActive) {
+      playerControls.style.display = "block";
+      microphoneNode.style.display = "none";
+      textContainer.textContent = "Hi my friend, what's your name?";
+      talkButton.textContent = "Stop Talking";
+
+      if (selectedCharacter) {
+        socket.send(selectedCharacter);
+        hideOtherCharacters();
+      } else {
+        console.log("character not selected");
+      }
+      
+      mediaRecorder.start();
+      recognition.start();
+      callActive = true;
+    } else {
+      playerControls.style.display = "none";
+      microphoneNode.style.display = "flex";
+      talkButton.textContent = "Talk to me";
+      
+      callActive = false;
+      mediaRecorder.stop();
+      recognition.stop();
+      stopAudioPlayback();
+    }
   }
 });
+
+function hideOtherCharacters() {
+  // Hide the radio buttons that are not selected
+  const radioButtons = document.querySelectorAll('.radio-buttons input[type="radio"]');
+  radioButtons.forEach(radioButton => {
+    if (radioButton.value != selectedCharacter) {
+      radioButton.parentElement.style.display = 'none';
+    }
+  });
+}
+
+/**
+ * Text-based Chatting
+ * allow users to send text-based messages through the WebSocket connection.
+ */
+const messageInput = document.getElementById('message-input');
+const sendButton = document.getElementById('send-btn');
+const messageButton = document.getElementById('message');
+const chatWindow = document.getElementById('chat-window');
+let characterSent = false;
+
+messageButton.addEventListener('click', function() {
+  microphoneContainer.style.display = 'none';
+  chatWindow.style.display = 'block';
+  talkButton.style.display = 'none';
+  sendButton.style.display = 'block';
+  messageInput.style.display = "block";
+  callButton.style.display = "flex";
+  messageButton.style.display = 'none';
+});
+
+const sendMessage = () => {
+  if (!characterSent){
+    if (selectedCharacter) {
+      socket.send(selectedCharacter);
+      characterSent = true;
+      hideOtherCharacters();
+      textContainer.textContent = "Hi my friend, what's your name?";
+    } else {
+      console.log("character not selected");
+    }
+  }
+
+  if (selectedCharacter && socket && socket.readyState === WebSocket.OPEN) {
+    const message = messageInput.value;
+    chatWindow.value += `\nYou> ${message}\n`;
+    socket.send(message);
+    messageInput.value = "";
+    stopAudioPlayback();
+  }
+}
+
+sendButton.addEventListener("click", sendMessage);
+messageInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    sendMessage();
+  }
+});
+
+/**
+ * Character Selection
+ * parses the initial message from the server that asks the user to select a 
+ * character for the chat. creates radio buttons for the character selection.
+ */
+let selectedCharacter;
+let radioGroupsCreated = false;
+function createCharacterGroups(message) {
+  const options = message.split('\n').slice(1);
+
+  // Create a map from character name to image URL
+  // TODO: store image in database and let server send the image url to client.
+  const imageMap = {
+    'Raiden Shogun And Ei': '/static/raiden.svg',
+    'Loki': '/static/loki.svg',
+    'Ai Character Helper': '/static/ai_helper.png',
+    'Reflection Pi': '/static/pi.jpeg'
+  };
+
+  const radioButtonDiv = document.getElementsByClassName('radio-buttons')[0];
+  options.forEach(option => {
+    const match = option.match(/^(\d+)\s-\s(.+)$/);
+    if (match) {
+      const label = document.createElement('label');
+      label.className = 'custom-radio';
+
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = 'radio';
+      input.value = match[1];  // The option number is the value
+
+      const span = document.createElement('span');
+      span.className = 'radio-btn';
+      span.innerHTML = '<i class="las la-check"></i>';
+
+      const hobbiesIcon = document.createElement('div');
+      hobbiesIcon.className = 'hobbies-icon';
+
+      const img = document.createElement('img');
+      img.src = imageMap[match[2]];
+
+      // Create a h3 element
+      const h3 = document.createElement('h4');
+      h3.textContent = match[2];  // The option name is the text
+
+      hobbiesIcon.appendChild(img);
+      hobbiesIcon.appendChild(h3);
+      span.appendChild(hobbiesIcon);
+      label.appendChild(input);
+      label.appendChild(span);
+
+      radioButtonDiv.appendChild(label);
+    }
+  });
+
+  radioButtonDiv.addEventListener('change', (event) => {
+    if (event.target.value != "") {
+      selectedCharacter = event.target.value;
+    }
+  });
+
+  radioGroupsCreated = true;
+}
+
+function destroyRadioGroups() {
+  const radioButtonDiv = document.getElementsByClassName('radio-buttons')[0];
+  while (radioButtonDiv.firstChild) {
+    radioButtonDiv.removeChild(radioButtonDiv.firstChild);
+  }
+  selectedCharacter = null;
+  radioGroupsCreated = false;
+}
+
+/**
+ * Audio Playback
+ * playing back audio received from the server.
+ */
+const audioPlayer = document.getElementById('audio-player')
+let audioQueue = [];
+let audioContext;
+let shouldPlayAudio = false;
 
 // Function to unlock the AudioContext
 function unlockAudioContext(audioContext) {
@@ -161,7 +466,6 @@ function unlockAudioContext(audioContext) {
   }
 }
 
-// Play audio function
 async function playAudios() {
   while (audioQueue.length > 0) {
     let data = audioQueue[0];
@@ -170,18 +474,8 @@ async function playAudios() {
     await playAudio(audioUrl);
     audioQueue.shift();
   }
-
-  // Start recording again after audio is done playing
-  if (mediaRecorder && mediaRecorder.state !== "recording") {
-    mediaRecorder.start();
-
-    if (recognition) {
-      recognition.start();
-    }
-  }
 }
 
-// Function to play an audio and return a Promise that resolves when the audio finishes playing
 function playAudio(url) {
   if (!audioContext) {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -193,95 +487,25 @@ function playAudio(url) {
   return new Promise((resolve) => {
     audioPlayer.src = url;
     audioPlayer.muted = true;  // Start muted
-    audioPlayer.play()
+    audioPlayer.play();
     audioPlayer.onended = resolve;
     audioPlayer.play().then(() => {
       audioPlayer.muted = false;  // Unmute after playback starts
     }).catch(error => alert(`Playback failed because: ${error}`));
   });
 }
-// websocket connection
-connectButton.addEventListener("click", () => {
-  chat.value = "";
-  chat.value += "Connecting...\n";
 
-  var clientId = Math.floor(Math.random() * 101);
-  var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-  var ws_path = ws_scheme + '://' + window.location.host + `/ws/${clientId}`;
-  socket = new WebSocket(ws_path);
-  socket.binaryType = 'arraybuffer';  // necessary to receive binary data
-
-  // // Start a silent audio context when the user clicks the "Connect" button
-  // if (!audioContext) {
-  //   audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  //   unlockAudioContext(audioContext);
-  //   let silentSource = audioContext.createConstantSource();
-  //   silentSource.connect(audioContext.destination);
-  //   silentSource.start();
-  // }
-
-  socket.onopen = (event) => {
-    chat.value += "Successfully Connected.\n\n";
-    // send the client platform to the server
-    socket.send("web");
-    connectMicrophone(audioDeviceSelection.value);
-  };
-
-  socket.onmessage = (event) => {
-    if (typeof event.data === 'string') {
-      const message = event.data;
-      if (message == '[end]\n') {
-        console.log('\nYou> \n');
-      } else if (message.startsWith('[+]')) {
-        // stop playing audio
-        // Note: JavaScript doesn't have built-in audio stop functionality for the Audio object.
-        // You need to implement it manually if you have a playing audio track.
-        console.log(message);
-      } else if (message.startsWith('[=]')) {
-        // indicate the response is done
-        console.log(message);
-      } else {
-      chat.value += `${event.data}`;
-      }
-    } else {  // binary data
-      console.log("start playing received audio");
-      audioQueue.push(event.data);
-      if (audioQueue.length === 1) {
-        playAudios();
-      }
-    }
-  };
-
-  socket.onerror = (error) => {
-    console.trace("Socket closed");
-    console.log(`WebSocket Error: ${error}`);
-  };
-
-  socket.onclose = (event) => {
-    console.trace("Socket closed");
-  };
-});
-
-endButton.addEventListener("click", () => {
-  if (socket) {
-    socket.close();
-    chat.value += "Connection Ended.\n";
-
-    startCallButton.disabled = true;
+function stopAudioPlayback() {
+  if (audioPlayer) {
+    audioPlayer.pause(); // pause current audio
+    shouldPlayAudio = false;
   }
-});
-
-const sendMessage = () => {
-  const message = messageInput.value;
-  chat.value += `\nYou> ${message}\n`;
-  socket.send(message);
-  messageInput.value = "";
+  audioQueue = []; // clear the audio queue
 }
 
-sendButton.addEventListener("click", sendMessage);
-messageInput.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") {
-    event.preventDefault();
-    sendMessage();
-  }
-});
+/**
+ * Onload action
+ * automatically connect socket at the beginning
+ */
+connectSocket();
+textContainer.textContent = "Please select your character first";

@@ -14,7 +14,7 @@ from realtime_ai_character.utils import Singleton
 DEBUG = False
 logger = get_logger(__name__)
 config = types.SimpleNamespace(**{
-    'model': 'small',
+    'model': 'tiny',
     'language': 'en',
     'api_key': os.getenv("OPENAI_API_KEY"),
 })

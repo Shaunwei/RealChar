@@ -168,3 +168,5 @@ cython_debug/
 .chroma
 *.ipynb
 google_credentials.json
+
+./node_modules

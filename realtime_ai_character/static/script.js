@@ -37,6 +37,9 @@ function connectSocket() {
         chatWindow.value += `${event.data}`;
       }
     } else {  // binary data
+      if (!shouldPlayAudio) {
+        return;
+      }
       audioQueue.push(event.data);
       if (audioQueue.length === 1) {
         playAudios();
@@ -124,13 +127,14 @@ audioDeviceSelection.addEventListener('change', function(e) {
  */
 let mediaRecorder;
 let chunks = [];
+let finalTranscripts = [];
 let debug = false;
+let audioSent = false;
 
 function connectMicrophone(deviceId) {
   navigator.mediaDevices.getUserMedia({
     audio: {
       deviceId: deviceId ? {exact: deviceId} : undefined,
-      sampleRate: 44100,
       echoCancellation: true
     }
   }).then(function(stream) {
@@ -161,7 +165,11 @@ function connectMicrophone(deviceId) {
       }
 
       if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(blob);
+        console.log("sending audio");
+        if (!audioSent) {
+          socket.send(blob);
+        }
+        audioSent = false;
         if (callActive) {
           mediaRecorder.start();
         }
@@ -179,19 +187,66 @@ function connectMicrophone(deviceId) {
  * listens for when the user's speech ends and stops the recording.
  */
 let recognition;
+let onresultTimeout;
+let onspeechTimeout;
+let confidence;
 function speechRecognition() {
   // Initialize SpeechRecognition
   window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   recognition = new SpeechRecognition();
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+  recognition.continuous = true;
 
   recognition.onstart = function() {
     console.log("recognition starts");
   }
 
-  recognition.onspeechend = function() {
-    if (socket && socket.readyState === WebSocket.OPEN){
-      mediaRecorder.stop();
+  recognition.onresult = function(event) {
+    // Clear the timeout if a result is received
+    clearTimeout(onresultTimeout);
+    clearTimeout(onspeechTimeout);
+    stopAudioPlayback()
+    const result = event.results[event.results.length - 1];
+    const transcriptObj = result[0];
+    const transcript = transcriptObj.transcript;
+    const ifFinal = result.isFinal;
+    if (ifFinal) {
+      console.log(`final transcript: {${transcript}}`);
+      finalTranscripts.push(transcript);
+      confidence = transcriptObj.confidence;
+      socket.send(`[&]${transcript}`);
+    } else {
+      console.log(`interim transcript: {${transcript}}`);
     }
+    // Set a new timeout
+    onresultTimeout = setTimeout(() => {
+      if (ifFinal) {
+        return;
+      }
+      // If the timeout is reached, send the interim transcript
+      console.log(`TIMEOUT: interim transcript: {${transcript}}`);
+      socket.send(`[&]${transcript}`);
+    }, 500); // 500 ms
+
+    onspeechTimeout = setTimeout(() => {
+      recognition.stop();
+    }, 2000); // 2 seconds
+  }
+
+  recognition.onspeechend = function() {
+    console.log("speech ends");
+
+    if (socket && socket.readyState === WebSocket.OPEN){
+      audioSent = true;
+      mediaRecorder.stop();
+      if (confidence > 0.8 && finalTranscripts.length > 0) {
+        console.log("send final transcript")
+        socket.send(finalTranscripts.join(' '))
+        shouldPlayAudio = true;
+      }
+    }
+    finalTranscripts = [];
   };
 
   recognition.onend = function() {
@@ -327,8 +382,8 @@ function createCharacterGroups(message) {
   // Create a map from character name to image URL
   // TODO: store image in database and let server send the image url to client.
   const imageMap = {
-    'Raiden Shogun And Ei': '/static/raiden.jpeg',
-    'Loki': '/static/loki.jpeg',
+    'Raiden Shogun And Ei': '/static/raiden.svg',
+    'Loki': '/static/loki.svg',
     'Ai Character Helper': '/static/ai_helper.png',
     'Reflection Pi': '/static/pi.jpeg'
   };
@@ -394,6 +449,7 @@ function destroyRadioGroups() {
 const audioPlayer = document.getElementById('audio-player')
 let audioQueue = [];
 let audioContext;
+let shouldPlayAudio = false;
 
 // Function to unlock the AudioContext
 function unlockAudioContext(audioContext) {
@@ -441,6 +497,7 @@ function playAudio(url) {
 function stopAudioPlayback() {
   if (audioPlayer) {
     audioPlayer.pause(); // pause current audio
+    shouldPlayAudio = false;
   }
   audioQueue = []; // clear the audio queue
 }

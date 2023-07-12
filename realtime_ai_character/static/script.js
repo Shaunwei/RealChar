@@ -351,14 +351,15 @@ const sendMessage = () => {
     } else {
       console.log("character not selected");
     }
-  }
-
-  if (selectedCharacter && socket && socket.readyState === WebSocket.OPEN) {
-    const message = messageInput.value;
-    chatWindow.value += `\nYou> ${message}\n`;
-    socket.send(message);
-    messageInput.value = "";
-    stopAudioPlayback();
+  } else {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      const message = messageInput.value;
+      chatWindow.value += `\nYou> ${message}\n`;
+      socket.send(message);
+      messageInput.value = "";
+      stopAudioPlayback(); // stop current audio
+      shouldPlayAudio=true; // allow following audios to play
+    }
   }
 }
 

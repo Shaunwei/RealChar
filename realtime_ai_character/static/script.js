@@ -79,7 +79,7 @@ disconnectButton.addEventListener("click", function() {
     recognition.stop();
   }
   textContainer.textContent = "";
-  playerControls.style.display = "none";
+  // playerControls.style.display = "none";
   disconnectButton.style.display = "none";
   playerContainer.style.display = "none";
   stopCallButton.style.display = "none";
@@ -278,11 +278,12 @@ function speechRecognition() {
  */
 const talkButton = document.getElementById('talk-btn');
 const callButton =  document.getElementById('call');
-const playerControls = document.querySelector(".player-controls");
+// const playerControls = document.querySelector(".player-controls");
 
 const textContainer = document.querySelector('.header p');
 const playerContainer = document.getElementById('player-container');
-const playerNode = document.getElementById('player-node');
+// const playerNode = document.getElementById('player-node');
+const bars = document.getElementById('bars');
 
 
 const stopCallButton = document.getElementById('stop-call');
@@ -291,18 +292,20 @@ let callActive = false;
 
 callButton.addEventListener("click", () => {
   playerContainer.style.display = 'flex';
-
   chatWindow.style.display = 'none';
   sendButton.style.display = 'none';
   messageInput.style.display = "none";
   callButton.style.display = "none";
   messageButton.style.display = 'flex';
   continueCallButton.style.display = 'flex';
+
+  stopAudioPlayback();
 });
 
 stopCallButton.addEventListener("click", () => {
-  playerControls.style.display = "none";
-  playerNode.style.display = "flex";
+  // playerControls.style.display = "none";
+  // playerNode.style.display = "flex";
+  bars.style.display = "none";
   stopCallButton.style.display = "none";
   continueCallButton.style.display = "flex";
 
@@ -316,8 +319,9 @@ stopCallButton.addEventListener("click", () => {
 continueCallButton.addEventListener("click", () => {
   stopCallButton.style.display = "flex";
   continueCallButton.style.display = "none";
-  playerControls.style.display = "flex";
-  playerNode.style.display = "none";
+  // playerControls.style.display = "flex";
+  // playerNode.style.display = "none";
+  bars.style.display = "flex";
 
   mediaRecorder.start();
   recognition.start();
@@ -333,8 +337,9 @@ talkButton.addEventListener("click", function() {
     messageButton.style.display = "flex";
     stopCallButton.style.display = "flex";
 
-    playerControls.style.display = "block";
-    playerNode.style.display = "none";
+    // playerControls.style.display = "flex";
+    // playerNode.style.display = "none";
+    bars.style.display = "flex";
     textContainer.textContent = "Hi my friend, what's your name?";
 
     socket.send(selectedCharacter);
@@ -376,8 +381,9 @@ messageButton.addEventListener('click', function() {
   messageButton.style.display = 'none';
   continueCallButton.style.display = 'none';
   stopCallButton.style.display = 'none';
-  playerControls.style.display = "none";
-  playerNode.style.display = "flex";
+  // playerControls.style.display = "none";
+  // playerNode.style.display = "flex";
+  bars.style.display = "none";
 
   // Stop calling if the call is still live
   if (callActive) {

@@ -35,18 +35,30 @@
   <div class="main-screen">
     
     <div id="player-container" class="player-container">
-      <div id="player-node">
+      <div id="bars">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+      <!-- <div id="player-node">
         <img src="/static/microphone.svg" alt="player" class="icon-instance-node-small" />
       </div>
       <div class="player-controls playing">
         <span class="play"></span>
         <span class="pause"></span>
-      </div>
+      </div> -->
       <audio id="audio-player" class="audio-player">
         <source src="" type="audio/mp3">
       </audio>
     </div>
-    <textarea id="chat-window" class="chat-window" readonly></textarea>
+    <textarea id="chat-window" class="chat-window" readonly draggable="false"></textarea>
   </div>
   </div>
   <div class="action-container">
@@ -76,9 +88,6 @@
       <img src="/static/microphone.svg" alt="Connect Icon" class="icon-instance-node-small" />
     </div>
   </div>
-
-
-
   <script src="/static/script.js"></script>
 </body>
 

@@ -28,12 +28,12 @@ body {
 
 .player-container {
   display: none;
-  align-items: center;
+  /* align-items: center;
   justify-content: center;
   background-color: #6785d3;
   border-radius: 50px;
   width: 5em;
-  height: 5em;
+  height: 5em; */
 }
 
 .audio-device-label {
@@ -53,7 +53,7 @@ body {
 .audio-player {
   display: none;
 }
-
+/* 
 .player-controls {
   color: #FFF;
   background-color: #6785d3;
@@ -123,13 +123,6 @@ body {
         }
      }
   }
-  &:hover {
-     transform: scale(1.1);
-     
-     .play::before {
-        box-shadow: 0 0 12px rgba(255, 238, 125, 0.8);
-     }
-  }
 }
 
 .animate-audio1 {
@@ -173,7 +166,7 @@ body {
   75% {
      box-shadow: 0 0 0 1.1em rgba(255, 255, 255, 0.45);
   }
-}
+} */
 
 .chat-window {
   background-color: #02081d;
@@ -183,6 +176,7 @@ body {
   width: 100%;
   height: 80%; 
   border: none;
+  resize: none;
 }
 
 .talk-btn,
@@ -500,3 +494,45 @@ input[type="text"]{font: 15px/24px "Lato", Arial, sans-serif; color: white; widt
 .message-input:focus ~ .focus-border:after{width: 100%; transition: 0.3s;}
 .message-input:focus ~ .focus-border i:before,
 .message-input:focus ~ .focus-border i:after{height: 100%; transition: 0.4s;}
+
+
+#bars {
+  height: 30px;
+  left: 50%;
+  margin: -30px 0 0 -40px;
+  position: absolute;
+  top: 60%;
+  width: 80px;
+}
+
+
+.bar {
+  background: #6785d3;
+  bottom: 1px;
+  height: 6px;  
+  position: absolute;
+  width: 6px;   
+  animation: sound 0ms -800ms linear infinite alternate;
+}
+
+@keyframes sound {
+  0% {
+    opacity: .35;
+    height: 6px;  
+  }
+  100% {
+    opacity: 1;
+    height: 56px; 
+  }
+}
+
+.bar:nth-child(1)  { left: 2px; animation-duration: 474ms; } 
+.bar:nth-child(2)  { left: 10px; animation-duration: 433ms; }
+.bar:nth-child(3)  { left: 18px; animation-duration: 407ms; }
+.bar:nth-child(4)  { left: 26px; animation-duration: 458ms; }
+.bar:nth-child(5)  { left: 34px; animation-duration: 400ms; }
+.bar:nth-child(6)  { left: 42px; animation-duration: 427ms; }
+.bar:nth-child(7)  { left: 50px; animation-duration: 441ms; }
+.bar:nth-child(8)  { left: 58px; animation-duration: 419ms; }
+.bar:nth-child(9)  { left: 66px; animation-duration: 487ms; }
+.bar:nth-child(10) { left: 74px; animation-duration: 442ms; }

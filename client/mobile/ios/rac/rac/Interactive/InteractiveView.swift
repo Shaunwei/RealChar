@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 enum InteractiveMode {
     case voice, text
@@ -24,6 +25,7 @@ struct InteractiveView: View {
     @State var messages: [ChatMessage] = []
     @State var mode: InteractiveMode = .voice
     @State var voiceState: VoiceState = .characterSpeaking(characterImageUrl: URL(string: "TODO"))
+    @StateObject var audioPlayer = AudioPlayer()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -123,6 +125,9 @@ struct InteractiveView: View {
                 } else {
                     messages.append(ChatMessage(id: UUID(), role: .assistant, content: message))
                 }
+            }
+            webSocketClient.onDataReceived = { data in
+                audioPlayer.playAudio(data: data)
             }
         }
     }

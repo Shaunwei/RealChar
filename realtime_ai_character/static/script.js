@@ -97,7 +97,7 @@ disconnectButton.addEventListener("click", function() {
   chatWindow.style.display = "none";
   callButton.style.display = "none";
   connectButton.style.display = "flex";
-  devicesContainer.style.display = "block";
+  devicesContainer.style.display = "flex";
   talkButton.disabled = true;
   textButton.disabled = true;
   chatWindow.value = "";

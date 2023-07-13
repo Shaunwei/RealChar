@@ -61,7 +61,7 @@ function connectSocket() {
 
 connectButton.addEventListener("click", function() {
   connectButton.style.display = "none";
-  textContainer.textContent = "Please select your character first";
+  textContainer.textContent = "Please select your character";
   devicesContainer.style.display = "none";
   connectSocket();
   talkButton.style.display = 'flex';
@@ -81,7 +81,7 @@ disconnectButton.addEventListener("click", function() {
   textContainer.textContent = "";
   playerControls.style.display = "none";
   disconnectButton.style.display = "none";
-  microphoneContainer.style.display = "none";
+  playerContainer.style.display = "none";
   stopCallButton.style.display = "none";
   continueCallButton.style.display = "none";
   messageButton.style.display = "none";
@@ -279,15 +279,19 @@ function speechRecognition() {
 const talkButton = document.getElementById('talk-btn');
 const callButton =  document.getElementById('call');
 const playerControls = document.querySelector(".player-controls");
+
 const textContainer = document.querySelector('.header p');
-const microphoneContainer = document.getElementById('microphone-container');
-const microphoneNode = document.getElementById('microphone-node');
+const playerContainer = document.getElementById('player-container');
+const playerNode = document.getElementById('player-node');
+
+
 const stopCallButton = document.getElementById('stop-call');
 const continueCallButton = document.getElementById('continue-call');
 let callActive = false;
 
 callButton.addEventListener("click", () => {
-  microphoneContainer.style.display = 'flex';
+  playerContainer.style.display = 'flex';
+
   chatWindow.style.display = 'none';
   sendButton.style.display = 'none';
   messageInput.style.display = "none";
@@ -298,7 +302,7 @@ callButton.addEventListener("click", () => {
 
 stopCallButton.addEventListener("click", () => {
   playerControls.style.display = "none";
-  microphoneNode.style.display = "flex";
+  playerNode.style.display = "flex";
   stopCallButton.style.display = "none";
   continueCallButton.style.display = "flex";
 
@@ -313,7 +317,7 @@ continueCallButton.addEventListener("click", () => {
   stopCallButton.style.display = "flex";
   continueCallButton.style.display = "none";
   playerControls.style.display = "flex";
-  microphoneNode.style.display = "none";
+  playerNode.style.display = "none";
 
   mediaRecorder.start();
   recognition.start();
@@ -322,14 +326,15 @@ continueCallButton.addEventListener("click", () => {
 
 talkButton.addEventListener("click", function() {
   if (socket && socket.readyState === WebSocket.OPEN && mediaRecorder && selectedCharacter) {
-    microphoneContainer.style.display = "flex";
+    playerContainer.style.display = "flex";
+
     talkButton.style.display = "none";
     disconnectButton.style.display = "flex";
     messageButton.style.display = "flex";
     stopCallButton.style.display = "flex";
 
     playerControls.style.display = "block";
-    microphoneNode.style.display = "none";
+    playerNode.style.display = "none";
     textContainer.textContent = "Hi my friend, what's your name?";
 
     socket.send(selectedCharacter);
@@ -362,7 +367,7 @@ const chatWindow = document.getElementById('chat-window');
 let characterSent = false;
 
 messageButton.addEventListener('click', function() {
-  microphoneContainer.style.display = 'none';
+  playerContainer.style.display = 'none';
   chatWindow.style.display = 'block';
   talkButton.style.display = 'none';
   sendButton.style.display = 'block';
@@ -372,7 +377,7 @@ messageButton.addEventListener('click', function() {
   continueCallButton.style.display = 'none';
   stopCallButton.style.display = 'none';
   playerControls.style.display = "none";
-  microphoneNode.style.display = "flex";
+  playerNode.style.display = "flex";
 
   // Stop calling if the call is still live
   if (callActive) {

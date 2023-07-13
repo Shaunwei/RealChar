@@ -11,7 +11,7 @@
     <img alt="Logo" src="/static/logo.svg" />
   </div>
   <!-- Audio device selection -->
-  <div id="devices-container">
+  <div id="devices-container" class="devices-container">
     <label class="audio-device-label" for="audio-device-selection">Select an audio input device:</label>
     <div class="select-dropdown">
       <select id="audio-device-selection" class="form-select"></select>
@@ -33,9 +33,9 @@
   
   <div class="main-screen">
     
-    <div id="microphone-container" class="microphone-container">
-      <div id="microphone-node">
-        <img src="/static/microphone.svg" alt="Connect Icon" class="icon-instance-node" height="24" width="24" />
+    <div id="player-container" class="player-container">
+      <div id="player-node">
+        <img src="/static/microphone.svg" alt="player" class="icon-instance-node-small" />
       </div>
       <div class="player-controls playing">
         <span class="play"></span>
@@ -50,10 +50,10 @@
   </div>
   <div class="action-container">
     <div id="stop-call" class="stop-call">
-      <img src="/static/end-call.svg" alt="End call icon" class="icon-instance-node" height="24" width="24" />
+      <img src="/static/end-call.svg" alt="End call icon" class="icon-instance-node"/>
     </div>
     <div id="continue-call" class="continue-call">
-      <img src="/static/continue-call.svg" alt="Continue call icon" class="icon-instance-node" height="24" width="24" />
+      <img src="/static/continue-call.svg" alt="Continue call icon" class="icon-instance-node"/>
     </div>
     <div class="message-input-container">
       <input id="message-input" class="message-input" type="text" placeholder="Type your message">
@@ -66,13 +66,13 @@
 
   <div class="options-container">
     <div id="disconnect" class="disconnect">
-      <img src="/static/connect.svg" alt="Connect Icon" class="icon-instance-node" height="24" width="24" />
+      <img src="/static/connect.svg" alt="Connect Icon" class="icon-instance-node-small" />
     </div>
     <div id="message" class="message">
-      <img src="/static/message.svg" alt="Message Icon" height="24" width="24" />
+      <img src="/static/message.svg" alt="Message Icon" class="icon-instance-node-small" />
     </div>
     <div id="call" class="call">
-      <img src="/static/microphone.svg" alt="Connect Icon" class="icon-instance-node" height="24" width="24" />
+      <img src="/static/microphone.svg" alt="Connect Icon" class="icon-instance-node-small" />
     </div>
   </div>
 

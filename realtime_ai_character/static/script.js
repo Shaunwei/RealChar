@@ -28,16 +28,22 @@ function connectSocket() {
       const message = event.data;
       if (message == '[end]\n') {
         chatWindow.value += "\n\n";
+        chatWindow.scrollTop = chatWindow.scrollHeight;
       } else if (message.startsWith('[+]')) {
         // [+] indicates the transcription is done. stop playing audio
         stopAudioPlayback();
       } else if (message.startsWith('[=]')) {
         // [=] indicates the response is done
         chatWindow.value += "\n\n";
+        chatWindow.scrollTop = chatWindow.scrollHeight;
       } else if (message.startsWith('Select')) {
         createCharacterGroups(message);
       } else {
         chatWindow.value += `${event.data}`;
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        // if user interrupts the previous response, should be able to play audios of new response
+        shouldPlayAudio=true;
       }
     } else {  // binary data
       if (!shouldPlayAudio) {
@@ -65,6 +71,7 @@ connectButton.addEventListener("click", function() {
   devicesContainer.style.display = "none";
   connectSocket();
   talkButton.style.display = 'flex';
+  textButton.style.display = 'flex';
 });
 
 disconnectButton.addEventListener("click", function() {
@@ -79,7 +86,6 @@ disconnectButton.addEventListener("click", function() {
     recognition.stop();
   }
   textContainer.textContent = "";
-  // playerControls.style.display = "none";
   disconnectButton.style.display = "none";
   playerContainer.style.display = "none";
   stopCallButton.style.display = "none";
@@ -91,9 +97,12 @@ disconnectButton.addEventListener("click", function() {
   callButton.style.display = "none";
   connectButton.style.display = "flex";
   devicesContainer.style.display = "block";
+  talkButton.disabled = true;
+  textButton.disabled = true;
   chatWindow.value = "";
   selectedCharacter = null;
   characterSent = false;
+  callActive = false;
   socket.close();
 });
 
@@ -277,12 +286,11 @@ function speechRecognition() {
  * allows users to start a voice chat.
  */
 const talkButton = document.getElementById('talk-btn');
+const textButton = document.getElementById('text-btn');
 const callButton =  document.getElementById('call');
-// const playerControls = document.querySelector(".player-controls");
 
 const textContainer = document.querySelector('.header p');
 const playerContainer = document.getElementById('player-container');
-// const playerNode = document.getElementById('player-node');
 const bars = document.getElementById('bars');
 
 
@@ -297,19 +305,20 @@ callButton.addEventListener("click", () => {
   messageInput.style.display = "none";
   callButton.style.display = "none";
   messageButton.style.display = 'flex';
-  continueCallButton.style.display = 'flex';
 
-  stopAudioPlayback();
+  if (callActive) {
+    stopCallButton.style.display = 'flex';
+    bars.style.display = 'flex';
+  } else {
+    continueCallButton.style.display = 'flex';
+  }
 });
 
 stopCallButton.addEventListener("click", () => {
-  // playerControls.style.display = "none";
-  // playerNode.style.display = "flex";
   bars.style.display = "none";
   stopCallButton.style.display = "none";
   continueCallButton.style.display = "flex";
 
-  
   callActive = false;
   mediaRecorder.stop();
   recognition.stop();
@@ -319,8 +328,6 @@ stopCallButton.addEventListener("click", () => {
 continueCallButton.addEventListener("click", () => {
   stopCallButton.style.display = "flex";
   continueCallButton.style.display = "none";
-  // playerControls.style.display = "flex";
-  // playerNode.style.display = "none";
   bars.style.display = "flex";
 
   mediaRecorder.start();
@@ -333,14 +340,13 @@ talkButton.addEventListener("click", function() {
     playerContainer.style.display = "flex";
 
     talkButton.style.display = "none";
+    textButton.style.display = 'none';
     disconnectButton.style.display = "flex";
     messageButton.style.display = "flex";
     stopCallButton.style.display = "flex";
-
-    // playerControls.style.display = "flex";
-    // playerNode.style.display = "none";
     bars.style.display = "flex";
-    textContainer.textContent = "Hi my friend, what's your name?";
+    textContainer.textContent = "Hi, my friend!";
+    shouldPlayAudio=true;
 
     socket.send(selectedCharacter);
     hideOtherCharacters();
@@ -349,7 +355,20 @@ talkButton.addEventListener("click", function() {
     recognition.start();
     callActive = true;
   }
-})
+});
+
+textButton.addEventListener("click", function() {
+  if (socket && socket.readyState === WebSocket.OPEN && mediaRecorder && selectedCharacter) {
+    messageButton.click();
+    disconnectButton.style.display = "flex";
+    textContainer.textContent = "";
+    chatWindow.value += "Hi, my friend\n";
+    shouldPlayAudio=true;
+
+    socket.send(selectedCharacter);
+    hideOtherCharacters();
+  }
+});
 
 function hideOtherCharacters() {
   // Hide the radio buttons that are not selected
@@ -375,43 +394,25 @@ messageButton.addEventListener('click', function() {
   playerContainer.style.display = 'none';
   chatWindow.style.display = 'block';
   talkButton.style.display = 'none';
+  textButton.style.display = 'none';
   sendButton.style.display = 'block';
   messageInput.style.display = "block";
   callButton.style.display = "flex";
   messageButton.style.display = 'none';
   continueCallButton.style.display = 'none';
   stopCallButton.style.display = 'none';
-  // playerControls.style.display = "none";
-  // playerNode.style.display = "flex";
   bars.style.display = "none";
-
-  // Stop calling if the call is still live
-  if (callActive) {
-    mediaRecorder.stop();
-    recognition.stop();
-    stopAudioPlayback();
-    callActive = false;
-  }
 });
 
 const sendMessage = () => {
-  if (!characterSent){
-    if (selectedCharacter) {
-      socket.send(selectedCharacter);
-      characterSent = true;
-      hideOtherCharacters();
-      textContainer.textContent = "Hi my friend, what's your name?";
-    } else {
-      console.log("character not selected");
-    }
-  } else {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      const message = messageInput.value;
-      chatWindow.value += `\nYou> ${message}\n`;
-      socket.send(message);
-      messageInput.value = "";
-      stopAudioPlayback(); // stop current audio
-      shouldPlayAudio=true; // allow following audios to play
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    const message = messageInput.value;
+    chatWindow.value += `\nYou> ${message}\n`;
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+    socket.send(message);
+    messageInput.value = "";
+    if (isPlaying) {
+      stopAudioPlayback();
     }
   }
 }
@@ -486,6 +487,7 @@ function createCharacterGroups(message) {
     }
 
     talkButton.disabled = false;
+    textButton.disabled = false;
   });
 
   radioGroupsCreated = true;
@@ -508,6 +510,7 @@ const audioPlayer = document.getElementById('audio-player')
 let audioQueue = [];
 let audioContext;
 let shouldPlayAudio = false;
+let isPlaying = false;
 
 // Function to unlock the AudioContext
 function unlockAudioContext(audioContext) {
@@ -524,6 +527,7 @@ function unlockAudioContext(audioContext) {
 }
 
 async function playAudios() {
+  isPlaying = true;
   while (audioQueue.length > 0) {
     let data = audioQueue[0];
     let blob = new Blob([data], { type: 'audio/mp3' });
@@ -531,6 +535,7 @@ async function playAudios() {
     await playAudio(audioUrl);
     audioQueue.shift();
   }
+  isPlaying = false;
 }
 
 function playAudio(url) {
@@ -554,8 +559,9 @@ function playAudio(url) {
 
 function stopAudioPlayback() {
   if (audioPlayer) {
-    audioPlayer.pause(); // pause current audio
+    audioPlayer.pause();
     shouldPlayAudio = false;
   }
-  audioQueue = []; // clear the audio queue
+  audioQueue = [];
+  isPlaying = false;
 }

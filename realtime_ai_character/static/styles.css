@@ -42,12 +42,18 @@ body {
   color: #e0e0e0;
 }
 
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 30px; /* optional, adds some space between the buttons */
+}
+
 .main-screen {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 50vw;
-  height: 30vh; 
+  height: 20vh; 
 }
 
 .audio-player {
@@ -181,6 +187,7 @@ body {
 
 .talk-btn,
 .send-btn,
+.text-btn,
 .connect,
 .select-character {
   font-family: "Prompt", Helvetica;
@@ -198,25 +205,27 @@ body {
 .talk-btn:hover,
 .send-btn:hover,
 .connect:hover,
-.select-character {
+.text-btn:hover {
   box-shadow: 0 0 40px 40px #6785d3 inset, 0 0 0 0 #6785d3;
   outline: 0;
 }
 
 .talk-btn,
-.send-btn, 
-.select-character {
+.send-btn,
+.text-btn {
   display: none;
 }
 
-.talk-btn[disabled] {
+.talk-btn[disabled],
+.text-btn[disabled] {
   background-color: #999999;
   cursor: not-allowed;
   box-shadow: none;
 }
 
 .connect,
-.talk-btn {
+.talk-btn,
+.text-btn {
   margin-top: 50px;
 }
 
@@ -485,10 +494,10 @@ input[type="text"]{font: 15px/24px "Lato", Arial, sans-serif; color: white; widt
 }
 
 .message-input ~ .focus-border:before,
-.message-input ~ .focus-border:after{content: ""; position: absolute; top: 0; left: 0; width: 0; height: 2px; background-color: #7598f0; transition: 0.3s;}
+.message-input ~ .focus-border:after{content: ""; position: absolute; top: 0; left: 0; width: 0; height: 2px; background-color: #85a7ff; transition: 0.3s;}
 .message-input ~ .focus-border:after{top: auto; bottom: 0; left: auto; right: 0;}
 .message-input ~ .focus-border i:before,
-.message-input ~ .focus-border i:after{content: ""; position: absolute; top: 0; left: 0; width: 2px; height: 0; background-color: #7598f0; transition: 0.4s;}
+.message-input ~ .focus-border i:after{content: ""; position: absolute; top: 0; left: 0; width: 2px; height: 0; background-color: #85a7ff; transition: 0.4s;}
 .message-input ~ .focus-border i:after{left: auto; right: 0; top: auto; bottom: 0;}
 .message-input:focus ~ .focus-border:before,
 .message-input:focus ~ .focus-border:after{width: 100%; transition: 0.3s;}

@@ -21,7 +21,7 @@ struct InteractiveView: View {
     let character: CharacterOption?
     let onExit: () -> Void
     @State var messages: [ChatMessage] = []
-    @State var mode: InteractiveMode = .text
+    @State var mode: InteractiveMode = .voice
 
     var body: some View {
         VStack(spacing: 0) {

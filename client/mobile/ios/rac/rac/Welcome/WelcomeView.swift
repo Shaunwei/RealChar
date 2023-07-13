@@ -14,7 +14,7 @@ struct WelcomeView: View {
     }
     @Binding var tab: WelcomeView.Tab
     @Binding var character: CharacterOption?
-    @Binding var options: [CharacterOption]
+    @State var options: [CharacterOption] = []
 
     let onConfirmConfig: (CharacterOption) -> Void
 
@@ -49,6 +49,52 @@ struct WelcomeView: View {
                 }
             }
         }
+        .onAppear {
+            if webSocketClient.isConnected && webSocketClient.isInteractiveMode {
+                webSocketClient.isConnected = false
+                webSocketClient.isInteractiveMode = false
+                webSocketClient.closeSession()
+                webSocketClient.onStringReceived = { message in
+                    if let options = self.parsedAsCharacterOptions(message: message) {
+                        self.options = options
+                    }
+                }
+                webSocketClient.connectSession()
+            } else {
+                webSocketClient.onStringReceived = { message in
+                    if let options = self.parsedAsCharacterOptions(message: message) {
+                        self.options = options
+                    }
+                }
+            }
+        }
+    }
+
+    private func parsedAsCharacterOptions(message: String) -> [CharacterOption]? {
+        var options: [CharacterOption] = []
+        // TODO: Parsing logic relies on loose contract
+        if message.contains("Select your character") {
+            message.split(separator: "\n").forEach { line in
+                if isFirstCharactersNumber(String(line), count: 1) {
+                    if let characterName = line.split(separator: "-").last?.trimmingPrefix(" ") {
+                        // TODO: ID and description here are temporary
+                        options.append(.init(id: options.count + 1, name: String(characterName), description: ""))
+                    }
+                }
+            }
+        }
+        return options.isEmpty ? nil : options
+    }
+
+    private func isFirstCharactersNumber(_ string: String, count: Int) -> Bool {
+        guard count > 0 && count <= string.count else {
+            return false
+        }
+
+        let characterSet = CharacterSet.decimalDigits
+        let firstCharacters = string.prefix(count)
+
+        return firstCharacters.allSatisfy { characterSet.contains(UnicodeScalar(String($0))!) }
     }
 }
 
@@ -57,17 +103,17 @@ struct WelcomeView_Previews: PreviewProvider {
         WelcomeView(webSocketClient: WebSocketClient(),
                     tab: .constant(.about),
                     character: .constant(nil),
-                    options: .constant([.init(id: 0, name: "Mythical god", description: "Rogue"),
+                    options: [.init(id: 0, name: "Mythical god", description: "Rogue"),
                                         .init(id: 1, name: "Anime hero", description: "Noble"),
-                                        .init(id: 2, name: "Realtime AI", description: "Kind")]),
+                                        .init(id: 2, name: "Realtime AI", description: "Kind")],
                     onConfirmConfig: { _ in }
         )
         WelcomeView(webSocketClient: WebSocketClient(),
                     tab: .constant(.config),
                     character: .constant(nil),
-                    options: .constant([.init(id: 0, name: "Mythical god", description: "Rogue"),
+                    options: [.init(id: 0, name: "Mythical god", description: "Rogue"),
                                         .init(id: 1, name: "Anime hero", description: "Noble"),
-                                        .init(id: 2, name: "Realtime AI", description: "Kind")]),
+                                        .init(id: 2, name: "Realtime AI", description: "Kind")],
                     onConfirmConfig: { _ in })
     }
 }

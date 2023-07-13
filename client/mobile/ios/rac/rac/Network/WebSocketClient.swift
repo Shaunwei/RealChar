@@ -40,14 +40,14 @@ class WebSocketClient: NSObject, URLSessionWebSocketDelegate, ObservableObject {
 
     override init() {
         super.init()
+    }
+
+    func connectSession() {
         let clientId = Int.random(in: 0...1010000)
         let wsScheme = serverUrl.scheme == "https" ? "wss" : "ws"
         let wsPath = "\(wsScheme)://\(serverUrl.host ?? "")\(serverUrl.port.flatMap { ":\($0)" } ?? "")/ws/\(clientId)"
         let session = URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue())
         webSocket = session.webSocketTask(with: URL(string: wsPath)!)
-    }
-
-    func connectSession() {
         webSocket.resume()
     }
 

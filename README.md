@@ -35,22 +35,22 @@ For the best demo experience,  try [our site](link) directly
 - **Realtime**: Talk to or message your AI character in realtime
 - **Multi-Platform**: You can talk to your AI character on web, terminal and mobile(Yes. we open source our mobile app)
 - **Most up-to-date AI**: We use the most up-to-date AI technology to power your AI character, including OpenAI, Anthropic Claude 2, Chroma, Whisper, ElevenLabs, etc.
-- **Modular**: You can easily swap out different modules to customize your flow. Less opinionated, more flexible.
+- **Modular**: You can easily swap out different modules to customize your flow. Less opinionated, more flexible. Great project to start your AI Engineering journey.
 
 ## 🔬 Tech stack
 <div align="center">
     <img src="./realtime_ai_character/assets/techstack.png" alt="RealChar-tech-stack" width="100%"  style="padding: 20px"/>
 </div>
 
-- ✅**Web**: Vanilla JS, WebSockets
-- ✅**Mobile**: Swift, WebSockets
-- ✅**Backend**: FastAPI, SQLite, Alembic, Docker
-- ✅**Data Ingession**: LlamaIndex, Chroma
-- ✅**LLM Orchestration**: LangChain, Chroma
-- ✅**LLM**: OpenAI GPT3.5/4, Anthropic Claude 2
-- ✅**Speech to Text**: Local Whisper, OpenAI Whisper API, Google Speech to Text
-- ✅**Text to Speech**: ElevenLabs
-- ✅**Voice Clone**: ElevenLabs
+- ✅**Web**: [Vanilla JS](http://vanilla-js.com/), [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
+- ✅**Mobile**: [Swift](https://developer.apple.com/swift/), [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
+- ✅**Backend**: [FastAPI](https://fastapi.tiangolo.com/), [SQLite](https://www.sqlite.org/index.html), [Docker](https://www.docker.com/)
+- ✅**Data Ingession**: [LlamaIndex](https://www.llamaindex.ai/), [Chroma](https://www.trychroma.com/)
+- ✅**LLM Orchestration**: [LangChain](https://langchain.com/), [Chroma](https://www.trychroma.com/)
+- ✅**LLM**: [OpenAI GPT3.5/4](https://platform.openai.com/docs/api-reference/chat), [Anthropic Claude 2](https://docs.anthropic.com/claude/docs/getting-started-with-claude)
+- ✅**Speech to Text**: [Local Whisper](https://github.com/openai/whisper), [OpenAI Whisper API](https://platform.openai.com/docs/api-reference/audio), [Google Speech to Text](https://cloud.google.com/speech-to-text/docs#docs)
+- ✅**Text to Speech**: [ElevenLabs](https://beta.elevenlabs.io/)
+- ✅**Voice Clone**: [ElevenLabs](https://beta.elevenlabs.io/voice-lab)
 
 ## 📚 Character Catalog
 
@@ -108,9 +108,6 @@ Visit [ElevenLabs](https://beta.elevenlabs.io/) to create an account. You'll nee
 ELEVEN_LABS_API_KEY=<api key>
 ```
 </details>
-
-<br/>
-<br/>
 
 ## 💿 Installation via Python
 - **Step 1**. Clone the repo

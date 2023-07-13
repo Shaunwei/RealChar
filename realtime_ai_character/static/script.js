@@ -104,6 +104,7 @@ disconnectButton.addEventListener("click", function() {
   selectedCharacter = null;
   characterSent = false;
   callActive = false;
+  showRecordingStatus();
   socket.close();
 });
 
@@ -292,12 +293,9 @@ function speechRecognition() {
 const talkButton = document.getElementById('talk-btn');
 const textButton = document.getElementById('text-btn');
 const callButton =  document.getElementById('call');
-
 const textContainer = document.querySelector('.header p');
 const playerContainer = document.getElementById('player-container');
-const bars = document.getElementById('bars');
-
-
+const soundWave = document.getElementById('sound-wave');
 const stopCallButton = document.getElementById('stop-call');
 const continueCallButton = document.getElementById('continue-call');
 let callActive = false;
@@ -312,7 +310,7 @@ callButton.addEventListener("click", () => {
 
   if (callActive) {
     stopCallButton.style.display = 'flex';
-    bars.style.display = 'flex';
+    soundWave.style.display = 'flex';
   } else {
     continueCallButton.style.display = 'flex';
   }
@@ -320,7 +318,7 @@ callButton.addEventListener("click", () => {
 });
 
 stopCallButton.addEventListener("click", () => {
-  bars.style.display = "none";
+  soundWave.style.display = "none";
   stopCallButton.style.display = "none";
   continueCallButton.style.display = "flex";
 
@@ -334,7 +332,7 @@ stopCallButton.addEventListener("click", () => {
 continueCallButton.addEventListener("click", () => {
   stopCallButton.style.display = "flex";
   continueCallButton.style.display = "none";
-  bars.style.display = "flex";
+  soundWave.style.display = "flex";
 
   mediaRecorder.start();
   recognition.start();
@@ -360,7 +358,7 @@ talkButton.addEventListener("click", function() {
     disconnectButton.style.display = "flex";
     messageButton.style.display = "flex";
     stopCallButton.style.display = "flex";
-    bars.style.display = "flex";
+    soundWave.style.display = "flex";
     textContainer.textContent = "Hi, my friend!";
     shouldPlayAudio=true;
 
@@ -384,6 +382,7 @@ textButton.addEventListener("click", function() {
 
     socket.send(selectedCharacter);
     hideOtherCharacters();
+    showRecordingStatus();
   }
 });
 
@@ -419,7 +418,7 @@ messageButton.addEventListener('click', function() {
   messageButton.style.display = 'none';
   continueCallButton.style.display = 'none';
   stopCallButton.style.display = 'none';
-  bars.style.display = "none";
+  soundWave.style.display = "none";
 
   showRecordingStatus();
 });

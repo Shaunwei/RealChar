@@ -68,7 +68,7 @@ function connectSocket() {
 
 connectButton.addEventListener("click", function() {
   connectButton.style.display = "none";
-  textContainer.textContent = "Please select your character";
+  textContainer.textContent = "Select a character";
   devicesContainer.style.display = "none";
   connectSocket();
   talkButton.style.display = 'flex';
@@ -359,7 +359,7 @@ talkButton.addEventListener("click", function() {
     messageButton.style.display = "flex";
     stopCallButton.style.display = "flex";
     soundWave.style.display = "flex";
-    textContainer.textContent = "Hi, my friend!";
+    textContainer.textContent = "Hi, my friend";
     shouldPlayAudio=true;
 
     socket.send(selectedCharacter);
@@ -521,6 +521,24 @@ function destroyRadioGroups() {
   radioGroupsCreated = false;
 }
 
+// This function will add or remove the pulse animation
+function togglePulseAnimation() {
+  const selectedRadioButton = document.querySelector('.custom-radio input:checked + .radio-btn');
+
+  if (isPlaying && selectedRadioButton) {
+    // Remove existing pulse animations
+    selectedRadioButton.classList.remove("pulse-animation-1");
+    selectedRadioButton.classList.remove("pulse-animation-2");
+
+    // Add a new pulse animation, randomly choosing between the two speeds
+    const animationClass = Math.random() > 0.5 ? "pulse-animation-1" : "pulse-animation-2";
+    selectedRadioButton.classList.add(animationClass);
+  } else if (selectedRadioButton) {
+    selectedRadioButton.classList.remove("pulse-animation-1");
+    selectedRadioButton.classList.remove("pulse-animation-2");
+  }
+}
+
 /**
  * Audio Playback
  * playing back audio received from the server.
@@ -547,6 +565,7 @@ function unlockAudioContext(audioContext) {
 
 async function playAudios() {
   isPlaying = true;
+  togglePulseAnimation();
   while (audioQueue.length > 0) {
     let data = audioQueue[0];
     let blob = new Blob([data], { type: 'audio/mp3' });
@@ -555,6 +574,7 @@ async function playAudios() {
     audioQueue.shift();
   }
   isPlaying = false;
+  togglePulseAnimation();
 }
 
 function playAudio(url) {
@@ -583,4 +603,5 @@ function stopAudioPlayback() {
   }
   audioQueue = [];
   isPlaying = false;
+  togglePulseAnimation();
 }

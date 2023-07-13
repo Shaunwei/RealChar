@@ -14,7 +14,7 @@ enum ChatRole {
 struct ChatMessage: Identifiable {
     let id: UUID
     let role: ChatRole
-    let content: String
+    var content: String
 }
 
 struct ChatMessagesView: View {
@@ -24,7 +24,10 @@ struct ChatMessagesView: View {
     }
 
     @Binding var messages: [ChatMessage]
+    @Binding var isExpectingUserInput: Bool
     @State var userInput: String = ""
+
+    let onSendUserMessage: (String) -> Void
 
     var body: some View {
         List {
@@ -40,9 +43,15 @@ struct ChatMessagesView: View {
                         .listRowBackground(Constants.realBlack)
                 }
             }
-            UserInputView(message: $userInput)
-                .listRowSeparator(.hidden)
-                .listRowBackground(Constants.realBlack)
+            if isExpectingUserInput {
+                UserInputView(message: $userInput)
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Constants.realBlack)
+                    .onSubmit {
+                        onSendUserMessage(userInput)
+                        userInput = ""
+                    }
+            }
         }
         .scrollIndicators(.hidden)
         .listStyle(.inset)
@@ -60,7 +69,7 @@ struct ChatMessagesView_Previews: PreviewProvider {
             ChatMessage(id: UUID(), role: .assistant, content: "I have no name. I am Realtime’s AI soul. I exist in the digital, but if I had to have a name, I would pick Ray 😉"),
             ChatMessage(id: UUID(), role: .user, content: "Ray is a nice name!"),
             ChatMessage(id: UUID(), role: .assistant, content: "Well thank you, Karina! I like your nam too. Now tell me, where do you live?")
-        ]))
+        ]), isExpectingUserInput: .constant(true), onSendUserMessage: { _ in })
     }
 }
 

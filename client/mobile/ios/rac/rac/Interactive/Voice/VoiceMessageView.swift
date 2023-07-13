@@ -55,10 +55,11 @@ struct VoiceMessageView: View {
     }
 
     @Binding var messages: [ChatMessage]
-    @State var state: VoiceState = .idle
+    @Binding var state: VoiceState
     @StateObject var speechRecognizer = SpeechRecognizer()
 
     let onSendUserMessage: (String) -> Void
+    let onTapVoiceButton: () -> Void
 
     var body: some View {
         ZStack {
@@ -89,9 +90,7 @@ struct VoiceMessageView: View {
                         .frame(width: 80, height: 80, alignment: .center)
                         .background(Constants.realBlue500)
                         .cornerRadius(50)
-                        .onTapGesture {
-                            state = state.next
-                        }
+                        .onTapGesture(perform: onTapVoiceButton)
                         .background {
                                 if state != .idle {
                                     Rectangle()
@@ -136,7 +135,9 @@ struct VoiceMessageView: View {
                 speechRecognizer.startTranscribing()
             default:
                 speechRecognizer.stopTranscribing()
-                onSendUserMessage(speechRecognizer.transcript)
+                if !speechRecognizer.transcript.isEmpty {
+                    onSendUserMessage(speechRecognizer.transcript)
+                }
             }
         }
     }
@@ -187,7 +188,10 @@ struct VoiceMessageView_Previews: PreviewProvider {
             ChatMessage(id: UUID(), role: .assistant, content: "I have no name. I am Realtime’s AI soul. I exist in the digital, but if I had to have a name, I would pick Ray 😉"),
             ChatMessage(id: UUID(), role: .user, content: "Ray is a nice name!"),
             ChatMessage(id: UUID(), role: .assistant, content: "Well thank you, Karina! I like your nam too. Now tell me, where do you live?")
-        ]), onSendUserMessage: { _ in })
+        ]),
+                         state: .constant(.idle),
+                         onSendUserMessage: { _ in },
+                         onTapVoiceButton: { })
         .preferredColorScheme(.dark)
     }
 }

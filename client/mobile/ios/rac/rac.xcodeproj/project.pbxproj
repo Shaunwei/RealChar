@@ -10,6 +10,7 @@
 		2600B06F2A5D0872003E8388 /* ChatMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B06E2A5D0872003E8388 /* ChatMessagesView.swift */; };
 		2600B0712A5D11DD003E8388 /* VoiceMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B0702A5D11DD003E8388 /* VoiceMessageView.swift */; };
 		2600B0732A60985F003E8388 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B0722A60985F003E8388 /* SpeechRecognizer.swift */; };
+		2600B0762A60A024003E8388 /* WebSocketClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B0752A60A024003E8388 /* WebSocketClient.swift */; };
 		26FE4D092A5B6F0D006A1882 /* racApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D082A5B6F0D006A1882 /* racApp.swift */; };
 		26FE4D0B2A5B6F0D006A1882 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D0A2A5B6F0D006A1882 /* RootView.swift */; };
 		26FE4D0D2A5B6F0E006A1882 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26FE4D0C2A5B6F0E006A1882 /* Assets.xcassets */; };
@@ -29,6 +30,7 @@
 		2600B06E2A5D0872003E8388 /* ChatMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessagesView.swift; sourceTree = "<group>"; };
 		2600B0702A5D11DD003E8388 /* VoiceMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageView.swift; sourceTree = "<group>"; };
 		2600B0722A60985F003E8388 /* SpeechRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
+		2600B0752A60A024003E8388 /* WebSocketClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketClient.swift; sourceTree = "<group>"; };
 		26FE4D052A5B6F0D006A1882 /* rac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = rac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		26FE4D082A5B6F0D006A1882 /* racApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = racApp.swift; sourceTree = "<group>"; };
 		26FE4D0A2A5B6F0D006A1882 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -57,6 +59,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2600B0742A60A014003E8388 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				2600B0752A60A024003E8388 /* WebSocketClient.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 		26FE4CFC2A5B6F0D006A1882 = {
 			isa = PBXGroup;
 			children = (
@@ -83,6 +93,7 @@
 				26FE4D162A5B6F89006A1882 /* Welcome */,
 				26FE4D2A2A5BC1D5006A1882 /* SharedUI */,
 				26FE4D2F2A5BC6A4006A1882 /* Extension */,
+				2600B0742A60A014003E8388 /* Network */,
 				26FE4D242A5BBF94006A1882 /* Assets */,
 				26FE4D0E2A5B6F0E006A1882 /* Preview Content */,
 			);
@@ -252,6 +263,7 @@
 			files = (
 				26FE4D232A5B707B006A1882 /* ConfigView.swift in Sources */,
 				26FE4D0B2A5B6F0D006A1882 /* RootView.swift in Sources */,
+				2600B0762A60A024003E8388 /* WebSocketClient.swift in Sources */,
 				2600B0732A60985F003E8388 /* SpeechRecognizer.swift in Sources */,
 				26FE4D1F2A5B704C006A1882 /* InteractiveView.swift in Sources */,
 				26FE4D2C2A5BC25C006A1882 /* CtaButton.swift in Sources */,

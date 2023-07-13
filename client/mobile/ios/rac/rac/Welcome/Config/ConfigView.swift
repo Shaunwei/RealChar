@@ -16,6 +16,7 @@ struct CharacterOption: Identifiable, Equatable {
 struct ConfigView: View {
 
     let options: [CharacterOption]
+    @Binding var loaded: Bool
     @Binding var selectedOption: CharacterOption?
     let onConfirmConfig: (CharacterOption) -> Void
 
@@ -28,16 +29,27 @@ struct ConfigView: View {
                   )
                   .foregroundColor(.black)
 
-                ForEach(options) { option in
-                    CharacterOptionView(option: option, selected: option == selectedOption)
-                        .onTapGesture {
-                            if selectedOption == option {
-                                selectedOption = nil
-                            } else {
-                                selectedOption = option
+                if loaded {
+                    ForEach(options) { option in
+                        CharacterOptionView(option: option, selected: option == selectedOption)
+                            .onTapGesture {
+                                if selectedOption == option {
+                                    selectedOption = nil
+                                } else {
+                                    selectedOption = option
+                                }
                             }
-                        }
-                        .padding(.horizontal, 2)
+                            .padding(.horizontal, 2)
+                    }
+                } else {
+                    ProgressView()
+
+                    Text("Loading characters")
+                      .font(
+                        Font.custom("Prompt", size: 16)
+                      )
+                      .foregroundColor(.black)
+
                 }
 
                 Spacer(minLength: 0)
@@ -98,6 +110,7 @@ struct ConfigView_Previews: PreviewProvider {
         ConfigView(options: [.init(id: 0, name: "Mythical god", description: "Rogue"),
                              .init(id: 1, name: "Anime hero", description: "Noble"),
                              .init(id: 2, name: "Realtime AI", description: "Kind")],
+                   loaded: .constant(true),
                    selectedOption: .constant(nil),
                    onConfirmConfig: { _ in })
         .frame(width: 310)

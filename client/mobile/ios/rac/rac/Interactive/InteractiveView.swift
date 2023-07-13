@@ -18,27 +18,42 @@ struct InteractiveView: View {
         static let realBlack: Color = Color(red: 0.01, green: 0.03, blue: 0.11)
     }
 
+    let webSocketClient: WebSocketClient
     let character: CharacterOption?
     let onExit: () -> Void
     @State var messages: [ChatMessage] = []
     @State var mode: InteractiveMode = .voice
+    @State var voiceState: VoiceState = .characterSpeaking(characterImageUrl: URL(string: "TODO"))
 
     var body: some View {
         VStack(spacing: 0) {
 
             switch mode {
             case .text:
-                ChatMessagesView(messages: $messages)
+                ChatMessagesView(messages: $messages,
+                                 isExpectingUserInput: .init(get: { voiceState == .idle }, set: { _ in }),
+                                 onSendUserMessage: { message in
+                    voiceState = .characterSpeaking(characterImageUrl: URL(string: "TODO"))
+                   messages.append(.init(id: UUID(), role: .user, content: message))
+                   webSocketClient.send(message: message)
+                }
+                )
                     .padding(.horizontal, 48)
                     .preferredColorScheme(.dark)
                     .background(Constants.realBlack)
             case .voice:
-                VoiceMessageView(messages: $messages, onSendUserMessage: { message in
+                VoiceMessageView(messages: $messages,
+                                 state: $voiceState,
+                                 onSendUserMessage: { message in
                     messages.append(.init(id: UUID(), role: .user, content: message))
+                    webSocketClient.send(message: message)
+                },
+                                 onTapVoiceButton: {
+                    voiceState = voiceState.next
                 })
-                    .padding(.horizontal, 48)
-                    .preferredColorScheme(.dark)
-                    .background(Constants.realBlack)
+                .padding(.horizontal, 48)
+                .preferredColorScheme(.dark)
+                .background(Constants.realBlack)
             }
 
             HStack(alignment: .center, spacing: 28) {
@@ -93,23 +108,30 @@ struct InteractiveView: View {
         }
         .background(Constants.realBlack)
         .onAppear {
-            // TODO: Load messages
-            messages = [
-                ChatMessage(id: UUID(), role: .assistant, content: "Hello stranger, what’s your name?"),
-                ChatMessage(id: UUID(), role: .user, content: "Hi 👋 my name is Karina"),
-                ChatMessage(id: UUID(), role: .assistant, content: "Greetings, Karina. What can I do for you?"),
-                ChatMessage(id: UUID(), role: .user, content: "What’s your name?"),
-                ChatMessage(id: UUID(), role: .assistant, content: "I have no name. I am Realtime’s AI soul. I exist in the digital, but if I had to have a name, I would pick Ray 😉"),
-                ChatMessage(id: UUID(), role: .user, content: "Ray is a nice name!"),
-                ChatMessage(id: UUID(), role: .assistant, content: "Well thank you, Karina! I like your nam too. Now tell me, where do you live?")
-            ]
+            // TODO: Always use "2" text chat as we do speech recognition locally.
+            webSocketClient.send(message: "2")
+            webSocketClient.isInteractiveMode = true
+            webSocketClient.onStringReceived = { message in
+                if message == "[end]\n" {
+                    voiceState = .idle
+                    return
+                }
+
+                voiceState = .characterSpeaking(characterImageUrl: URL(string: "TODO"))
+                if messages.last?.role == .assistant {
+                    messages[messages.count - 1].content += message
+                } else {
+                    messages.append(ChatMessage(id: UUID(), role: .assistant, content: message))
+                }
+            }
         }
     }
 }
 
 struct InteractiveView_Previews: PreviewProvider {
     static var previews: some View {
-        InteractiveView(character: .init(id: 0, name: "Name", description: "Description"),
+        InteractiveView(webSocketClient: WebSocketClient(),
+                        character: .init(id: 0, name: "Name", description: "Description"),
                         onExit: {})
     }
 }

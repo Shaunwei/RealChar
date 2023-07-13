@@ -1,7 +1,7 @@
 # <img src="./realtime_ai_character/static/realchar.svg" height="24px" style="padding-top:4px"/>RealChar. - Realtime AI Character
 <br/>
 <div align="center">
-    <img src="./realtime_ai_character/static/logo.svg" alt="Quivr-logo" width="80%"  style="padding: 40px"/>
+    <img src="./realtime_ai_character/static/logo.png" alt="Quivr-logo" width="80%"  style="padding: 40px"/>
 </div>
 <br/>
 <p align="center">

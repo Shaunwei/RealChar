@@ -11,7 +11,7 @@ import SwiftUI
 struct racApp: App {
     var body: some Scene {
         WindowGroup {
-            RootView()
+            RootView(webSocketClient: WebSocketClient())
         }
     }
 }

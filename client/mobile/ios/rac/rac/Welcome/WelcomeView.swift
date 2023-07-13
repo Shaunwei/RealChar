@@ -8,11 +8,13 @@
 import SwiftUI
 
 struct WelcomeView: View {
+    @ObservedObject var webSocketClient: WebSocketClient
     enum Tab {
         case about, config
     }
     @Binding var tab: WelcomeView.Tab
     @Binding var character: CharacterOption?
+    @Binding var options: [CharacterOption]
 
     let onConfirmConfig: (CharacterOption) -> Void
 
@@ -39,10 +41,8 @@ struct WelcomeView: View {
                     AboutView()
                         .padding(.horizontal, 48)
                 case .config:
-                    // TODO: Load characters from server
-                    ConfigView(options: [.init(id: 0, name: "Mythical god", description: "Rogue"),
-                                         .init(id: 1, name: "Anime hero", description: "Noble"),
-                                         .init(id: 2, name: "Realtime AI", description: "Kind")],
+                    ConfigView(options: options,
+                               loaded: $webSocketClient.isConnected,
                                selectedOption: $character,
                                onConfirmConfig: onConfirmConfig)
                         .padding(.horizontal, 48)
@@ -54,11 +54,20 @@ struct WelcomeView: View {
 
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
-        WelcomeView(tab: .constant(.about),
+        WelcomeView(webSocketClient: WebSocketClient(),
+                    tab: .constant(.about),
                     character: .constant(nil),
-                    onConfirmConfig: { _ in })
-        WelcomeView(tab: .constant(.config),
+                    options: .constant([.init(id: 0, name: "Mythical god", description: "Rogue"),
+                                        .init(id: 1, name: "Anime hero", description: "Noble"),
+                                        .init(id: 2, name: "Realtime AI", description: "Kind")]),
+                    onConfirmConfig: { _ in }
+        )
+        WelcomeView(webSocketClient: WebSocketClient(),
+                    tab: .constant(.config),
                     character: .constant(nil),
+                    options: .constant([.init(id: 0, name: "Mythical god", description: "Rogue"),
+                                        .init(id: 1, name: "Anime hero", description: "Noble"),
+                                        .init(id: 2, name: "Realtime AI", description: "Kind")]),
                     onConfirmConfig: { _ in })
     }
 }

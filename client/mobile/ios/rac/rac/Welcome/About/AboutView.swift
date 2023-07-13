@@ -15,7 +15,7 @@ struct AboutView: View {
 
                 Spacer(minLength: 24)
 
-                Text("Realtime (AI Character)")
+                Text("RealtChar")
                     .font(
                         Font.custom("Prompt", size: 16).weight(.semibold)
                     )

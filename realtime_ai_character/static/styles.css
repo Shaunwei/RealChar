@@ -11,44 +11,55 @@ body {
   margin-bottom: 30px;
 }
 
-.text-container p {
+.header p {
   color: #cccccc;
   font-family: "Prompt", Helvetica;
   font-size: 30px;
   font-weight: 300;
   margin-top: 20px;
 }
-/* 
-h2 
-{
-  margin: 0 0 80px 0;
-  color: #cccccc;
-  font-size: 30px;
-  font-weight: 300;
-} */
+
+.devices-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.player-container {
+  display: none;
+  /* align-items: center;
+  justify-content: center;
+  background-color: #6785d3;
+  border-radius: 50px;
+  width: 5em;
+  height: 5em; */
+}
+
+.audio-device-label {
+  margin-top: 40px;
+  margin-bottom: 20px;
+  color: #e0e0e0;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 30px; /* optional, adds some space between the buttons */
+}
 
 .main-screen {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 50vw;
-  height: 30vh; 
-}
-
-.microphone-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #6785d3;
-  border-radius: 50px;
-  width: 5em;
-  height: 5em;
+  height: 20vh; 
 }
 
 .audio-player {
   display: none;
 }
-
+/* 
 .player-controls {
   color: #FFF;
   background-color: #6785d3;
@@ -118,13 +129,6 @@ h2
         }
      }
   }
-  &:hover {
-     transform: scale(1.1);
-     
-     .play::before {
-        box-shadow: 0 0 12px rgba(255, 238, 125, 0.8);
-     }
-  }
 }
 
 .animate-audio1 {
@@ -136,16 +140,16 @@ h2
 @keyframes audio1 {
   0%,
   100% {
-     box-shadow: 0 0 0 0.4em rgba(255, 255, 255, 0.4);
+     box-shadow: 0 0 0 0.8em rgba(255, 255, 255, 0.4);
   }
   25% {
-     box-shadow: 0 0 0 0.15em rgba(255, 255, 255, 0.15);
+     box-shadow: 0 0 0 0.3em rgba(255, 255, 255, 0.15);
   }
   50% {
-     box-shadow: 0 0 0 0.55em rgba(255, 255, 255, 0.55);
+     box-shadow: 0 0 0 1.1em rgba(255, 255, 255, 0.55);
   }
   75% {
-     box-shadow: 0 0 0 0.25em rgba(255, 255, 255, 0.25);
+     box-shadow: 0 0 0 0.5em rgba(255, 255, 255, 0.25);
   }
 }
 .animate-audio2 {
@@ -157,18 +161,18 @@ h2
 @keyframes audio2 {
   0%,
   100% {
-     box-shadow: 0 0 0 0.25em rgba(255, 255, 255, 0.15);
+     box-shadow: 0 0 0 0.5em rgba(255, 255, 255, 0.15);
   }
   25% {
-     box-shadow: 0 0 0 0.4em rgba(255, 255, 255, 0.3);
+     box-shadow: 0 0 0 0.8em rgba(255, 255, 255, 0.3);
   }
   50% {
-     box-shadow: 0 0 0 0.15em rgba(255, 255, 255, 0.05);
+     box-shadow: 0 0 0 0.3em rgba(255, 255, 255, 0.05);
   }
   75% {
-     box-shadow: 0 0 0 0.55em rgba(255, 255, 255, 0.45);
+     box-shadow: 0 0 0 1.1em rgba(255, 255, 255, 0.45);
   }
-}
+} */
 
 .chat-window {
   background-color: #02081d;
@@ -178,10 +182,14 @@ h2
   width: 100%;
   height: 80%; 
   border: none;
+  resize: none;
 }
 
 .talk-btn,
-.send-btn {
+.send-btn,
+.text-btn,
+.connect,
+.select-character {
   font-family: "Prompt", Helvetica;
   font-size: 1rem;
   border-color: #6785d3;
@@ -195,13 +203,30 @@ h2
 }
 
 .talk-btn:hover,
-.send-btn:hover {
+.send-btn:hover,
+.connect:hover,
+.text-btn:hover {
   box-shadow: 0 0 40px 40px #6785d3 inset, 0 0 0 0 #6785d3;
   outline: 0;
 }
 
-.send-btn {
+.talk-btn,
+.send-btn,
+.text-btn {
   display: none;
+}
+
+.talk-btn[disabled],
+.text-btn[disabled] {
+  background-color: #999999;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.connect,
+.talk-btn,
+.text-btn {
+  margin-top: 50px;
 }
 
 .action-container {
@@ -220,7 +245,14 @@ h2
   width: 100%;
 }
 
+.disconnect,
 .call {
+  margin-right: 20px;
+}
+
+.disconnect,
+.call,
+.message {
   display: none;
   align-items: center;
   justify-content: center;
@@ -229,48 +261,67 @@ h2
   padding: 8px;
   height: 50px;
   width: 50px;
-  margin-right: 20px;
   cursor: pointer;
 }
 
 .call:hover {
-  background-color: #bccffe;
+  background-color: #0149ff;
 }
-
-.connect {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #febcbc1a;
-  border-radius: 50px;
-  padding: 8px;
-  height: 50px;
-  width: 50px;
-  margin-right: 20px;
-  cursor: pointer;
-}
-
-.connect:hover {
-  background-color: #ff4242;
-}
-
-.message {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #bccffe1a;
-  border-radius: 50px;
-  padding: 8px;
-  height: 50px;
-  width: 50px;
-  cursor: pointer;
-}
-
 
 .message:hover {
   background-color: #28c235;
 }
 
+.disconnect:hover {
+  background-color: #ff4242;
+}
+
+.continue-call,
+.stop-call {
+  display: none;
+}
+
+.stop-call {
+  background-color: white;
+  border-radius: 50px;
+}
+
+.stop-call,
+.continue-call,
+.disconnect,
+.message,
+.call {
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
+}
+
+.icon-instance-node {
+  width: 3em;
+  height: 3em;
+  transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+}
+
+.icon-instance-node-small {
+  width: 1.3em;
+  height: 1.3em;
+  transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+}
+
+.continue-call:hover,
+.stop-call:hover,
+.disconnect:hover,
+.message:hover,
+.call:hover {
+  transform: scale(1.1);
+}
+
+.continue-call:hover .icon-instance-node,
+.stop-call:hover .icon-instance-node,
+.disconnect:hover .icon-instance-node-small,
+.message:hover, .icon-instance-node-small,
+.call:hover, .icon-instance-node-small{
+  filter: brightness(2);
+}
 
 /* character select radio groups */
 @import url("https://fonts.googleapis.com/css?family=Raleway:300,400,400i,700");
@@ -422,12 +473,6 @@ body
 	border-left: 5px solid transparent;
 }
 
-.audio-device-label {
-  margin-top: 20px;
-  margin-bottom: 10px;
-  color: #e0e0e0;
-}
-
 /* text input */
 input[type="text"]{font: 15px/24px 'Muli', sans-serif; color: white; width: 100%; box-sizing: border-box; letter-spacing: 1px;}
 :focus{outline: none;}
@@ -449,12 +494,54 @@ input[type="text"]{font: 15px/24px "Lato", Arial, sans-serif; color: white; widt
 }
 
 .message-input ~ .focus-border:before,
-.message-input ~ .focus-border:after{content: ""; position: absolute; top: 0; left: 0; width: 0; height: 2px; background-color: #7598f0; transition: 0.3s;}
+.message-input ~ .focus-border:after{content: ""; position: absolute; top: 0; left: 0; width: 0; height: 2px; background-color: #85a7ff; transition: 0.3s;}
 .message-input ~ .focus-border:after{top: auto; bottom: 0; left: auto; right: 0;}
 .message-input ~ .focus-border i:before,
-.message-input ~ .focus-border i:after{content: ""; position: absolute; top: 0; left: 0; width: 2px; height: 0; background-color: #7598f0; transition: 0.4s;}
+.message-input ~ .focus-border i:after{content: ""; position: absolute; top: 0; left: 0; width: 2px; height: 0; background-color: #85a7ff; transition: 0.4s;}
 .message-input ~ .focus-border i:after{left: auto; right: 0; top: auto; bottom: 0;}
 .message-input:focus ~ .focus-border:before,
 .message-input:focus ~ .focus-border:after{width: 100%; transition: 0.3s;}
 .message-input:focus ~ .focus-border i:before,
 .message-input:focus ~ .focus-border i:after{height: 100%; transition: 0.4s;}
+
+
+#bars {
+  height: 30px;
+  left: 50%;
+  margin: -30px 0 0 -40px;
+  position: absolute;
+  top: 60%;
+  width: 80px;
+}
+
+
+.bar {
+  background: #6785d3;
+  bottom: 1px;
+  height: 6px;  
+  position: absolute;
+  width: 6px;   
+  animation: sound 0ms -800ms linear infinite alternate;
+}
+
+@keyframes sound {
+  0% {
+    opacity: .35;
+    height: 6px;  
+  }
+  100% {
+    opacity: 1;
+    height: 56px; 
+  }
+}
+
+.bar:nth-child(1)  { left: 2px; animation-duration: 474ms; } 
+.bar:nth-child(2)  { left: 10px; animation-duration: 433ms; }
+.bar:nth-child(3)  { left: 18px; animation-duration: 407ms; }
+.bar:nth-child(4)  { left: 26px; animation-duration: 458ms; }
+.bar:nth-child(5)  { left: 34px; animation-duration: 400ms; }
+.bar:nth-child(6)  { left: 42px; animation-duration: 427ms; }
+.bar:nth-child(7)  { left: 50px; animation-duration: 441ms; }
+.bar:nth-child(8)  { left: 58px; animation-duration: 419ms; }
+.bar:nth-child(9)  { left: 66px; animation-duration: 487ms; }
+.bar:nth-child(10) { left: 74px; animation-duration: 442ms; }

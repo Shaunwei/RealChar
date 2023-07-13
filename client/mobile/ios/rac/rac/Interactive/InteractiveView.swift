@@ -33,7 +33,9 @@ struct InteractiveView: View {
                     .preferredColorScheme(.dark)
                     .background(Constants.realBlack)
             case .voice:
-                VoiceMessageView(messages: $messages)
+                VoiceMessageView(messages: $messages, onSendUserMessage: { message in
+                    messages.append(.init(id: UUID(), role: .user, content: message))
+                })
                     .padding(.horizontal, 48)
                     .preferredColorScheme(.dark)
                     .background(Constants.realBlack)

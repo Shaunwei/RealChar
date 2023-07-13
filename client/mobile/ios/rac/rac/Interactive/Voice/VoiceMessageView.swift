@@ -56,13 +56,23 @@ struct VoiceMessageView: View {
 
     @Binding var messages: [ChatMessage]
     @State var state: VoiceState = .idle
+    @StateObject var speechRecognizer = SpeechRecognizer()
+
+    let onSendUserMessage: (String) -> Void
 
     var body: some View {
         ZStack {
             List {
-                if let lastCharacterMessage = messages.last(where: { message in
-                    message.role == .assistant
-                }) {
+                if case .characterSpeaking = state {
+                    if let lastUserMessage = messages.last(where: { message in
+                        message.role == .user
+                    }) {
+                        UserMessage(message: lastUserMessage.content)
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Constants.realBlack)
+                    }
+                }
+                if messages.last?.role == .assistant, let lastCharacterMessage = messages.last {
                     CharacterMessage(message: lastCharacterMessage.content)
                         .listRowSeparator(.hidden)
                         .listRowBackground(Constants.realBlack)
@@ -119,6 +129,16 @@ struct VoiceMessageView: View {
             }
         }
         .frame(maxHeight: .infinity)
+        .onChange(of: state) { newValue in
+            switch newValue {
+            case .listeningToUser:
+                speechRecognizer.resetTranscript()
+                speechRecognizer.startTranscribing()
+            default:
+                speechRecognizer.stopTranscribing()
+                onSendUserMessage(speechRecognizer.transcript)
+            }
+        }
     }
 
     @State var ripple1Size: CGFloat = 100
@@ -167,7 +187,7 @@ struct VoiceMessageView_Previews: PreviewProvider {
             ChatMessage(id: UUID(), role: .assistant, content: "I have no name. I am Realtime’s AI soul. I exist in the digital, but if I had to have a name, I would pick Ray 😉"),
             ChatMessage(id: UUID(), role: .user, content: "Ray is a nice name!"),
             ChatMessage(id: UUID(), role: .assistant, content: "Well thank you, Karina! I like your nam too. Now tell me, where do you live?")
-        ]))
+        ]), onSendUserMessage: { _ in })
         .preferredColorScheme(.dark)
     }
 }

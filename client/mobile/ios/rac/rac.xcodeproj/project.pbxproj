@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2600B06F2A5D0872003E8388 /* ChatMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B06E2A5D0872003E8388 /* ChatMessagesView.swift */; };
 		2600B0712A5D11DD003E8388 /* VoiceMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B0702A5D11DD003E8388 /* VoiceMessageView.swift */; };
+		2600B0732A60985F003E8388 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B0722A60985F003E8388 /* SpeechRecognizer.swift */; };
 		26FE4D092A5B6F0D006A1882 /* racApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D082A5B6F0D006A1882 /* racApp.swift */; };
 		26FE4D0B2A5B6F0D006A1882 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D0A2A5B6F0D006A1882 /* RootView.swift */; };
 		26FE4D0D2A5B6F0E006A1882 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26FE4D0C2A5B6F0E006A1882 /* Assets.xcassets */; };
@@ -27,6 +28,7 @@
 /* Begin PBXFileReference section */
 		2600B06E2A5D0872003E8388 /* ChatMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessagesView.swift; sourceTree = "<group>"; };
 		2600B0702A5D11DD003E8388 /* VoiceMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageView.swift; sourceTree = "<group>"; };
+		2600B0722A60985F003E8388 /* SpeechRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
 		26FE4D052A5B6F0D006A1882 /* rac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = rac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		26FE4D082A5B6F0D006A1882 /* racApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = racApp.swift; sourceTree = "<group>"; };
 		26FE4D0A2A5B6F0D006A1882 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -135,6 +137,7 @@
 			isa = PBXGroup;
 			children = (
 				2600B0702A5D11DD003E8388 /* VoiceMessageView.swift */,
+				2600B0722A60985F003E8388 /* SpeechRecognizer.swift */,
 			);
 			path = Voice;
 			sourceTree = "<group>";
@@ -249,6 +252,7 @@
 			files = (
 				26FE4D232A5B707B006A1882 /* ConfigView.swift in Sources */,
 				26FE4D0B2A5B6F0D006A1882 /* RootView.swift in Sources */,
+				2600B0732A60985F003E8388 /* SpeechRecognizer.swift in Sources */,
 				26FE4D1F2A5B704C006A1882 /* InteractiveView.swift in Sources */,
 				26FE4D2C2A5BC25C006A1882 /* CtaButton.swift in Sources */,
 				2600B06F2A5D0872003E8388 /* ChatMessagesView.swift in Sources */,
@@ -391,6 +395,8 @@
 				INFOPLIST_FILE = rac/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = RealChar;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "You can send voice message to your favorite realtime AI chacater.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "You can send voice message to your favorite realtime AI chacater.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -423,6 +429,8 @@
 				INFOPLIST_FILE = rac/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = RealChar;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "You can send voice message to your favorite realtime AI chacater.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "You can send voice message to your favorite realtime AI chacater.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

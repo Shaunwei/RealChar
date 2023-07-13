@@ -1,6 +1,6 @@
 # RealChar. - Realtime AI Character
 <div align="center">
-    <img src="./realtime_ai_character/static/logo.svg" alt="Quivr-logo" width="80%"  style="padding: 20px"/>
+    <img src="./realtime_ai_character/static/logo.svg" alt="Quivr-logo" width="80%"  style="padding: 40px"/>
 </div>
 
 <p align="center">

@@ -336,16 +336,13 @@ body
 {
   font-family: Raleway, sans-serif;
 }
+
+
+/* Characters Group */
 .main-container 
 {
-  /* height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column; */
   margin-top: 30px;
 }
-
 
 .radio-buttons 
 {
@@ -361,28 +358,28 @@ body
 
 .radio-btn 
 {
-  margin: 10px;
-  width: 220px;
-  height: 240px;
-  border: 3px solid transparent;
+  margin: 8px;
+  width: 176px;
+  height: 192px; 
+  border: 2.4px solid transparent;
   display: inline-block;
-  border-radius: 10px;
+  border-radius: 8px;
   position: relative;
   text-align: center;
-  box-shadow: 0 0 20px #c3c3c367;
+  box-shadow: 0 0 16px #c3c3c367;
   cursor: pointer;
 }
 
 .radio-btn > i {
   color: #ffffff;
   background-color: #FFDAE9;
-  font-size: 20px;
+  font-size: 16px;
   position: absolute;
-  top: -15px;
+  top: -12px;
   left: 50%;
-  transform: translateX(-50%) scale(2);
-  border-radius: 50px;
-  padding: 3px;
+  transform: translateX(-50%) scale(1.6);
+  border-radius: 40px;
+  padding: 2.4px;
   transition: 0.5s;
   pointer-events: none;
   opacity: 0;
@@ -390,8 +387,8 @@ body
 
 .radio-btn .hobbies-icon 
 {
-  width: 150px;
-  height: 150px;
+  width: 120px; 
+  height: 120px; 
   position: absolute;
   top: 40%;
   left: 50%;
@@ -401,36 +398,67 @@ body
 {
   display:block;
   width:100%;
-  margin-bottom:20px;
+  margin-bottom:16px;
   
 }
 .radio-btn .hobbies-icon i 
 {
   color: #FFDAE9;
-  line-height: 80px;
-  font-size: 60px;
+  line-height: 64px;
+  font-size: 48px;
 }
 
 .radio-btn .hobbies-icon h4
 {
   color: rgb(214, 214, 214);
-  font-size: 15px;
+  font-size: 12px; 
   font-weight: 300;
   text-transform: uppercase;
-  letter-spacing:1px;
+  letter-spacing:0.8px; 
 }
 
 .custom-radio input:checked + .radio-btn 
 {
-  border: 2px solid #FFDAE9;
+  border: 1.6px solid #FFDAE9;
 }
 
 .custom-radio input:checked + .radio-btn > i 
 {
   opacity: 1;
-  transform: translateX(-50%) scale(1);
+  transform: translateX(-50%) scale(0.8);
 }
 
+@keyframes pulse {
+  0%,
+  100% {
+     box-shadow: 0 0 0 0 rgba(173, 216, 230, 0.4);
+  }
+  25% {
+     box-shadow: 0 0 0 10px rgba(173, 216, 230, 0.15);
+  }
+  50% {
+     box-shadow: 0 0 0 20px rgba(173, 216, 230, 0.55);
+  }
+  75% {
+     box-shadow: 0 0 0 10px rgba(173, 216, 230, 0.25);
+  }
+}
+
+.pulse-animation-1 {
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.pulse-animation-2 {
+  animation: pulse 2.2s infinite ease-in-out;
+}
+
+.pulse-animation-1 {
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.pulse-animation-2 {
+  animation: pulse 2.2s infinite ease-in-out;
+}
 
 /* media devices select */
 .select-dropdown,

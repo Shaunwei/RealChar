@@ -112,16 +112,18 @@ XI_API_KEY=<api key>
     ```
 5. Setup `.env`: update API keys and select module
    ```sh
-   mv .env.example .env
+   cp .env.example .env
    ```
-6. Run the app with web client on http://localhost:8000
+6. Run server
     ```sh
     uvicorn realtime_ai_character.main:app --reload
     ```
-7. (Optional) Run terminal client - python cli
-    ```sh
-    python client/cli.py
-    ```
+7. Run client:
+    - Web client: Open your web browser and navigate to http://localhost:8000
+    - (Optional) Terminal client: Run the following command in your terminal
+        ```sh
+        python client/cli.py
+        ```
 8. Select one character to talk to, then start talking
 
 

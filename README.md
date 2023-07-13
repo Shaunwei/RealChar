@@ -34,8 +34,22 @@ For the best demo experience,  try [our site](link) directly
 - **Companion**: Your AI character can be your companion, friend, or even your lover
 - **Multi-Platform**: You can talk to your AI character on web, terminal and mobile(we also open source our mobile app)
 - **Most up-to-date AI**: We use the most up-to-date AI technology to power your AI character, including OpenAI, Anthropic Claude 2, Chroma, Whisper, ElevenLabs, etc.
+- **Modular**: You can easily swap out different modules to customize your flow. Less opinionated, more flexible.
 
-## Prerequisites
+## 🔬 Tech stack
+- **Frontend**: Vinilla JS, WebSockets
+- **Backend**: FastAPI, SQLite, Alembic, Docker
+- **Data Ingession**: LlamaIndex, Chroma
+- **LLM Orchestration**: LangChain, Chroma
+- **LLM**: OpenAI GPT3.5/4, Anthropic Claude 2
+- **Speech to Text**: Local Whisper, OpenAI Whisper API, Google Speech to Text API
+- **Text to Speech**: ElevenLabs API
+- **Voice Clone**: ElevenLabs API
+
+## 📚 Character Catalog
+
+
+## 👨‍🚀 Prerequisites
 
 Before you begin setting up this project, please ensure you have completed the following tasks:
 

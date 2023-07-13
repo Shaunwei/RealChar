@@ -31,6 +31,7 @@ function connectSocket() {
         chatWindow.scrollTop = chatWindow.scrollHeight;
       } else if (message.startsWith('[+]')) {
         // [+] indicates the transcription is done. stop playing audio
+        chatWindow.value += `\nYou> ${message}\n`;
         stopAudioPlayback();
       } else if (message.startsWith('[=]')) {
         // [=] indicates the response is done
@@ -265,8 +266,11 @@ function speechRecognition() {
       audioSent = true;
       mediaRecorder.stop();
       if (confidence > 0.8 && finalTranscripts.length > 0) {
-        console.log("send final transcript")
-        socket.send(finalTranscripts.join(' '))
+        console.log("send final transcript");
+        let message = finalTranscripts.join(' ');
+        socket.send(message);
+        chatWindow.value += `\nYou> ${message}\n`;
+        chatWindow.scrollTop = chatWindow.scrollHeight;
         shouldPlayAudio = true;
       }
     }
@@ -402,6 +406,11 @@ messageButton.addEventListener('click', function() {
   continueCallButton.style.display = 'none';
   stopCallButton.style.display = 'none';
   bars.style.display = "none";
+
+  // show recording status
+  if (mediaRecorder.state == "recording") {
+    
+  }
 });
 
 const sendMessage = () => {

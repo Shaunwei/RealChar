@@ -11,21 +11,28 @@
     <img alt="Logo" src="/static/logo.svg" />
   </div>
   <!-- Audio device selection -->
-  <label class="audio-device-label" for="audio-device-selection">Select an audio input device:</label>
-  <div class="select-dropdown">
-    <select id="audio-device-selection" class="form-select"></select>
-  </div>
-
-  <div class="text-container">
-    <p>Please connect first</p>
+  <div id="devices-container">
+    <label class="audio-device-label" for="audio-device-selection">Select an audio input device:</label>
+    <div class="select-dropdown">
+      <select id="audio-device-selection" class="form-select"></select>
+    </div>
   </div>
   
+  <div class="header">
+    <p></p>
+  </div>
+  <button id="connect" class="connect">Connect</button>
+  
+  <!-- Characters List -->
   <div class="main-container">
     <div class="radio-buttons">
       <!-- this part will be dynamically rendered -->
     </div>
   </div>
+  <button id="talk-btn" class="talk-btn" disabled>Talk to me</button>
+  
   <div class="main-screen">
+    
     <div id="microphone-container" class="microphone-container">
       <div id="microphone-node">
         <img src="/static/microphone.svg" alt="Connect Icon" class="icon-instance-node" height="24" width="24" />
@@ -42,7 +49,12 @@
   </div>
   </div>
   <div class="action-container">
-    <button id="talk-btn" class="talk-btn">Talk to me</button>
+    <div id="stop-call" class="stop-call">
+      <img src="/static/end-call.svg" alt="End call icon" class="icon-instance-node" height="24" width="24" />
+    </div>
+    <div id="continue-call" class="continue-call">
+      <img src="/static/continue-call.svg" alt="Continue call icon" class="icon-instance-node" height="24" width="24" />
+    </div>
     <div class="message-input-container">
       <input id="message-input" class="message-input" type="text" placeholder="Type your message">
         <span class="focus-border">
@@ -53,7 +65,7 @@
   </div>
 
   <div class="options-container">
-    <div id="connect" class="connect">
+    <div id="disconnect" class="disconnect">
       <img src="/static/connect.svg" alt="Connect Icon" class="icon-instance-node" height="24" width="24" />
     </div>
     <div id="message" class="message">

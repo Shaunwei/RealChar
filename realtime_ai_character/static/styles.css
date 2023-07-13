@@ -11,7 +11,7 @@ body {
   margin-bottom: 30px;
 }
 
-.text-container p {
+.header p {
   color: #cccccc;
   font-family: "Prompt", Helvetica;
   font-size: 30px;
@@ -36,7 +36,7 @@ h2
 }
 
 .microphone-container {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   background-color: #6785d3;
@@ -181,7 +181,9 @@ h2
 }
 
 .talk-btn,
-.send-btn {
+.send-btn,
+.connect,
+.select-character {
   font-family: "Prompt", Helvetica;
   font-size: 1rem;
   border-color: #6785d3;
@@ -195,13 +197,27 @@ h2
 }
 
 .talk-btn:hover,
-.send-btn:hover {
+.send-btn:hover,
+.connect:hover,
+.select-character {
   box-shadow: 0 0 40px 40px #6785d3 inset, 0 0 0 0 #6785d3;
   outline: 0;
 }
 
-.send-btn {
+.talk-btn,
+.send-btn, 
+.select-character {
   display: none;
+}
+
+.talk-btn[disabled] {
+  background-color: #999999;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.talk-btn {
+  margin-top: 50px;
 }
 
 .action-container {
@@ -220,7 +236,14 @@ h2
   width: 100%;
 }
 
+.disconnect,
 .call {
+  margin-right: 20px;
+}
+
+.disconnect,
+.call,
+.message {
   display: none;
   align-items: center;
   justify-content: center;
@@ -229,7 +252,6 @@ h2
   padding: 8px;
   height: 50px;
   width: 50px;
-  margin-right: 20px;
   cursor: pointer;
 }
 
@@ -237,40 +259,18 @@ h2
   background-color: #bccffe;
 }
 
-.connect {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #febcbc1a;
-  border-radius: 50px;
-  padding: 8px;
-  height: 50px;
-  width: 50px;
-  margin-right: 20px;
-  cursor: pointer;
-}
-
-.connect:hover {
-  background-color: #ff4242;
-}
-
-.message {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #bccffe1a;
-  border-radius: 50px;
-  padding: 8px;
-  height: 50px;
-  width: 50px;
-  cursor: pointer;
-}
-
-
 .message:hover {
   background-color: #28c235;
 }
 
+.disconnect:hover {
+  background-color: #ff4242;
+}
+
+.continue-call,
+.stop-call {
+  display: none;
+}
 
 /* character select radio groups */
 @import url("https://fonts.googleapis.com/css?family=Raleway:300,400,400i,700");

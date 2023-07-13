@@ -2,9 +2,12 @@
  * WebSocket Connection
  * The client sends and receives messages through this WebSocket connection.
  */
-const connectButton =  document.getElementById('connect');
+const connectButton = document.getElementById('connect');
+const disconnectButton = document.getElementById('disconnect');
+const devicesContainer = document.getElementById('devices-container');
 let socket;
 let clientId = Math.floor(Math.random() * 1000);
+
 function connectSocket() {
   chatWindow.value = "";
   var clientId = Math.floor(Math.random() * 101);
@@ -57,31 +60,42 @@ function connectSocket() {
 }
 
 connectButton.addEventListener("click", function() {
-  if (socket && socket.readyState === WebSocket.OPEN) {
-    stopAudioPlayback();
-    if (radioGroupsCreated) {
-      destroyRadioGroups();
-    }
-    if (mediaRecorder) {
-      mediaRecorder.stop();
-    }
-    if (recognition) {
-      recognition.stop();
-    }
-    textContainer.textContent = "Please connect first";
-    playerControls.style.display = "none";
-    microphoneNode.style.display = "flex";
-    chatWindow.value = "";
-    characterSent = false;
-    talkButton.textContent = "Talk to me";
-    callButton.click();
-    socket.close();
-  } else {
-    connectSocket();
-    textContainer.textContent = "Please select your character first";
-  }
+  connectButton.style.display = "none";
+  textContainer.textContent = "Please select your character first";
+  devicesContainer.style.display = "none";
+  connectSocket();
+  talkButton.style.display = 'flex';
 });
 
+disconnectButton.addEventListener("click", function() {
+  stopAudioPlayback();
+  if (radioGroupsCreated) {
+    destroyRadioGroups();
+  }
+  if (mediaRecorder) {
+    mediaRecorder.stop();
+  }
+  if (recognition) {
+    recognition.stop();
+  }
+  textContainer.textContent = "";
+  playerControls.style.display = "none";
+  disconnectButton.style.display = "none";
+  microphoneContainer.style.display = "none";
+  stopCallButton.style.display = "none";
+  continueCallButton.style.display = "none";
+  messageButton.style.display = "none";
+  sendButton.style.display = "none";
+  messageInput.style.display = "none";
+  chatWindow.style.display = "none";
+  callButton.style.display = "none";
+  connectButton.style.display = "flex";
+  devicesContainer.style.display = "block";
+  chatWindow.value = "";
+  selectedCharacter = null;
+  characterSent = false;
+  socket.close();
+});
 
 /**
  * Devices
@@ -265,51 +279,67 @@ function speechRecognition() {
 const talkButton = document.getElementById('talk-btn');
 const callButton =  document.getElementById('call');
 const playerControls = document.querySelector(".player-controls");
-const textContainer = document.querySelector('.text-container p');
+const textContainer = document.querySelector('.header p');
 const microphoneContainer = document.getElementById('microphone-container');
 const microphoneNode = document.getElementById('microphone-node');
+const stopCallButton = document.getElementById('stop-call');
+const continueCallButton = document.getElementById('continue-call');
 let callActive = false;
 
 callButton.addEventListener("click", () => {
   microphoneContainer.style.display = 'flex';
   chatWindow.style.display = 'none';
-  talkButton.style.display = 'block';
   sendButton.style.display = 'none';
   messageInput.style.display = "none";
   callButton.style.display = "none";
   messageButton.style.display = 'flex';
+  continueCallButton.style.display = 'flex';
+});
+
+stopCallButton.addEventListener("click", () => {
+  playerControls.style.display = "none";
+  microphoneNode.style.display = "flex";
+  stopCallButton.style.display = "none";
+  continueCallButton.style.display = "flex";
+
+  
+  callActive = false;
+  mediaRecorder.stop();
+  recognition.stop();
+  stopAudioPlayback();
+})
+
+continueCallButton.addEventListener("click", () => {
+  stopCallButton.style.display = "flex";
+  continueCallButton.style.display = "none";
+  playerControls.style.display = "flex";
+  microphoneNode.style.display = "none";
+
+  mediaRecorder.start();
+  recognition.start();
+  callActive = true;
 });
 
 talkButton.addEventListener("click", function() {
   if (socket && socket.readyState === WebSocket.OPEN && mediaRecorder && selectedCharacter) {
-    if (!callActive) {
-      playerControls.style.display = "block";
-      microphoneNode.style.display = "none";
-      textContainer.textContent = "Hi my friend, what's your name?";
-      talkButton.textContent = "Stop Talking";
+    microphoneContainer.style.display = "flex";
+    talkButton.style.display = "none";
+    disconnectButton.style.display = "flex";
+    messageButton.style.display = "flex";
+    stopCallButton.style.display = "flex";
 
-      if (selectedCharacter) {
-        socket.send(selectedCharacter);
-        hideOtherCharacters();
-      } else {
-        console.log("character not selected");
-      }
-      
-      mediaRecorder.start();
-      recognition.start();
-      callActive = true;
-    } else {
-      playerControls.style.display = "none";
-      microphoneNode.style.display = "flex";
-      talkButton.textContent = "Talk to me";
-      
-      callActive = false;
-      mediaRecorder.stop();
-      recognition.stop();
-      stopAudioPlayback();
-    }
+    playerControls.style.display = "block";
+    microphoneNode.style.display = "none";
+    textContainer.textContent = "Hi my friend, what's your name?";
+
+    socket.send(selectedCharacter);
+    hideOtherCharacters();
+
+    mediaRecorder.start();
+    recognition.start();
+    callActive = true;
   }
-});
+})
 
 function hideOtherCharacters() {
   // Hide the radio buttons that are not selected
@@ -339,6 +369,18 @@ messageButton.addEventListener('click', function() {
   messageInput.style.display = "block";
   callButton.style.display = "flex";
   messageButton.style.display = 'none';
+  continueCallButton.style.display = 'none';
+  stopCallButton.style.display = 'none';
+  playerControls.style.display = "none";
+  microphoneNode.style.display = "flex";
+
+  // Stop calling if the call is still live
+  if (callActive) {
+    mediaRecorder.stop();
+    recognition.stop();
+    stopAudioPlayback();
+    callActive = false;
+  }
 });
 
 const sendMessage = () => {
@@ -377,6 +419,7 @@ messageInput.addEventListener("keydown", (event) => {
  */
 let selectedCharacter;
 let radioGroupsCreated = false;
+
 function createCharacterGroups(message) {
   const options = message.split('\n').slice(1);
 
@@ -429,6 +472,8 @@ function createCharacterGroups(message) {
     if (event.target.value != "") {
       selectedCharacter = event.target.value;
     }
+
+    talkButton.disabled = false;
   });
 
   radioGroupsCreated = true;
@@ -502,10 +547,3 @@ function stopAudioPlayback() {
   }
   audioQueue = []; // clear the audio queue
 }
-
-/**
- * Onload action
- * automatically connect socket at the beginning
- */
-connectSocket();
-textContainer.textContent = "Please select your character first";

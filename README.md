@@ -1,7 +1,7 @@
 # <img src="./realtime_ai_character/static/realchar.svg" height="24px" style="padding-top:4px"/>RealChar. - Realtime AI Character
 <br/>
 <div align="center">
-    <img src="./realtime_ai_character/static/logo.png" alt="Quivr-logo" width="80%"  style="padding: 40px"/>
+    <img src="./realtime_ai_character/static/logo.png" alt="RealChar-logo" width="80%"  style="padding: 40px"/>
 </div>
 <br/>
 <p align="center">
@@ -30,23 +30,27 @@ For the best demo experience,  try [our site](link) directly
 [Demo Video](link)
 
 ## 🎯 Key Features
-- **Easy to use**: No coding required to create your own AI character. All in one codebase.
+- **Easy to use**: No coding required to create your own AI character.
 - **Customizable**: You can customize your AI character's personality, background, and even voice
 - **Realtime**: Talk to or message your AI character in realtime
-- **Companion**: Your AI character can be your companion, friend, or even your lover
-- **Multi-Platform**: You can talk to your AI character on web, terminal and mobile(we also open source our mobile app)
+- **Multi-Platform**: You can talk to your AI character on web, terminal and mobile(Yes. we open source our mobile app)
 - **Most up-to-date AI**: We use the most up-to-date AI technology to power your AI character, including OpenAI, Anthropic Claude 2, Chroma, Whisper, ElevenLabs, etc.
 - **Modular**: You can easily swap out different modules to customize your flow. Less opinionated, more flexible.
 
 ## 🔬 Tech stack
-- **Frontend**: Vinilla JS, WebSockets
-- **Backend**: FastAPI, SQLite, Alembic, Docker
-- **Data Ingession**: LlamaIndex, Chroma
-- **LLM Orchestration**: LangChain, Chroma
-- **LLM**: OpenAI GPT3.5/4, Anthropic Claude 2
-- **Speech to Text**: Local Whisper, OpenAI Whisper API, Google Speech to Text API
-- **Text to Speech**: ElevenLabs API
-- **Voice Clone**: ElevenLabs API
+<div align="center">
+    <img src="./realtime_ai_character/assets/techstack.png" alt="RealChar-tech-stack" width="100%"  style="padding: 20px"/>
+</div>
+
+- ✅**Web**: Vanilla JS, WebSockets
+- ✅**Mobile**: Swift, WebSockets
+- ✅**Backend**: FastAPI, SQLite, Alembic, Docker
+- ✅**Data Ingession**: LlamaIndex, Chroma
+- ✅**LLM Orchestration**: LangChain, Chroma
+- ✅**LLM**: OpenAI GPT3.5/4, Anthropic Claude 2
+- ✅**Speech to Text**: Local Whisper, OpenAI Whisper API, Google Speech to Text
+- ✅**Text to Speech**: ElevenLabs
+- ✅**Voice Clone**: ElevenLabs
 
 ## 📚 Character Catalog
 
@@ -55,8 +59,8 @@ For the best demo experience,  try [our site](link) directly
 
 Before you begin setting up this project, please ensure you have completed the following tasks:
 
-### 1. Prepare LLM -  OpenAI API Token
-<details><summary>click me</summary>
+### 1. LLM -  OpenAI API Token
+<details><summary>👇click me</summary>
 This application utilizes the OpenAI API to access its powerful language model capabilities. In order to use the OpenAI API, you will need to obtain an API token.
 
 To get your OpenAI API token, follow these steps:
@@ -68,79 +72,123 @@ To get your OpenAI API token, follow these steps:
 5. Add the API key to your environment variable, e.g. `export OPENAI_API_KEY=<your API key>`
 </details>
 
-### 1.1 Prepare LLM -  Anthropic API Token
+### 1.1 (Optional) Prepare LLM -  Anthropic(Claude 2) API Token
+<details><summary>👇click me</summary>
 
-### 2.(Optional) Prepare Speech to Text - Google Cloud API
+To get your OpenAI API token, follow these steps:
+
+1. Go to the [Anthropic website](https://docs.anthropic.com/claude/docs/getting-started-with-claude) and sign up for an account if you haven't already.
+2. Once you're logged in, navigate to the [API keys page](https://console.anthropic.com/account/keys).
+3. Generate a new API key by clicking on the "Create Key" button.
+4. Copy the API key and store it safely.
+5. Add the API key to your environment variable, e.g. `export ANTHROPIC_API_KEY=<your API key>`
+</details>
+
+### 2. (Optional) Prepare Speech to Text - Google Cloud API
+<details><summary>👇click me</summary>
+
+To get your Google Cloud API credentials.json, follow these steps:
+
+1. Go to the [GCP website](https://cloud.google.com/speech-to-text/docs/before-you-begin) and sign up for an account if you haven't already.
+2. Follow the guide to create a project and enable Speech to Text API
+3. Put `google_credentials.json` in the root folder of this project. Check [GCP website](https://cloud.google.com/speech-to-text/docs/before-you-begin#set_your_authentication_environment_variable)
+4. Change `SPEECH_TO_TEXT_USE` to use `GOOGLE` in your `.env` file
+</details>
+
 
 ### 3. Prepare Text to Speech - ElevenLabs API Key
-<details><summary>click me</summary>
+<details><summary>👇click me</summary>
 1. Creating an ElevenLabs Account
-Visit [ElevenLabs](https://beta.elevenlabs.io/) to create an account. You'll need this to access the speech synthesis and voice cloning features.
+Visit [ElevenLabs](https://beta.elevenlabs.io/) to create an account. You'll need this to access the text to speech and voice cloning features.
 
 2. In your Profile Setting, you can get an API Key. Save it in a safe place.
 
 3. Set API key in your .env file:
 ```
-XI_API_KEY=<api key>
+ELEVEN_LABS_API_KEY=<api key>
 ```
 </details>
 
+<br/>
+<br/>
 
-## Installation via Python
-1. Clone the repo
+## 💿 Installation via Python
+- **Step 1**. Clone the repo
    ```sh
-   git clone
+   git clone https://github.com/Shaunwei/RealChar.git && cd RealChar
     ```
-2. Install requirements
-   - Install portaudio and ffmpeg
+- **Step 2**. Install requirements
+    - Install [portaudio](https://people.csail.mit.edu/hubert/pyaudio/) and [ffmpeg](https://ffmpeg.org/download.html) for audio
     ```sh
-    (For Mac)
+    # for mac
     brew install portaudio
     brew install ffmpeg
     ```
-    Then install all python requirements
+    - Then install all python requirements
     ```sh
     pip install -r requirements.txt
     ```
-3. Create an empty database if you have not done so before
+- **Step 3**. Create an empty [sqlite](https://www.sqlite.org/index.html) database if you have not done so before
     ```sh
     sqlite3 test.db "VACUUM;"
     ```
-4. Run db upgrade
+- **Step 4**. Run db upgrade
     ```sh
     alembic upgrade head
     ```
-5. Setup `.env`: update API keys and select module
+- **Step 5**. Setup `.env`: update API keys and select module
    ```sh
-   mv .env.example .env
+   cp .env.example .env
    ```
-6. Run the app with web client on http://localhost:8000
+- **Step 6**. Run server with `cli.py` or use uvicorn directly
     ```sh
-    uvicorn realtime_ai_character.main:app --reload
+    python cli.py run-uvicorn
+    # or
+    uvicorn realtime_ai_character.main:app
     ```
-7. (Optional) Run terminal client - python cli
+- **Step 7**. Run client:
+    - Web client: Open your web browser and navigate to http://localhost:8000
+    - (Optional) Terminal client: Run the following command in your terminal
     ```sh
     python client/cli.py
     ```
-8. Select one character to talk to, then start talking
+    - (Optional) mobile client: open `client/mobile/ios/rac/rac.xcodeproj/project.pbxproj` in Xcode and run the app
+- **Step 8**. Select one character to talk to, then start talking
 
 
-## (Optional) Installation via Docker
-<details><summary>click me</summary>
-1. Build docker image
+## (Optional) 📀 Installation via Docker
+<details><summary>👇click me</summary>
+
+1. Docker image: you can use our docker image directly
+    ```sh
+    docker pull shaunly/real_char:latest
+    ```
+    (Or you want build yourself) Build docker image
     ```sh
     python cli.py docker-build
     ```
-2. Run docker image
+    If you have issues with docker (especially on a non-Linux machine), please refer to https://docs.docker.com/get-docker/ (installation) and https://docs.docker.com/desktop/troubleshoot/overview/ (troubleshooting).
+2. Run docker image with `.env` file
     ```sh
     python cli.py docker-run
     ```
-3. Go to http://localhost:8000 to start talking (note: you need https to use microphone)
 
-If you have issues with docker (especially on a non-Linux machine), please refer to https://docs.docker.com/get-docker/ (installation) and https://docs.docker.com/desktop/troubleshoot/overview/ (troubleshooting).
+3. Go to http://localhost:8000 to start talking or use terminal    client
+    ```sh
+    python client/cli.py
+    ```
+
 </details>
 
-## Tech Stack
-Speech to Text: Whisper
+## 📍Roadmap
+- [ ] Launch v0.0.0 and build a community
+- [ ] Add more characters
 
-Voice Clone and Sound Synthesis: ElevenLabs
+## Contributors💪
+
+<a href="https://github.com/Shaunwei/RealChar">
+  <img src="https://contrib.rocks/image?repo=Shaunwei/RealChar" />
+</a>
+
+## 🎲Community
+- Join us on [Discord](https://discord.gg/e4AYNnFg2F)

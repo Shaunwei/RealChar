@@ -19,6 +19,23 @@ body {
   margin-top: 20px;
 }
 
+.recording {
+  color: firebrick;
+  display: none;
+  padding-left: 1.2em;
+  line-height: 1.5em;
+}
+
+.recording::before {
+  content: '🔴';
+  margin-right: 3px;
+  animation: recording 600ms alternate infinite;
+}
+@keyframes recording {
+  from { opacity: 1; }
+  to { opacity: 0.2; }
+}
+
 .devices-container {
   display: flex;
   align-items: center;

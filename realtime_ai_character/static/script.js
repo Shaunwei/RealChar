@@ -316,6 +316,7 @@ callButton.addEventListener("click", () => {
   } else {
     continueCallButton.style.display = 'flex';
   }
+  showRecordingStatus();
 });
 
 stopCallButton.addEventListener("click", () => {
@@ -327,6 +328,7 @@ stopCallButton.addEventListener("click", () => {
   mediaRecorder.stop();
   recognition.stop();
   stopAudioPlayback();
+  showRecordingStatus();
 })
 
 continueCallButton.addEventListener("click", () => {
@@ -337,7 +339,17 @@ continueCallButton.addEventListener("click", () => {
   mediaRecorder.start();
   recognition.start();
   callActive = true;
+  showRecordingStatus();
 });
+
+function showRecordingStatus() {
+  // show recording status
+  if (mediaRecorder.state == "recording") {
+    recordingStatus.style.display = "inline-block";
+  } else {
+    recordingStatus.style.display = "none";
+  }
+}
 
 talkButton.addEventListener("click", function() {
   if (socket && socket.readyState === WebSocket.OPEN && mediaRecorder && selectedCharacter) {
@@ -358,6 +370,7 @@ talkButton.addEventListener("click", function() {
     mediaRecorder.start();
     recognition.start();
     callActive = true;
+    showRecordingStatus();
   }
 });
 
@@ -392,6 +405,7 @@ const messageInput = document.getElementById('message-input');
 const sendButton = document.getElementById('send-btn');
 const messageButton = document.getElementById('message');
 const chatWindow = document.getElementById('chat-window');
+const recordingStatus = document.getElementById("recording");
 let characterSent = false;
 
 messageButton.addEventListener('click', function() {
@@ -407,10 +421,7 @@ messageButton.addEventListener('click', function() {
   stopCallButton.style.display = 'none';
   bars.style.display = "none";
 
-  // show recording status
-  if (mediaRecorder.state == "recording") {
-    
-  }
+  showRecordingStatus();
 });
 
 const sendMessage = () => {

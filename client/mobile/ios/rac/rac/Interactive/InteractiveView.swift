@@ -25,6 +25,7 @@ struct InteractiveView: View {
     @State var messages: [ChatMessage] = []
     @State var mode: InteractiveMode = .voice
     @State var voiceState: VoiceState = .idle(streamingEnded: true)
+    @State var streamingEnded = true
     @StateObject var audioPlayer = AudioPlayer()
 
     var body: some View {
@@ -35,11 +36,10 @@ struct InteractiveView: View {
                 ChatMessagesView(messages: $messages,
                                  isExpectingUserInput: .init(get: { voiceState == .idle(streamingEnded: true) }, set: { _ in }),
                                  onSendUserMessage: { message in
-                    voiceState = .characterSpeaking(characterImageUrl: character?.imageUrl)
-                   messages.append(.init(id: UUID(), role: .user, content: message))
-                   webSocketClient.send(message: message)
-                }
-                )
+                    voiceState = .idle(streamingEnded: false)
+                    messages.append(.init(id: UUID(), role: .user, content: message))
+                    webSocketClient.send(message: message)
+                })
                     .padding(.horizontal, 48)
                     .preferredColorScheme(.dark)
                     .background(Constants.realBlack)
@@ -57,7 +57,7 @@ struct InteractiveView: View {
                     webSocketClient.send(message: message)
                 },
                                  onTapVoiceButton: {
-                    voiceState = voiceState.next
+                    voiceState = voiceState.next(streamingEnded: streamingEnded)
                     if case .idle = voiceState {
                         audioPlayer.pauseAudio()
                     }
@@ -127,6 +127,7 @@ struct InteractiveView: View {
                     if case .idle(let streamingEnded) = voiceState, !streamingEnded {
                         voiceState = .idle(streamingEnded: true)
                     }
+                    streamingEnded = true
                     return
                 }
 
@@ -137,6 +138,7 @@ struct InteractiveView: View {
                     if mode == .voice {
                         voiceState = .characterSpeaking(characterImageUrl: character?.imageUrl)
                     }
+                    streamingEnded = false
                 }
             }
             webSocketClient.onDataReceived = { data in
@@ -156,6 +158,7 @@ struct InteractiveView: View {
         .onChange(of: mode) { newValue in
             if mode == .text {
                 audioPlayer.pauseAudio()
+                voiceState = .idle(streamingEnded: streamingEnded)
             }
         }
         .onChange(of: audioPlayer.isPlaying) { newValue in

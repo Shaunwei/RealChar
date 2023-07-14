@@ -34,7 +34,7 @@ enum VoiceState: Equatable {
     }
 
     var isDisabled: Bool {
-        return next == self
+        return self == .idle(streamingEnded: false)
     }
 
     var image: some View {
@@ -60,14 +60,14 @@ enum VoiceState: Equatable {
         }
     }
 
-    var next: VoiceState {
+    func next(streamingEnded: Bool) -> VoiceState {
         switch self {
         case .idle(let streamingEnded):
             return streamingEnded ? .listeningToUser : self
         case .listeningToUser:
             return .idle(streamingEnded: true)
         case .characterSpeaking:
-            return .idle(streamingEnded: false)
+            return .idle(streamingEnded: streamingEnded)
         }
     }
 }

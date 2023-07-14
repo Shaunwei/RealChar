@@ -5,7 +5,11 @@
   <title>RealChar. - Realtime AI Character</title>
   <link rel="stylesheet" type="text/css" href="/static/styles.css">
   <link rel="icon" type="image/png" href="/static/favicon.ico">
-  <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/all.js" integrity="sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe" crossorigin="anonymous"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/all.js"
+    integrity="sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe"
+    crossorigin="anonymous"></script>
+  <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
 </head>
 
 <body>
@@ -25,7 +29,7 @@
     <p></p>
   </div>
   <button id="connect" class="connect">Connect</button>
-  
+
   <!-- Characters List -->
   <div class="main-container">
     <div class="radio-buttons">
@@ -36,8 +40,8 @@
     <button id="talk-btn" class="talk-btn" disabled>Talk</button>
     <button id="text-btn" class="text-btn" disabled>Text</button>
   </div>
-  
-  
+
+
   <div class="main-screen">
     <div id="player-container" class="player-container">
       <div id="sound-wave" class="sound-wave">
@@ -57,10 +61,10 @@
   </div>
   <div class="action-container">
     <div id="stop-call" class="stop-call">
-      <img src="/static/end-call.svg" alt="End call icon" class="icon-instance-node"/>
+      <img src="/static/end-call.svg" alt="End call icon" class="icon-instance-node" />
     </div>
     <div id="continue-call" class="continue-call">
-      <img src="/static/continue-call.svg" alt="Continue call icon" class="icon-instance-node"/>
+      <img src="/static/continue-call.svg" alt="Continue call icon" class="icon-instance-node" />
     </div>
     <div class="message-input-container">
       <input id="message-input" class="message-input" type="text" placeholder="Type your message">
@@ -85,13 +89,41 @@
 
   <footer>
     <div class="rounded-social-buttons">
-      <a class="social-button github" href="https://github.com/Shaunwei/RealChar" target="_blank"><i class="fab fa-github"></i></a>
-      <a class="social-button discord" href="https://discord.gg/e4AYNnFg2F" target="_blank"><i class="fab fa-discord"></i></a>
-      <a class="social-button twitter" href="https://twitter.com/agishaun" target="_blank"><i class="fab fa-twitter"></i></a>
+      <a class="social-button github" href="https://github.com/Shaunwei/RealChar" target="_blank"><i
+          class="fab fa-github"></i></a>
+      <a class="social-button discord" href="https://discord.gg/e4AYNnFg2F" target="_blank"><i
+          class="fab fa-discord"></i></a>
+      <a class="social-button twitter" href="https://twitter.com/agishaun" target="_blank"><i
+          class="fab fa-twitter"></i></a>
     </div>
     <p class="copyright">Copyright © 2023 RealChar. All rights reserved.</p>
   </footer>
   <script src="/static/script.js"></script>
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-analytics.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyAVqhwbdB8I56HAMVVlgJKZcfrBkKI2AhQ",
+      authDomain: "assistly-kubernetes.firebaseapp.com",
+      projectId: "assistly-kubernetes",
+      storageBucket: "assistly-kubernetes.appspot.com",
+      messagingSenderId: "806733379891",
+      appId: "1:806733379891:web:48bf124c0d9b90298e6646",
+      measurementId: "G-XVWF8XDKS5"
+    };
+
+    // Initialize Firebase
+    const firebase = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(firebase);
+  </script>
+
 </body>
 
 </html>

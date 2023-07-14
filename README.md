@@ -181,6 +181,9 @@ ELEVEN_LABS_API_KEY=<api key>
 - [ ] Launch v0.0.0 and build a community
 - [ ] Add more characters
 
+## Contribute to RealChar🫶
+Please check out our [Contribution Guide](contribute.md)!
+
 ## Contributors💪
 
 <a href="https://github.com/Shaunwei/RealChar">

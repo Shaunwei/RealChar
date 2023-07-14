@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CachedAsyncImage
 
 struct CharacterOption: Identifiable, Equatable {
     let id: Int
@@ -79,14 +80,12 @@ struct CharacterOptionView: View {
                         .background(Color(red: 0.76, green: 0.83, blue: 1))
                         .cornerRadius(20)
                     if let imageUrl = option.imageUrl {
-                        AsyncImage(url: imageUrl) { phase in
+                        CachedAsyncImage(url: imageUrl) { phase in
                             switch phase {
                             case .empty:
                                 ProgressView()
                             case .success(let image):
-                                image
-                                    .resizable()
-                                    .transition(.scale(scale: 0.1, anchor: .center))
+                                image.resizable()
                             default:
                                 Image(systemName: "wifi.slash")
                             }

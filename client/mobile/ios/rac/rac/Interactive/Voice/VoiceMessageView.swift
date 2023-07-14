@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CachedAsyncImage
 
 enum VoiceState: Equatable {
     case idle
@@ -28,14 +29,12 @@ enum VoiceState: Equatable {
         case .idle:
             return AnyView(Image("voice"))
         case .characterSpeaking(let characterImageUrl):
-            return AnyView(AsyncImage(url: characterImageUrl) { phase in
+            return AnyView(CachedAsyncImage(url: characterImageUrl) { phase in
                 switch phase {
                 case .empty:
                     ProgressView()
                 case .success(let image):
-                    image
-                        .resizable()
-                        .transition(.scale(scale: 0.5, anchor: .center))
+                    image.resizable()
                 default:
                     Image(systemName: "wifi.slash")
                 }

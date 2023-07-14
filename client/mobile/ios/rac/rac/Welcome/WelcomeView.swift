@@ -89,7 +89,7 @@ struct WelcomeView: View {
     private func mapCharacterToImageUrl(characterName: String) -> URL? {
         // TODO: Get url from server
         if characterName.contains("Elon") {
-            return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/elon.png")!
+            return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/elon.jpeg")!
         } else if characterName.contains("Character") {
             return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!
         } else if characterName.contains("Loki") {

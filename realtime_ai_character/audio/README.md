@@ -4,7 +4,7 @@ This README serves as a guide on how to use ElevenLabs for voice cloning. Follow
 
 ## Collecting Data
 
-Before you start, you'll need voice data. Download high quality vocal only audio clips.
+Before you start, you'll need voice data. Download high quality vocal only audio clips. Check the [training_data](./training_data) folder for reference.
 
 If you're creating your own dataset, ensure the audio is high quality. It should have no background noise, clear pronunciation.
 

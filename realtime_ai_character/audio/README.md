@@ -4,15 +4,19 @@ This README serves as a guide on how to use ElevenLabs for voice cloning. Follow
 
 ## Collecting Data
 
-Before you start, you'll need voice data. For instance, if you're cloning the voice of Raiden Shogun from the game Genshin Impact, you can download the voice data from [this site](https://genshin-impact.fandom.com/wiki/Raiden_Shogun/Voice-Overs).
+Before you start, you'll need voice data. Download high quality vocal only audio clips.
 
-If you're creating your own dataset, ensure the audio is high quality. It should have no background noise, clear pronunciation, and be at least 1 minute long. 
+If you're creating your own dataset, ensure the audio is high quality. It should have no background noise, clear pronunciation.
 
-The audio format must be mp3.
+The audio format must be mp3 and should be about 1 minute long in total.
 
 ## Creating an ElevenLabs Account
 
 Visit [ElevenLabs](https://beta.elevenlabs.io/) to create an account. You'll need this to access the speech synthesis and voice cloning features.
+
+Get your `ELEVEN_LABS_API_KEY`:
+1. Click profile icon and select 'profile'.
+2. Copy API Key
 
 ## Speech Synthesis/Voice Cloning
 
@@ -30,13 +34,13 @@ Follow these steps to clone a voice:
 To test the voice you've just created:
 
 1. Go back to the [speech synthesis page](https://beta.elevenlabs.io/speech-synthesis).
-2. Choose the voice you just created.
-3. Adjust the voice settings and choose a model (monolingual or multilingual).
+2. Choose the voice you just created in Settings.
 4. Type some text and click "Generate".
 
 ## Fine-tuning Your Voice
 
-Compare the original voice and the generated voice using the same text. Adjust the settings or text based on this comparison. Here are some tips:
+You can make the voice read better by adjusting system and user prompts.
+Here are some tips:
 
 - If the voice is too monotone, lower the Stability to make it more emotional. However, setting the Stability to zero can sometimes lead to a strange accent.
 - Longer sentences tend to be spoken better because they provide more context for the AI speaker to understand.
@@ -45,11 +49,8 @@ Compare the original voice and the generated voice using the same text. Adjust t
 
 ## Using Your Custom Voice in Our Project
 
-1. Get the voice ID of the voice, and get the API key from your ElevenLabs account.
-2. Paste the voice ID and API key in your .env file:
-```
-XI_VOICE_ID=<voice id>
-XI_API_KEY=<api key>
-```
-3. Remember to add your fine-tuning tricks in the system prompt.
-
+You need the voice id of cloned voice. Here's how:
+1. go to https://api.elevenlabs.io/docs
+2. choose Get Voices api
+3. follow the instruction and find the specific voice_id in the Responses.
+4. Do not forget to update your .env file with `ELEVEN_LABS_API_KEY` and voice ids.

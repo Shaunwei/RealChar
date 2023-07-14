@@ -101,6 +101,7 @@ class WebSocketClient: NSObject, URLSessionWebSocketDelegate, ObservableObject {
     }
 
     func send(message: String) {
+        print("Send websocket string: \(message)")
         webSocket.send(.string(message)) { error in
             if let error {
                 print(error)

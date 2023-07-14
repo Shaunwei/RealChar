@@ -6,6 +6,31 @@ body {
   align-items: center;
 }
 
+/* CSS for mobile warning message and desktop content */
+@media (max-width: 768px) {
+  #desktop-content { display: none; }
+  #mobile-warning { display: block; }
+}
+
+@media (min-width: 769px) {
+  #desktop-content { display: flex; }
+  #mobile-warning { display: none; }
+}
+
+#desktop-content {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#mobile-warning {
+  color:white;
+}
+
+#mobile-warning p {
+  margin-bottom: 10px;
+}
+
 .logo-container {
   margin-top: 80px;
   margin-bottom: 30px;

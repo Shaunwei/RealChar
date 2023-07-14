@@ -12,77 +12,89 @@
   <div class="logo-container">
     <img alt="Logo" src="/static/logo.svg" />
   </div>
-  <!-- Audio device selection -->
-  <p class="alert"> Please wear headphone 🎧 <span id="recording" class="recording">Recording</span> </p>
-  <div id="devices-container" class="devices-container">
-    <label class="audio-device-label" for="audio-device-selection">Select an audio input device:</label>
-    <div class="select-dropdown">
-      <select id="audio-device-selection" class="form-select"></select>
-    </div>
+
+  <!-- Mobile warning message -->
+  <div id="mobile-warning">
+    <p>This website is best viewed on a desktop browser.</p> 
+    <p>Please switch to a desktop for the best experience.</p> 
+    <p>Mobile version is coming soon!</p>
   </div>
 
-  <div class="header">
-    <p></p>
-  </div>
-  <button id="connect" class="connect">Connect</button>
-  
-  <!-- Characters List -->
-  <div class="main-container">
-    <div class="radio-buttons">
-      <!-- this part will be dynamically rendered -->
-    </div>
-  </div>
-  <div class="actions">
-    <button id="talk-btn" class="talk-btn" disabled>Talk</button>
-    <button id="text-btn" class="text-btn" disabled>Text</button>
-  </div>
-  
-  
-  <div class="main-screen">
-    <div id="player-container" class="player-container">
-      <div id="sound-wave" class="sound-wave">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
+
+  <!-- Desktop content -->
+  <div id="desktop-content">
+    <!-- Audio device selection -->
+    <p class="alert"> Please wear headphone 🎧 <span id="recording" class="recording">Recording</span> </p>
+    <div id="devices-container" class="devices-container">
+      <label class="audio-device-label" for="audio-device-selection">Select an audio input device:</label>
+      <div class="select-dropdown">
+        <select id="audio-device-selection" class="form-select"></select>
       </div>
-      <audio id="audio-player" class="audio-player">
-        <source src="" type="audio/mp3">
-      </audio>
     </div>
-    <textarea id="chat-window" class="chat-window" readonly draggable="false"></textarea>
-  </div>
-  </div>
-  <div class="action-container">
-    <div id="stop-call" class="stop-call">
-      <img src="/static/end-call.svg" alt="End call icon" class="icon-instance-node"/>
-    </div>
-    <div id="continue-call" class="continue-call">
-      <img src="/static/continue-call.svg" alt="Continue call icon" class="icon-instance-node"/>
-    </div>
-    <div class="message-input-container">
-      <input id="message-input" class="message-input" type="text" placeholder="Type your message">
-      <span class="focus-border">
-        <i></i>
-      </span>
-    </div>
-    <button id="send-btn" class="send-btn">Send Message</button>
-  </div>
 
-  <div class="options-container">
-    <div id="disconnect" class="disconnect">
-      <img src="/static/connect.svg" alt="Connect Icon" class="icon-instance-node-small" />
+    <div class="header">
+      <p></p>
     </div>
-    <div id="message" class="message">
-      <img src="/static/message.svg" alt="Message Icon" class="icon-instance-node-small" />
+    <button id="connect" class="connect">Connect</button>
+    
+    <!-- Characters List -->
+    <div class="main-container">
+      <div class="radio-buttons">
+        <!-- this part will be dynamically rendered -->
+      </div>
     </div>
-    <div id="call" class="call">
-      <img src="/static/microphone.svg" alt="Connect Icon" class="icon-instance-node-small" />
+    <div class="actions">
+      <button id="talk-btn" class="talk-btn" disabled>Talk</button>
+      <button id="text-btn" class="text-btn" disabled>Text</button>
     </div>
-  </div>
+    
+    
+    <div class="main-screen">
+      <div id="player-container" class="player-container">
+        <div id="sound-wave" class="sound-wave">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <audio id="audio-player" class="audio-player">
+          <source src="" type="audio/mp3">
+        </audio>
+      </div>
+      <textarea id="chat-window" class="chat-window" readonly draggable="false"></textarea>
+    </div>
+    </div>
+    <div class="action-container">
+      <div id="stop-call" class="stop-call">
+        <img src="/static/end-call.svg" alt="End call icon" class="icon-instance-node"/>
+      </div>
+      <div id="continue-call" class="continue-call">
+        <img src="/static/continue-call.svg" alt="Continue call icon" class="icon-instance-node"/>
+      </div>
+      <div class="message-input-container">
+        <input id="message-input" class="message-input" type="text" placeholder="Type your message">
+        <span class="focus-border">
+          <i></i>
+        </span>
+      </div>
+      <button id="send-btn" class="send-btn">Send Message</button>
+    </div>
 
+    <div class="options-container">
+      <div id="disconnect" class="disconnect">
+        <img src="/static/connect.svg" alt="Connect Icon" class="icon-instance-node-small" />
+      </div>
+      <div id="message" class="message">
+        <img src="/static/message.svg" alt="Message Icon" class="icon-instance-node-small" />
+      </div>
+      <div id="call" class="call">
+        <img src="/static/microphone.svg" alt="Connect Icon" class="icon-instance-node-small" />
+      </div>
+    </div>  
+  </div>
+  
   <footer>
     <div class="rounded-social-buttons">
       <a class="social-button github" href="https://github.com/Shaunwei/RealChar" target="_blank"><i class="fab fa-github"></i></a>
@@ -91,6 +103,7 @@
     </div>
     <p class="copyright">Copyright © 2023 RealChar. All rights reserved.</p>
   </footer>
+
   <script src="/static/script.js"></script>
 </body>
 

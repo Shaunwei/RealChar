@@ -461,7 +461,8 @@ function createCharacterGroups(message) {
     'Raiden Shogun And Ei': '/static/raiden.svg',
     'Loki': '/static/loki.svg',
     'Ai Character Helper': '/static/ai_helper.png',
-    'Reflection Pi': '/static/pi.jpeg'
+    'Reflection Pi': '/static/pi.jpeg',
+    'Elon Musk': '/static/elon.png',
   };
 
   const radioButtonDiv = document.getElementsByClassName('radio-buttons')[0];
@@ -484,7 +485,11 @@ function createCharacterGroups(message) {
       hobbiesIcon.className = 'hobbies-icon';
 
       const img = document.createElement('img');
-      img.src = imageMap[match[2]];
+      let src = imageMap[match[2]];
+      if (!src) {
+        src = '/static/realchar.svg';
+      }
+      img.src = src;
 
       // Create a h3 element
       const h3 = document.createElement('h4');

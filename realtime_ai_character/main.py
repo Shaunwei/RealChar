@@ -30,3 +30,5 @@ get_speech_to_text()
 
 # suppress deprecation warnings
 warnings.filterwarnings("ignore", module="whisper")
+
+print(os.environ)

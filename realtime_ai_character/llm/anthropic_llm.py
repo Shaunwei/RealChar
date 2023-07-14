@@ -1,3 +1,4 @@
+import os
 from typing import List
 
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -17,7 +18,7 @@ class AnthropicLlm(Singleton, LLM):
         super().__init__()
 
         self.chat_anthropic = ChatAnthropic(
-            model='claude-2',
+            model=os.getenv('ANTHROPIC_MODEL', 'claude-2'),
             temperature=0.2,
             streaming=True
         )

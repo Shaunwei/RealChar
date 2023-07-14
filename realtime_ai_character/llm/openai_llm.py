@@ -1,3 +1,4 @@
+import os
 from typing import List
 
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -17,7 +18,7 @@ class OpenaiLlm(Singleton, LLM):
         super().__init__()
 
         self.chat_open_ai = ChatOpenAI(
-            model='gpt-3.5-turbo-16k-0613',
+            model=os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo-16k'),
             temperature=0.2,
             streaming=True
         )

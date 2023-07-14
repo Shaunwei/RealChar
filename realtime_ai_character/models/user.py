@@ -8,6 +8,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     email = Column(String, unique=True, index=True, nullable=False)
+    client_id = Column(String)
 
     def save(self, db):
         db.add(self)

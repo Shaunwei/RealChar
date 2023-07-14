@@ -20,7 +20,7 @@ def upgrade() -> None:
     op.create_table('interactions',
                     sa.Column('id', sa.Integer(),
                               primary_key=True, index=True),
-                    sa.Column('client_id', sa.Integer(), nullable=True),
+                    sa.Column('client_id', sa.String(), nullable=True),
                     sa.Column('client_message', sa.String(), nullable=True),
                     sa.Column('server_message', sa.String(), nullable=True),
                     sa.Column('timestamp', sa.DateTime(), nullable=True),

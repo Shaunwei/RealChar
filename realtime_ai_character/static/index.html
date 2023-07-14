@@ -25,6 +25,10 @@
     </div>
   </div>
 
+  <div class="login-container">
+    <div id="firebaseui-auth-container"></div>
+  </div>
+
   <div class="header">
     <p></p>
   </div>
@@ -98,32 +102,13 @@
     </div>
     <p class="copyright">Copyright © 2023 RealChar. All rights reserved.</p>
   </footer>
-  <script src="/static/script.js"></script>
+  <!-- Insert this script at the bottom of the HTML, but before you use any Firebase services -->
+  <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 
-  <script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-analytics.js";
-    // TODO: Add SDKs for Firebase products that you want to use
-    // https://firebase.google.com/docs/web/setup#available-libraries
+  <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-    // Your web app's Firebase configuration
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-    const firebaseConfig = {
-      apiKey: "AIzaSyAVqhwbdB8I56HAMVVlgJKZcfrBkKI2AhQ",
-      authDomain: "assistly-kubernetes.firebaseapp.com",
-      projectId: "assistly-kubernetes",
-      storageBucket: "assistly-kubernetes.appspot.com",
-      messagingSenderId: "806733379891",
-      appId: "1:806733379891:web:48bf124c0d9b90298e6646",
-      measurementId: "G-XVWF8XDKS5"
-    };
-
-    // Initialize Firebase
-    const firebase = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(firebase);
-  </script>
-
+  <script defer src="/static/script.js"></script>
 </body>
 
 </html>

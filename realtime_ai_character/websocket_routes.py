@@ -29,7 +29,7 @@ manager = get_connection_manager()
 @router.websocket("/ws/{client_id}")
 async def websocket_endpoint(
         websocket: WebSocket,
-        client_id: int = Path(...),
+        client_id: str = Path(...),
         api_key: str = Query(None),
         db: Session = Depends(get_db),
         llm: LLM = Depends(get_llm),
@@ -54,7 +54,7 @@ async def websocket_endpoint(
 
 async def handle_receive(
         websocket: WebSocket,
-        client_id: int,
+        client_id: str,
         db: Session,
         llm: LLM,
         catalog_manager: CatalogManager,

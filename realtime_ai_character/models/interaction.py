@@ -7,7 +7,7 @@ class Interaction(Base):
     __tablename__ = "interactions"
 
     id = Column(Integer, primary_key=True, index=True, nullable=False)
-    client_id = Column(Integer)
+    client_id = Column(String)
     client_message = Column(String)
     server_message = Column(String)
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)

@@ -1,11 +1,46 @@
 // Initialize the FirebaseUI Widget using Firebase.
+const firebaseConfig = {
+  apiKey: "AIzaSyAVqhwbdB8I56HAMVVlgJKZcfrBkKI2AhQ",
+  authDomain: "assistly-kubernetes.firebaseapp.com",
+  projectId: "assistly-kubernetes",
+  storageBucket: "assistly-kubernetes.appspot.com",
+  messagingSenderId: "806733379891",
+  appId: "1:806733379891:web:48bf124c0d9b90298e6646",
+  measurementId: "G-XVWF8XDKS5"
+};
+
+firebase.initializeApp(firebaseConfig);
 var ui = new firebaseui.auth.AuthUI(firebase.auth());
-ui.start('#firebaseui-auth-container', {
-  signInOptions: [
-    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-    firebase.auth.TwitterAuthProvider.PROVIDER_ID,
-  ],
-});
+
+const user = firebase.auth().currentUser;
+let clientId = null;
+if (user) {
+  document.getElementById('connect').display = 'flex';
+  document.getElementById('devices-container').display = 'flex';
+  clientId = user.uid;
+} else {
+  ui.start('#firebaseui-auth-container', {
+    signInOptions: [
+      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+      firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+    ],
+    callbacks: {
+      signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+        // User successfully signed in.
+        // Return type determines whether we continue the redirect automatically
+        // or whether we leave that to developer to handle.
+        console.log(authResult);
+        return true;
+      },
+      uiShown: function() {
+        document.getElementById('connect').display = 'flex';
+        document.getElementById('devices-container').display = 'flex';
+      },
+    },
+    signInFlow: 'popup',
+    signInSuccessUrl: 'https://realchar.ai',
+  });
+}
 /**
  * WebSocket Connection
  * The client sends and receives messages through this WebSocket connection.
@@ -14,11 +49,9 @@ const connectButton = document.getElementById('connect');
 const disconnectButton = document.getElementById('disconnect');
 const devicesContainer = document.getElementById('devices-container');
 let socket;
-let clientId = Math.floor(Math.random() * 10000000);
 
 function connectSocket() {
   chatWindow.value = "";
-  var clientId = Math.floor(Math.random() * 1010000);
   var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
   var ws_path = ws_scheme + '://' + window.location.host + `/ws/${clientId}`;
   socket = new WebSocket(ws_path);

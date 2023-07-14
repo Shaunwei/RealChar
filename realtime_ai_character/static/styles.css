@@ -605,3 +605,11 @@ input[type="text"]{font: 15px/24px "Lato", Arial, sans-serif; color: white; widt
   left:55px;
   animation-delay:1s
 }
+
+#connect {
+  display: none;
+}
+
+#devices-container {
+  display: none;
+}

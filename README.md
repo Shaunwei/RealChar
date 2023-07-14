@@ -182,7 +182,7 @@ ELEVEN_LABS_API_KEY=<api key>
 - [ ] Add more characters
 
 ## Contribute to RealChar🫶
-Please check out our [Contribution Guide](contribute.md)
+Please check out our [Contribution Guide](contribute.md)!
 
 ## Contributors💪
 

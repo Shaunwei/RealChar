@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import CachedAsyncImage
 
 struct CharacterOption: Identifiable, Equatable {
     let id: Int
     let name: String
     let description: String
+    let imageUrl: URL?
 }
 
 struct ConfigView: View {
@@ -71,11 +73,28 @@ struct CharacterOptionView: View {
     var body: some View {
         HStack(alignment: .center, spacing: 22) {
             HStack(alignment: .center, spacing: 12) {
-                Rectangle()
-                    .foregroundColor(.clear)
-                    .frame(width: 40, height: 40)
-                    .background(Color(red: 0.76, green: 0.83, blue: 1))
-                    .cornerRadius(43.75)
+                ZStack {
+                    Rectangle()
+                        .foregroundColor(.clear)
+                        .frame(width: 40, height: 40)
+                        .background(Color(red: 0.76, green: 0.83, blue: 1))
+                        .cornerRadius(20)
+                    if let imageUrl = option.imageUrl {
+                        CachedAsyncImage(url: imageUrl) { phase in
+                            switch phase {
+                            case .empty:
+                                ProgressView()
+                            case .success(let image):
+                                image.resizable()
+                            default:
+                                Image(systemName: "wifi.slash")
+                            }
+                        }
+                        .scaledToFit()
+                        .frame(width: 36, height: 36)
+                        .cornerRadius(18)
+                    }
+                }
 
                 Text(option.name)
                     .font(
@@ -107,9 +126,9 @@ struct CharacterOptionView: View {
 
 struct ConfigView_Previews: PreviewProvider {
     static var previews: some View {
-        ConfigView(options: [.init(id: 0, name: "Mythical god", description: "Rogue"),
-                             .init(id: 1, name: "Anime hero", description: "Noble"),
-                             .init(id: 2, name: "Realtime AI", description: "Kind")],
+        ConfigView(options: [.init(id: 0, name: "Mythical god", description: "Rogue", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!),
+                             .init(id: 1, name: "Anime hero", description: "Noble", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!),
+                             .init(id: 2, name: "Realtime AI", description: "Kind", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!)],
                    loaded: .constant(true),
                    selectedOption: .constant(nil),
                    onConfirmConfig: { _ in })

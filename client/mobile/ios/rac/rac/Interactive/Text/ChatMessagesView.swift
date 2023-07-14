@@ -48,14 +48,20 @@ struct ChatMessagesView: View {
                     .listRowSeparator(.hidden)
                     .listRowBackground(Constants.realBlack)
                     .onSubmit {
-                        onSendUserMessage(userInput)
-                        userInput = ""
+                        doSubmit()
                     }
+                    .onEnter($of: $userInput, action: doSubmit)
+                    .submitLabel(.send)
             }
         }
         .scrollIndicators(.hidden)
         .listStyle(.inset)
         .scrollContentBackground(.hidden)
+    }
+
+    private func doSubmit() {
+        onSendUserMessage(userInput)
+        userInput = ""
     }
 }
 
@@ -114,6 +120,7 @@ struct CustomTextFieldStyle: TextFieldStyle {
         configuration
             .font(Font.custom("Prompt", size: 20))
             .multilineTextAlignment(.trailing)
+            .lineLimit(...3)
             .foregroundColor(.white)
             .padding(.horizontal, 20)
             .padding(.vertical, 11)
@@ -125,6 +132,15 @@ struct CustomTextFieldStyle: TextFieldStyle {
 extension View {
     func roundedCorner(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape(RoundedCorner(radius: radius, corners: corners) )
+    }
+
+    func onEnter(@Binding of text: String, action: @escaping () -> ()) -> some View {
+        onChange(of: text) { newValue in
+            if let last = newValue.last, last == "\n" {
+                text.removeLast()
+                action()
+            }
+        }
     }
 }
 

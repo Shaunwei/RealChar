@@ -12,6 +12,7 @@
 		2600B0732A60985F003E8388 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B0722A60985F003E8388 /* SpeechRecognizer.swift */; };
 		2600B0762A60A024003E8388 /* WebSocketClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B0752A60A024003E8388 /* WebSocketClient.swift */; };
 		2600B0782A60C6CE003E8388 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B0772A60C6CE003E8388 /* AudioPlayer.swift */; };
+		2600B07B2A61EA86003E8388 /* CachedAsyncImage in Frameworks */ = {isa = PBXBuildFile; productRef = 2600B07A2A61EA86003E8388 /* CachedAsyncImage */; };
 		26FE4D092A5B6F0D006A1882 /* racApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D082A5B6F0D006A1882 /* racApp.swift */; };
 		26FE4D0B2A5B6F0D006A1882 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D0A2A5B6F0D006A1882 /* RootView.swift */; };
 		26FE4D0D2A5B6F0E006A1882 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26FE4D0C2A5B6F0E006A1882 /* Assets.xcassets */; };
@@ -55,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2600B07B2A61EA86003E8388 /* CachedAsyncImage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,6 +209,9 @@
 			dependencies = (
 			);
 			name = rac;
+			packageProductDependencies = (
+				2600B07A2A61EA86003E8388 /* CachedAsyncImage */,
+			);
 			productName = rac;
 			productReference = 26FE4D052A5B6F0D006A1882 /* rac.app */;
 			productType = "com.apple.product-type.application";
@@ -235,6 +240,9 @@
 				Base,
 			);
 			mainGroup = 26FE4CFC2A5B6F0D006A1882;
+			packageReferences = (
+				2600B0792A61EA86003E8388 /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */,
+			);
 			productRefGroup = 26FE4D062A5B6F0D006A1882 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -423,7 +431,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.aisland.rac;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.realchar.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -457,7 +465,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.aisland.rac;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.realchar.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -487,6 +495,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2600B0792A61EA86003E8388 /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/lorenzofiamingo/swiftui-cached-async-image";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2600B07A2A61EA86003E8388 /* CachedAsyncImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2600B0792A61EA86003E8388 /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */;
+			productName = CachedAsyncImage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 26FE4CFD2A5B6F0D006A1882 /* Project object */;
 }

@@ -10,7 +10,8 @@ import Combine
 import Foundation
 import SwiftUI
 
-let serverUrl: URL = URL(string: "http://127.0.0.1:8000/")!
+//let serverUrl: URL = URL(string: "http://127.0.0.1:8000/")!
+let serverUrl: URL = URL(string: "https://realchar.ai/")!
 
 class WebSocketClient: NSObject, URLSessionWebSocketDelegate, ObservableObject {
 
@@ -58,6 +59,9 @@ class WebSocketClient: NSObject, URLSessionWebSocketDelegate, ObservableObject {
     func receive() {
         webSocket.receive(completionHandler: { [weak self] result in
             guard let self else { return }
+
+            var retry = true
+
             switch result {
             case .success(let message):
 
@@ -85,14 +89,19 @@ class WebSocketClient: NSObject, URLSessionWebSocketDelegate, ObservableObject {
 
             case .failure(let error):
                 print("Error Receiving \(error)")
+                retry = false
+                self.connectSession()
             }
 
-            // Creates the Recurrsion
-            self.receive()
+            if retry {
+                // Creates the Recurrsion
+                self.receive()
+            }
         })
     }
 
     func send(message: String) {
+        print("Send websocket string: \(message)")
         webSocket.send(.string(message)) { error in
             if let error {
                 print(error)

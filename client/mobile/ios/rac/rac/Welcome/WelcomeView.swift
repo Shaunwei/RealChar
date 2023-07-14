@@ -78,12 +78,28 @@ struct WelcomeView: View {
                 if isFirstCharactersNumber(String(line), count: 1) {
                     if let characterName = line.split(separator: "-").last?.trimmingPrefix(" ") {
                         // TODO: ID and description here are temporary
-                        options.append(.init(id: options.count + 1, name: String(characterName), description: ""))
+                        options.append(.init(id: options.count + 1, name: String(characterName), description: "", imageUrl: mapCharacterToImageUrl(characterName: String(characterName))))
                     }
                 }
             }
         }
         return options.isEmpty ? nil : options
+    }
+
+    private func mapCharacterToImageUrl(characterName: String) -> URL? {
+        // TODO: Get url from server
+        if characterName.contains("Elon") {
+            return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/elon.jpeg")!
+        } else if characterName.contains("Character") {
+            return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!
+        } else if characterName.contains("Loki") {
+            return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!
+        } else if characterName.contains("Pi") {
+            return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/pi.jpeg")!
+        } else if characterName.contains("Raiden") {
+            return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!
+        }
+        return nil
     }
 
     private func isFirstCharactersNumber(_ string: String, count: Int) -> Bool {
@@ -103,17 +119,17 @@ struct WelcomeView_Previews: PreviewProvider {
         WelcomeView(webSocketClient: WebSocketClient(),
                     tab: .constant(.about),
                     character: .constant(nil),
-                    options: [.init(id: 0, name: "Mythical god", description: "Rogue"),
-                                        .init(id: 1, name: "Anime hero", description: "Noble"),
-                                        .init(id: 2, name: "Realtime AI", description: "Kind")],
+                    options: [.init(id: 0, name: "Mythical god", description: "Rogue", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!),
+                              .init(id: 1, name: "Anime hero", description: "Noble", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!),
+                              .init(id: 2, name: "Realtime AI", description: "Kind", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!)],
                     onConfirmConfig: { _ in }
         )
         WelcomeView(webSocketClient: WebSocketClient(),
                     tab: .constant(.config),
                     character: .constant(nil),
-                    options: [.init(id: 0, name: "Mythical god", description: "Rogue"),
-                                        .init(id: 1, name: "Anime hero", description: "Noble"),
-                                        .init(id: 2, name: "Realtime AI", description: "Kind")],
+                    options:  [.init(id: 0, name: "Mythical god", description: "Rogue", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!),
+                               .init(id: 1, name: "Anime hero", description: "Noble", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!),
+                               .init(id: 2, name: "Realtime AI", description: "Kind", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!)],
                     onConfirmConfig: { _ in })
     }
 }

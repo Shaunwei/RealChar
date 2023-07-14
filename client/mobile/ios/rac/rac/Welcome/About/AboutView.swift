@@ -49,7 +49,7 @@ struct AboutView: View {
                 Spacer(minLength: 20)
 
                 CtaButton(action: {
-                    UIApplication.shared.open(URL(string: "https://github.com/Shaunwei/Realtime-AI-Character")!)
+                    UIApplication.shared.open(URL(string: "https://github.com/Shaunwei/RealChar")!)
                 }, text: "Contribute")
             }
         }

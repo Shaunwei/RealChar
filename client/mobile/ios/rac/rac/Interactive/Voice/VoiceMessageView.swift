@@ -23,15 +23,28 @@ enum VoiceState: Equatable {
         }
     }
 
-    var image: Image {
+    var image: some View {
         switch self {
         case .idle:
-            return Image("voice")
-        case .characterSpeaking:
-            // TODO: Use image URL
-            return Image("message")
+            return AnyView(Image("voice"))
+        case .characterSpeaking(let characterImageUrl):
+            return AnyView(AsyncImage(url: characterImageUrl) { phase in
+                switch phase {
+                case .empty:
+                    ProgressView()
+                case .success(let image):
+                    image
+                        .resizable()
+                        .transition(.scale(scale: 0.5, anchor: .center))
+                default:
+                    Image(systemName: "wifi.slash")
+                }
+            }
+                .scaledToFit()
+                .frame(width: 80, height: 80)
+            )
         case .listeningToUser:
-            return Image("stop")
+            return AnyView(Image("stop"))
         }
     }
 

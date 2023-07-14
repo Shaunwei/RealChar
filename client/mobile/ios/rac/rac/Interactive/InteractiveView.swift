@@ -24,7 +24,7 @@ struct InteractiveView: View {
     let onExit: () -> Void
     @State var messages: [ChatMessage] = []
     @State var mode: InteractiveMode = .voice
-    @State var voiceState: VoiceState = .characterSpeaking(characterImageUrl: URL(string: "TODO"))
+    @State var voiceState: VoiceState = .idle
     @StateObject var audioPlayer = AudioPlayer()
 
     var body: some View {
@@ -35,7 +35,7 @@ struct InteractiveView: View {
                 ChatMessagesView(messages: $messages,
                                  isExpectingUserInput: .init(get: { voiceState == .idle }, set: { _ in }),
                                  onSendUserMessage: { message in
-                    voiceState = .characterSpeaking(characterImageUrl: URL(string: "TODO"))
+                    voiceState = .characterSpeaking(characterImageUrl: character?.imageUrl)
                    messages.append(.init(id: UUID(), role: .user, content: message))
                    webSocketClient.send(message: message)
                 }
@@ -129,12 +129,12 @@ struct InteractiveView: View {
                     messages.append(ChatMessage(id: UUID(), role: .assistant, content: message))
                 }
                 if mode == .voice {
-                    voiceState = .characterSpeaking(characterImageUrl: URL(string: "TODO"))
+                    voiceState = .characterSpeaking(characterImageUrl: character?.imageUrl)
                 }
             }
             webSocketClient.onDataReceived = { data in
                 if mode == .voice {
-                    voiceState = .characterSpeaking(characterImageUrl: URL(string: "TODO"))
+                    voiceState = .characterSpeaking(characterImageUrl: character?.imageUrl)
                     audioPlayer.playAudio(data: data)
                 }
             }
@@ -164,7 +164,7 @@ struct InteractiveView: View {
 struct InteractiveView_Previews: PreviewProvider {
     static var previews: some View {
         InteractiveView(webSocketClient: WebSocketClient(),
-                        character: .init(id: 0, name: "Name", description: "Description"),
+                        character: .init(id: 0, name: "Name", description: "Description", imageUrl: nil),
                         onExit: {})
     }
 }

@@ -110,8 +110,8 @@ struct InteractiveView: View {
         }
         .background(Constants.realBlack)
         .onAppear {
-            // TODO: Always use "2" text chat as we do speech recognition locally.
-            webSocketClient.send(message: "2")
+            // TODO: Allow user to provide first message
+            webSocketClient.send(message: "Hi")
             webSocketClient.isInteractiveMode = true
             webSocketClient.onStringReceived = { message in
                 if message == "[end]\n" {

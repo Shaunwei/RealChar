@@ -184,6 +184,12 @@ ELEVEN_LABS_API_KEY=<api key>
 
 </details>
 
+<br/>
+
+## ⭐️ Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Shaunwei/RealChar&type=Date)](https://star-history.com/#Shaunwei/RealChar&Date)
+
 ## 📍 Roadmap
 - [ ] Launch v0.0.0 and build a community
 - [ ] Add more characters

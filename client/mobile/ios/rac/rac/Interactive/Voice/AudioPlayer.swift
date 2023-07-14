@@ -17,7 +17,6 @@ class AudioPlayer: NSObject, ObservableObject {
     func playAudio(data: Data, checkPlaying: Bool = true) {
         if checkPlaying && isPlaying {
             pendingData.append(data)
-            print("add pending play data: \(data)")
             return
         }
 
@@ -25,7 +24,6 @@ class AudioPlayer: NSObject, ObservableObject {
             audioPlayer = try AVAudioPlayer(data: data)
             audioPlayer?.delegate = self
             audioPlayer?.play()
-            print("play: \(data)")
             DispatchQueue.main.async {
                 self.isPlaying = true
             }

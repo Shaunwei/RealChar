@@ -46,8 +46,14 @@ struct InteractiveView: View {
             case .voice:
                 VoiceMessageView(messages: $messages,
                                  state: $voiceState,
+                                 onUpdateUserMessage: { message in
+                    if messages.last?.role == .user {
+                        messages[messages.count - 1].content = message
+                    } else {
+                        messages.append(.init(id: UUID(), role: .user, content: message))
+                    }
+                },
                                  onSendUserMessage: { message in
-                    messages.append(.init(id: UUID(), role: .user, content: message))
                     webSocketClient.send(message: message)
                 },
                                  onTapVoiceButton: {
@@ -122,14 +128,19 @@ struct InteractiveView: View {
                 } else {
                     messages.append(ChatMessage(id: UUID(), role: .assistant, content: message))
                 }
+                if mode == .voice {
+                    voiceState = .characterSpeaking(characterImageUrl: URL(string: "TODO"))
+                }
             }
             webSocketClient.onDataReceived = { data in
                 if mode == .voice {
                     voiceState = .characterSpeaking(characterImageUrl: URL(string: "TODO"))
-                    print("play audio with data: \(data)")
                     audioPlayer.playAudio(data: data)
                 }
             }
+        }
+        .onDisappear {
+            audioPlayer.pauseAudio()
         }
         .onChange(of: voiceState) { newValue in
             if newValue == .listeningToUser {

@@ -58,13 +58,15 @@ struct VoiceMessageView: View {
     @Binding var state: VoiceState
     @StateObject var speechRecognizer = SpeechRecognizer()
 
+    let onUpdateUserMessage: (String) -> Void
     let onSendUserMessage: (String) -> Void
     let onTapVoiceButton: () -> Void
 
     var body: some View {
         VStack(spacing: 50) {
             List {
-                if case .characterSpeaking = state {
+                switch state {
+                case .characterSpeaking, .idle:
                     if let lastUserMessage = messages.last(where: { message in
                         message.role == .user
                     }) {
@@ -72,11 +74,25 @@ struct VoiceMessageView: View {
                             .listRowSeparator(.hidden)
                             .listRowBackground(Constants.realBlack)
                     }
-                }
-                if messages.last?.role == .assistant, let lastCharacterMessage = messages.last {
-                    CharacterMessage(message: lastCharacterMessage.content)
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Constants.realBlack)
+                    if messages.last?.role == .assistant, let lastCharacterMessage = messages.last {
+                        CharacterMessage(message: lastCharacterMessage.content)
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Constants.realBlack)
+                    }
+                case .listeningToUser:
+                    if let lastCharacterMessage = messages.last(where: { message in
+                        message.role == .assistant
+                    }) {
+                        CharacterMessage(message: lastCharacterMessage.content)
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Constants.realBlack)
+                    }
+
+                    if messages.last?.role == .user, let lastUserMessage = messages.last {
+                        UserMessage(message: lastUserMessage.content)
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Constants.realBlack)
+                    }
                 }
             }
             .scrollIndicators(.hidden)
@@ -147,7 +163,13 @@ struct VoiceMessageView: View {
                 speechRecognizer.stopTranscribing()
                 if !speechRecognizer.transcript.isEmpty {
                     onSendUserMessage(speechRecognizer.transcript)
+                    speechRecognizer.resetTranscript()
                 }
+            }
+        }
+        .onChange(of: speechRecognizer.transcript) { newValue in
+            if !newValue.isEmpty {
+                onUpdateUserMessage(newValue)
             }
         }
     }
@@ -200,6 +222,7 @@ struct VoiceMessageView_Previews: PreviewProvider {
             ChatMessage(id: UUID(), role: .assistant, content: "Well thank you, Karina! I like your nam too. Now tell me, where do you live?")
         ]),
                          state: .constant(.idle),
+                         onUpdateUserMessage: { _ in },
                          onSendUserMessage: { _ in },
                          onTapVoiceButton: { })
         .preferredColorScheme(.dark)

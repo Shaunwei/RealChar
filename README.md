@@ -28,7 +28,8 @@
 ## ✨ Demo
 For the best demo experience, try [our site](https://realchar.ai)
 
-https://github.com/Shaunwei/RealChar/assets/5101573/088e4bc3-ee5b-4edd-aa27-35176cf2a8a6
+https://github.com/Shaunwei/RealChar/assets/5101573/5de0b023-6cf3-4947-84cb-596f429d109e
+
 
 __Demo settings: Web, GPT4, ElevenLabs with voice clone, Chroma, Google Speech to Text__
 

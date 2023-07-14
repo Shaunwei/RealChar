@@ -508,7 +508,7 @@ input[type="text"]{font: 15px/24px 'Muli', sans-serif; color: white; width: 100%
 .message-input-container{
   float: left; 
   width: 50vw;
-  margin: 30px 3%; 
+  margin: 15px 3%; 
   position: relative;}
 input[type="text"]{font: 15px/24px "Lato", Arial, sans-serif; color: white; width: 100%; box-sizing: border-box; letter-spacing: 1px;}
 .message-input {

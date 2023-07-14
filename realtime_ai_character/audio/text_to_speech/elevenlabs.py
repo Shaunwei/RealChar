@@ -11,11 +11,9 @@ logger = get_logger(__name__)
 DEBUG = False
 
 config = types.SimpleNamespace(**{
-    'default_voice': 'EXAVITQu4vr4xnSDxMaL',
-    'pi_voice': 'EXAVITQu4vr4xnSDxMaL',
-    'raiden_voice': 'GQbV9jBB6X50z0S6R2d0',
-    'loki_voice': 'ErXwobaYiN019PkySvjV',  # TODO: train a new voice for Loki
-    'elon_voice': 'pkR5tvu0WMvDEf8i4UZT',
+    'default_voice': '21m00Tcm4TlvDq8ikWAM',
+    'default_female_voice': 'EXAVITQu4vr4xnSDxMaL',
+    'default_male_voice': 'ErXwobaYiN019PkySvjV',
     'chunk_size': 1024,
     'url': 'https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/stream',
     'headers': {
@@ -32,22 +30,19 @@ config = types.SimpleNamespace(**{
     }
 })
 
-
 class ElevenLabs(Singleton, TextToSpeech):
     def __init__(self):
         super().__init__()
         logger.info("Initializing [ElevenLabs Text To Speech] voices...")
+        self.voice_ids = {
+            "Raiden Shogun And Ei": os.environ.get('RAIDEN_VOICE') or config.default_female_voice,
+            "Loki": os.environ.get('LOKI_VOICE') or config.default_male_voice,
+            "Reflection Pi": os.environ.get('PI_VOICE') or config.default_female_voice,
+            "Elon Musk": os.environ.get('ELON_VOICE') or config.default_male_voice,
+        }
 
     def get_voice_id(self, name):
-        if name == "Raiden Shogun And Ei":
-            return config.raiden_voice
-        if name == "Loki":
-            return config.loki_voice
-        if name == "Reflection Pi":
-            return config.pi_voice
-        if name == "Elon Musk":
-            return config.elon_voice
-        return config.default_voice
+        return self.voice_ids.get(name, config.default_voice)
 
     async def stream(self, text, websocket, tts_event: asyncio.Event, characater_name="", first_sentence=False) -> None:
         if DEBUG:
@@ -58,6 +53,7 @@ class ElevenLabs(Singleton, TextToSpeech):
             **config.data,
         }
         voice_id = self.get_voice_id(characater_name)
+        print("\n\nvoice_id: ", voice_id)
         url = config.url.format(voice_id=voice_id)
         if first_sentence:
             url = url + '?optimize_streaming_latency=4'

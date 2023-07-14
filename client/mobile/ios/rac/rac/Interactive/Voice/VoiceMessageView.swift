@@ -9,19 +9,32 @@ import SwiftUI
 import CachedAsyncImage
 
 enum VoiceState: Equatable {
-    case idle
+    case idle(streamingEnded: Bool)
     case characterSpeaking(characterImageUrl: URL?)
     case listeningToUser
 
     var displayText: String {
         switch self {
-        case .idle:
-            return "Talk to me"
+        case .idle(let streamingEnded):
+            return streamingEnded ? "Talk to me" : "Receiving..."
         case .characterSpeaking:
             return "Talking"
         case .listeningToUser:
             return "Listening"
         }
+    }
+
+    var isSpeaking: Bool {
+        switch self {
+        case .characterSpeaking:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isDisabled: Bool {
+        return next == self
     }
 
     var image: some View {
@@ -49,12 +62,12 @@ enum VoiceState: Equatable {
 
     var next: VoiceState {
         switch self {
-        case .idle:
-            return .listeningToUser
+        case .idle(let streamingEnded):
+            return streamingEnded ? .listeningToUser : self
         case .listeningToUser:
-            return .idle
+            return .idle(streamingEnded: true)
         case .characterSpeaking:
-            return .idle
+            return .idle(streamingEnded: false)
         }
     }
 }
@@ -110,51 +123,59 @@ struct VoiceMessageView: View {
             .scrollIndicators(.hidden)
             .listStyle(.inset)
             .scrollContentBackground(.hidden)
-            .mask(
-                LinearGradient(
-                    gradient: Gradient(
-                        colors: [Constants.realBlack, Constants.realBlack, .clear]
-                    ),
-                    startPoint: .top,
-                    endPoint: .bottom
+            .if(state.isSpeaking, transform: { view in
+                view.mask(
+                    LinearGradient(
+                        gradient: Gradient(
+                            colors: [Constants.realBlack, Constants.realBlack, .clear]
+                        ),
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
                 )
-            )
+            })
 
             VStack(spacing: 24) {
-                state.image
-                    .tint(.white)
-                    .padding(12)
-                    .frame(width: 80, height: 80, alignment: .center)
-                    .background(Constants.realBlue500)
-                    .cornerRadius(50)
-                    .onTapGesture(perform: onTapVoiceButton)
-                    .background {
-                        if state != .idle {
-                            Rectangle()
-                                .foregroundColor(.clear)
-                                .frame(width: ripple2Size, height: ripple2Size)
-                                .background(Constants.realBlue500.opacity(0.3))
-                                .cornerRadius(ripple2Size / 2)
-                                .onAppear {
-                                    animate()
-                                }
-                                .onDisappear() {
-                                    disableAnimation()
-                                }
+                Button {
+                    onTapVoiceButton()
+                } label: {
+                    state.image
+                        .tint(.white)
+                        .padding(12)
+                        .frame(width: 80, height: 80, alignment: .center)
+                        .background(Constants.realBlue500)
+                        .opacity(state.isDisabled ? 0.25 : 1.0)
+                        .disabled(state.isDisabled)
+                        .cornerRadius(50)
+                        .onTapGesture(perform: onTapVoiceButton)
+                        .background {
+                            if state.isSpeaking || state == .listeningToUser {
+                                Rectangle()
+                                    .foregroundColor(.clear)
+                                    .frame(width: ripple2Size, height: ripple2Size)
+                                    .background(Constants.realBlue500.opacity(0.3))
+                                    .cornerRadius(ripple2Size / 2)
+                                    .onAppear {
+                                        animate()
+                                    }
+                                    .onDisappear() {
+                                        disableAnimation()
+                                    }
 
-                            Rectangle()
-                                .foregroundColor(.clear)
-                                .frame(width: ripple1Size, height: ripple1Size)
-                                .background(Constants.realBlue500.opacity(0.3))
-                                .cornerRadius(ripple1Size / 2)
+                                Rectangle()
+                                    .foregroundColor(.clear)
+                                    .frame(width: ripple1Size, height: ripple1Size)
+                                    .background(Constants.realBlue500.opacity(0.3))
+                                    .cornerRadius(ripple1Size / 2)
 
-                            Rectangle()
-                                .foregroundColor(.clear)
-                                .frame(width: 100, height: 100)
-                                .background(Constants.realBlue500)
-                                .cornerRadius(50)
+                                Rectangle()
+                                    .foregroundColor(.clear)
+                                    .frame(width: 100, height: 100)
+                                    .background(Constants.realBlue500)
+                                    .cornerRadius(50)
+                            }
                         }
-                    }
+                }
 
                 Text(state.displayText)
                     .font(Font.custom("Prompt", size: 16))
@@ -175,6 +196,7 @@ struct VoiceMessageView: View {
                 speechRecognizer.stopTranscribing()
                 if !speechRecognizer.transcript.isEmpty {
                     onSendUserMessage(speechRecognizer.transcript)
+                    speechRecognizer.transcript = ""
                     speechRecognizer.resetTranscript()
                 }
             }
@@ -233,7 +255,7 @@ struct VoiceMessageView_Previews: PreviewProvider {
             ChatMessage(id: UUID(), role: .user, content: "Ray is a nice name!"),
             ChatMessage(id: UUID(), role: .assistant, content: "Well thank you, Karina! I like your nam too. Now tell me, where do you live?")
         ]),
-                         state: .constant(.idle),
+                         state: .constant(.idle(streamingEnded: true)),
                          onUpdateUserMessage: { _ in },
                          onSendUserMessage: { _ in },
                          onTapVoiceButton: { })

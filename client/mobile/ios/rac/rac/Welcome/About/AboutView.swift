@@ -40,7 +40,7 @@ struct AboutView: View {
 
                 Spacer(minLength: 40)
 
-                Text("Realtime is Open Source")
+                Text("RealChar is Open Source")
                     .font(
                         Font.custom("Prompt", size: 16).weight(.semibold)
                     )

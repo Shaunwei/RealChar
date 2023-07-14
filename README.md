@@ -148,7 +148,7 @@ ELEVEN_LABS_API_KEY=<api key>
     uvicorn realtime_ai_character.main:app
     ```
 - **Step 7**. Run client:
-    - Wear headphone for best experience(avoid echo)
+    - Use **GPT4** for better conversation and **Wear headphone** for best audio(avoid echo)
     - Web client: Open your web browser and navigate to http://localhost:8000
     - (Optional) Terminal client: Run the following command in your terminal
     ```sh

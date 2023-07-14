@@ -39,7 +39,7 @@ For the best demo experience,  try [our site](link) directly
 
 ## 🔬 Tech stack
 <div align="center">
-    <img src="./realtime_ai_character/assets/techstack.png" alt="RealChar-tech-stack" width="100%"  style="padding: 20px"/>
+    <img src="https://storage.googleapis.com/assistly/static/realchar/techstack.png" alt="RealChar-tech-stack" width="100%"  style="padding: 20px"/>
 </div>
 
 - ✅**Web**: [Vanilla JS](http://vanilla-js.com/), [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
@@ -52,7 +52,10 @@ For the best demo experience,  try [our site](link) directly
 - ✅**Text to Speech**: [ElevenLabs](https://beta.elevenlabs.io/)
 - ✅**Voice Clone**: [ElevenLabs](https://beta.elevenlabs.io/voice-lab)
 
-## 📚 Character Catalog
+## 📚 Comparison with existing products
+<div align="center">
+    <img src="https://storage.googleapis.com/assistly/static/realchar/compare.png">
+</div>
 
 
 ## 👨‍🚀 Prerequisites
@@ -144,6 +147,7 @@ ELEVEN_LABS_API_KEY=<api key>
     uvicorn realtime_ai_character.main:app
     ```
 - **Step 7**. Run client:
+    - Wear headphone for best experience(avoid echo)
     - Web client: Open your web browser and navigate to http://localhost:8000
     - (Optional) Terminal client: Run the following command in your terminal
     ```sh
@@ -180,6 +184,8 @@ ELEVEN_LABS_API_KEY=<api key>
 ## 📍 Roadmap
 - [ ] Launch v0.0.0 and build a community
 - [ ] Add more characters
+- [ ] Launch mobile app
+- [ ] Add authentication
 
 ## 🫶 Contribute to RealChar
 Please check out our [Contribution Guide](contribute.md)!

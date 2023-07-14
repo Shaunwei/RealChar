@@ -185,6 +185,7 @@ ELEVEN_LABS_API_KEY=<api key>
 ## 📍 Roadmap
 - [ ] Launch v0.0.0 and build a community
 - [ ] Add more characters
+- [ ] Move away from Vanilla JS
 - [ ] Launch mobile app
 - [ ] Add authentication
 

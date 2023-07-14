@@ -127,7 +127,13 @@ struct InteractiveView: View {
                 }
             }
             webSocketClient.onDataReceived = { data in
+                // TODO: Currently showing error: The operation couldn’t be completed. (OSStatus error 1954115647.)
                 audioPlayer.playAudio(data: data)
+            }
+        }
+        .onChange(of: voiceState) { newValue in
+            if newValue == .idle || newValue == .listeningToUser {
+                audioPlayer.pauseAudio()
             }
         }
     }

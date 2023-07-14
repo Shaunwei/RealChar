@@ -10,14 +10,25 @@ import AVFoundation
 
 class AudioPlayer: NSObject, ObservableObject {
     private var audioPlayer: AVAudioPlayer?
-    private var isPlaying = false
+    @Published var isPlaying = false
 
-    func playAudio(data: Data) {
+    private var pendingData: [Data] = []
+
+    func playAudio(data: Data, checkPlaying: Bool = true) {
+        if checkPlaying && isPlaying {
+            pendingData.append(data)
+            print("add pending play data: \(data)")
+            return
+        }
+
         do {
             audioPlayer = try AVAudioPlayer(data: data)
             audioPlayer?.delegate = self
             audioPlayer?.play()
-            isPlaying = true
+            print("play: \(data)")
+            DispatchQueue.main.async {
+                self.isPlaying = true
+            }
         } catch {
             print("Error playing audio: \(error.localizedDescription)")
         }
@@ -25,12 +36,17 @@ class AudioPlayer: NSObject, ObservableObject {
 
     func pauseAudio() {
         audioPlayer?.pause()
-        isPlaying = false
+        pendingData.removeAll()
+        DispatchQueue.main.async {
+            self.isPlaying = false
+        }
     }
 
     func resumeAudio() {
         audioPlayer?.play()
-        isPlaying = true
+        DispatchQueue.main.async {
+            self.isPlaying = true
+        }
     }
 
     func togglePlayback() {
@@ -44,6 +60,13 @@ class AudioPlayer: NSObject, ObservableObject {
 
 extension AudioPlayer: AVAudioPlayerDelegate {
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        isPlaying = false
+        if let nextAudioToPlay = pendingData.first {
+            playAudio(data: nextAudioToPlay, checkPlaying: false)
+            pendingData.remove(at: 0)
+        } else {
+            DispatchQueue.main.async {
+                self.isPlaying = false
+            }
+        }
     }
 }

@@ -115,11 +115,8 @@ struct InteractiveView: View {
             webSocketClient.isInteractiveMode = true
             webSocketClient.onStringReceived = { message in
                 if message == "[end]\n" {
-                    voiceState = .idle
                     return
                 }
-
-                voiceState = .characterSpeaking(characterImageUrl: URL(string: "TODO"))
                 if messages.last?.role == .assistant {
                     messages[messages.count - 1].content += message
                 } else {
@@ -127,13 +124,27 @@ struct InteractiveView: View {
                 }
             }
             webSocketClient.onDataReceived = { data in
-                // TODO: Currently showing error: The operation couldn’t be completed. (OSStatus error 1954115647.)
-                audioPlayer.playAudio(data: data)
+                if mode == .voice {
+                    voiceState = .characterSpeaking(characterImageUrl: URL(string: "TODO"))
+                    print("play audio with data: \(data)")
+                    audioPlayer.playAudio(data: data)
+                }
             }
         }
         .onChange(of: voiceState) { newValue in
-            if newValue == .idle || newValue == .listeningToUser {
+            if newValue == .listeningToUser {
                 audioPlayer.pauseAudio()
+            }
+        }
+        .onChange(of: mode) { newValue in
+            if mode == .text {
+                audioPlayer.pauseAudio()
+                voiceState = .idle
+            }
+        }
+        .onChange(of: audioPlayer.isPlaying) { newValue in
+            if !newValue, case .characterSpeaking = voiceState {
+                voiceState = .idle
             }
         }
     }

@@ -31,8 +31,7 @@ struct RootView: View {
                 } else {
                     WelcomeView(webSocketClient: webSocketClient,
                                 tab: $welcomeTab,
-                                character: $character,
-                                options: $options) { selected in
+                                character: $character) { selected in
                         character = selected
                         webSocketClient.send(message: String(selected.id))
                         // TODO: figure out why animation does not work well
@@ -74,42 +73,10 @@ struct RootView: View {
         }
         .onAppear {
             webSocketClient.connectSession()
-            webSocketClient.onStringReceived = { message in
-                if let options = self.parsedAsCharacterOptions(message: message) {
-                    self.options = options
-                }
-            }
         }
         .onDisappear {
             webSocketClient.closeSession()
         }
-    }
-
-    private func parsedAsCharacterOptions(message: String) -> [CharacterOption]? {
-        var options: [CharacterOption] = []
-        // TODO: Parsing logic relies on loose contract
-        if message.contains("Select your character") {
-            message.split(separator: "\n").forEach { line in
-                if isFirstCharactersNumber(String(line), count: 1) {
-                    if let characterName = line.split(separator: "-").last?.trimmingPrefix(" ") {
-                        // TODO: ID and description here are temporary
-                        options.append(.init(id: options.count + 1, name: String(characterName), description: ""))
-                    }
-                }
-            }
-        }
-        return options.isEmpty ? nil : options
-    }
-
-    private func isFirstCharactersNumber(_ string: String, count: Int) -> Bool {
-        guard count > 0 && count <= string.count else {
-            return false
-        }
-
-        let characterSet = CharacterSet.decimalDigits
-        let firstCharacters = string.prefix(count)
-
-        return firstCharacters.allSatisfy { characterSet.contains(UnicodeScalar(String($0))!) }
     }
 }
 

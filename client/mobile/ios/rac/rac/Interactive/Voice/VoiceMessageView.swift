@@ -40,7 +40,7 @@ enum VoiceState: Equatable {
         case .idle:
             return .listeningToUser
         case .listeningToUser:
-            return .characterSpeaking(characterImageUrl: nil)
+            return .idle
         case .characterSpeaking:
             return .idle
         }

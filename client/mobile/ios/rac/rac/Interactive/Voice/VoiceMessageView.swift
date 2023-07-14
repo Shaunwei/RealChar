@@ -62,7 +62,7 @@ struct VoiceMessageView: View {
     let onTapVoiceButton: () -> Void
 
     var body: some View {
-        ZStack {
+        VStack(spacing: 50) {
             List {
                 if case .characterSpeaking = state {
                     if let lastUserMessage = messages.last(where: { message in
@@ -82,42 +82,51 @@ struct VoiceMessageView: View {
             .scrollIndicators(.hidden)
             .listStyle(.inset)
             .scrollContentBackground(.hidden)
+            .mask(
+                LinearGradient(
+                    gradient: Gradient(
+                        colors: [Constants.realBlack, Constants.realBlack, .clear]
+                    ),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
 
             VStack(spacing: 24) {
-                    state.image
-                        .tint(.white)
-                        .padding(12)
-                        .frame(width: 80, height: 80, alignment: .center)
-                        .background(Constants.realBlue500)
-                        .cornerRadius(50)
-                        .onTapGesture(perform: onTapVoiceButton)
-                        .background {
-                                if state != .idle {
-                                    Rectangle()
-                                        .foregroundColor(.clear)
-                                        .frame(width: ripple2Size, height: ripple2Size)
-                                        .background(Constants.realBlue500.opacity(0.3))
-                                        .cornerRadius(ripple2Size / 2)
-                                        .onAppear {
-                                            animate()
-                                        }
-                                        .onDisappear() {
-                                            disableAnimation()
-                                        }
-
-                                    Rectangle()
-                                        .foregroundColor(.clear)
-                                        .frame(width: ripple1Size, height: ripple1Size)
-                                        .background(Constants.realBlue500.opacity(0.3))
-                                        .cornerRadius(ripple1Size / 2)
-
-                                    Rectangle()
-                                        .foregroundColor(.clear)
-                                        .frame(width: 100, height: 100)
-                                        .background(Constants.realBlue500)
-                                        .cornerRadius(50)
+                state.image
+                    .tint(.white)
+                    .padding(12)
+                    .frame(width: 80, height: 80, alignment: .center)
+                    .background(Constants.realBlue500)
+                    .cornerRadius(50)
+                    .onTapGesture(perform: onTapVoiceButton)
+                    .background {
+                        if state != .idle {
+                            Rectangle()
+                                .foregroundColor(.clear)
+                                .frame(width: ripple2Size, height: ripple2Size)
+                                .background(Constants.realBlue500.opacity(0.3))
+                                .cornerRadius(ripple2Size / 2)
+                                .onAppear {
+                                    animate()
                                 }
+                                .onDisappear() {
+                                    disableAnimation()
+                                }
+
+                            Rectangle()
+                                .foregroundColor(.clear)
+                                .frame(width: ripple1Size, height: ripple1Size)
+                                .background(Constants.realBlue500.opacity(0.3))
+                                .cornerRadius(ripple1Size / 2)
+
+                            Rectangle()
+                                .foregroundColor(.clear)
+                                .frame(width: 100, height: 100)
+                                .background(Constants.realBlue500)
+                                .cornerRadius(50)
                         }
+                    }
 
                 Text(state.displayText)
                     .font(Font.custom("Prompt", size: 16))
@@ -126,6 +135,7 @@ struct VoiceMessageView: View {
                     .padding(.horizontal, 20)
                     .padding(.vertical, 8)
             }
+            .padding(.bottom, 50)
         }
         .frame(maxHeight: .infinity)
         .onChange(of: state) { newValue in
@@ -193,5 +203,6 @@ struct VoiceMessageView_Previews: PreviewProvider {
                          onSendUserMessage: { _ in },
                          onTapVoiceButton: { })
         .preferredColorScheme(.dark)
+        .frame(height: 400)
     }
 }

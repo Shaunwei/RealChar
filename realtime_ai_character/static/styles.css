@@ -32,16 +32,16 @@ body {
 }
 
 .logo-container {
-  margin-top: 80px;
-  margin-bottom: 30px;
+  margin-top: 50px;
+  margin-bottom: 20px;
 }
 
 .header p {
   color: #cccccc;
   font-family: "Prompt", Helvetica;
-  font-size: 30px;
-  font-weight: 300;
-  margin-top: 20px;
+  font-size: 20px;
+  font-weight: 200;
+  margin-top: 10px;
 }
 
 .recording {
@@ -153,12 +153,6 @@ body {
   box-shadow: none;
 }
 
-.connect,
-.talk-btn,
-.text-btn {
-  margin-top: 50px;
-}
-
 .action-container {
   display: flex;
   align-items: center;
@@ -170,7 +164,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 30px 60px;
+  padding: 20px 40px;
   bottom: 0;
   width: 100%;
 }
@@ -366,7 +360,7 @@ body
 /* Characters Group */
 .main-container 
 {
-  margin-top: 30px;
+  margin-top: 10px;
 }
 
 .radio-buttons 

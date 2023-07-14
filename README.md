@@ -177,18 +177,18 @@ ELEVEN_LABS_API_KEY=<api key>
 
 </details>
 
-## 📍Roadmap
+## 📍 Roadmap
 - [ ] Launch v0.0.0 and build a community
 - [ ] Add more characters
 
-## Contribute to RealChar🫶
+## 🫶 Contribute to RealChar
 Please check out our [Contribution Guide](contribute.md)!
 
-## Contributors💪
+## 💪 Contributors
 
 <a href="https://github.com/Shaunwei/RealChar">
   <img src="https://contrib.rocks/image?repo=Shaunwei/RealChar" />
 </a>
 
-## 🎲Community
+## 🎲 Community
 - Join us on [Discord](https://discord.gg/e4AYNnFg2F)

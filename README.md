@@ -194,11 +194,5 @@ ELEVEN_LABS_API_KEY=<api key>
 ## 🫶 Contribute to RealChar
 Please check out our [Contribution Guide](contribute.md)!
 
-## 💪 Contributors
-
-<a href="https://github.com/Shaunwei/RealChar">
-  <img src="https://contrib.rocks/image?repo=Shaunwei/RealChar" />
-</a>
-
 ## 🎲 Community
 - Join us on [Discord](https://discord.gg/e4AYNnFg2F)

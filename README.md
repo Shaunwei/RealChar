@@ -26,12 +26,9 @@
 </div>
 
 ## ✨ Demo
-For the best demo experience,  try [our site](link) directly
-[Demo Video](link)
+For the best demo experience, try [our site](https://realchar.ai)
 
-<p align="center">
 https://github.com/Shaunwei/RealChar/assets/5101573/088e4bc3-ee5b-4edd-aa27-35176cf2a8a6
-<p/>
 
 ## 🎯 Key Features
 - **Easy to use**: No coding required to create your own AI character.

@@ -24,7 +24,7 @@ struct InteractiveView: View {
     let onExit: () -> Void
     @State var messages: [ChatMessage] = []
     @State var mode: InteractiveMode = .voice
-    @State var voiceState: VoiceState = .idle
+    @State var voiceState: VoiceState = .idle(streamingEnded: true)
     @StateObject var audioPlayer = AudioPlayer()
 
     var body: some View {
@@ -33,7 +33,7 @@ struct InteractiveView: View {
             switch mode {
             case .text:
                 ChatMessagesView(messages: $messages,
-                                 isExpectingUserInput: .init(get: { voiceState == .idle }, set: { _ in }),
+                                 isExpectingUserInput: .init(get: { voiceState == .idle(streamingEnded: true) }, set: { _ in }),
                                  onSendUserMessage: { message in
                     voiceState = .characterSpeaking(characterImageUrl: character?.imageUrl)
                    messages.append(.init(id: UUID(), role: .user, content: message))
@@ -58,6 +58,9 @@ struct InteractiveView: View {
                 },
                                  onTapVoiceButton: {
                     voiceState = voiceState.next
+                    if case .idle = voiceState {
+                        audioPlayer.pauseAudio()
+                    }
                 })
                 .padding(.horizontal, 48)
                 .preferredColorScheme(.dark)
@@ -117,24 +120,27 @@ struct InteractiveView: View {
         .background(Constants.realBlack)
         .onAppear {
             // TODO: Allow user to provide first message
-            webSocketClient.send(message: "Hi")
+            webSocketClient.send(message: "Hi, my friend, what brings you here today?")
             webSocketClient.isInteractiveMode = true
             webSocketClient.onStringReceived = { message in
                 if message == "[end]\n" {
+                    if case .idle(let streamingEnded) = voiceState, !streamingEnded {
+                        voiceState = .idle(streamingEnded: true)
+                    }
                     return
                 }
+
                 if messages.last?.role == .assistant {
                     messages[messages.count - 1].content += message
                 } else {
                     messages.append(ChatMessage(id: UUID(), role: .assistant, content: message))
-                }
-                if mode == .voice {
-                    voiceState = .characterSpeaking(characterImageUrl: character?.imageUrl)
+                    if mode == .voice {
+                        voiceState = .characterSpeaking(characterImageUrl: character?.imageUrl)
+                    }
                 }
             }
             webSocketClient.onDataReceived = { data in
-                if mode == .voice {
-                    voiceState = .characterSpeaking(characterImageUrl: character?.imageUrl)
+                if mode == .voice, case .characterSpeaking = voiceState {
                     audioPlayer.playAudio(data: data)
                 }
             }
@@ -150,12 +156,11 @@ struct InteractiveView: View {
         .onChange(of: mode) { newValue in
             if mode == .text {
                 audioPlayer.pauseAudio()
-                voiceState = .idle
             }
         }
         .onChange(of: audioPlayer.isPlaying) { newValue in
             if !newValue, case .characterSpeaking = voiceState {
-                voiceState = .idle
+                voiceState = .idle(streamingEnded: true)
             }
         }
     }

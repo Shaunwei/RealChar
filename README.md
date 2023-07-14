@@ -30,6 +30,8 @@ For the best demo experience, try [our site](https://realchar.ai)
 
 https://github.com/Shaunwei/RealChar/assets/5101573/088e4bc3-ee5b-4edd-aa27-35176cf2a8a6
 
+notes: Demo setting: Web, GPT4, ElevenLabs with voice clone, Chroma, Google Speech to Text
+
 ## 🎯 Key Features
 - **Easy to use**: No coding required to create your own AI character.
 - **Customizable**: You can customize your AI character's personality, background, and even voice

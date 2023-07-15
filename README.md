@@ -26,7 +26,7 @@
 </div>
 
 ## ✨ Demo
-For the best demo experience, try our site at realchar.ai
+For the best demo experience, try our site at [realchar.ai](http://realchar.ai/)
 
 https://github.com/Shaunwei/RealChar/assets/5101573/5de0b023-6cf3-4947-84cb-596f429d109e
 

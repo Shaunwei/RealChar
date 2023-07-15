@@ -128,6 +128,12 @@ ELEVEN_LABS_API_KEY=<api key>
     brew install portaudio
     brew install ffmpeg
     ```
+    ```sh
+    # for ubuntu
+    sudo apt update
+    sudo apt install portaudio19-dev
+    sudo apt install ffmpeg
+    ```
     - Then install all python requirements
     ```sh
     pip install -r requirements.txt

@@ -24,5 +24,6 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
       with:
+        platforms: linux/amd64
         push: true
         tags: shaunly/real_char:latest

@@ -25,6 +25,7 @@ struct InteractiveView: View {
     let webSocketClient: WebSocketClient
     let character: CharacterOption?
     let openMic: Bool
+    let hapticFeedback: Bool
     let onExit: () -> Void
     @Binding var messages: [ChatMessage]
     @State var mode: InteractiveMode = .voice
@@ -205,17 +206,19 @@ struct InteractiveView: View {
     }
 
     private func simpleSuccess() {
+        guard hapticFeedback else { return }
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)
     }
 
     private func simpleError() {
+        guard hapticFeedback else { return }
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.error)
     }
 
     private func prepareHaptics() {
-        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        guard hapticFeedback, CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
 
         do {
             engine = try CHHapticEngine()
@@ -227,7 +230,7 @@ struct InteractiveView: View {
 
     private func complexSuccess() {
         // make sure that the device supports haptics
-        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        guard hapticFeedback, CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
         var events = [CHHapticEvent]()
 
         // create one intense, sharp tap
@@ -248,7 +251,7 @@ struct InteractiveView: View {
 
     private func lightHapticFeedback() {
         // make sure that the device supports haptics
-        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        guard hapticFeedback, CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
         var events = [CHHapticEvent]()
 
         for i in stride(from: 0, to: 0.2, by: 0.2) {
@@ -274,6 +277,7 @@ struct InteractiveView_Previews: PreviewProvider {
         InteractiveView(webSocketClient: WebSocketClient(),
                         character: .init(id: 0, name: "Name", description: "Description", imageUrl: nil),
                         openMic: false,
+                        hapticFeedback: false,
                         onExit: {},
                         messages: .constant([]))
     }

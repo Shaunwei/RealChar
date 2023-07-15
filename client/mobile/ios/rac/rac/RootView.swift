@@ -15,6 +15,7 @@ struct RootView: View {
     @State var shouldSendCharacter: Bool = true
     @State var messages: [ChatMessage] = []
     @State var openMic: Bool = false
+    @State var hapticFeedback: Bool = true
 
     let webSocketClient: WebSocketClient
 
@@ -25,6 +26,7 @@ struct RootView: View {
                     InteractiveView(webSocketClient: webSocketClient,
                                     character: character,
                                     openMic: openMic,
+                                    hapticFeedback: hapticFeedback,
                                     onExit: {
                         welcomeTab = .about
                         character = nil
@@ -40,6 +42,7 @@ struct RootView: View {
                                 character: $character,
                                 options: $options,
                                 openMic: $openMic,
+                                hapticFeedback: $hapticFeedback,
                                 onConfirmConfig: { selected in
                         if shouldSendCharacter {
                             shouldSendCharacter = false

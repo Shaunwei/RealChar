@@ -26,9 +26,16 @@
 </div>
 
 ## ✨ Demo
-For the best demo experience, try our site at [realchar.ai](https://realchar.ai/)
+Try our site at [RealChar.ai](https://realchar.ai/)
+
+### Demo 1 - with AI Elon about cage fight!
 
 https://github.com/Shaunwei/RealChar/assets/5101573/5de0b023-6cf3-4947-84cb-596f429d109e
+
+### Demo 2 - with AI Raiden about AI and "real" memory
+
+https://github.com/Shaunwei/RealChar/assets/5101573/62a1f3d1-1166-4254-9119-97647be52c42
+
 
 
 __Demo settings: Web, GPT4, ElevenLabs with voice clone, Chroma, Google Speech to Text__

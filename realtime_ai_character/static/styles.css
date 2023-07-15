@@ -4,6 +4,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  min-height: 100vh;
 }
 
 /* CSS for mobile warning message and desktop content */
@@ -21,6 +22,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  flex-grow: 1;
 }
 
 #mobile-warning {
@@ -39,7 +41,7 @@ body {
 .header p {
   color: #cccccc;
   font-family: "Prompt", Helvetica;
-  font-size: 20px;
+  font-size: 25px;
   font-weight: 200;
   margin-top: 10px;
 }
@@ -100,8 +102,10 @@ body {
   color: white;
 }
 
-.copyright {
+.copyright,
+.disclaimer {
   color:#777;
+  font-size: 15px;
 }
 
 .chat-window {
@@ -151,6 +155,12 @@ body {
   background-color: #999999;
   cursor: not-allowed;
   box-shadow: none;
+}
+
+.talk-btn,
+.text-btn,
+.connect {
+  margin-top: 10px;
 }
 
 .action-container {
@@ -249,9 +259,11 @@ body {
 
 
 footer {
-  position: absolute;
-  bottom: 0;
-  margin-bottom: 10px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 .svg-inline--fa {

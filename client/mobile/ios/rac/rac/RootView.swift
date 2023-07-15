@@ -14,6 +14,7 @@ struct RootView: View {
     @State var options: [CharacterOption] = []
     @State var shouldSendCharacter: Bool = true
     @State var messages: [ChatMessage] = []
+    @State var openMic: Bool = false
 
     let webSocketClient: WebSocketClient
 
@@ -23,6 +24,7 @@ struct RootView: View {
                 if interactive {
                     InteractiveView(webSocketClient: webSocketClient,
                                     character: character,
+                                    openMic: openMic,
                                     onExit: {
                         welcomeTab = .about
                         character = nil
@@ -37,6 +39,7 @@ struct RootView: View {
                                 tab: $welcomeTab,
                                 character: $character,
                                 options: $options,
+                                openMic: $openMic,
                                 onConfirmConfig: { selected in
                         if shouldSendCharacter {
                             shouldSendCharacter = false

@@ -15,6 +15,7 @@ struct WelcomeView: View {
     @Binding var tab: WelcomeView.Tab
     @Binding var character: CharacterOption?
     @Binding var options: [CharacterOption]
+    @Binding var openMic: Bool
 
     let onConfirmConfig: (CharacterOption) -> Void
     let onWebSocketReconnected: () -> Void
@@ -45,6 +46,7 @@ struct WelcomeView: View {
                     ConfigView(options: options,
                                loaded: $webSocketClient.isConnected,
                                selectedOption: $character,
+                               openMic: $openMic,
                                onConfirmConfig: onConfirmConfig)
                         .padding(.horizontal, 48)
                 }
@@ -78,6 +80,7 @@ struct WelcomeView_Previews: PreviewProvider {
                     options: .constant([.init(id: 0, name: "Mythical god", description: "Rogue", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!),
                               .init(id: 1, name: "Anime hero", description: "Noble", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!),
                               .init(id: 2, name: "Realtime AI", description: "Kind", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!)]),
+                    openMic: .constant(false),
                     onConfirmConfig: { _ in },
                     onWebSocketReconnected: { }
         )

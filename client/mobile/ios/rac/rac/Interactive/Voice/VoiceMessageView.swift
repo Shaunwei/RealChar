@@ -133,9 +133,7 @@ struct VoiceMessageView: View {
                 .listStyle(.inset)
                 .scrollContentBackground(.hidden)
                 .onAppear {
-                    withAnimation {
-                        scrollView.scrollTo(messages.last?.role == .user ? 0 : 1, anchor: .bottomTrailing)
-                    }
+                    scrollView.scrollTo(messages.last?.role == .user ? 0 : 1, anchor: .bottomTrailing)
                 }
                 .onChange(of: messages.last?.content) { newValue in
                     // TODO: Debounce the onChange call

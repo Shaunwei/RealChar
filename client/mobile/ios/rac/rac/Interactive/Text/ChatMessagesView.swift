@@ -62,9 +62,7 @@ struct ChatMessagesView: View {
             .listStyle(.inset)
             .scrollContentBackground(.hidden)
             .onAppear {
-                withAnimation {
-                    scrollView.scrollTo(isExpectingUserInput ? messages.count : messages.count - 1, anchor: .bottomTrailing)
-                }
+                scrollView.scrollTo(isExpectingUserInput ? messages.count : messages.count - 1, anchor: .bottomTrailing)
             }
             .onChange(of: messages.last?.content) { _ in
                 // TODO: Debounce the onChange call

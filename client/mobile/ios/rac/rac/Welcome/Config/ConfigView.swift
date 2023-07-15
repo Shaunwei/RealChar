@@ -63,6 +63,7 @@ struct ConfigView: View {
                         Font.custom("Prompt", size: 16)
                       )
                 }
+                .tint(.accentColor)
                 .padding(.horizontal, 8)
 
                 CtaButton(action: {

@@ -26,12 +26,12 @@ struct ConfigView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 Text("Choose your partner")
-                  .font(
-                    Font.custom("Prompt", size: 18).weight(.medium)
-                  )
-                  .foregroundColor(.black)
+                    .font(
+                        Font.custom("Prompt", size: 18).weight(.medium)
+                    )
+                    .foregroundColor(.black)
 
-                if loaded {
+                if loaded || !options.isEmpty {
                     ForEach(options) { option in
                         CharacterOptionView(option: option, selected: option == selectedOption)
                             .onTapGesture {

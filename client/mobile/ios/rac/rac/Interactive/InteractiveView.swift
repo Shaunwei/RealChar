@@ -17,14 +17,17 @@ struct InteractiveView: View {
     struct Constants {
         static let realOrange500: Color = Color(red: 0.95, green: 0.29, blue: 0.16)
         static let realBlack: Color = Color(red: 0.01, green: 0.03, blue: 0.11)
+        static let greeting: String = "Hi, my friend, what brings you here today?"
+        static let serverError: String = "Disconnected, try again later."
     }
 
     let webSocketClient: WebSocketClient
     let character: CharacterOption?
     let onExit: () -> Void
-    @State var messages: [ChatMessage] = []
+    @Binding var messages: [ChatMessage]
     @State var mode: InteractiveMode = .voice
     @State var voiceState: VoiceState = .idle(streamingEnded: true)
+    @State var streamingEnded = true
     @StateObject var audioPlayer = AudioPlayer()
 
     var body: some View {
@@ -35,11 +38,10 @@ struct InteractiveView: View {
                 ChatMessagesView(messages: $messages,
                                  isExpectingUserInput: .init(get: { voiceState == .idle(streamingEnded: true) }, set: { _ in }),
                                  onSendUserMessage: { message in
-                    voiceState = .characterSpeaking(characterImageUrl: character?.imageUrl)
-                   messages.append(.init(id: UUID(), role: .user, content: message))
-                   webSocketClient.send(message: message)
-                }
-                )
+                    voiceState = .idle(streamingEnded: false)
+                    messages.append(.init(id: UUID(), role: .user, content: message))
+                    webSocketClient.send(message: message)
+                })
                     .padding(.horizontal, 48)
                     .preferredColorScheme(.dark)
                     .background(Constants.realBlack)
@@ -57,7 +59,7 @@ struct InteractiveView: View {
                     webSocketClient.send(message: message)
                 },
                                  onTapVoiceButton: {
-                    voiceState = voiceState.next
+                    voiceState = voiceState.next(streamingEnded: streamingEnded)
                     if case .idle = voiceState {
                         audioPlayer.pauseAudio()
                     }
@@ -119,14 +121,18 @@ struct InteractiveView: View {
         }
         .background(Constants.realBlack)
         .onAppear {
-            // TODO: Allow user to provide first message
-            webSocketClient.send(message: "Hi, my friend, what brings you here today?")
+            if messages.isEmpty {
+                // TODO: Allow user to provide first message
+                messages.append(.init(id: UUID(), role: .user, content: Constants.greeting))
+                webSocketClient.send(message: Constants.greeting)
+            }
             webSocketClient.isInteractiveMode = true
             webSocketClient.onStringReceived = { message in
                 if message == "[end]\n" {
                     if case .idle(let streamingEnded) = voiceState, !streamingEnded {
                         voiceState = .idle(streamingEnded: true)
                     }
+                    streamingEnded = true
                     return
                 }
 
@@ -137,11 +143,17 @@ struct InteractiveView: View {
                     if mode == .voice {
                         voiceState = .characterSpeaking(characterImageUrl: character?.imageUrl)
                     }
+                    streamingEnded = false
                 }
             }
             webSocketClient.onDataReceived = { data in
                 if mode == .voice, case .characterSpeaking = voiceState {
                     audioPlayer.playAudio(data: data)
+                }
+            }
+            webSocketClient.onCharacterOptionsReceived = { _ in
+                if messages.last?.content != Constants.serverError {
+                    messages.append(.init(id: UUID(), role: .assistant, content: Constants.serverError))
                 }
             }
         }
@@ -156,6 +168,7 @@ struct InteractiveView: View {
         .onChange(of: mode) { newValue in
             if mode == .text {
                 audioPlayer.pauseAudio()
+                voiceState = .idle(streamingEnded: streamingEnded)
             }
         }
         .onChange(of: audioPlayer.isPlaying) { newValue in
@@ -170,6 +183,7 @@ struct InteractiveView_Previews: PreviewProvider {
     static var previews: some View {
         InteractiveView(webSocketClient: WebSocketClient(),
                         character: .init(id: 0, name: "Name", description: "Description", imageUrl: nil),
-                        onExit: {})
+                        onExit: {},
+                        messages: .constant([]))
     }
 }

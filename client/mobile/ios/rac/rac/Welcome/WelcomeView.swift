@@ -14,9 +14,10 @@ struct WelcomeView: View {
     }
     @Binding var tab: WelcomeView.Tab
     @Binding var character: CharacterOption?
-    @State var options: [CharacterOption] = []
+    @Binding var options: [CharacterOption]
 
     let onConfirmConfig: (CharacterOption) -> Void
+    let onWebSocketReconnected: () -> Void
 
     var body: some View {
         GeometryReader { geometry in
@@ -50,67 +51,22 @@ struct WelcomeView: View {
             }
         }
         .onAppear {
+            webSocketClient.onCharacterOptionsReceived = { options in
+                self.options = options
+            }
+        }
+        .onChange(of: character) { newValue in
             if webSocketClient.isConnected && webSocketClient.isInteractiveMode {
                 webSocketClient.isConnected = false
                 webSocketClient.isInteractiveMode = false
                 webSocketClient.closeSession()
-                webSocketClient.onStringReceived = { message in
-                    if let options = self.parsedAsCharacterOptions(message: message) {
-                        self.options = options
-                    }
+                webSocketClient.onCharacterOptionsReceived = { options in
+                    self.options = options
                 }
                 webSocketClient.connectSession()
-            } else {
-                webSocketClient.onStringReceived = { message in
-                    if let options = self.parsedAsCharacterOptions(message: message) {
-                        self.options = options
-                    }
-                }
+                onWebSocketReconnected()
             }
         }
-    }
-
-    private func parsedAsCharacterOptions(message: String) -> [CharacterOption]? {
-        var options: [CharacterOption] = []
-        // TODO: Parsing logic relies on loose contract
-        if message.contains("Select your character") {
-            message.split(separator: "\n").forEach { line in
-                if isFirstCharactersNumber(String(line), count: 1) {
-                    if let characterName = line.split(separator: "-").last?.trimmingPrefix(" ") {
-                        // TODO: ID and description here are temporary
-                        options.append(.init(id: options.count + 1, name: String(characterName), description: "", imageUrl: mapCharacterToImageUrl(characterName: String(characterName))))
-                    }
-                }
-            }
-        }
-        return options.isEmpty ? nil : options
-    }
-
-    private func mapCharacterToImageUrl(characterName: String) -> URL? {
-        // TODO: Get url from server
-        if characterName.contains("Elon") {
-            return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/elon.jpeg")!
-        } else if characterName.contains("Character") {
-            return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!
-        } else if characterName.contains("Loki") {
-            return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!
-        } else if characterName.contains("Pi") {
-            return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/pi.jpeg")!
-        } else if characterName.contains("Raiden") {
-            return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!
-        }
-        return nil
-    }
-
-    private func isFirstCharactersNumber(_ string: String, count: Int) -> Bool {
-        guard count > 0 && count <= string.count else {
-            return false
-        }
-
-        let characterSet = CharacterSet.decimalDigits
-        let firstCharacters = string.prefix(count)
-
-        return firstCharacters.allSatisfy { characterSet.contains(UnicodeScalar(String($0))!) }
     }
 }
 
@@ -119,18 +75,12 @@ struct WelcomeView_Previews: PreviewProvider {
         WelcomeView(webSocketClient: WebSocketClient(),
                     tab: .constant(.about),
                     character: .constant(nil),
-                    options: [.init(id: 0, name: "Mythical god", description: "Rogue", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!),
+                    options: .constant([.init(id: 0, name: "Mythical god", description: "Rogue", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!),
                               .init(id: 1, name: "Anime hero", description: "Noble", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!),
-                              .init(id: 2, name: "Realtime AI", description: "Kind", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!)],
-                    onConfirmConfig: { _ in }
+                              .init(id: 2, name: "Realtime AI", description: "Kind", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!)]),
+                    onConfirmConfig: { _ in },
+                    onWebSocketReconnected: { }
         )
-        WelcomeView(webSocketClient: WebSocketClient(),
-                    tab: .constant(.config),
-                    character: .constant(nil),
-                    options:  [.init(id: 0, name: "Mythical god", description: "Rogue", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!),
-                               .init(id: 1, name: "Anime hero", description: "Noble", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!),
-                               .init(id: 2, name: "Realtime AI", description: "Kind", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!)],
-                    onConfirmConfig: { _ in })
     }
 }
 

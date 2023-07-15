@@ -10,8 +10,10 @@ import SwiftUI
 struct RootView: View {
     @State var interactive = false
     @State var welcomeTab: WelcomeView.Tab = .about
-    @State var options: [CharacterOption] = []
     @State var character: CharacterOption? = nil
+    @State var options: [CharacterOption] = []
+    @State var shouldSendCharacter: Bool = true
+    @State var messages: [ChatMessage] = []
 
     let webSocketClient: WebSocketClient
 
@@ -20,25 +22,35 @@ struct RootView: View {
             VStack {
                 if interactive {
                     InteractiveView(webSocketClient: webSocketClient,
-                                    character: character) {
+                                    character: character,
+                                    onExit: {
                         welcomeTab = .about
                         character = nil
                         withAnimation {
                             interactive.toggle()
                         }
-                    }
+                    },
+                                    messages: $messages)
                     .transition(.moveAndFade2)
                 } else {
                     WelcomeView(webSocketClient: webSocketClient,
                                 tab: $welcomeTab,
-                                character: $character) { selected in
-                        character = selected
-                        webSocketClient.send(message: String(selected.id))
+                                character: $character,
+                                options: $options,
+                                onConfirmConfig: { selected in
+                        if shouldSendCharacter {
+                            shouldSendCharacter = false
+                            webSocketClient.send(message: String(selected.id))
+                        }
                         // TODO: figure out why animation does not work well
 //                        withAnimation {
                             interactive.toggle()
 //                        }
-                    }
+                    },
+                                onWebSocketReconnected: {
+                        messages = []
+                        shouldSendCharacter = true
+                    })
                     .transition(.moveAndFade)
                 }
             }

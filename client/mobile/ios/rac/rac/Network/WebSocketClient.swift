@@ -29,6 +29,16 @@ class WebSocketClient: NSObject, URLSessionWebSocketDelegate, ObservableObject {
         }
     }
 
+    var lastCharacterOptions: [CharacterOption]? = nil
+    var onCharacterOptionsReceived: (([CharacterOption]) -> Void)? {
+        didSet {
+            if let lastCharacterOptions, let onCharacterOptionsReceived {
+                onCharacterOptionsReceived(lastCharacterOptions)
+                self.lastCharacterOptions = nil
+            }
+        }
+    }
+
     var lastData: Data? = nil
     var onDataReceived: ((Data) -> Void)? {
         didSet {
@@ -68,7 +78,7 @@ class WebSocketClient: NSObject, URLSessionWebSocketDelegate, ObservableObject {
                 switch message {
 
                 case .data(let data):
-                    print("Data received \(data)")
+                    print("Data received: \(data)")
                     if self.onDataReceived == nil {
                         self.lastData = data
                     } else {
@@ -76,11 +86,19 @@ class WebSocketClient: NSObject, URLSessionWebSocketDelegate, ObservableObject {
                     }
 
                 case .string(let strMessage):
-                    print("String received \(strMessage)")
-                    if self.onStringReceived == nil {
-                        self.lastStrMessage = strMessage
+                    print("String received: \(strMessage)")
+                    if let options = self.parsedAsCharacterOptions(message: strMessage) {
+                        if self.onCharacterOptionsReceived == nil {
+                            self.lastCharacterOptions = options
+                        } else {
+                            self.onCharacterOptionsReceived?(options)
+                        }
                     } else {
-                        self.onStringReceived?(strMessage)
+                        if self.onStringReceived == nil {
+                            self.lastStrMessage = strMessage
+                        } else {
+                            self.onStringReceived?(strMessage)
+                        }
                     }
 
                 default:
@@ -128,5 +146,50 @@ class WebSocketClient: NSObject, URLSessionWebSocketDelegate, ObservableObject {
         DispatchQueue.main.async {
             self.isConnected = false
         }
+    }
+
+    // MARK: - Private
+
+    private func parsedAsCharacterOptions(message: String) -> [CharacterOption]? {
+        var options: [CharacterOption] = []
+        // TODO: Parsing logic relies on loose contract
+        if message.contains("Select your character") {
+            message.split(separator: "\n").forEach { line in
+                if isFirstCharactersNumber(String(line), count: 1) {
+                    if let characterName = line.split(separator: "-").last?.trimmingPrefix(" ") {
+                        // TODO: ID and description here are temporary
+                        options.append(.init(id: options.count + 1, name: String(characterName), description: "", imageUrl: mapCharacterToImageUrl(characterName: String(characterName))))
+                    }
+                }
+            }
+        }
+        return options.isEmpty ? nil : options
+    }
+
+    private func mapCharacterToImageUrl(characterName: String) -> URL? {
+        // TODO: Get url from server
+        if characterName.contains("Elon") {
+            return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/elon.jpeg")!
+        } else if characterName.contains("Character") {
+            return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!
+        } else if characterName.contains("Loki") {
+            return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!
+        } else if characterName.contains("Pi") {
+            return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/pi.jpeg")!
+        } else if characterName.contains("Raiden") {
+            return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!
+        }
+        return nil
+    }
+
+    private func isFirstCharactersNumber(_ string: String, count: Int) -> Bool {
+        guard count > 0 && count <= string.count else {
+            return false
+        }
+
+        let characterSet = CharacterSet.decimalDigits
+        let firstCharacters = string.prefix(count)
+
+        return firstCharacters.allSatisfy { characterSet.contains(UnicodeScalar(String($0))!) }
     }
 }

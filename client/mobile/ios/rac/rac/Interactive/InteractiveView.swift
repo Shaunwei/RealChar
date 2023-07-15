@@ -17,12 +17,14 @@ struct InteractiveView: View {
     struct Constants {
         static let realOrange500: Color = Color(red: 0.95, green: 0.29, blue: 0.16)
         static let realBlack: Color = Color(red: 0.01, green: 0.03, blue: 0.11)
+        static let greeting: String = "Hi, my friend, what brings you here today?"
+        static let serverError: String = "Disconnected, try again later."
     }
 
     let webSocketClient: WebSocketClient
     let character: CharacterOption?
     let onExit: () -> Void
-    @State var messages: [ChatMessage] = []
+    @Binding var messages: [ChatMessage]
     @State var mode: InteractiveMode = .voice
     @State var voiceState: VoiceState = .idle(streamingEnded: true)
     @State var streamingEnded = true
@@ -119,8 +121,11 @@ struct InteractiveView: View {
         }
         .background(Constants.realBlack)
         .onAppear {
-            // TODO: Allow user to provide first message
-            webSocketClient.send(message: "Hi, my friend, what brings you here today?")
+            if messages.isEmpty {
+                // TODO: Allow user to provide first message
+                messages.append(.init(id: UUID(), role: .user, content: Constants.greeting))
+                webSocketClient.send(message: Constants.greeting)
+            }
             webSocketClient.isInteractiveMode = true
             webSocketClient.onStringReceived = { message in
                 if message == "[end]\n" {
@@ -144,6 +149,11 @@ struct InteractiveView: View {
             webSocketClient.onDataReceived = { data in
                 if mode == .voice, case .characterSpeaking = voiceState {
                     audioPlayer.playAudio(data: data)
+                }
+            }
+            webSocketClient.onCharacterOptionsReceived = { _ in
+                if messages.last?.content != Constants.serverError {
+                    messages.append(.init(id: UUID(), role: .assistant, content: Constants.serverError))
                 }
             }
         }
@@ -173,6 +183,7 @@ struct InteractiveView_Previews: PreviewProvider {
     static var previews: some View {
         InteractiveView(webSocketClient: WebSocketClient(),
                         character: .init(id: 0, name: "Name", description: "Description", imageUrl: nil),
-                        onExit: {})
+                        onExit: {},
+                        messages: .constant([]))
     }
 }

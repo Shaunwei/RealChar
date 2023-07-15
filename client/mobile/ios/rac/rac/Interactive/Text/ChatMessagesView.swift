@@ -67,6 +67,7 @@ struct ChatMessagesView: View {
                 }
             }
             .onChange(of: messages.last?.content) { _ in
+                // TODO: Debounce the onChange call
                 withAnimation {
                     scrollView.scrollTo(isExpectingUserInput ? messages.count : messages.count - 1, anchor: .bottomTrailing)
                 }
@@ -77,6 +78,7 @@ struct ChatMessagesView: View {
                 }
             }
             .onChange(of: userInput) { newValue in
+                // TODO: Debounce the onChange call
                 withAnimation {
                     scrollView.scrollTo(isExpectingUserInput ? messages.count : messages.count - 1, anchor: .bottomTrailing)
                 }

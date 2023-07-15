@@ -138,6 +138,7 @@ struct VoiceMessageView: View {
                     }
                 }
                 .onChange(of: messages.last?.content) { newValue in
+                    // TODO: Debounce the onChange call
                     withAnimation {
                         scrollView.scrollTo(messages.last?.role == .user ? 0 : 1, anchor: .bottomTrailing)
                     }

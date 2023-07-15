@@ -150,7 +150,11 @@ struct InteractiveView: View {
                 }
 
                 if messages.last?.role == .assistant {
-                    messages[messages.count - 1].content += message
+                    if messages.last?.content != Constants.serverError {
+                        messages[messages.count - 1].content += message
+                    } else {
+                        messages[messages.count - 1].content = message
+                    }
                 } else {
                     if mode == .voice {
                         voiceState = .characterSpeaking(characterImageUrl: character?.imageUrl)
@@ -167,6 +171,7 @@ struct InteractiveView: View {
             webSocketClient.onCharacterOptionsReceived = { _ in
                 if messages.last?.content != Constants.serverError {
                     messages.append(.init(id: UUID(), role: .assistant, content: Constants.serverError))
+                    simpleError()
                 }
             }
         }
@@ -199,6 +204,11 @@ struct InteractiveView: View {
     private func simpleSuccess() {
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)
+    }
+
+    private func simpleError() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.error)
     }
 
     private func prepareHaptics() {

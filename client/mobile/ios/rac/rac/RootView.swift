@@ -86,6 +86,7 @@ struct RootView: View {
                 }
             }
         }
+        .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
             webSocketClient.connectSession()
         }

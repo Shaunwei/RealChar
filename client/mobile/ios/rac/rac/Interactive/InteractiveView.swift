@@ -146,6 +146,7 @@ struct InteractiveView: View {
                         voiceState = .idle(streamingEnded: true)
                     }
                     streamingEnded = true
+                    simpleSuccess()
                     return
                 }
 
@@ -155,12 +156,14 @@ struct InteractiveView: View {
                     } else {
                         messages[messages.count - 1].content = message
                     }
+                    lightHapticFeedback()
                 } else {
                     if mode == .voice {
                         voiceState = .characterSpeaking(characterImageUrl: character?.imageUrl)
                     }
                     streamingEnded = false
                     messages.append(ChatMessage(id: UUID(), role: .assistant, content: message))
+                    lightHapticFeedback()
                 }
             }
             webSocketClient.onDataReceived = { data in
@@ -232,6 +235,28 @@ struct InteractiveView: View {
         let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: 1)
         let event = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: 0)
         events.append(event)
+
+        // convert those events into a pattern and play it immediately
+        do {
+            let pattern = try CHHapticPattern(events: events, parameters: [])
+            let player = try engine?.makePlayer(with: pattern)
+            try player?.start(atTime: 0)
+        } catch {
+            print("Failed to play pattern: \(error.localizedDescription).")
+        }
+    }
+
+    private func lightHapticFeedback() {
+        // make sure that the device supports haptics
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        var events = [CHHapticEvent]()
+
+        for i in stride(from: 0, to: 0.2, by: 0.2) {
+            let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: Float(0.5))
+            let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: Float(0.5))
+            let event = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: i)
+            events.append(event)
+        }
 
         // convert those events into a pattern and play it immediately
         do {

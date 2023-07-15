@@ -230,6 +230,7 @@ struct VoiceMessageView: View {
         .onAppear {
             if openMic {
                 startTimer()
+                SpeechRecognizer.defaultToSpeaker = false
             }
         }
     }

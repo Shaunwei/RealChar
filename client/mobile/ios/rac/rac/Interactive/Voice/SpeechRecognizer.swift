@@ -26,7 +26,9 @@ actor SpeechRecognizer: ObservableObject {
     }
     
     @MainActor @Published var transcript: String = ""
-    
+
+    static var defaultToSpeaker: Bool = true
+
     private var audioEngine: AVAudioEngine?
     private var request: SFSpeechAudioBufferRecognitionRequest?
     private var task: SFSpeechRecognitionTask?
@@ -116,7 +118,8 @@ actor SpeechRecognizer: ObservableObject {
         request.shouldReportPartialResults = true
         
         let audioSession = AVAudioSession.sharedInstance()
-        try audioSession.setCategory(.playAndRecord, mode: .measurement, options: .duckOthers)
+        let options: AVAudioSession.CategoryOptions = defaultToSpeaker ? [.allowBluetooth, .defaultToSpeaker, .duckOthers] : [.allowBluetooth, .duckOthers]
+        try audioSession.setCategory(.playAndRecord, mode: .default, options: options)
         try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
         let inputNode = audioEngine.inputNode
         

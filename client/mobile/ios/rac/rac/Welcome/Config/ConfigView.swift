@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CachedAsyncImage
+import AVFAudio
 
 struct CharacterOption: Identifiable, Equatable {
     let id: Int
@@ -58,7 +59,7 @@ struct ConfigView: View {
                 Spacer(minLength: 0)
 
                 Toggle(isOn: $openMic) {
-                    Text("Open Mic?")
+                    Text("Wearing headphone?")
                       .font(
                         Font.custom("Prompt", size: 16)
                       )
@@ -73,6 +74,19 @@ struct ConfigView: View {
                 .disabled(selectedOption == nil)
             }
         }
+        .onAppear {
+            openMic = headphoneOrBluetoothDeviceConnected
+        }
+    }
+
+    var headphoneOrBluetoothDeviceConnected: Bool {
+        !AVAudioSession.sharedInstance().currentRoute.outputs.compactMap {
+            ($0.portType == .headphones ||
+             $0.portType == .headsetMic ||
+             $0.portType == .bluetoothA2DP ||
+             $0.portType == .bluetoothHFP ||
+             $0.portType == .bluetoothLE) ? true : nil
+        }.isEmpty
     }
 }
 

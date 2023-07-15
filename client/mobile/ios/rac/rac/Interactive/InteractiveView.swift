@@ -181,7 +181,11 @@ struct InteractiveView: View {
         }
         .onChange(of: audioPlayer.isPlaying) { newValue in
             if !newValue, case .characterSpeaking = voiceState {
-                voiceState = .idle(streamingEnded: true)
+                if openMic {
+                    voiceState = .listeningToUser
+                } else {
+                    voiceState = .idle(streamingEnded: true)
+                }
             }
         }
     }

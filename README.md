@@ -15,7 +15,7 @@
     <a href="https://twitter.com/agishaun">
     <img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/agishaun?style=for-the-badge" height="20">
     <a href="https://github.com/Shaunwei/RealChar">
-    <img alt="GitHub" src="https://img.shields.io/github/stars/Shaunwei/RealChar?style=for-the-badge" height="20">
+    <img alt="GitHub" src="https://img.shields.io/github/stars/Shaunwei/RealChar?style=for-the-badge&color=gold" height="20">
     </a>
     <a href="https://github.com/Shaunwei/RealChar/commits/main">
     <img alt="GitHub" src="https://img.shields.io/github/last-commit/Shaunwei/RealChar/main?style=for-the-badge" height="20">

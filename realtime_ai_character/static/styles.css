@@ -4,6 +4,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  min-height: 100vh;
 }
 
 /* CSS for mobile warning message and desktop content */
@@ -21,6 +22,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  flex-grow: 1;
 }
 
 #mobile-warning {
@@ -100,8 +102,13 @@ body {
   color: white;
 }
 
-.copyright {
+.copyright,
+.disclaimer {
   color:#777;
+}
+
+.disclaimer {
+  margin-bottom: 10px;
 }
 
 .chat-window {
@@ -249,9 +256,12 @@ body {
 
 
 footer {
-  position: absolute;
-  bottom: 0;
-  margin-bottom: 10px;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 70vw;
 }
 
 .svg-inline--fa {

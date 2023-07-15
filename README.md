@@ -73,6 +73,10 @@ __Demo settings: Web, GPT4, ElevenLabs with voice clone, Chroma, Google Speech t
 
 Before you begin setting up this project, please ensure you have completed the following tasks:
 
+### 0. Setup tutorial
+
+- [Tutorial - YouTuBe](https://www.youtube.com/watch?v=Q16ZH3kJWxw)
+
 ### 1. LLM -  OpenAI API Token
 <details><summary>👇click me</summary>
 This application utilizes the OpenAI API to access its powerful language model capabilities. In order to use the OpenAI API, you will need to obtain an API token.

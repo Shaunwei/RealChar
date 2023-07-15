@@ -93,51 +93,72 @@ struct VoiceMessageView: View {
 
     var body: some View {
         VStack(spacing: 50) {
-            List {
-                switch state {
-                case .characterSpeaking, .idle:
-                    if let lastUserMessage = messages.last(where: { message in
-                        message.role == .user
-                    }) {
-                        UserMessage(message: lastUserMessage.content)
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Constants.realBlack)
-                    }
-                    if messages.last?.role == .assistant, let lastCharacterMessage = messages.last {
-                        CharacterMessage(message: lastCharacterMessage.content)
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Constants.realBlack)
-                    }
-                case .listeningToUser:
-                    if let lastCharacterMessage = messages.last(where: { message in
-                        message.role == .assistant
-                    }) {
-                        CharacterMessage(message: lastCharacterMessage.content)
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Constants.realBlack)
-                    }
+            ScrollViewReader { scrollView in
+                List {
+                    switch state {
+                    case .characterSpeaking, .idle:
+                        if let lastUserMessage = messages.last(where: { message in
+                            message.role == .user
+                        }) {
+                            UserMessage(message: lastUserMessage.content)
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Constants.realBlack)
+                                .id(0)
+                        }
+                        if messages.last?.role == .assistant, let lastCharacterMessage = messages.last {
+                            CharacterMessage(message: lastCharacterMessage.content)
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Constants.realBlack)
+                                .id(1)
+                        }
+                    case .listeningToUser:
+                        if let lastCharacterMessage = messages.last(where: { message in
+                            message.role == .assistant
+                        }) {
+                            CharacterMessage(message: lastCharacterMessage.content)
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Constants.realBlack)
+                                .id(1)
+                        }
 
-                    if messages.last?.role == .user, let lastUserMessage = messages.last {
-                        UserMessage(message: lastUserMessage.content)
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Constants.realBlack)
+                        if messages.last?.role == .user, let lastUserMessage = messages.last {
+                            UserMessage(message: lastUserMessage.content)
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Constants.realBlack)
+                                .id(0)
+                        }
                     }
                 }
-            }
-            .scrollIndicators(.hidden)
-            .listStyle(.inset)
-            .scrollContentBackground(.hidden)
-            .if(state.isSpeaking, transform: { view in
-                view.mask(
-                    LinearGradient(
-                        gradient: Gradient(
-                            colors: [Constants.realBlack, Constants.realBlack, .clear]
-                        ),
-                        startPoint: .top,
-                        endPoint: .bottom
+                .scrollIndicators(.hidden)
+                .listStyle(.inset)
+                .scrollContentBackground(.hidden)
+                .onAppear {
+                    withAnimation {
+                        scrollView.scrollTo(messages.last?.role == .user ? 0 : 1, anchor: .bottomTrailing)
+                    }
+                }
+                .onChange(of: messages.last?.content) { newValue in
+                    withAnimation {
+                        scrollView.scrollTo(messages.last?.role == .user ? 0 : 1, anchor: .bottomTrailing)
+                    }
+                }
+                .onChange(of: state) { newValue in
+                    withAnimation {
+                        scrollView.scrollTo(messages.last?.role == .user ? 0 : 1, anchor: .bottomTrailing)
+                    }
+                }
+                .if(state.isSpeaking, transform: { view in
+                    view.mask(
+                        LinearGradient(
+                            gradient: Gradient(
+                                colors: [Constants.realBlack, Constants.realBlack, .clear]
+                            ),
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
                     )
-                )
-            })
+                })
+            }
 
             VStack(spacing: 24) {
                 Button {

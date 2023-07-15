@@ -180,7 +180,7 @@ struct InteractiveView: View {
             }
         }
         .onChange(of: audioPlayer.isPlaying) { newValue in
-            if !newValue, case .characterSpeaking = voiceState {
+            if !newValue && streamingEnded, case .characterSpeaking = voiceState {
                 if openMic {
                     voiceState = .listeningToUser
                 } else {

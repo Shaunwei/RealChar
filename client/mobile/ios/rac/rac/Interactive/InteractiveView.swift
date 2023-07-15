@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AVFoundation
+import CoreHaptics
 
 enum InteractiveMode {
     case voice, text
@@ -30,6 +31,7 @@ struct InteractiveView: View {
     @State var voiceState: VoiceState = .idle(streamingEnded: true)
     @State var streamingEnded = true
     @StateObject var audioPlayer = AudioPlayer()
+    @State var engine: CHHapticEngine?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -42,6 +44,7 @@ struct InteractiveView: View {
                     voiceState = .idle(streamingEnded: false)
                     messages.append(.init(id: UUID(), role: .user, content: message))
                     webSocketClient.send(message: message)
+                    complexSuccess()
                 })
                     .padding(.horizontal, 48)
                     .preferredColorScheme(.dark)
@@ -62,6 +65,7 @@ struct InteractiveView: View {
                 },
                                  onSendUserMessage: { message in
                     webSocketClient.send(message: message)
+                    simpleSuccess()
                 },
                                  onTapVoiceButton: {
                     voiceState = voiceState.next(streamingEnded: streamingEnded)
@@ -126,6 +130,8 @@ struct InteractiveView: View {
         }
         .background(Constants.realBlack)
         .onAppear {
+            prepareHaptics()
+
             if messages.isEmpty {
                 // TODO: Allow user to provide first message
                 messages.append(.init(id: UUID(), role: .user, content: Constants.greeting))
@@ -187,6 +193,43 @@ struct InteractiveView: View {
                     voiceState = .idle(streamingEnded: true)
                 }
             }
+        }
+    }
+
+    private func simpleSuccess() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+    }
+
+    private func prepareHaptics() {
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+
+        do {
+            engine = try CHHapticEngine()
+            try engine?.start()
+        } catch {
+            print("There was an error creating the engine: \(error.localizedDescription)")
+        }
+    }
+
+    private func complexSuccess() {
+        // make sure that the device supports haptics
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        var events = [CHHapticEvent]()
+
+        // create one intense, sharp tap
+        let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: 1)
+        let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: 1)
+        let event = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: 0)
+        events.append(event)
+
+        // convert those events into a pattern and play it immediately
+        do {
+            let pattern = try CHHapticPattern(events: events, parameters: [])
+            let player = try engine?.makePlayer(with: pattern)
+            try player?.start(atTime: 0)
+        } catch {
+            print("Failed to play pattern: \(error.localizedDescription).")
         }
     }
 }

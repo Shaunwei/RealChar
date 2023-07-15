@@ -30,33 +30,58 @@ struct ChatMessagesView: View {
     let onSendUserMessage: (String) -> Void
 
     var body: some View {
-        List {
-            ForEach(messages) { message in
-                switch message.role {
-                case .assistant:
-                    CharacterMessage(message: message.content)
+        ScrollViewReader { scrollView in
+            List {
+                ForEach(messages) { message in
+                    switch message.role {
+                    case .assistant:
+                        CharacterMessage(message: message.content)
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Constants.realBlack)
+                            .id(messages.firstIndex(where: { $0.id == message.id}))
+                    case .user:
+                        UserMessage(message: message.content)
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Constants.realBlack)
+                            .id(messages.firstIndex(where: { $0.id == message.id}))
+                    }
+                }
+                if isExpectingUserInput {
+                    UserInputView(message: $userInput)
                         .listRowSeparator(.hidden)
                         .listRowBackground(Constants.realBlack)
-                case .user:
-                    UserMessage(message: message.content)
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Constants.realBlack)
+                        .onSubmit {
+                            doSubmit()
+                        }
+                        .onEnter($of: $userInput, action: doSubmit)
+                        .submitLabel(.send)
+                        .id(messages.count)
                 }
             }
-            if isExpectingUserInput {
-                UserInputView(message: $userInput)
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Constants.realBlack)
-                    .onSubmit {
-                        doSubmit()
-                    }
-                    .onEnter($of: $userInput, action: doSubmit)
-                    .submitLabel(.send)
+            .scrollIndicators(.hidden)
+            .listStyle(.inset)
+            .scrollContentBackground(.hidden)
+            .onAppear {
+                scrollView.scrollTo(isExpectingUserInput ? messages.count : messages.count - 1, anchor: .bottomTrailing)
+            }
+            .onChange(of: messages.last?.content) { _ in
+                // TODO: Debounce the onChange call
+                withAnimation {
+                    scrollView.scrollTo(isExpectingUserInput ? messages.count : messages.count - 1, anchor: .bottomTrailing)
+                }
+            }
+            .onChange(of: isExpectingUserInput) { _ in
+                withAnimation {
+                    scrollView.scrollTo(isExpectingUserInput ? messages.count : messages.count - 1, anchor: .bottomTrailing)
+                }
+            }
+            .onChange(of: userInput) { newValue in
+                // TODO: Debounce the onChange call
+                withAnimation {
+                    scrollView.scrollTo(isExpectingUserInput ? messages.count : messages.count - 1, anchor: .bottomTrailing)
+                }
             }
         }
-        .scrollIndicators(.hidden)
-        .listStyle(.inset)
-        .scrollContentBackground(.hidden)
     }
 
     private func doSubmit() {

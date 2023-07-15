@@ -17,6 +17,9 @@
     <a href="https://github.com/Shaunwei/RealChar">
     <img alt="GitHub" src="https://img.shields.io/github/stars/Shaunwei/RealChar?style=for-the-badge" height="20">
     </a>
+    <a href="https://github.com/Shaunwei/RealChar/commits/main">
+    <img alt="GitHub" src="https://img.shields.io/github/last-commit/Shaunwei/RealChar/main?style=for-the-badge" height="20">
+    </a>
     <a href="https://github.com/Shaunwei/RealChar/blob/main/README.md" target="_blank">
     <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=green&style=for-the-badge" alt="License" height="20">
     </a>

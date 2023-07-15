@@ -20,6 +20,7 @@ struct ConfigView: View {
     let options: [CharacterOption]
     @Binding var loaded: Bool
     @Binding var selectedOption: CharacterOption?
+    @Binding var openMic: Bool
     let onConfirmConfig: (CharacterOption) -> Void
 
     var body: some View {
@@ -55,6 +56,15 @@ struct ConfigView: View {
                 }
 
                 Spacer(minLength: 0)
+
+                Toggle(isOn: $openMic) {
+                    Text("Open Mic?")
+                      .font(
+                        Font.custom("Prompt", size: 16)
+                      )
+                }
+                .tint(.accentColor)
+                .padding(.horizontal, 8)
 
                 CtaButton(action: {
                     guard let selectedOption else { return }
@@ -131,6 +141,7 @@ struct ConfigView_Previews: PreviewProvider {
                              .init(id: 2, name: "Realtime AI", description: "Kind", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!)],
                    loaded: .constant(true),
                    selectedOption: .constant(nil),
+                   openMic: .constant(false),
                    onConfirmConfig: { _ in })
         .frame(width: 310)
     }

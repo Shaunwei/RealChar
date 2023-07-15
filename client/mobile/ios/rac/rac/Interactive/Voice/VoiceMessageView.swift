@@ -79,9 +79,13 @@ struct VoiceMessageView: View {
         static let realBlue500: Color = Color(red: 0.4, green: 0.52, blue: 0.83)
     }
 
+    let openMic: Bool
     @Binding var messages: [ChatMessage]
     @Binding var state: VoiceState
     @StateObject var speechRecognizer = SpeechRecognizer()
+
+    @State private var isInputUpdated: Bool = true
+    @State private var timer: Timer? = nil
 
     let onUpdateUserMessage: (String) -> Void
     let onSendUserMessage: (String) -> Void
@@ -187,24 +191,53 @@ struct VoiceMessageView: View {
             .padding(.bottom, 50)
         }
         .frame(maxHeight: .infinity)
-        .onChange(of: state) { newValue in
-            switch newValue {
-            case .listeningToUser:
-                speechRecognizer.resetTranscript()
-                speechRecognizer.startTranscribing()
-            default:
-                speechRecognizer.stopTranscribing()
-                if !speechRecognizer.transcript.isEmpty {
-                    onSendUserMessage(speechRecognizer.transcript)
-                    speechRecognizer.transcript = ""
-                    speechRecognizer.resetTranscript()
+        .onChange(of: state) { [oldValue = state] newValue in
+            print("DEBUG: voiceState: \(state)")
+            if openMic {
+                switch newValue {
+                case .characterSpeaking, .listeningToUser:
+                    if !oldValue.isSpeaking {
+                        startSpeechRecognition()
+                    }
+                default:
+                    stopSpeechRecognition()
+                }
+            } else {
+                switch newValue {
+                case .listeningToUser:
+                    startSpeechRecognition()
+                default:
+                    stopSpeechRecognition()
                 }
             }
         }
         .onChange(of: speechRecognizer.transcript) { newValue in
             if !newValue.isEmpty {
+                print("DEBUG: onUpdateUserMessage \(newValue)")
                 onUpdateUserMessage(newValue)
+                if openMic {
+                    isInputUpdated = true
+                    startTimer()
+                }
             }
+        }
+        .onChange(of: isInputUpdated) { newValue in
+            if openMic && state == .listeningToUser && !newValue {
+                state = .idle(streamingEnded: true)
+                stopSpeechRecognition()
+            }
+        }
+        .onAppear {
+            if openMic {
+                startTimer()
+            }
+        }
+    }
+
+    private func startTimer() {
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
+            isInputUpdated = false
         }
     }
 
@@ -240,13 +273,28 @@ struct VoiceMessageView: View {
 
     private func disableAnimation() {
         ripple1Size = 100
-        ripple2Size = 200
+        ripple2Size = 100
+    }
+
+    private func startSpeechRecognition() {
+        speechRecognizer.startTranscribing()
+    }
+
+    private func stopSpeechRecognition() {
+        speechRecognizer.stopTranscribing()
+        if !speechRecognizer.transcript.isEmpty {
+            print("DEBUG: onSendUserMessage \(speechRecognizer.transcript)")
+            onSendUserMessage(speechRecognizer.transcript)
+            speechRecognizer.transcript = ""
+            speechRecognizer.resetTranscript()
+        }
     }
 }
 
 struct VoiceMessageView_Previews: PreviewProvider {
     static var previews: some View {
-        VoiceMessageView(messages: .constant([
+        VoiceMessageView(openMic: false,
+                         messages: .constant([
             ChatMessage(id: UUID(), role: .assistant, content: "Hello stranger, what’s your name?"),
             ChatMessage(id: UUID(), role: .user, content: "Hi 👋 my name is Karina"),
             ChatMessage(id: UUID(), role: .assistant, content: "Greetings, Karina. What can I do for you?"),

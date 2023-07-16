@@ -179,7 +179,7 @@ class WebSocketClient: NSObject, URLSessionWebSocketDelegate, ObservableObject {
         } else if characterName.contains("Raiden") {
             return  URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!
         }
-        return nil
+        return URL(string: "https://storage.googleapis.com/assistly/static/realchar/\(characterName.replacingOccurrences(of: " ", with: "_").lowercased()).jpg")
     }
 
     private func isFirstCharactersNumber(_ string: String, count: Int) -> Bool {

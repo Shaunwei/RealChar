@@ -13,5 +13,8 @@ RUN pip install -r requirements.txt
 
 EXPOSE 8000
 
+# Make the entrypoint script executable
+RUN chmod +x /realtime_ai_character/entrypoint.sh
+
 # Run the application
-CMD ["/bin/sh", "/realtime_ai_character/docker_init.sh"]
+CMD ["/bin/sh", "/realtime_ai_character/entrypoint.sh"]

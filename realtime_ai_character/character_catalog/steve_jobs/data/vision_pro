@@ -1,0 +1,130 @@
+Apple Vision Pro
+
+Article
+Talk
+Read
+Edit
+View history
+
+Tools
+From Wikipedia, the free encyclopedia
+"Vision Pro" redirects here. For the non-linear editing system, see D/Vision Pro.
+Apple Vision Pro
+
+
+Apple Vision Pro headset and its battery pack
+Developer	Apple Inc.
+Manufacturer	Luxshare
+Type	Standalone mixed reality headset
+Release date	Early 2024 in the United States
+2024 in other countries, such as Japan, India, Brazil, Canada and Australia
+Introductory price	US$3,499
+Operating system	visionOS (iOS-based[1])
+CPU	Apple M2 and R1
+Display	~23 MP total (equivalent to WUHD for each eye) dual micro-OLED (RGBB π subpixel geometry)[2]
+Sound	Stereo speakers, 6 microphones
+Input	6DoF inside-out tracking, photogrammetry, and gesture recognition through 12 built-in cameras and LiDAR
+Website	apple.com/apple-vision-pro
+Apple Vision Pro is an upcoming mixed reality headset developed by Apple Inc. It was announced on June 5, 2023, at its 2023 Worldwide Developers Conference (WWDC), with availability scheduled for early 2024 in the United States and a later time in 2024 in more countries, such as Japan, India, Brazil, Canada and Australia. It is Apple's first entrance into a new major product category since the Apple Watch, released in 2015.[3]
+
+Apple advertises the Vision Pro as a "spatial computer," where digital media is integrated with the real world and physical inputs, such as motion gestures, eye tracking, and voice input, can be used to interact with the system. Primarily intended as a standalone device booting visionOS, a derivative of iOS designed to run its own extended reality apps, it can also be cordlessly tethered to a Mac.
+
+History
+Development
+In May 2015, Apple acquired the German augmented reality (AR) company Metaio, originally spun off from Volkswagen.[4] rumored to be originally motivated by Project Titan.[5] That year, Apple hired Mike Rockwell from Dolby Laboratories. Rockwell formed a team that included Metaio co-founder Peter Meier and Apple Watch manager Fletcher Rothkopf. The team, called the Technology Development Group, developed an AR demo in 2016 but faced opposition from then-chief design officer Jony Ive and his team. Augmented reality and virtual reality (VR) expert and former NASA specialist Jeff Norris was hired in April 2017.[6][7] Rockwell's team helped deliver ARKit in 2017 with iOS 11. Rockwell's team sought to create a headset and worked with Ive's team; the decision to reveal the wearer's eyes through a front-facing eye display went over well with the industrial design team.[8]
+
+The headset's development experienced a period of uncertainty with the departure of Ive in 2019. His successor, Evans Hankey, left the company in 2023.[9] Senior engineering manager Geoff Stahl, who reports to Rockwell, led the development of its visionOS operating system,[7][10] after previously working on games and graphics technology at Apple.[11] Apple's extended reality headset is meant as a bridge to future lightweight augmented reality glasses, which are not yet technically feasible.[12][13] In November 2017, Apple acquired Canadian augmented reality company Vrvana for $30 million. The Vrvana Totem was able to overlay fully opaque, true-color animations on top of the real world rather than the ghost-like projections of other AR headsets, which cannot display the color black. It was able to do this while avoiding the often noticeable lag between the cameras capturing the outside world while simultaneously maintaining a 120-degree field of view at 90 Hz. The totem used IR illuminators and infrared cameras to perform spatial and hand tracking. [14][15]
+
+According to leaker Wayne Ma, Apple was originally going to allow macOS software to be dragged from the display to the user's envornment, but was scrapped early on due to the limitations of being based on iOS, and noted that the hand-tracking system was not precise enough to game. Workers also discussed collaborations with brands such as Nike for working out with the headset, while others investigated face cushions that were better suited for sweaty, high-intensity workouts, but was scrapped due to the battery pack and the fragile screen. A feature called "co-presence", a projection of a FaceTime user's full body was also scrapped due to unknown reasons.[16]
+
+Unveiling and release
+Information about a headset, then rumored to be called the Reality Pro,[17] began surfacing in 2022. In May 2022, Apple executives previewed the device, including CEO Tim Cook.[18] The company began recruiting directors to develop content for the headset in June. One such director, Jon Favreau, was enlisted to bring the dinosaurs on his Apple TV+ show Prehistoric Planet to life.[19] By April, Apple was attempting to attract developers to make software and services.[20] Apple filed over 5,000 patents for technologies which contributed to the development of Vision Pro.[21] The Apple Vision Pro was announced at the Worldwide Developers Conference on June 5, 2023, with availability beginning in early 2024 in the United States at a starting price of US$3,499 and later in 2024 in additional countries, incl. Japan, India, Brazil, Canada and Australia, at varying starting prices.[22] An estimated million units will be shipped initially.[23]
+
+On June 6, Apple acquired the AR headset startup Mira, whose technology is used at Super Nintendo World's Mario Kart ride. The company has a contract with the United States Air Force and Navy. Eleven of the company's employees were onboarded.[24]
+
+Specifications
+Hardware
+Apple Vision Pro has a laminated glass display front, an aluminum frame covered by a flexible cushion, and an adjustable headband. The frame contains five sensors, six microphones and 12 cameras. Two micro-OLED displays with a total of 23 megapixels, each with a size of a postage stamp, will be seen by the user through the lens. The eyes are tracked by a system of LEDs and infrared cameras, which form the basis of the device's iris scanner named Optic ID (used for authentication, like the iPhone's Face ID). Custom optical inserts are supported for users with prescription glasses; these lenses will attach magnetically to the main lens and are developed in partnership with Carl Zeiss AG. The device's speaker is inside the headband and is placed directly over the user's ears. It can also virtualize surround sound.[2][25]
+
+The Vision Pro uses the Apple M2 system on a chip. It is accompanied by a co-processor known as Apple R1, which is used for real-time sensor input processing. The device can be powered by an external power supply, a USB-C port on a Mac, or a battery pack rated for two hours of use.[26][27][28]
+
+The user's face is scanned by the headset during setup to generate a “persona”—a realistic avatar used by OS features.[29] During a public demo at WWDC, hands-on participants faces were scanned by an iPhone with TrueDepth camera for fitting purposes, and ears were scanned to optimize the speakers, with Apple stating this process can be done with the user's own iPhone or at an Apple Store as part of the purchase process.[30]
+
+A “digital crown” dial on the headset is used to control the amount of virtual background occupying the user's field of view, ranging from a mixed reality view where apps and media appear to float in the user's real-world surroundings, to completely hiding the user's surroundings.[26][27] The Vision Pro has an outward-facing display called EyeSight, which displays the eyes of the user's “persona” to indicate the degree to which they are immersed. Their eyes appear dimmed when in augmented reality, and obscured when in full immersion, to give others an indication of the user's environmental awareness. When someone else approaches or strikes up a conversation, EyeSight shows the user's eyes normally, even when fully immersed, and the other person is visible to the user.[27][25]
+
+Software
+visionOS
+
+Developer	Apple Inc.
+OS family	Unix-like, based on Darwin (BSD), iOS, iPadOS
+Working state	Current
+Initial release	Early 2024
+Marketing target	Mixed reality headsets, Apple Vision Pro
+Platforms	ARMv8-A
+Kernel type	Hybrid (XNU)
+License	Proprietary software with open-source components
+Official website	www.apple.com/apple-vision-pro/
+Support status
+Beta
+Apple Vision Pro runs visionOS (internally called xrOS), which is derived primarily from iOS core frameworks, and XR-specific frameworks for foveated rendering and real-time interaction.[1][31] The operating system uses a 3D user interface navigated via finger tracking, eye tracking, and speech recognition. For example, the user can click an element by looking at it and pinching two fingers together, move the element by moving their pinched fingers, and scroll by flicking their wrist. Apps are displayed in floating windows that can be arranged in 3D space. visionOS supports a virtual keyboard for text input, the Siri virtual assistant, and external Bluetooth peripherals including Magic Keyboard, Magic Trackpad, and gamepads.[27][32] Calls can be presented using participants' “personas,” or individual windows with their video feeds.[30]
+
+Apple stated that “hundreds of thousands of familiar iPhone and iPad apps” would be compatible with the platform;[33] the WWDC presentation showcased apps from the Microsoft 365 suite, including Microsoft Word, Microsoft Excel, and Microsoft Teams, as well as Adobe Lightroom, FaceTime, Webex, and Zoom. The Walt Disney Company announced plans to develop apps for visionOS, including a Disney+ app incorporating mixed reality experiences.[34] Over 100 Apple Arcade games will be compatible with visionOS at launch.[32][35][36] The company is working with Unity Technologies to support the Unity engine on visionOS.[37][33] WebXR will be supported in Safari for visionOS.[38]
+
+Reception
+Pre-release and unveiling
+Ars Technica reported that the Vision Pro was “truly something I had never seen before,” noting the intuitiveness of its user interface in a choreographed demo given by Apple, and praising a dinosaur tech demo for its immersiveness. Feeling that its displays were dim but “much better than other headsets I've used on this front, even if it still wasn’t perfect,” and that the personas looked “surreal” but conveyed body language better than a more stylized avatar (such as Animoji or Horizon Worlds).[30] Arguing that the Vision Pro was not a virtual reality (VR) platform, nor a competitor to Meta Platforms' Quest (formerly Oculus) product line, due to its positioning as “primarily an AR device that just happens to have a few VR features,” and not as a mass market consumer product.[30]
+
+The Verge similarly noted that Apple had deliberately avoided presenting the Vision Pro as a VR platform, such as not referring to the device as a “headset,” describing it as an AR device and “spatial computer,” and not showcasing fully-immersive experiences such as games and metaverse platforms in its presentation (only demonstrating non-VR games, displayed in windows and controlled using an external gamepad). He suggested that this positioning “leaves wiggle room for the likely future of this technology that looks nothing like a bulky VR headset: AR glasses.”[39]
+
+Bloomberg noted that loud gasps were heard among the crowd in response to the announcement of the Vision Pro price tag, followed by criticism of the cost by both consumers and online commentators. The three priciest components in the Vision Pro are its camera and sensor array, its dual Apple silicon chips, and the twin 4K micro-OLED virtual reality displays. Apple is reportedly working on a cheaper model that is scheduled for release in late 2025 or early 2026 as well as a second-generation model with a faster processor.[40]
+
+The Vision Pro has been criticized due to its high cost, seen by some as too high to go mainstream,[41][42][43], it's short battery lifespan[44], appearing distracting to others[45], and its lack of HDMI input[46] [47] and haptic feedback[48].
+
+After a reported seven years of development, Apple’s AR headset is finally here. It’s been a minute since we’ve had a “one more thing” moment. The wisdom, efficacy and ultimate fate of the product have yet to be determined, but one thing we can finally say for certain: Unlike the long-rumored Apple television and car, it’s real and it’s finally here.
+
+“With Vision Pro, you’re no longer limited by a display,” Apple CEO Tim Cook said, introducing the new headset at WWDC 2023. Unlike earlier mixed reality reports, the system is far more focused on augmented reality than virtual. The company refresh to this new paradigm is “spatial computing.”
+
+
+Image Credits: Apple
+
+
+It’s a way of interacting with the computing UI — something the company is referring to as a kind of input device, akin to a mouse or trackpad. The headset is surprisingly similar to earlier renders — it does, indeed, look like ski googles. Clearly this thing isn’t meant to be worn outside the home or office.
+
+The headset is based on an aluminum frame, with curved glass up front. There’s a physical button for image capture and a digital crown for adjustments. The rear is a flexible strap, and a visor extends from the display to the wearer’s head, to keep light out. On the sides are built-in “audio pods,” providing the sound.This is finally spatial audio’s time to shine — it’s now clear why Apple has been pushing it in such a big way. The system is designed to create the illusion of different audio sources.
+
+
+
+The headset runs on the standard M2 chip, paired with a new R1 chip, which takes on the video streaming. The displays are micro-OLED, with an impressive 64 pixels in roughly the space of a standard iPhone pixel. The three-element lens is designed to improve the imaging from all angles. The company also teamed up with Zeiss to bring custom prescription glass inserts, rather than accommodating for the wearer’s glasses.
+
+
+
+Image Credits: Apple
+
+
+The hardware utilizes a new feature called “EyeSight,” which uses a front-facing display to reveal your eyes to other people in the room (compensating for the opaque visor), creating an “authentic representation of you” on the curved front glass. This is accomplished through an initial facial scan. That image is also used as your avatar to represent you to other people wearing the headset.
+
+While the product is, indeed, mixed reality (owing to the need for on-board passthrough), the company seems disinterested in engaging in the virtual reality conversation.
+
+Interestingly, it does appear to be a work-first device. It’s telling that the company is focused on things like email, rather than, say, gaming. In fact, users can actually bring a version of their Mac desktop over, projected out in front of them. Apple really went to great lengths to avoid a touchscreen Mac, it seems.
+
+The opaque display lets the room darken around images. In fact, the company is really pushing 2D photos taken from the iPhone here. There’s a 3D camera built in, as well, allowing users to capture “Spatial” photos and videos. There’s a movie theater option, too, taking advantage of the illusion of a full, large screen. There is gaming here, but rather than an actual VR experience, it’s a large screen projection, with standard games.
+
+
+Image Credits: Apple
+
+
+Disney (who else?) is the first content partner here, which does bode well for future experiences. Bob Iger took to the stage today to announce that Disney+ will be available at launch on the device. The entertainment mogul understandably had a lot of faith in Apple here.
+
+In spite of earlier rumors around an adapted iPadOS, the company introduced VisionOS, a new operating system “designed from the ground up” for spatial computing. Much like the iPad’s initial launch, there are a number of educational features, including astronomical and health apps, as well as one for music creation.
+
+Apple says the system will work with Microsoft Office apps, as well as teleconferencing services like WebEX and Zoom. VisionOS runs on the same framework as iOS and iPad OS, meaning that existing apps will port over. The company is also launching a new App Store specifically for the headset. It’s teamed with Unity, as well, to support development tools for games, which should offer a better experience than simply porting over existing games.
+
+A new version of FaceID called OpticId brings security features for using things like Apple Pay. Meanwhile, camera data is processed onboard and the company doesn’t log where you look.
+
+
+Image Credits: Apple
+
+
+What’s clear is this is all extremely early stages. For one thing, the product was announced today, in order to bring more developers onboard. For another, the experience as depicted in the presentation is all renders. Of course, that also owes to the difficulty of presenting a 3D experience on a 2D video — this is something the company will keep running into with the product.
+
+It will be available early next year. Better start saving up now, because this thing is going to run $3,499. Yep. It’s clearly focused on enterprise buyers, rather than regular consumers. Keep in mind, however, the “Pro” part of the name seems to suggest that a more affordable (relatively speaking) version will be coming at some point in the future.

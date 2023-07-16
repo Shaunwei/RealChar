@@ -1,0 +1,86 @@
+# Realtime AI Character
+Realtime AI Character is a revolutionary project enabling dynamic audio-visual interactions between humans and AI. Powered by Language Learning Model (LLM), it offers instant, natural, and context-aware responses, paving the way for a new era of interactive AI experiences.
+
+## Prerequisites
+
+Before you begin setting up this project, please ensure you have completed the following tasks:
+
+### 1. Prepare OpenAI API Token
+
+This application utilizes the OpenAI API to access its powerful language model capabilities. In order to use the OpenAI API, you will need to obtain an API token.
+
+To get your OpenAI API token, follow these steps:
+
+1. Go to the [OpenAI website](https://beta.openai.com/signup/) and sign up for an account if you haven't already.
+2. Once you're logged in, navigate to the [API keys page](https://beta.openai.com/account/api-keys).
+3. Generate a new API key by clicking on the "Create API Key" button.
+4. Copy the API key and store it safely.
+5. Add the API key to your environment variable, e.g. `export OPENAI_API_KEY=<your API key>`
+
+### 2. Prepare ElevenLabs API Key
+
+1. Creating an ElevenLabs Account
+Visit [ElevenLabs](https://beta.elevenlabs.io/) to create an account. You'll need this to access the speech synthesis and voice cloning features.
+
+2. In your Profile Setting, you can get an API Key. Save it in a safe place.
+
+3. Set API key in your .env file:
+```
+XI_API_KEY=<api key>
+```
+
+## Installation
+1. Clone the repo
+   ```sh
+   git clone
+    ```
+2. Install requirements
+   - (For Mac) Install portaudio and ffmpeg
+    ```sh
+    brew install portaudio
+    brew install ffmpeg
+    ```
+    Then install all python requirements
+    ```sh
+    pip install -r requirements.txt
+    ```
+3. Create an empty database if you have not done so before
+    ```sh
+    sqlite3 test.db "VACUUM;"
+    ```
+4. Run db upgrade
+    ```sh
+    alembic upgrade head
+    ```
+5. Setup `.env`: update API keys and select component
+   ```sh
+   mv .env.example .env
+   ```
+6. Run the app with web client on http://localhost:8000
+    ```sh
+    uvicorn realtime_ai_character.main:app --reload
+    ```
+7. (Optional) Run terminal client - python cli
+    ```sh
+    python client/cli.py
+    ```
+8. Select one character to talk to, then start talking
+
+
+## Tech Stack
+Speech to Text: Whisper
+
+Voice Clone and Sound Synthesis: ElevenLabs
+
+## Docker
+1. Build docker image
+    ```sh
+    python cli.py docker-build
+    ```
+2. Run docker image
+    ```sh
+    python cli.py docker-run
+    ```
+3. Go to http://localhost:8000 to start talking (note: you need https to use microphone)
+
+If you have issues with docker (especially on a non-Linux machine), please refer to https://docs.docker.com/get-docker/ (installation) and https://docs.docker.com/desktop/troubleshoot/overview/ (troubleshooting).

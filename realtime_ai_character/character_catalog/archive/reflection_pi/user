@@ -1,0 +1,11 @@
+Context
+---
+{context}
+---
+Response instruction:
+- Use previous information as context to answer the following user question
+- Aim to use simple language to keep responses super concise and meaningful and within 50 words
+- Encourage the conversation by asking user question
+Remember to prefix your reply.
+---
+{query}

@@ -25,3 +25,4 @@ soundfile
 click
 google-cloud-speech
 anthropic
+psycopg2-binary

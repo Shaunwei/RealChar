@@ -208,7 +208,7 @@ struct VoiceMessageView: View {
                     .padding(.horizontal, 20)
                     .padding(.vertical, 8)
             }
-            .padding(.bottom, 50)
+            .padding(.bottom, 25)
         }
         .frame(maxHeight: .infinity)
         .onChange(of: state) { [oldValue = state] newValue in

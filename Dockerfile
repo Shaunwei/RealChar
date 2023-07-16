@@ -11,10 +11,7 @@ COPY ./ /realtime_ai_character
 # Install Python dependencies
 RUN pip install -r requirements.txt
 
-# Build the application
-RUN alembic upgrade head
-
 EXPOSE 8000
 
 # Run the application
-CMD ["uvicorn", "realtime_ai_character.main:app", "--host", "0.0.0.0"]
+CMD ["/bin/sh", "/realtime_ai_character/docker_init.sh"]

@@ -56,7 +56,7 @@ class CatalogManager(Singleton):
         :overwrite: if True, overwrite existing data in the chroma.
         """
         path = Path(__file__).parent
-        excluded_dirs = {'__pycache__'}
+        excluded_dirs = {'__pycache__', 'archive'}
 
         directories = [d for d in path.iterdir() if d.is_dir()
                        and d.name not in excluded_dirs]

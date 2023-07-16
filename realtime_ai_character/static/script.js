@@ -463,6 +463,7 @@ function createCharacterGroups(message) {
     'Ai Character Helper': '/static/ai_helper.png',
     'Reflection Pi': '/static/pi.jpeg',
     'Elon Musk': '/static/elon.png',
+    'Steve Jobs': '/static/jobs.png',
   };
 
   const radioButtonDiv = document.getElementsByClassName('radio-buttons')[0];

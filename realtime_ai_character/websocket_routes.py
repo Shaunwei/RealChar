@@ -63,7 +63,7 @@ async def handle_receive(
     try:
         conversation_history = ConversationHistory()
 
-        # 0. Recieve client platform info (web, mobile, terminal)
+        # 0. Receive client platform info (web, mobile, terminal)
         data = await websocket.receive()
         if data['type'] != 'websocket.receive':
             raise WebSocketDisconnect('disconnected')

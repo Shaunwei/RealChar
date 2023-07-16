@@ -22,6 +22,7 @@ struct ConfigView: View {
     @Binding var loaded: Bool
     @Binding var selectedOption: CharacterOption?
     @Binding var openMic: Bool
+    @Binding var hapticFeedback: Bool
     let onConfirmConfig: (CharacterOption) -> Void
 
     var body: some View {
@@ -67,6 +68,15 @@ struct ConfigView: View {
                 .tint(.accentColor)
                 .padding(.horizontal, 8)
 
+                Toggle(isOn: $hapticFeedback) {
+                    Text("Haptic feedback?")
+                      .font(
+                        Font.custom("Prompt", size: 16)
+                      )
+                }
+                .tint(.accentColor)
+                .padding(.horizontal, 8)
+
                 CtaButton(action: {
                     guard let selectedOption else { return }
                     simpleSuccess()
@@ -91,6 +101,7 @@ struct ConfigView: View {
     }
 
     private func simpleSuccess() {
+        guard hapticFeedback else { return }
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)
     }
@@ -162,6 +173,7 @@ struct ConfigView_Previews: PreviewProvider {
                    loaded: .constant(true),
                    selectedOption: .constant(nil),
                    openMic: .constant(false),
+                   hapticFeedback: .constant(false),
                    onConfirmConfig: { _ in })
         .frame(width: 310)
     }

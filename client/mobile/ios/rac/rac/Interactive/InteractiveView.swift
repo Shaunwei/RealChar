@@ -25,6 +25,7 @@ struct InteractiveView: View {
     let webSocketClient: WebSocketClient
     let character: CharacterOption?
     let openMic: Bool
+    let hapticFeedback: Bool
     let onExit: () -> Void
     @Binding var messages: [ChatMessage]
     @State var mode: InteractiveMode = .voice
@@ -146,6 +147,7 @@ struct InteractiveView: View {
                         voiceState = .idle(streamingEnded: true)
                     }
                     streamingEnded = true
+                    simpleSuccess()
                     return
                 }
 
@@ -155,12 +157,14 @@ struct InteractiveView: View {
                     } else {
                         messages[messages.count - 1].content = message
                     }
+                    lightHapticFeedback()
                 } else {
                     if mode == .voice {
                         voiceState = .characterSpeaking(characterImageUrl: character?.imageUrl)
                     }
                     streamingEnded = false
                     messages.append(ChatMessage(id: UUID(), role: .assistant, content: message))
+                    lightHapticFeedback()
                 }
             }
             webSocketClient.onDataReceived = { data in
@@ -202,17 +206,19 @@ struct InteractiveView: View {
     }
 
     private func simpleSuccess() {
+        guard hapticFeedback else { return }
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)
     }
 
     private func simpleError() {
+        guard hapticFeedback else { return }
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.error)
     }
 
     private func prepareHaptics() {
-        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        guard hapticFeedback, CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
 
         do {
             engine = try CHHapticEngine()
@@ -224,7 +230,7 @@ struct InteractiveView: View {
 
     private func complexSuccess() {
         // make sure that the device supports haptics
-        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        guard hapticFeedback, CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
         var events = [CHHapticEvent]()
 
         // create one intense, sharp tap
@@ -242,6 +248,28 @@ struct InteractiveView: View {
             print("Failed to play pattern: \(error.localizedDescription).")
         }
     }
+
+    private func lightHapticFeedback() {
+        // make sure that the device supports haptics
+        guard hapticFeedback, CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        var events = [CHHapticEvent]()
+
+        for i in stride(from: 0, to: 0.2, by: 0.2) {
+            let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: Float(0.5))
+            let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: Float(0.5))
+            let event = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: i)
+            events.append(event)
+        }
+
+        // convert those events into a pattern and play it immediately
+        do {
+            let pattern = try CHHapticPattern(events: events, parameters: [])
+            let player = try engine?.makePlayer(with: pattern)
+            try player?.start(atTime: 0)
+        } catch {
+            print("Failed to play pattern: \(error.localizedDescription).")
+        }
+    }
 }
 
 struct InteractiveView_Previews: PreviewProvider {
@@ -249,6 +277,7 @@ struct InteractiveView_Previews: PreviewProvider {
         InteractiveView(webSocketClient: WebSocketClient(),
                         character: .init(id: 0, name: "Name", description: "Description", imageUrl: nil),
                         openMic: false,
+                        hapticFeedback: false,
                         onExit: {},
                         messages: .constant([]))
     }

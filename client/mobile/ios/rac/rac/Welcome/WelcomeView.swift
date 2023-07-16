@@ -16,6 +16,7 @@ struct WelcomeView: View {
     @Binding var character: CharacterOption?
     @Binding var options: [CharacterOption]
     @Binding var openMic: Bool
+    @Binding var hapticFeedback: Bool
 
     let onConfirmConfig: (CharacterOption) -> Void
     let onWebSocketReconnected: () -> Void
@@ -47,6 +48,7 @@ struct WelcomeView: View {
                                loaded: $webSocketClient.isConnected,
                                selectedOption: $character,
                                openMic: $openMic,
+                               hapticFeedback: $hapticFeedback,
                                onConfirmConfig: onConfirmConfig)
                         .padding(.horizontal, 48)
                 }
@@ -81,6 +83,7 @@ struct WelcomeView_Previews: PreviewProvider {
                               .init(id: 1, name: "Anime hero", description: "Noble", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!),
                               .init(id: 2, name: "Realtime AI", description: "Kind", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!)]),
                     openMic: .constant(false),
+                    hapticFeedback: .constant(false),
                     onConfirmConfig: { _ in },
                     onWebSocketReconnected: { }
         )

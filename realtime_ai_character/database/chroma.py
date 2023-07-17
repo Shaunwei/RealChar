@@ -8,7 +8,8 @@ load_dotenv()
 logger = get_logger(__name__)
 
 embedding = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
-
+if os.getenv('OPENAI_API_TYPE') == 'azure':
+    embedding = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"), deployment="text-embedding-ada-002", chunk_size=1)
 
 def get_chroma():
     chroma = Chroma(

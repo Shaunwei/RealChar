@@ -2,7 +2,10 @@ import os
 from typing import List
 
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from langchain.chat_models import ChatOpenAI
+if os.getenv('OPENAI_API_TYPE') == 'azure':
+    from langchain.chat_models import AzureChatOpenAI
+else:
+    from langchain.chat_models import ChatOpenAI
 from langchain.schema import BaseMessage, HumanMessage
 
 from realtime_ai_character.database.chroma import get_chroma
@@ -17,11 +20,19 @@ class OpenaiLlm(Singleton, LLM):
     def __init__(self):
         super().__init__()
 
-        self.chat_open_ai = ChatOpenAI(
-            model=os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo-16k'),
-            temperature=0.2,
-            streaming=True
-        )
+        if os.getenv('OPENAI_API_TYPE') == 'azure':
+            self.chat_open_ai = AzureChatOpenAI(
+                deployment_name='gpt-35-turbo',
+                model=os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo-16k'),
+                temperature=0.2,
+                streaming=True
+            )
+        else:
+            self.chat_open_ai = ChatOpenAI(
+                model=os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo-16k'),
+                temperature=0.2,
+                streaming=True
+            )
         self.db = get_chroma()
 
     async def achat(self,

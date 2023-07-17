@@ -7,11 +7,6 @@ body {
   min-height: 100vh;
 }
 
-.warning {
-  color: #777;
-  margin-bottom: 10px;
-}
-
 /* CSS for mobile warning message and desktop content */
 @media (max-width: 768px) {
   #desktop-content { display: none; }

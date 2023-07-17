@@ -96,7 +96,7 @@ To get your OpenAI API token, follow these steps:
 ### 1.1 (Optional) Prepare LLM -  Anthropic(Claude 2) API Token
 <details><summary>👇click me</summary>
 
-To get your OpenAI API token, follow these steps:
+To get your Anthropic API token, follow these steps:
 
 1. Go to the [Anthropic website](https://docs.anthropic.com/claude/docs/getting-started-with-claude) and sign up for an account if you haven't already.
 2. Once you're logged in, navigate to the [API keys page](https://console.anthropic.com/account/keys).

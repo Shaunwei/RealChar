@@ -1,6 +1,6 @@
 This directory includes code samples for deployment on popular cloud services.
 
-Feel free to contribute new samples or make edits!
+Feel free to contribute new samples or make edits! (We would love if you can contribute Vercel integration, for example).
 
 # Currently Supported Platform
 

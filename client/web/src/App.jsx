@@ -1,3 +1,10 @@
+// TODO: 
+// break down into smaller componnets once socket can successfully connect to server!
+// relace each render div parts with components, and better arrange the rendering along with booleans
+// add remaining funcitonalities
+// replace all icon svgs with react icons
+// update style 
+
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import logo from './assets/svgs/logo.svg'; 
@@ -8,18 +15,35 @@ import messageIcon from './assets/svgs/message.svg';
 import microphoneIcon from './assets/svgs/microphone.svg'; 
 import { FaGithub, FaDiscord, FaTwitter } from 'react-icons/fa';
 
+import raiden from './assets/svgs/raiden.svg';
+import loki from './assets/svgs/loki.svg';
+import aiHelper from './assets/images/ai_helper.png';
+import pi from './assets/images/pi.jpeg';
+import elon from './assets/images/elon.png';
+import bruce from './assets/images/elon.png';
+import steve from './assets/images/jobs.png';
+import realchar from './assets/svgs/realchar.svg';
+
 const App = () => {
   // devices
   const [devices, setDevices] = useState([]);
   const [selectedDevice, setSelectedDevice] = useState('');
   // socket connection
-  const socketRef = useRef(null);
+  const socket = useRef(null);
   const [isConnected, setIsConnected] = useState(false);
   // characters
   const [characterConfirmed, setCharacterConfirmed] = useState(false);
   // Talk
   const [isTalkView, setIsTalkView] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  // media recorder
+  const mediaRecorder = useRef(null);
+  const chunks = useRef([]);
+  const debug = false;
+  const [audioSent, setAudioSent] = useState(false);
+  const [callActive, setCallActive] = useState(false);
+  // characters
+  const [characterGroups, setCharacterGroups] = useState([]);
 
   // render devices
   useEffect(() => {
@@ -39,6 +63,55 @@ const App = () => {
   const connectMicrophone = (deviceId) => {
     // logic to connect the microphone
     console.log("connectMicrophone");
+    navigator.mediaDevices.getUserMedia({
+      audio: {
+        deviceId: deviceId ? {exact: deviceId} : undefined,
+        echoCancellation: true
+      }
+    }).then(function(stream) {
+      let mr = new MediaRecorder(stream);
+  
+      mr.ondataavailable = function(e) {
+        chunks.current.push(e.data);
+      }
+  
+      mr.onstart = function() {
+        console.log("recorder starts");
+      }
+  
+      mr.onstop = function(e) {
+        console.log("recorder stops");
+        let blob = new Blob(chunks.current, {'type' : 'audio/webm'});
+        chunks.current = [];
+  
+        if (debug) {
+            // Save the audio
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement("a");
+            document.body.appendChild(a);
+            a.style = "display: none";
+            a.href = url;
+            a.download = 'test.webm';
+            a.click();
+        }
+  
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          if (!audioSent && callActive) {
+            console.log("sending audio");
+            socket.send(blob);
+          }
+          setAudioSent(false);
+          if (callActive) {
+            mr.start();
+          }
+        }
+      }
+
+      mediaRecorder.current = mr;
+    })
+    .catch(function(err) {
+      console.log('An error occurred: ' + err);
+    });
   }
 
   const handleDeviceChange = (event) => {
@@ -50,33 +123,46 @@ const App = () => {
   const connectSocket = () => {
     const clientId = Math.floor(Math.random() * 1010000);
     const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+    // const ws_path = ws_scheme + '://realchar.ai:8000/ws/' + clientId;
     const ws_path = ws_scheme + '://' + window.location.host + `/ws/${clientId}`;
     console.log(`ws_path ${ws_path}`);
 
-    let socket = new WebSocket(ws_path);
-    socket.binaryType = 'arraybuffer';
+    let sk = new WebSocket(ws_path);
+    sk.binaryType = 'arraybuffer';
 
-    socket.onopen = (event) => {
+    sk.onopen = (event) => {
       console.log("successfully connected");
       setIsConnected(true);
       connectMicrophone(selectedDevice);
-      socket.send("web"); // select web as the platform
+      sk.send("web"); // select web as the platform
     };
 
-    socket.onmessage = (event) => {
+    sk.onmessage = (event) => {
       console.log(`receive message ${event.data}`);
+      if (typeof event.data === 'string') {
+        console.log("receive text data");
+        const message = event.data;
+        if (message === '[end]\n') {
+        } else if (message.startsWith('[+]')) {
+        } else if (message.startsWith('[=]')) {
+        } else if (message.startsWith('Select')) {
+          createCharacterGroups(message);
+        } else {
+        }
+      } else {  // binary data
+        console.log("receive binary data");
+      }
     };
 
-    socket.onerror = (error) => {
+    sk.onerror = (error) => {
       console.log(`WebSocket Error: ${error}`);
     };
 
-    socket.onclose = (event) => {
+    sk.onclose = (event) => {
       console.log("Socket closed");
     };
 
-    socketRef.current = socket;
-    setIsConnected(true);
+    socket.current = sk;
   };
 
   const handleConnectButtonClick = () => {
@@ -89,6 +175,7 @@ const App = () => {
     setCharacterConfirmed(true);
     setIsTalkView(true);
     setIsRecording(true);
+    setCallActive(true);
   }
 
   const handleTextClick = () => {
@@ -100,11 +187,13 @@ const App = () => {
   const handleStopCall = () => {
     console.log("call stopped");
     setIsRecording(false);
+    setCallActive(false);
   }
 
   const handleContinueCall = () => {
     console.log("call continue");
     setIsRecording(true);
+    setCallActive(true);
   }
 
   const handleDisconnect = () => {
@@ -113,6 +202,7 @@ const App = () => {
     setIsRecording(false);
     setCharacterConfirmed(false);
     setIsTalkView(false);
+    setCallActive(false);
   }
 
   const handleMessageClick = () => {
@@ -121,6 +211,40 @@ const App = () => {
 
   const handleCallClick = () => {
     setIsTalkView(true);
+  }
+
+  // character groups
+  const createCharacterGroups = (message) => {
+    const options = message.split('\n').slice(1);
+
+    const imageMap = {
+      'Raiden Shogun And Ei': {raiden},
+      'Loki': {loki},
+      'Ai Character Helper': {aiHelper},
+      'Reflection Pi': {pi},
+      'Elon Musk': {elon},
+      'Bruce Wayne': {bruce},
+      'Steve Jobs': {steve},
+    };
+
+    const newCharacterGroups = [];
+    options.forEach(option => {
+      const match = option.match(/^(\d+)\s-\s(.+)$/);
+      if (match) {
+        let src = imageMap[match[2]];
+        if (!src) {
+          src = {realchar};
+        }
+        
+        newCharacterGroups.push({
+          id: match[1],
+          name: match[2],
+          imageSrc: src
+        });
+      }
+    });
+
+    setCharacterGroups(newCharacterGroups);
   }
 
 
@@ -171,8 +295,20 @@ const App = () => {
         ) : null}
 
         <div className="main-container">
-          <div className="radio-buttons">
+          <div className='radio-buttons'>
+            {characterGroups.map(group => (
+              <label key={group.id} className='custom-radio'>
+                <input type='radio' name='radio' value={group.id} />
+                <span className='radio-btn'>
+                  <div className='hobbies-icon'>
+                    <img src={group.imageSrc} />
+                    <h4>{group.name}</h4>
+                  </div>
+                </span>
+              </label>
+            ))}
           </div>
+          
         </div>
 
         { isConnected && !characterConfirmed ? (

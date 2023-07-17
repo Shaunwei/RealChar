@@ -1,6 +1,6 @@
 This directory includes code samples for deployment on popular cloud services.
 
-Feel free to contribue new samples or make edits!
+Feel free to contribute new samples or make edits!
 
 # Currently Supported Platform
 

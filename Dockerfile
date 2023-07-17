@@ -11,6 +11,7 @@ COPY ./ /realtime_ai_character
 # Install Python dependencies
 RUN pip install -r requirements.txt
 
+# Expose 8000 port from the docker image.
 EXPOSE 8000
 
 # Make the entrypoint script executable

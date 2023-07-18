@@ -31,8 +31,9 @@ async def websocket_endpoint(
         websocket: WebSocket,
         client_id: int = Path(...),
         api_key: str = Query(None),
+        llm_model: str = Query(default=os.getenv(
+            'LLM_MODEL_USE', 'gpt-3.5-turbo-16k')),
         db: Session = Depends(get_db),
-        llm: LLM = Depends(get_llm),
         catalog_manager=Depends(get_catalog_manager),
         speech_to_text=Depends(get_speech_to_text),
         text_to_speech=Depends(get_text_to_speech)):
@@ -40,6 +41,7 @@ async def websocket_endpoint(
     if os.getenv('USE_AUTH', '') and api_key != os.getenv('AUTH_API_KEY'):
         await websocket.close(code=1008, reason="Unauthorized")
         return
+    llm = get_llm(model=llm_model)
     await manager.connect(websocket)
     try:
         main_task = asyncio.create_task(

@@ -152,9 +152,25 @@ async def receive_message(websocket):
             break
 
 
+def select_model():
+    llm_model_selection = input(
+        '1: gpt-3.5-turbo-16k \n'
+        '2: gpt-4 \n'
+        '3: claude-2 \n'
+        'Select llm model:')
+    if llm_model_selection == '1':
+        llm_model = 'gpt-3.5-turbo-16k'
+    elif llm_model_selection == '2':
+        llm_model = 'gpt-4'
+    elif llm_model_selection == '3':
+        llm_model = 'claude-2'
+    return llm_model
+
+
 async def start_client(client_id, url):
     api_key = os.getenv('AUTH_API_KEY')
-    uri = f"ws://{url}/ws/{client_id}?api_key={api_key}"
+    llm_model = select_model()
+    uri = f"ws://{url}/ws/{client_id}?api_key={api_key}&llm_model={llm_model}"
     async with websockets.connect(uri) as websocket:
         # send client platform info
         await websocket.send('terminal')

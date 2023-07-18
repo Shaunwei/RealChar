@@ -22,7 +22,7 @@ class OpenaiLlm(Singleton, LLM):
 
         if os.getenv('OPENAI_API_TYPE') == 'azure':
             self.chat_open_ai = AzureChatOpenAI(
-                deployment_name='gpt-35-turbo',
+                deployment_name=os.getenv('OPENAI_API_MODEL_DEPLOYMENT_NAME', 'gpt-35-turbo'),
                 model=os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo-16k'),
                 temperature=0.2,
                 streaming=True

@@ -8,18 +8,16 @@ from langchain.schema import BaseMessage, HumanMessage
 from realtime_ai_character.database.chroma import get_chroma
 from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, AsyncCallbackTextHandler, LLM
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Character, Singleton
+from realtime_ai_character.utils import Character
 
 logger = get_logger(__name__)
 
 
-class OpenaiLlm(Singleton, LLM):
-    def __init__(self):
-        super().__init__()
-
+class OpenaiLlm(LLM):
+    def __init__(self, model):
         self.chat_open_ai = ChatOpenAI(
-            model=os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo-16k'),
-            temperature=0.2,
+            model=model,
+            temperature=0.5,
             streaming=True
         )
         self.db = get_chroma()

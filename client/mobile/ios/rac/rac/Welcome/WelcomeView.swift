@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct WelcomeView: View {
-    @ObservedObject var webSocketClient: WebSocketClient
+    let webSocket: any WebSocket
+    @State var isWebSocketConnected = false
     enum Tab {
         case about, config
     }
@@ -45,7 +46,7 @@ struct WelcomeView: View {
                         .padding(.horizontal, 48)
                 case .config:
                     ConfigView(options: options,
-                               loaded: $webSocketClient.isConnected,
+                               loaded: $isWebSocketConnected,
                                selectedOption: $character,
                                openMic: $openMic,
                                hapticFeedback: $hapticFeedback,
@@ -55,19 +56,23 @@ struct WelcomeView: View {
             }
         }
         .onAppear {
-            webSocketClient.onCharacterOptionsReceived = { options in
+            isWebSocketConnected = webSocket.isConnected
+            webSocket.onConnectionChanged = { connected in
+                self.isWebSocketConnected = connected
+            }
+            webSocket.onCharacterOptionsReceived = { options in
                 self.options = options
             }
         }
         .onChange(of: character) { newValue in
-            if webSocketClient.isConnected && webSocketClient.isInteractiveMode {
-                webSocketClient.isConnected = false
-                webSocketClient.isInteractiveMode = false
-                webSocketClient.closeSession()
-                webSocketClient.onCharacterOptionsReceived = { options in
+            if webSocket.isConnected && webSocket.isInteractiveMode {
+                webSocket.isConnected = false
+                webSocket.isInteractiveMode = false
+                webSocket.closeSession()
+                webSocket.onCharacterOptionsReceived = { options in
                     self.options = options
                 }
-                webSocketClient.connectSession()
+                webSocket.connectSession()
                 onWebSocketReconnected()
             }
         }
@@ -76,7 +81,7 @@ struct WelcomeView: View {
 
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
-        WelcomeView(webSocketClient: WebSocketClient(),
+        WelcomeView(webSocket: MockWebSocket(),
                     tab: .constant(.about),
                     character: .constant(nil),
                     options: .constant([.init(id: 0, name: "Mythical god", description: "Rogue", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!),

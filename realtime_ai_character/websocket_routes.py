@@ -31,8 +31,9 @@ async def websocket_endpoint(
         websocket: WebSocket,
         client_id: int = Path(...),
         api_key: str = Query(None),
+        llm_model: str = Query(default=os.getenv(
+            'LLM_MODEL_USE', 'gpt-3.5-turbo-16k')),
         db: Session = Depends(get_db),
-        llm: LLM = Depends(get_llm),
         catalog_manager=Depends(get_catalog_manager),
         speech_to_text=Depends(get_speech_to_text),
         text_to_speech=Depends(get_text_to_speech)):
@@ -40,6 +41,7 @@ async def websocket_endpoint(
     if os.getenv('USE_AUTH', '') and api_key != os.getenv('AUTH_API_KEY'):
         await websocket.close(code=1008, reason="Unauthorized")
         return
+    llm = get_llm(model=llm_model)
     await manager.connect(websocket)
     try:
         main_task = asyncio.create_task(
@@ -161,7 +163,12 @@ async def handle_receive(
                 token_buffer.clear()
                 # 4. Persist interaction in the database
                 Interaction(
-                    client_id=client_id, client_message=msg_data, server_message=response).save(db)
+                    client_id=client_id,
+                    client_message=msg_data,
+                    server_message=response,
+                    platform=platform,
+                    action_type='text'
+                ).save(db)
 
             # handle binary message(audio)
             elif 'bytes' in data:
@@ -191,7 +198,12 @@ async def handle_receive(
                     token_buffer.clear()
                     # Persist interaction in the database
                     Interaction(
-                        client_id=client_id, client_message=transcript, server_message=response).save(db)
+                        client_id=client_id,
+                        client_message=transcript,
+                        server_message=response,
+                        platform=platform,
+                        action_type='audio'
+                    ).save(db)
 
                 # 4. Send message to LLM
                 tts_task = asyncio.create_task(llm.achat(

@@ -13,13 +13,27 @@ import SwiftUI
 //let serverUrl: URL = URL(string: "http://127.0.0.1:8000/")!
 let serverUrl: URL = URL(string: "https://realchar.ai/")!
 
-class WebSocketClient: NSObject, URLSessionWebSocketDelegate, ObservableObject {
+protocol WebSocket: NSObject, ObservableObject {
+    var isConnected: Bool { get set }
+    var isInteractiveMode: Bool { get set }
+    var onConnectionChanged: ((Bool) -> Void)? { get set }
+    var onStringReceived: ((String) -> Void)? { get set }
+    var onCharacterOptionsReceived: (([CharacterOption]) -> Void)? { get set }
+    var onDataReceived: ((Data) -> Void)? { get set }
+    func connectSession()
+    func closeSession()
+    func send(message: String)
+}
+
+class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
 
     private var webSocket: URLSessionWebSocketTask!
-    @Published var isConnected: Bool = false
-    @Published var isInteractiveMode: Bool = false
+    var isConnected: Bool = false
+    var isInteractiveMode: Bool = false
 
-    var lastStrMessage: String? = nil
+    var onConnectionChanged: ((Bool) -> Void)?
+
+    private var lastStrMessage: String? = nil
     var onStringReceived: ((String) -> Void)? {
         didSet {
             if let lastStrMessage, let onStringReceived {
@@ -29,7 +43,7 @@ class WebSocketClient: NSObject, URLSessionWebSocketDelegate, ObservableObject {
         }
     }
 
-    var lastCharacterOptions: [CharacterOption]? = nil
+    private var lastCharacterOptions: [CharacterOption]? = nil
     var onCharacterOptionsReceived: (([CharacterOption]) -> Void)? {
         didSet {
             if let lastCharacterOptions, let onCharacterOptionsReceived {
@@ -39,7 +53,7 @@ class WebSocketClient: NSObject, URLSessionWebSocketDelegate, ObservableObject {
         }
     }
 
-    var lastData: Data? = nil
+    private var lastData: Data? = nil
     var onDataReceived: ((Data) -> Void)? {
         didSet {
             if let lastData, let onDataReceived {
@@ -131,9 +145,8 @@ class WebSocketClient: NSObject, URLSessionWebSocketDelegate, ObservableObject {
                     webSocketTask: URLSessionWebSocketTask,
                     didOpenWithProtocol protocol: String?) {
         print("Connected to server")
-        DispatchQueue.main.async {
-            self.isConnected = true
-        }
+        isConnected = true
+        onConnectionChanged?(isConnected)
         receive()
         send(message: "mobile")
     }
@@ -143,9 +156,8 @@ class WebSocketClient: NSObject, URLSessionWebSocketDelegate, ObservableObject {
                     didCloseWith closeCode: URLSessionWebSocketTask.CloseCode,
                     reason: Data?) {
         print("Disconnect from Server \(String(describing: reason))")
-        DispatchQueue.main.async {
-            self.isConnected = false
-        }
+        isConnected = false
+        onConnectionChanged?(isConnected)
     }
 
     // MARK: - Private
@@ -191,5 +203,28 @@ class WebSocketClient: NSObject, URLSessionWebSocketDelegate, ObservableObject {
         let firstCharacters = string.prefix(count)
 
         return firstCharacters.allSatisfy { characterSet.contains(UnicodeScalar(String($0))!) }
+    }
+}
+
+class MockWebSocket: NSObject, WebSocket {
+    var isConnected: Bool = false
+
+    var isInteractiveMode: Bool = false
+
+    var onConnectionChanged: ((Bool) -> Void)?
+
+    var onStringReceived: ((String) -> Void)?
+
+    var onCharacterOptionsReceived: (([CharacterOption]) -> Void)?
+
+    var onDataReceived: ((Data) -> Void)?
+
+    func connectSession() {
+    }
+
+    func closeSession() {
+    }
+
+    func send(message: String) {
     }
 }

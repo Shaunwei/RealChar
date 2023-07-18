@@ -2,18 +2,16 @@
 import React, { useEffect, useState } from 'react';
 import './style.css';
 
-const TextView = ({ socket, isPlaying, stopAudioPlayback }) => {
+const TextView = ({ send, isPlaying, stopAudioPlayback }) => {
     const [messageInput, setMessageInput] = useState('');
 
     const sendMessage = () => {
-        if (socket.current && socket.current.readyState === WebSocket.OPEN) {
-            // chatWindow.value += `\nYou> ${message}\n`;
-            // chatWindow.scrollTop = chatWindow.scrollHeight;
-            socket.current.send(messageInput);
-            setMessageInput('');
-            if (isPlaying) {
-                stopAudioPlayback();
-            }
+        // chatWindow.value += `\nYou> ${message}\n`;
+        // chatWindow.scrollTop = chatWindow.scrollHeight;
+        send(messageInput);
+        setMessageInput('');
+        if (isPlaying) {
+            stopAudioPlayback();
         }
     }
 

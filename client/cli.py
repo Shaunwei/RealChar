@@ -192,7 +192,7 @@ async def start_client(client_id, url):
 
 
 async def main(url):
-    client_id = random.randint(0, 1000)
+    client_id = random.randint(0, 1000000)
     task = asyncio.create_task(start_client(client_id, url))
     try:
         await task

@@ -163,7 +163,12 @@ async def handle_receive(
                 token_buffer.clear()
                 # 4. Persist interaction in the database
                 Interaction(
-                    client_id=client_id, client_message=msg_data, server_message=response).save(db)
+                    client_id=client_id,
+                    client_message=msg_data,
+                    server_message=response,
+                    platform=platform,
+                    action_type='text'
+                ).save(db)
 
             # handle binary message(audio)
             elif 'bytes' in data:
@@ -193,7 +198,12 @@ async def handle_receive(
                     token_buffer.clear()
                     # Persist interaction in the database
                     Interaction(
-                        client_id=client_id, client_message=transcript, server_message=response).save(db)
+                        client_id=client_id,
+                        client_message=transcript,
+                        server_message=response,
+                        platform=platform,
+                        action_type='audio'
+                    ).save(db)
 
                 # 4. Send message to LLM
                 tts_task = asyncio.create_task(llm.achat(

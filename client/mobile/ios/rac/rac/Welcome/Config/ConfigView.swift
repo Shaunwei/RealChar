@@ -74,7 +74,7 @@ struct ConfigView: View {
                 .tint(.accentColor)
                 .padding(.horizontal, 8)
 
-                CtaButton(action: {
+                CtaButton(style: .primary, action: {
                     guard let selectedOption else { return }
                     simpleSuccess()
                     onConfirmConfig(selectedOption)

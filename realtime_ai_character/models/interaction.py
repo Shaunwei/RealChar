@@ -11,6 +11,8 @@ class Interaction(Base):
     client_message = Column(String)
     server_message = Column(String)
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+    platform = Column(String(50))
+    action_type = Column(String(50))
 
     def save(self, db):
         db.add(self)

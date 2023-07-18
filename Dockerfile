@@ -5,11 +5,12 @@ RUN apt-get update && apt-get install -y portaudio19-dev libffi-dev libssl-dev f
 
 WORKDIR /realtime_ai_character
 
+# Install Python dependencies
+COPY requirements.txt /realtime_ai_character
+RUN pip install -r /realtime_ai_character/requirements.txt
+
 # Copy the project files
 COPY ./ /realtime_ai_character
-
-# Install Python dependencies
-RUN pip install -r requirements.txt
 
 # Expose 8000 port from the docker image.
 EXPOSE 8000

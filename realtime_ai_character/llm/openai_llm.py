@@ -15,20 +15,18 @@ from realtime_ai_character.utils import Character
 
 logger = get_logger(__name__)
 
-class OpenaiLlm(Singleton, LLM):
-    def __init__(self):
-        super().__init__()
-
+class OpenaiLlm(LLM):
+    def __init__(self, model):
         if os.getenv('OPENAI_API_TYPE') == 'azure':
             self.chat_open_ai = AzureChatOpenAI(
                 deployment_name=os.getenv('OPENAI_API_MODEL_DEPLOYMENT_NAME', 'gpt-35-turbo'),
-                model=os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo-16k'),
+                model=model,
                 temperature=0.5,
                 streaming=True
             )
         else:
             self.chat_open_ai = ChatOpenAI(
-                model=os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo-16k'),
+                model=model,
                 temperature=0.5,
                 streaming=True
             )

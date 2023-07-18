@@ -1,0 +1,28 @@
+.button {
+  font-family: "Prompt", Helvetica;
+  font-size: 1rem;
+  border-color: #6785d3;
+  color: #fff;
+  box-shadow: 0 0 10px 0 #6785d3 inset, 0 0 10px 4px #6785d3;
+  transition: all 150ms ease-in-out;
+  cursor: pointer;
+  background-color: transparent;
+  padding: 0.6em 2em;
+  border-radius: 1.5em;
+  margin-top: 10px;
+}
+
+.button:hover {
+  box-shadow: 0 0 40px 40px #6785d3 inset, 0 0 0 0 #6785d3;
+  outline: 0;
+}
+
+.button[disabled] {
+  background-color: #999999;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.alert {
+  color: white;
+}

@@ -184,7 +184,7 @@ ELEVEN_LABS_API_KEY=<api key>
     ```
 - **Step 7**. Run client:
     - Use **GPT4** for better conversation and **Wear headphone** for best audio(avoid echo)
-    - Web client: Open your web browser and navigate to http://localhost:8000
+    - Web client: Open your web browser and navigate to http://localhost:8000 (NOT 0.0.0.0:8000)
     - (Optional) Terminal client: Run the following command in your terminal
     ```sh
     python client/cli.py
@@ -210,7 +210,7 @@ ELEVEN_LABS_API_KEY=<api key>
     python cli.py docker-run
     ```
 
-3. Go to http://localhost:8000 to start talking or use terminal    client
+3. Go to http://localhost:8000 (NOT 0.0.0.0:8000) to start talking or use terminal    client
     ```sh
     python client/cli.py
     ```

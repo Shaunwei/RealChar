@@ -91,6 +91,18 @@ To get your OpenAI API token, follow these steps:
 3. Generate a new API key by clicking on the "Create API Key" button.
 4. Copy the API key and store it safely.
 5. Add the API key to your environment variable, e.g. `export OPENAI_API_KEY=<your API key>`
+
+(Optional) This section for Azure OpenAI API
+`export OPENAI_API_TYPE=azure`
+The API version you want to use: set this to `2023-03-15-preview` for the released version.
+`export OPENAI_API_VERSION=2023-03-15-preview`
+The base URL for your Azure OpenAI resource.  You can find this in the Azure portal under your Azure OpenAI resource.
+`export OPENAI_API_BASE=https://your-base-url.openai.azure.com`
+The OpenAI model deployment name for your Azure OpenAI resource.
+`export OPENAI_API_MODEL_DEPLOYMENT_NAME=gpt-35-turbo`
+The OpenAIEmbeddings model deployment name for your Azure OpenAI resource.
+`export OPENAI_API_EMBEDDING_DEPLOYMENT_NAME=text-embedding-ada-002`
+
 </details>
 
 ### 1.1 (Optional) Prepare LLM -  Anthropic(Claude 2) API Token

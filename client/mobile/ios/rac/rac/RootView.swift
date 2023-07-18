@@ -17,13 +17,13 @@ struct RootView: View {
     @State var openMic: Bool = false
     @State var hapticFeedback: Bool = true
 
-    let webSocketClient: WebSocketClient
+    let webSocket: any WebSocket
 
     var body: some View {
         NavigationView {
             VStack {
                 if interactive {
-                    InteractiveView(webSocketClient: webSocketClient,
+                    InteractiveView(webSocket: webSocket,
                                     character: character,
                                     openMic: openMic,
                                     hapticFeedback: hapticFeedback,
@@ -37,7 +37,7 @@ struct RootView: View {
                                     messages: $messages)
                     .transition(.moveAndFade2)
                 } else {
-                    WelcomeView(webSocketClient: webSocketClient,
+                    WelcomeView(webSocket: webSocket,
                                 tab: $welcomeTab,
                                 character: $character,
                                 options: $options,
@@ -46,7 +46,7 @@ struct RootView: View {
                                 onConfirmConfig: { selected in
                         if shouldSendCharacter {
                             shouldSendCharacter = false
-                            webSocketClient.send(message: String(selected.id))
+                            webSocket.send(message: String(selected.id))
                         }
                         // TODO: figure out why animation does not work well
 //                        withAnimation {
@@ -91,10 +91,10 @@ struct RootView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
-            webSocketClient.connectSession()
+            webSocket.connectSession()
         }
         .onDisappear {
-            webSocketClient.closeSession()
+            webSocket.closeSession()
         }
     }
 }
@@ -124,6 +124,6 @@ struct LogoView: View {
 
 struct RootView_Previews: PreviewProvider {
     static var previews: some View {
-        RootView(webSocketClient: WebSocketClient())
+        RootView(webSocket: MockWebSocket())
     }
 }

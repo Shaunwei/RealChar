@@ -32,7 +32,6 @@ struct ConfigView: View {
                     .font(
                         Font.custom("Prompt", size: 18).weight(.medium)
                     )
-                    .foregroundColor(.black)
 
                 if loaded || !options.isEmpty {
                     ForEach(options) { option in
@@ -53,8 +52,6 @@ struct ConfigView: View {
                       .font(
                         Font.custom("Prompt", size: 16)
                       )
-                      .foregroundColor(.black)
-
                 }
 
                 Spacer(minLength: 0)

@@ -359,7 +359,6 @@ talkButton.addEventListener("click", function() {
     messageButton.style.display = "flex";
     stopCallButton.style.display = "flex";
     soundWave.style.display = "flex";
-    textContainer.textContent = "Hi, my friend, what brings you here today?";
     shouldPlayAudio=true;
 
     socket.send(selectedCharacter);
@@ -377,7 +376,6 @@ textButton.addEventListener("click", function() {
     messageButton.click();
     disconnectButton.style.display = "flex";
     textContainer.textContent = "";
-    chatWindow.value += "Hi, my friend, what brings you here today?\n";
     shouldPlayAudio=true;
 
     socket.send(selectedCharacter);

@@ -76,7 +76,7 @@ __Demo settings: Web, GPT4, ElevenLabs with voice clone, Chroma, Google Speech t
 
 Before you begin setting up this project, please ensure you have completed the following tasks:
 
-### 0. Setup tutorial
+### 0. Setup Tutorial
 
 - [Tutorial - YouTuBe](https://www.youtube.com/watch?v=Q16ZH3kJWxw)
 

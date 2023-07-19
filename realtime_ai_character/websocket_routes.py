@@ -42,6 +42,8 @@ async def websocket_endpoint(
     if os.getenv('USE_AUTH', '') and api_key != os.getenv('AUTH_API_KEY'):
         await websocket.close(code=1008, reason="Unauthorized")
         return
+    # TODO: replace client_id with user_id completely.
+    user_id = str(client_id)
     llm = get_llm(model=llm_model)
     await manager.connect(websocket)
     try:
@@ -52,7 +54,7 @@ async def websocket_endpoint(
 
     except WebSocketDisconnect:
         await manager.disconnect(websocket)
-        await manager.broadcast_message(f"Client #{client_id} left the chat")
+        await manager.broadcast_message(f"User #{user_id} left the chat")
 
 
 async def handle_receive(
@@ -65,6 +67,8 @@ async def handle_receive(
         text_to_speech: TextToSpeech):
     try:
         conversation_history = ConversationHistory()
+        # TODO: clean up client_id once migration is done.
+        user_id = str(client_id)
         session_id = str(uuid.uuid4().hex)
 
         # 0. Receive client platform info (web, mobile, terminal)
@@ -72,7 +76,7 @@ async def handle_receive(
         if data['type'] != 'websocket.receive':
             raise WebSocketDisconnect('disconnected')
         platform = data['text']
-        logger.info(f"Client #{client_id}:{platform} connected to server with "
+        logger.info(f"User #{user_id}:{platform} connected to server with "
                     f"session_id {session_id}")
 
         # 1. User selected a character
@@ -102,7 +106,7 @@ async def handle_receive(
                 conversation_history.system_prompt = character.llm_system_prompt
                 user_input_template = character.llm_user_prompt
                 logger.info(
-                    f"Client #{client_id} selected character: {character.name}")
+                    f"User #{user_id} selected character: {character.name}")
 
         tts_event = asyncio.Event()
         tts_task = None
@@ -167,6 +171,7 @@ async def handle_receive(
                 # 4. Persist interaction in the database
                 Interaction(
                     client_id=client_id,
+                    user_id=user_id,
                     session_id=session_id,
                     client_message_unicode=msg_data,
                     server_message_unicode=response,
@@ -203,6 +208,7 @@ async def handle_receive(
                     # Persist interaction in the database
                     Interaction(
                         client_id=client_id,
+                        user_id=user_id,
                         session_id=session_id,
                         client_message_unicode=transcript,
                         server_message_unicode=response,
@@ -223,6 +229,6 @@ async def handle_receive(
                 )
 
     except WebSocketDisconnect:
-        logger.info(f"Client #{client_id} closed the connection")
+        logger.info(f"User #{user_id} closed the connection")
         await manager.disconnect(websocket)
         return

@@ -219,6 +219,16 @@ ELEVEN_LABS_API_KEY=<api key>
 
 <br/>
 
+## 🆕! LangSmith integration
+If you have access to LangSmith, you can add these environment variables to enable:
+```
+LANGCHAIN_TRACING_V2=false # default off
+LANGCHAIN_ENDPOINT=https://api.smith.langchain.com
+LANGCHAIN_API_KEY=YOUR_LANGCHAIN_API_KEY
+LANGCHAIN_PROJECT=YOUR_LANGCHAIN_PROJECT
+```
+And it should work out of the box.
+
 ## ⭐️ Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Shaunwei/RealChar&type=Date)](https://star-history.com/#Shaunwei/RealChar&Date)

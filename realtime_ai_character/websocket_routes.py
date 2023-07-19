@@ -1,5 +1,6 @@
 import asyncio
 import os
+import uuid
 
 from fastapi import APIRouter, Depends, Path, WebSocket, WebSocketDisconnect, Query
 from requests import Session
@@ -64,13 +65,15 @@ async def handle_receive(
         text_to_speech: TextToSpeech):
     try:
         conversation_history = ConversationHistory()
+        session_id = str(uuid.uuid4().hex)
 
         # 0. Receive client platform info (web, mobile, terminal)
         data = await websocket.receive()
         if data['type'] != 'websocket.receive':
             raise WebSocketDisconnect('disconnected')
         platform = data['text']
-        logger.info(f"Client #{client_id}:{platform} connected to server")
+        logger.info(f"Client #{client_id}:{platform} connected to server with "
+                    f"session_id {session_id}")
 
         # 1. User selected a character
         character = None
@@ -164,6 +167,7 @@ async def handle_receive(
                 # 4. Persist interaction in the database
                 Interaction(
                     client_id=client_id,
+                    session_id=session_id,
                     client_message_unicode=msg_data,
                     server_message_unicode=response,
                     platform=platform,
@@ -199,6 +203,7 @@ async def handle_receive(
                     # Persist interaction in the database
                     Interaction(
                         client_id=client_id,
+                        session_id=session_id,
                         client_message_unicode=transcript,
                         server_message_unicode=response,
                         platform=platform,

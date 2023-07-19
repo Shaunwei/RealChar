@@ -8,6 +8,7 @@ class Interaction(Base):
 
     id = Column(Integer, primary_key=True, index=True, nullable=False)
     client_id = Column(Integer)
+    session_id = Column(String(50))
     client_message = Column(String) # deprecated, use client_message_unicode instead
     server_message = Column(String) # deprecated, use server_message_unicode instead
     client_message_unicode = Column(Unicode(65535))

@@ -1,9 +1,16 @@
-// CallView
+/**
+ * src/components/CallView/index.jsx
+ * User can stop or continue the call. Allows audios playing and switch to TextView.
+ * 
+ * created by Lynchee on 7/16/23
+ */
+
 import React, { useEffect, useRef } from 'react';
 import './style.css';
 import { TbPhoneCall } from 'react-icons/tb';
 import { MdCallEnd } from 'react-icons/md';
 import { TbMessageChatbot, TbPower } from 'react-icons/tb';
+import IconButton from '../Common/IconButton';
 
 // utils
 import { playAudios } from '../../utils/audioUtils';
@@ -11,38 +18,27 @@ import { playAudios } from '../../utils/audioUtils';
 const CallView = ( {isRecording, isPlaying, audioPlayer, handleStopCall, handleContinueCall, audioQueue, setIsPlaying, handleDisconnect, setIsTalkView} ) => {
     const audioContextRef = useRef(null);
     useEffect(() => {
-      console.log(`CallView, useEffect, isPlaying: ${isPlaying}`);
       if (isPlaying) {
         playAudios(audioContextRef, audioPlayer, audioQueue, setIsPlaying);
       }
     }, [isPlaying]);
     
     return (
-        <div className="main-screen">
+          <>
             <audio ref={audioPlayer} className="audio-player"><source src="" type="audio/mp3" /></audio>
             {isRecording ? (
                 <>
-                  <div>
-                   <div className="sound-wave"><span></span><span></span><span></span><span></span><span></span><span></span></div>
-                  </div>
-                  <div className="stop-call" onClick={handleStopCall}>
-                    <MdCallEnd className="icon-instance-node"/>
-                  </div>
+                  <div className="sound-wave"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                  <IconButton Icon={MdCallEnd} className="icon-red" bgcolor="red" onClick={handleStopCall} />
                 </>
               ) : (
-                <div className="continue-call" onClick={handleContinueCall}>
-                  <TbPhoneCall className="icon-instance-node"/>
-                </div>
+                <IconButton Icon={TbPhoneCall} className="icon-green" bgcolor="green" onClick={handleContinueCall} />
             )}
             <div className="options-container">
-              <div className="disconnect" onClick={handleDisconnect}>
-                <TbPower className="icon-instance-node-small" />
-              </div>
-              <div className="message" onClick={() => setIsTalkView(false)}>
-                    <TbMessageChatbot className="icon-instance-node-small" />
-                  </div>
+              <IconButton Icon={TbPower} className="icon-red" onClick={handleDisconnect} />
+              <IconButton Icon={TbMessageChatbot} className="icon-green" onClick={() => setIsTalkView(false)} />
             </div>
-        </div>
+          </>
     )
 }
 

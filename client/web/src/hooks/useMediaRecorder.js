@@ -1,3 +1,10 @@
+/**
+ * src/hooks/useMediaRecorder.js
+ * Initialize media recorder. Start and stop recording.
+ * 
+ * created by Lynchee on 7/16/23
+ */
+
 import { useState, useRef, useEffect } from 'react';
 
 const useMediaRecorder = (onDataAvailable, onStop) => {
@@ -5,16 +12,12 @@ const useMediaRecorder = (onDataAvailable, onStop) => {
   const mediaRecorder = useRef(null);
 
   const connectMicrophone = (deviceId) => {
-    console.log("connectMicrophone");
     if (mediaRecorder.current) return;
     navigator.mediaDevices.getUserMedia({
       audio: { deviceId: deviceId ? {exact: deviceId} : undefined, echoCancellation: true }
     })
     .then((stream) => {
       mediaRecorder.current = new MediaRecorder(stream);
-      mediaRecorder.current.onstart = () => {
-        console.log("recorder starts");
-      }
       mediaRecorder.current.ondataavailable = onDataAvailable;
       mediaRecorder.current.onstop = onStop;
     })
@@ -24,21 +27,21 @@ const useMediaRecorder = (onDataAvailable, onStop) => {
   };
 
   const startRecording = () => {
-    console.log("startRecording");
+    console.log("start recording");
     if (!mediaRecorder.current) return;
     mediaRecorder.current.start();
     setIsRecording(true);
   }
 
   const stopRecording = () => {
-    console.log("stopRecording");
+    console.log("stop recording");
     if (!mediaRecorder.current) return;
     mediaRecorder.current.stop();
     setIsRecording(false);
   };
 
   const closeMediaRecorder = () => {
-    console.log("closeMediaRecorder");
+    stopRecording();
     mediaRecorder.current = null;
   };
 

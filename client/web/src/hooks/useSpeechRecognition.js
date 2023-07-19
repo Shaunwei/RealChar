@@ -1,21 +1,26 @@
-// hooks/useSpeechRecognition.js
-import { useState, useEffect, useRef } from 'react';
+/**
+ * src/hooks/useSpeechRecognition.js
+ * Initialize speech recognition. Start and stop listening.
+ * 
+ * created by Lynchee on 7/16/23
+ */
+
+import { useRef, useEffect } from 'react';
 
 const useSpeechRecognition = (onResult, onend, onSpeechEnd) => {
-  const [isListening, setIsListening] = useState(false);
   const recognition = useRef(null);
 
   const startListening = () => {
-    console.log("startListening");
-    setIsListening(true);
+    console.log("start listening");
+    recognition.current.start();
   }
 
   const stopListening = () => {
     console.log("stopListening");
-    setIsListening(false);
+    recognition.current.stop();
   }
+
   const initializeSpeechRecognition = () => {
-    console.log("initializeSpeechRecognition");
     window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     recognition.current = new window.SpeechRecognition();
     recognition.current.interimResults = true;
@@ -31,18 +36,15 @@ const useSpeechRecognition = (onResult, onend, onSpeechEnd) => {
     recognition.current.onend = onend;
   };
 
-  useEffect(() => {
-    if (!recognition.current) return;
-    if (isListening) {
-      recognition.current.start();
-    } else if (recognition.current) {
-      recognition.current.stop();
-    }
-  }, [isListening]);
+  const closeRecognition = () => {
+    stopListening();
+    recognition.current = null;
+  }
 
   return {
     startListening,
     stopListening,
+    closeRecognition,
     initializeSpeechRecognition,
   };
 };

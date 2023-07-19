@@ -1,12 +1,19 @@
-// Header.jsx
+/**
+ * src/components/Header/index.jsx
+ * logo
+ * 
+ * created by Lynchee on 7/16/23
+ */
+
+
 import React from 'react';
 import logo from '../../assets/svgs/logo.svg';
 import './style.css';
 
 const Header = () => (
-  <div className="logo-container">
+  <header>
     <img src={logo} alt="Logo" />
-  </div>
+  </header>
 );
 
 export default Header;

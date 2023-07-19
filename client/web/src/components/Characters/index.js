@@ -1,3 +1,10 @@
+/**
+ * src/components/Characters/index.jsx
+ * create and display characters
+ * 
+ * created by Lynchee on 7/16/23
+ */
+
 // Characters
 import React, { useEffect, useState } from 'react';
 import './style.css';
@@ -64,14 +71,14 @@ const Characters = ({ characterGroups, selectedCharacter, setSelectedCharacter, 
             <div className='radio-buttons'>
                 {characterGroups.map(group => (
                     (!characterConfirmed || group.id === selectedCharacter) && (
-                    <label key={group.id} className={`custom-radio ${group.id === selectedCharacter ? pulseAnimation : ''}`}>
+                    <label key={group.id} className="custom-radio">
                         <input 
                             type='radio' 
                             name='radio' 
                             value={group.id} 
                             onChange={handleCharacterSelection}
                         />
-                        <span className='radio-btn'>
+                        <span className={`radio-btn ${group.id === selectedCharacter ? pulseAnimation : ''}`}>
                             <div className='hobbies-icon'>
                                 <img src={group.imageSrc} alt={group.name}/>
                                 <h4>{group.name}</h4>

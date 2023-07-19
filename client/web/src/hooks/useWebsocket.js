@@ -1,9 +1,15 @@
+/**
+ * src/hooks/useWebsocket.js
+ * Connect web socket. Send message to sever.
+ * 
+ * created by Lynchee on 7/16/23
+ */
+
 import { useRef, useState, useCallback } from 'react';
 
 const useWebsocket = (onOpen, onMessage) => {
     const socketRef = useRef(null);
     const connectSocket = useCallback(() => {
-        console.log("connectSocket");
         if (!socketRef.current) {
             const clientId = Math.floor(Math.random() * 1010000);
             const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
@@ -25,7 +31,6 @@ const useWebsocket = (onOpen, onMessage) => {
             var newHost = ipAddress + ':' + newPort;
 
             const ws_path = ws_scheme + '://' + newHost + `/ws/${clientId}`;
-            console.log(`ws_path ${ws_path}`);
 
             socketRef.current = new WebSocket(ws_path);
             const socket = socketRef.current;
@@ -42,19 +47,17 @@ const useWebsocket = (onOpen, onMessage) => {
     }, [onOpen, onMessage]);
 
     const send = (data) => {
-        console.log("send");
         if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
             socketRef.current.send(data);
         }
     };
 
     const closeSocket = () => {
-        console.log("closeSocket");
         socketRef.current.close();
         socketRef.current = null;
     }
 
-    return [send, connectSocket, closeSocket];
+    return { send, connectSocket, closeSocket };
 };
 
 export default useWebsocket;

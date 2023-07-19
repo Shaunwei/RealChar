@@ -1,26 +1,26 @@
-.body {
-  background-color: #02081d;
+.app {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
-}
-
-/* CSS for mobile warning message and desktop content */
-@media (max-width: 768px) {
-  #desktop-content { display: none; }
-}
-
-@media (min-width: 769px) {
-  #desktop-content { display: flex; }
 }
 
 #desktop-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.main-screen {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
   flex-grow: 1;
+  width: 100%;
+  height: 40vh;
+  padding: 20px;
 }
 
 .header {
@@ -53,15 +53,6 @@
   gap: 30px;
 }
 
-/* character select radio groups */
-@import url("https://fonts.googleapis.com/css?family=Raleway:300,400,400i,700");
-*
-{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-body 
-{
-  font-family: Raleway, sans-serif;
+.alert {
+  color: white;
 }

@@ -1,13 +1,3 @@
-.main-screen {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  flex-grow: 1;
-  width: 50vw;
-  height: 20vh;
-}
-
 .chat-window {
   background-color: #02081d;
   color: white;

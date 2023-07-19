@@ -1,3 +1,10 @@
+/**
+ * src/utils/audioUtils.js
+ * Audio playback.
+ * 
+ * created by Lynchee on 7/16/23
+ */
+
 const unlockAudioContext = (audioContext) => {
     if (audioContext.state === 'suspended') {
       const unlock = function() {
@@ -29,7 +36,6 @@ const playAudio = (audioContextRef, audioPlayer, url) => {
 }
 
 export const playAudios = async (audioContextRef, audioPlayer, audioQueue, setIsPlaying) => {
-  console.log("playing audio");
   while (audioQueue.current.length > 0) {
     let data = audioQueue.current[0];
     let blob = new Blob([data], { type: 'audio/mp3' });
@@ -37,6 +43,5 @@ export const playAudios = async (audioContextRef, audioPlayer, audioQueue, setIs
     await playAudio(audioContextRef, audioPlayer, audioUrl);
     audioQueue.current.shift();
   }
-  console.log("playAudios setIsPlaying false");
   setIsPlaying(false);
 }

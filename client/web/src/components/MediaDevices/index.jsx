@@ -1,4 +1,9 @@
-// MediaDevices
+/**
+ * src/components/MediaDevices/index.jsx
+ * generate a list of media devices.
+ * 
+ * created by Lynchee on 7/16/23
+ */
 
 import React, { useEffect, useState } from 'react';
 import './style.css';

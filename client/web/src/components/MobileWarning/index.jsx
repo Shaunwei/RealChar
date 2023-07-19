@@ -1,4 +1,10 @@
-// MobileWarning.jsx
+/**
+ * src/components/MobileWarning/index.jsx
+ * Show warning when user opens the website on mobile browser,
+ * 
+ * created by Lynchee on 7/16/23
+ */
+
 import React from 'react';
 import './style.css'
 

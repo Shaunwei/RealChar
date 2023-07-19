@@ -1,12 +1,26 @@
-// TextView
-import React, { useEffect, useState } from 'react';
+/**
+ * src/components/TextView/index.jsx
+ * show chat log. User can send message and switch to CallView.
+ * 
+ * created by Lynchee on 7/16/23
+ */
+
+import React, { useEffect, useRef } from 'react';
 import './style.css';
 import { TbPower, TbMicrophone } from 'react-icons/tb';
+import IconButton from '../Common/IconButton';
 
 const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAreaValue, messageInput, setMessageInput, handleDisconnect, setIsTalkView }) => {
+    const chatWindowRef = useRef(null);
+    
+    useEffect(() => {
+        if (chatWindowRef.current) {
+            chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+        }
+    }, [textAreaValue]);
+
     const sendMessage = () => {
         setTextAreaValue(prevState => prevState + `\nYou> ${messageInput}\n`);
-        // chatWindow.scrollTop = chatWindow.scrollHeight;
         send(messageInput);
         setMessageInput('');
         if (isPlaying) {
@@ -31,7 +45,7 @@ const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAr
     };
 
     return (
-        <div className="main-screen">
+        <>
             <textarea 
                 className="chat-window" 
                 readOnly 
@@ -39,26 +53,22 @@ const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAr
                 value={textAreaValue}
             ></textarea>
             <div className="message-input-container">
-            <input
-                className="message-input" 
-                type="text" 
-                placeholder="Type your message"
-                value={messageInput} 
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown} 
+                <input
+                    className="message-input" 
+                    type="text" 
+                    placeholder="Type your message"
+                    value={messageInput} 
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown} 
                 />
-            <span className="focus-border"><i></i></span>
+                <span className="focus-border"><i></i></span>
             </div>
             <button className="send-btn" onClick={handleSendClick}>Send Message</button>
             <div className="options-container">
-                <div className="disconnect" onClick={handleDisconnect}>
-                    <TbPower className="icon-instance-node-small" />
-                </div>
-                <div className="call" onClick={() => setIsTalkView(true)}>
-                    <TbMicrophone className="icon-instance-node-small" />
-                </div>
+                <IconButton Icon={TbPower} className="icon-red" onClick={handleDisconnect} />
+                <IconButton Icon={TbMicrophone} className="icon-blue" onClick={() => setIsTalkView(true)} />
             </div>
-        </div>
+        </>
     )
 }
 

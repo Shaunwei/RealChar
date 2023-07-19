@@ -1,8 +1,5 @@
-
-/* Characters Group */
 .main-container 
 {
-  margin-top: 10px;
   flex-direction: row;
 }
 
@@ -17,7 +14,6 @@
 .custom-radio input 
 {
   opacity: 0;
-  cursor: pointer;
   height: 0;
   width: 0;
 }
@@ -25,8 +21,8 @@
 .radio-btn 
 {
   margin: 8px;
-  width: 176px;
-  height: 192px; 
+  width: 160px;
+  height: 185px; 
   border: 2.4px solid transparent;
   display: inline-block;
   border-radius: 8px;
@@ -53,8 +49,8 @@
 
 .radio-btn .hobbies-icon 
 {
-  width: 120px; 
-  height: 120px; 
+  width: 110px; 
+  height: 110px; 
   position: absolute;
   top: 40%;
   left: 50%;
@@ -70,7 +66,7 @@
 {
   color: #FFDAE9;
   line-height: 64px;
-  font-size: 48px;
+  font-size: 40px;
 }
 
 .radio-btn .hobbies-icon h4
@@ -111,8 +107,10 @@
 
 .pulse-animation-1 {
   animation: pulse 1.5s infinite ease-in-out;
+  border-radius: 8px;
 }
 
 .pulse-animation-2 {
   animation: pulse 2.2s infinite ease-in-out;
+  border-radius: 8px;
 }

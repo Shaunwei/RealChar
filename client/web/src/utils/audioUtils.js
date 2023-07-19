@@ -11,7 +11,7 @@ const unlockAudioContext = (audioContext) => {
     }
 }
 
-const playAudio = (audioPlayer, url) => {
+const playAudio = (audioContextRef, audioPlayer, url) => {
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
       unlockAudioContext(audioContextRef.current);
@@ -28,15 +28,15 @@ const playAudio = (audioPlayer, url) => {
     });
 }
 
-export const playAudios = async (audioContextRef, audioPlayer, audioQueue, setAudioQueue, setIsPlaying) => {
+export const playAudios = async (audioContextRef, audioPlayer, audioQueue, setIsPlaying) => {
   console.log("playing audio");
-  setIsPlaying(true);
-  while (audioQueue.length > 0) {
-    let data = audioQueue[0];
+  while (audioQueue.current.length > 0) {
+    let data = audioQueue.current[0];
     let blob = new Blob([data], { type: 'audio/mp3' });
     let audioUrl = URL.createObjectURL(blob);
     await playAudio(audioContextRef, audioPlayer, audioUrl);
-    setAudioQueue(oldQueue => oldQueue.slice(1));
+    audioQueue.current.shift();
   }
+  console.log("playAudios setIsPlaying false");
   setIsPlaying(false);
 }

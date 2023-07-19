@@ -29,6 +29,7 @@ const MediaDevices = ({ selectedDevice, setSelectedDevice }) => {
       <label className="audio-device-label" htmlFor="audio-device-selection">Select an audio input device:</label>
       <div className="select-dropdown">
         <select
+            id="audio-device-selection"
             className="form-select" 
             value={selectedDevice} 
             onChange={handleDeviceChange}

@@ -2,7 +2,6 @@
   background-color: #02081d;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   min-height: 100vh;
 }
@@ -17,9 +16,10 @@
 }
 
 #desktop-content {
+  display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: space-between;
   flex-grow: 1;
 }
 
@@ -53,88 +53,6 @@
   gap: 30px;
 }
 
-.main-screen {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50vw;
-  height: 20vh;
-}
-
-.copyright,
-.disclaimer {
-  color:#777;
-  font-size: 15px;
-}
-
-.options-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px 40px;
-  bottom: 0;
-  width: 100%;
-}
-
-.disconnect,
-.call {
-  margin-right: 20px;
-}
-
-.disconnect,
-.call,
-.message {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #bccffe1a;
-  border-radius: 50px;
-  padding: 8px;
-  height: 50px;
-  width: 50px;
-  cursor: pointer;
-}
-
-.call:hover {
-  background-color: #0149ff;
-}
-
-.message:hover {
-  background-color: #28c235;
-}
-
-.disconnect:hover {
-  background-color: #ff4242;
-}
-
-.disconnect,
-.message,
-.call {
-  cursor: pointer;
-  transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
-}
-
-
-.icon-instance-node-small {
-  color: white;
-  width: 1.3em;
-  height: 1.3em;
-  transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
-}
-
-.disconnect:hover,
-.message:hover,
-.call:hover {
-  transform: scale(1.1);
-}
-
-.disconnect:hover .icon-instance-node-small,
-.message:hover, .icon-instance-node-small,
-.call:hover, .icon-instance-node-small{
-  filter: brightness(2);
-}
-
-
 /* character select radio groups */
 @import url("https://fonts.googleapis.com/css?family=Raleway:300,400,400i,700");
 *
@@ -146,30 +64,4 @@
 body 
 {
   font-family: Raleway, sans-serif;
-}
-
-@keyframes audio-wave {
-  0%{
-    height: 10px;
-    trnsform: translateY(0px);
-    background: #1F4FCC;
-  }
-  25%{
-    height: 40px;
-    trnsform: translateY(-5px);
-    scaleY: 1.7;
-    background:#6785D3;
-  }
-  50%{
-    height: 10px;
-    trnsform: translateY(0px);
-    scaleY: 1.7;
-    background: #C2D3FF;
-  }
-  100%{
-    height: 10px;
-    trnsform: translateY(0px);
-    scaleY: 1.7;
-    background:fixed #EEF3FF;
-  }
 }

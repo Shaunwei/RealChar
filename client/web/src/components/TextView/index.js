@@ -1,12 +1,11 @@
 // TextView
 import React, { useEffect, useState } from 'react';
 import './style.css';
+import { TbPower, TbMicrophone } from 'react-icons/tb';
 
-const TextView = ({ send, isPlaying, stopAudioPlayback }) => {
-    const [messageInput, setMessageInput] = useState('');
-
+const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAreaValue, messageInput, setMessageInput, handleDisconnect, setIsTalkView }) => {
     const sendMessage = () => {
-        // chatWindow.value += `\nYou> ${message}\n`;
+        setTextAreaValue(prevState => prevState + `\nYou> ${messageInput}\n`);
         // chatWindow.scrollTop = chatWindow.scrollHeight;
         send(messageInput);
         setMessageInput('');
@@ -32,8 +31,13 @@ const TextView = ({ send, isPlaying, stopAudioPlayback }) => {
     };
 
     return (
-        <>
-            <textarea className="chat-window" readOnly draggable="false"></textarea>
+        <div className="main-screen">
+            <textarea 
+                className="chat-window" 
+                readOnly 
+                draggable="false"
+                value={textAreaValue}
+            ></textarea>
             <div className="message-input-container">
             <input
                 className="message-input" 
@@ -46,7 +50,15 @@ const TextView = ({ send, isPlaying, stopAudioPlayback }) => {
             <span className="focus-border"><i></i></span>
             </div>
             <button className="send-btn" onClick={handleSendClick}>Send Message</button>
-        </>
+            <div className="options-container">
+                <div className="disconnect" onClick={handleDisconnect}>
+                    <TbPower className="icon-instance-node-small" />
+                </div>
+                <div className="call" onClick={() => setIsTalkView(true)}>
+                    <TbMicrophone className="icon-instance-node-small" />
+                </div>
+            </div>
+        </div>
     )
 }
 

@@ -3,10 +3,12 @@
 .main-container 
 {
   margin-top: 10px;
+  flex-direction: row;
 }
 
 .radio-buttons 
 {
+  display: flex;
   width: 100%;
   margin: 0 auto;
   text-align: center;
@@ -14,7 +16,10 @@
 
 .custom-radio input 
 {
-  display: flex;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
 }
 
 .radio-btn 
@@ -60,7 +65,6 @@
   display:block;
   width:100%;
   margin-bottom:16px;
-  
 }
 .radio-btn .hobbies-icon i 
 {
@@ -103,14 +107,6 @@
   75% {
      box-shadow: 0 0 0 10px rgba(173, 216, 230, 0.25);
   }
-}
-
-.pulse-animation-1 {
-  animation: pulse 1.5s infinite ease-in-out;
-}
-
-.pulse-animation-2 {
-  animation: pulse 2.2s infinite ease-in-out;
 }
 
 .pulse-animation-1 {

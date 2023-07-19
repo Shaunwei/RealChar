@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { TbMessageChatbot, TbPower, TbMicrophone } from 'react-icons/tb';
 import './App.css';
 
 // Components
@@ -18,33 +17,34 @@ import useWebsocket from './hooks/useWebsocket';
 import useMediaRecorder from './hooks/useMediaRecorder';
 import useSpeechRecognition from './hooks/useSpeechRecognition'; 
 
-// utils
-import { playAudios } from './utils/audioUtils';
-
 const App = () => {
-  const chunks = useRef([]);
-  const [selectedDevice, setSelectedDevice] = useState('');
-  const [isConnected, setIsConnected] = useState(false);
+  const [headerText, setHeaderText] = useState("");
+  const [selectedDevice, setSelectedDevice] = useState("");
   const [characterConfirmed, setCharacterConfirmed] = useState(false);
-  const [audioSent, setAudioSent] = useState(false);
+  // const [isConnected, setIsConnected] = useState(false);
+  const [isTalkView, setIsTalkView] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [characterGroups, setCharacterGroups] = useState([]);
-  const [isTalkView, setIsTalkView] = useState(false);
-  const [headerText, setHeaderText] = useState("");
+  const [textAreaValue, setTextAreaValue] = useState('');
+  const [messageInput, setMessageInput] = useState('');
   const onresultTimeout = useRef(null);
   const onspeechTimeout = useRef(null);
-  const [confidence, setConfidence] = useState(0);
-  const [finalTranscripts, setFinalTranscripts] = useState([]);
-  const [shouldPlayAudio, setShouldPlayAudio] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [audioQueue, setAudioQueue] = useState([]);
   const audioPlayer = useRef(null);
-  const audioContextRef = useRef(null);
-
+  const callActive = useRef(false);
+  const audioSent = useRef(false);
+  const shouldPlayAudio = useRef(false);
+  const finalTranscripts = useRef([]);
+  const audioQueue = useRef([]);
+  const chunks = useRef([]);
+  const confidence = useRef(0);
+  const isConnected = useRef(false);
+  
   const [send, connectSocket, closeSocket] = useWebsocket(
     (event) => { // onopen
       console.log("successfully connected");
-      setIsConnected(true);
+      // setIsConnected(true);
+      isConnected.current = true;
       connectMicrophone(selectedDevice);
       initializeSpeechRecognition();
       send("web"); // select web as the platform
@@ -53,42 +53,45 @@ const App = () => {
         if (typeof event.data === 'string') {
           const message = event.data;
           if (message === '[end]\n') {
-            // chatWindow.value += "\n\n";
+            setTextAreaValue(prevState => prevState + "\n\n");
             // chatWindow.scrollTop = chatWindow.scrollHeight;
           } else if (message.startsWith('[+]')) {
             // [+] indicates the transcription is done. stop playing audio
-            // chatWindow.value += `\nYou> ${message}\n`;
+            setTextAreaValue(prevState => prevState + `\nYou> ${message}\n`);
             stopAudioPlayback();
           } else if (message.startsWith('[=]')) {
             // [=] indicates the response is done
-            // chatWindow.value += "\n\n";
+            setTextAreaValue(prevState => prevState + "\n\n");
             // chatWindow.scrollTop = chatWindow.scrollHeight;
           } else if (message.startsWith('Select')) {
             setCharacterGroups(createCharacterGroups(message));
           } else {
-            // chatWindow.value += `${event.data}`;
+            setTextAreaValue(prevState => prevState + `${event.data}`);
             // chatWindow.scrollTop = chatWindow.scrollHeight;
 
             // if user interrupts the previous response, should be able to play audios of new response
             console.log("onmessage so should play audio");
-            setShouldPlayAudio(true);
+            shouldPlayAudio.current = true;
           }
         } else {  // binary data
-          console.log(`received audio data. shouldPlayAudio? ${shouldPlayAudio}`);
-          if (!shouldPlayAudio) {
+          console.log(`received audio data. shouldPlayAudio? ${shouldPlayAudio.current}`);
+          if (!shouldPlayAudio.current) {
             console.log("should not play audio");
             return;
           }
-          setAudioQueue(prevAudioQueue => [...prevAudioQueue, event.data]);
-          if (audioQueue.length === 1) {
-            playAudios(audioContextRef, audioPlayer, audioQueue, setAudioQueue, setIsPlaying);
+          console.log("audioQueue updated");
+          audioQueue.current.push(event.data);
+          if (audioQueue.current.length === 1) {
+            console.log("onmessage, setIsPlaying true");
+            setIsPlaying(true); // this will trigger playAudios in CallView.
           }
         }
      }
   );
 
-  const { isRecording, callActive, connectMicrophone, startRecording, stopRecording, closeMediaRecorder } = useMediaRecorder(
+  const { isRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder } = useMediaRecorder(
     (e) => { // onDataAvailable
+      console.log("onDataAvailable");
       chunks.current.push(e.data);
     },
     (e) => { // onStop
@@ -98,13 +101,14 @@ const App = () => {
   
       // TODO: debug download video
   
-      if (isConnected) {
-        if (!audioSent && callActive) {
+      if (isConnected.current) {
+        if (!audioSent.current && callActive.current) {
           console.log("sending audio");
           send(blob);
         }
-        setAudioSent(false);
-        if (callActive) {
+        audioSent.current = false;
+        if (callActive.current) {
+          console.log("onstop, start recording again when callActive");
           startRecording();
         }
       }
@@ -112,6 +116,7 @@ const App = () => {
   );
 
   const onResult = (event) => {
+    console.log("onResult");
     // Clear the timeout if a result is received
     clearTimeout(onresultTimeout.current);
     clearTimeout(onspeechTimeout.current);
@@ -122,8 +127,8 @@ const App = () => {
     const ifFinal = result.isFinal;
     if (ifFinal) {
       console.log(`final transcript: {${transcript}}`);
-      setFinalTranscripts((prevTranscripts) => [...prevTranscripts, transcript]);
-      setConfidence(transcriptObj.confidence);
+      finalTranscripts.current.push(transcript);
+      confidence.current = transcriptObj.confidence;
       send(`[&]${transcript}`);
     } else {
       console.log(`interim transcript: {${transcript}}`);
@@ -144,26 +149,27 @@ const App = () => {
   };
 
   const onSpeechEnd = () => {
-    console.log('speech ends');
-    if (isConnected) {
-      setAudioSent(true);
+    console.log("onSpeechEnd");
+    if (isConnected.current) {
+      audioSent.current = true;
       stopRecording();
-      if (confidence > 0.8 && finalTranscripts.length > 0) {
+      if (confidence.current > 0.8 && finalTranscripts.current.length > 0) {
         console.log('send final transcript');
-        let message = finalTranscripts.join(' ');
+        let message = finalTranscripts.current.join(' ');
         send(message);
-        // chatWindow.value += `\nYou> ${message}\n`;
+        setTextAreaValue(prevState => prevState + `\nYou> ${message}\n`);
         // chatWindow.scrollTop = chatWindow.scrollHeight;
         console.log("on speech end confidence great should play audio");
-        setShouldPlayAudio(true);
+        shouldPlayAudio.current = true;
       }
     }
-    setFinalTranscripts([]);
+    finalTranscripts.current = [];
   };
 
   const onEnd = () => {
-    console.log('recognition ends');
-    if (isConnected && callActive) {
+    console.log(`recognition ends. callActive: ${callActive.current}`);
+    console.log(`recognition ends. isConnected: ${isConnected.current}`);
+    if (isConnected.current && callActive.current) {
       startListening();
     }
   };
@@ -178,9 +184,10 @@ const App = () => {
     if (audioPlayer.current) {
       audioPlayer.current.pause();
       console.log("stopAudioPlayback so should not play audio");
-      setShouldPlayAudio(false);
+      shouldPlayAudio.current = false;
     }
-    setAudioQueue([]);
+    audioQueue.current = [];
+    console.log("stopAudioPlayback setIsPlaying false");
     setIsPlaying(false);
   }
 
@@ -192,33 +199,33 @@ const App = () => {
 
   const handleTalkClick = () => {
     console.log("talk clicked");
-    if (isConnected && selectedCharacter) {
+    if (isConnected.current && selectedCharacter) {
       send(selectedCharacter);
 
       setCharacterConfirmed(true);
       setIsTalkView(true);
       
       console.log("talk button so should play audio");
-      setShouldPlayAudio(true);
+      shouldPlayAudio.current = true;
       setHeaderText("Hi, my friend, what brings you here today?");
 
       startRecording();      
       startListening();
-      
-      
+      console.log("setCallActive true");
+      callActive.current = true;
     }
   }
 
   const handleTextClick = () => {
     console.log("text clicked");
-    if (isConnected && selectedCharacter) {
+    if (isConnected.current && selectedCharacter) {
       send(selectedCharacter);    
 
       setCharacterConfirmed(true);
       setHeaderText("");
-      // chatWindow.value += "Hi, my friend, what brings you here today?\n";
+      setTextAreaValue(prevState => prevState + "Hi, my friend, what brings you here today?\n");
       console.log("text button so should play audio");
-      setShouldPlayAudio(true);
+      shouldPlayAudio.current = true;
       setIsTalkView(false);
     }
   }
@@ -228,31 +235,40 @@ const App = () => {
     stopRecording();
     stopListening();
     stopAudioPlayback();
+    console.log("setCallActive false");
+    callActive.current = false;
   }
 
   const handleContinueCall = () => {
     console.log("call continue");
     startRecording();
     startListening();
+    console.log("setCallActive true");
+    callActive.current = true;
   }
 
   const handleDisconnect = () => {
     console.log("disconnect");
     stopAudioPlayback();
     closeSocket();
-    setIsConnected(false);
+    // setIsConnected(false);
+    isConnected.current = false;
     
     stopRecording();
     stopListening();
     closeMediaRecorder();
+    console.log("setCallActive false");
+    callActive.current = false;
     
     setCharacterConfirmed(false);
     setIsTalkView(false);
     chunks.current = []
-    setAudioSent(false);
+    audioSent.current = false;
     
     setSelectedCharacter(null);
     setHeaderText("");
+
+    setTextAreaValue("");
   }
 
   return (
@@ -262,43 +278,43 @@ const App = () => {
 
       <div id="desktop-content">
         <Alert text="Please wear headphone 🎧" />
-        { isConnected && characterConfirmed && isRecording ? (<span className="recording">Recording</span>) : null}
-        { !isConnected ? <MediaDevices selectedDevice={selectedDevice} setSelectedDevice={setSelectedDevice} /> : null }
+        { isConnected.current && characterConfirmed && isRecording ? (<span className="recording">Recording</span>) : null}
+        { !isConnected.current ? <MediaDevices selectedDevice={selectedDevice} setSelectedDevice={setSelectedDevice} /> : null }
         <p className="header">{headerText}</p>
-        { !isConnected ? <Button onClick={handleConnectButtonClick} name="Connect" /> : null}
-        { isConnected && <Characters characterGroups={characterGroups} selectedCharacter={selectedCharacter} setSelectedCharacter={setSelectedCharacter} isPlaying={isPlaying} characterConfirmed={characterConfirmed} />}
-        { isConnected && !characterConfirmed ? (
+        { !isConnected.current ? <Button onClick={handleConnectButtonClick} name="Connect" /> : null}
+        { isConnected.current && <Characters characterGroups={characterGroups} selectedCharacter={selectedCharacter} setSelectedCharacter={setSelectedCharacter} isPlaying={isPlaying} characterConfirmed={characterConfirmed} />}
+        { isConnected.current && !characterConfirmed ? (
           <div className="actions">
             <Button onClick={handleTalkClick} name="Talk" disabled={!selectedCharacter} />
             <Button onClick={handleTextClick} name="Text" disabled={!selectedCharacter} />
           </div>
         ) : null}
 
-        { isConnected && characterConfirmed ? (
-          <div className="main-screen">
-            { isTalkView ? 
-              <CallView isRecording={isRecording} audioPlayer={audioPlayer} handleStopCall={handleStopCall} handleContinueCall={handleContinueCall} /> : 
-              <TextView send={send} isPlaying={isPlaying} stopAudioPlayback={stopAudioPlayback} />
-            }
-
-            <div className="options-container">
-              <div className="disconnect" onClick={handleDisconnect}>
-                <TbPower className="icon-instance-node-small" />
-              </div>
-              {
-                isTalkView ? (
-                  <div className="message" onClick={() => setIsTalkView(false)}>
-                    <TbMessageChatbot className="icon-instance-node-small" />
-                  </div>
-                ) : (
-                  <div className="call" onClick={() => setIsTalkView(true)}>
-                    <TbMicrophone className="icon-instance-node-small" />
-                  </div>
-                )
-              }
-            </div>
-          </div>
-        ):null}
+        { isConnected.current && characterConfirmed ?
+            (isTalkView ? 
+              <CallView 
+                isRecording={isRecording} 
+                isPlaying={isPlaying}
+                audioPlayer={audioPlayer} 
+                handleStopCall={handleStopCall} 
+                handleContinueCall={handleContinueCall}
+                audioQueue={audioQueue}
+                setIsPlaying={setIsPlaying}
+                handleDisconnect={handleDisconnect}
+                setIsTalkView={setIsTalkView}
+              /> : 
+              <TextView 
+                send={send} 
+                isPlaying={isPlaying}
+                stopAudioPlayback={stopAudioPlayback}
+                textAreaValue={textAreaValue}
+                setTextAreaValue={setTextAreaValue}
+                messageInput={messageInput}
+                setMessageInput={setMessageInput}
+                handleDisconnect={handleDisconnect}
+                setIsTalkView={setIsTalkView}
+            />) : null
+        }
 
         <Footer />
       </div>

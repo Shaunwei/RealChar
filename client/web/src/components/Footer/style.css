@@ -6,6 +6,11 @@ footer {
     flex-direction: column;
   }
   
+.copyright {
+    color:#777;
+    font-size: 15px;
+  }
+  
 .rounded-social-buttons {
     text-align: center;
     margin-bottom: 10px;

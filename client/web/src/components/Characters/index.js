@@ -44,7 +44,6 @@ const createCharacterGroups = (message) => {
     return newCharacterGroups;
 }
 
-
 const Characters = ({ characterGroups, selectedCharacter, setSelectedCharacter, isPlaying, characterConfirmed }) => {
     const [pulseAnimation, setPulseAnimation] = useState(null);
 
@@ -63,24 +62,24 @@ const Characters = ({ characterGroups, selectedCharacter, setSelectedCharacter, 
     return (
         <div className="main-container">
             <div className='radio-buttons'>
-            {characterGroups.map(group => (
-                (!characterConfirmed || group.id === selectedCharacter) && (
-                <label key={group.id} className={`custom-radio ${group.id === selectedCharacter ? pulseAnimation : ''}`}>
-                    <input 
-                    type='radio' 
-                    name='radio' 
-                    value={group.id} 
-                    onChange={handleCharacterSelection}
-                    />
-                    <span className='radio-btn'>
-                    <div className='hobbies-icon'>
-                        <img src={group.imageSrc} alt={group.name}/>
-                        <h4>{group.name}</h4>
-                    </div>
-                    </span>
-                </label>
-                )
-            ))}
+                {characterGroups.map(group => (
+                    (!characterConfirmed || group.id === selectedCharacter) && (
+                    <label key={group.id} className={`custom-radio ${group.id === selectedCharacter ? pulseAnimation : ''}`}>
+                        <input 
+                            type='radio' 
+                            name='radio' 
+                            value={group.id} 
+                            onChange={handleCharacterSelection}
+                        />
+                        <span className='radio-btn'>
+                            <div className='hobbies-icon'>
+                                <img src={group.imageSrc} alt={group.name}/>
+                                <h4>{group.name}</h4>
+                            </div>
+                        </span>
+                    </label>
+                    )
+                ))}
             </div>
         </div>
     )

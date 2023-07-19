@@ -1,13 +1,24 @@
 // CallView
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import './style.css';
-import endCallIcon from '../../assets/svgs/end-call.svg'; 
 import { TbPhoneCall } from 'react-icons/tb';
 import { MdCallEnd } from 'react-icons/md';
+import { TbMessageChatbot, TbPower } from 'react-icons/tb';
 
-const CallView = ( {isRecording, audioPlayer, handleStopCall, handleContinueCall} ) => {
+// utils
+import { playAudios } from '../../utils/audioUtils';
+
+const CallView = ( {isRecording, isPlaying, audioPlayer, handleStopCall, handleContinueCall, audioQueue, setIsPlaying, handleDisconnect, setIsTalkView} ) => {
+    const audioContextRef = useRef(null);
+    useEffect(() => {
+      console.log(`CallView, useEffect, isPlaying: ${isPlaying}`);
+      if (isPlaying) {
+        playAudios(audioContextRef, audioPlayer, audioQueue, setIsPlaying);
+      }
+    }, [isPlaying]);
+    
     return (
-        <>
+        <div className="main-screen">
             {isRecording ? (
                 <>
                   <div>
@@ -23,7 +34,15 @@ const CallView = ( {isRecording, audioPlayer, handleStopCall, handleContinueCall
                   <TbPhoneCall className="icon-instance-node"/>
                 </div>
             )}
-        </>
+            <div className="options-container">
+              <div className="disconnect" onClick={handleDisconnect}>
+                <TbPower className="icon-instance-node-small" />
+              </div>
+              <div className="message" onClick={() => setIsTalkView(false)}>
+                    <TbMessageChatbot className="icon-instance-node-small" />
+                  </div>
+            </div>
+        </div>
     )
 }
 

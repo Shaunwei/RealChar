@@ -5,9 +5,15 @@ const useSpeechRecognition = (onResult, onend, onSpeechEnd) => {
   const [isListening, setIsListening] = useState(false);
   const recognition = useRef(null);
 
-  const startListening = () => setIsListening(true);
-  const stopListening = () => setIsListening(false);
+  const startListening = () => {
+    console.log("startListening");
+    setIsListening(true);
+  }
 
+  const stopListening = () => {
+    console.log("stopListening");
+    setIsListening(false);
+  }
   const initializeSpeechRecognition = () => {
     console.log("initializeSpeechRecognition");
     window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;

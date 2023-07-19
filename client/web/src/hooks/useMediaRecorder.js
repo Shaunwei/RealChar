@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 
 const useMediaRecorder = (onDataAvailable, onStop) => {
   const [isRecording, setIsRecording] = useState(false);
-  const [callActive, setCallActive] = useState(false);
   const mediaRecorder = useRef(null);
 
   const connectMicrophone = (deviceId) => {
@@ -25,20 +24,21 @@ const useMediaRecorder = (onDataAvailable, onStop) => {
   };
 
   const startRecording = () => {
+    console.log("startRecording");
     if (!mediaRecorder.current) return;
     mediaRecorder.current.start();
     setIsRecording(true);
-    setCallActive(true);
   }
 
   const stopRecording = () => {
+    console.log("stopRecording");
     if (!mediaRecorder.current) return;
     mediaRecorder.current.stop();
     setIsRecording(false);
-    setCallActive(false);
   };
 
   const closeMediaRecorder = () => {
+    console.log("closeMediaRecorder");
     mediaRecorder.current = null;
   };
 
@@ -48,7 +48,7 @@ const useMediaRecorder = (onDataAvailable, onStop) => {
     };
   }, []);
 
-  return { isRecording, callActive, setIsRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder };
+  return { isRecording, setIsRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder };
 };
 
 export default useMediaRecorder;

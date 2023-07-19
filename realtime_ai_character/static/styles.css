@@ -483,14 +483,6 @@ body
   animation: pulse 2.2s infinite ease-in-out;
 }
 
-.pulse-animation-1 {
-  animation: pulse 1.5s infinite ease-in-out;
-}
-
-.pulse-animation-2 {
-  animation: pulse 2.2s infinite ease-in-out;
-}
-
 /* media devices select */
 .select-dropdown,
 .select-dropdown * {

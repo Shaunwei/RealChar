@@ -1,0 +1,56 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#desktop-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.main-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  flex-grow: 1;
+  width: 100%;
+  height: 40vh;
+  padding: 20px;
+}
+
+.header {
+  color: #cccccc;
+  font-family: "Prompt", Helvetica;
+  font-size: 20px;
+  font-weight: 200;
+}
+
+.recording {
+  color: firebrick;
+  padding-left: 1.2em;
+}
+
+.recording::before {
+  content: '🔴';
+  margin-right: 3px;
+  animation: recording 600ms alternate infinite;
+}
+@keyframes recording {
+  from { opacity: 1; }
+  to { opacity: 0.2; }
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+
+.alert {
+  color: white;
+}

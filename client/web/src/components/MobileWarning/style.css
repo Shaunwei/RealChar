@@ -1,0 +1,15 @@
+#mobile-warning {
+    color:white;
+  }
+  
+#mobile-warning p {
+    margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+    #mobile-warning { display: block; }
+}
+  
+@media (min-width: 769px) {
+    #mobile-warning { display: none; }
+}

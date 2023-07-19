@@ -1,0 +1,67 @@
+.chat-window {
+  background-color: #02081d;
+  color: white;
+  font-size: 17px;
+  width: 100%;
+  height: 100%;
+  border: none;
+  resize: none;
+}
+
+/* text input */
+input[type="text"]{font: 15px/24px 'Muli', sans-serif; color: white; width: 100%; box-sizing: border-box; letter-spacing: 1px;}
+:focus{outline: none;}
+.message-input-container{
+  float: left; 
+  width: 50vw;
+  margin: 15px 3%; 
+  position: relative;}
+input[type="text"]{font: 15px/24px "Lato", Arial, sans-serif; color: white; width: 100%; box-sizing: border-box; letter-spacing: 1px;}
+.message-input {
+  border: 1px solid #ccc; 
+  border-radius: 5px;
+  padding: 7px 14px 9px; 
+  transition: 0.4s;
+  font-size: 20px;
+  display: flex;
+  color: white;
+  background-color: transparent;
+}
+
+.message-input ~ .focus-border:before,
+.message-input ~ .focus-border:after{content: ""; position: absolute; top: 0; left: 0; width: 0; height: 2px; background-color: #85a7ff; transition: 0.3s;}
+.message-input ~ .focus-border:after{top: auto; bottom: 0; left: auto; right: 0;}
+.message-input ~ .focus-border i:before,
+.message-input ~ .focus-border i:after{content: ""; position: absolute; top: 0; left: 0; width: 2px; height: 0; background-color: #85a7ff; transition: 0.4s;}
+.message-input ~ .focus-border i:after{left: auto; right: 0; top: auto; bottom: 0;}
+.message-input:focus ~ .focus-border:before,
+.message-input:focus ~ .focus-border:after{width: 100%; transition: 0.3s;}
+.message-input:focus ~ .focus-border i:before,
+.message-input:focus ~ .focus-border i:after{height: 100%; transition: 0.4s;}
+
+.send-btn {
+    font-family: "Prompt", Helvetica;
+    font-size: 1rem;
+    border-color: #6785d3;
+    color: #fff;
+    box-shadow: 0 0 10px 0 #6785d3 inset, 0 0 10px 4px #6785d3;
+    transition: all 150ms ease-in-out;
+    cursor: pointer;
+    background-color: transparent;
+    padding: 0.6em 2em;
+    border-radius: 1.5em;
+}
+
+.send-btn:hover {
+    box-shadow: 0 0 40px 40px #6785d3 inset, 0 0 0 0 #6785d3;
+    outline: 0;
+}
+
+.options-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 40px;
+  bottom: 0;
+  width: 100%;
+}

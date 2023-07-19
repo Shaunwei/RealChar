@@ -1,0 +1,80 @@
+.button {
+  font-family: "Prompt", Helvetica;
+  font-size: 1rem;
+  border-color: #6785d3;
+  color: #fff;
+  box-shadow: 0 0 10px 0 #6785d3 inset, 0 0 10px 4px #6785d3;
+  transition: all 150ms ease-in-out;
+  cursor: pointer;
+  background-color: transparent;
+  padding: 0.6em 2em;
+  border-radius: 1.5em;
+  margin-top: 10px;
+}
+
+.button:hover {
+  box-shadow: 0 0 40px 40px #6785d3 inset, 0 0 0 0 #6785d3;
+  outline: 0;
+}
+
+.button[disabled] {
+  background-color: #999999;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Icon Buttons */
+.icon-instance-node-small {
+  color: white;
+  width: 1.3em;
+  height: 1.3em;
+  transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+}
+
+.icon-button {
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50px;
+  padding: 8px;
+  height: 40px;
+  width: 40px;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
+}
+
+.default {
+  background-color: #bccffe1a;
+}
+
+.red {
+  background-color: #ff4242;
+}
+
+.blue {
+  background-color: #0149ff;
+}
+
+.green {
+  background-color: #28c235;
+}
+
+.icon-red:hover {
+  background-color: #ff4242;
+  transform: scale(1.1);
+}
+
+.icon-blue:hover {
+  background-color: #0149ff;
+  transform: scale(1.1);
+}
+
+.icon-green:hover {
+  background-color: #28c235;
+  transform: scale(1.1);
+}
+
+.icon-button:hover .icon-instance-node-small {
+  filter: brightness(2);
+}

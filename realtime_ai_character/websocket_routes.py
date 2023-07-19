@@ -164,8 +164,8 @@ async def handle_receive(
                 # 4. Persist interaction in the database
                 Interaction(
                     client_id=client_id,
-                    client_message=msg_data,
-                    server_message=response,
+                    client_message_unicode=msg_data,
+                    server_message_unicode=response,
                     platform=platform,
                     action_type='text'
                 ).save(db)
@@ -199,8 +199,8 @@ async def handle_receive(
                     # Persist interaction in the database
                     Interaction(
                         client_id=client_id,
-                        client_message=transcript,
-                        server_message=response,
+                        client_message_unicode=transcript,
+                        server_message_unicode=response,
                         platform=platform,
                         action_type='audio'
                     ).save(db)

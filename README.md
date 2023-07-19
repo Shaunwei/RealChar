@@ -220,6 +220,8 @@ ELEVEN_LABS_API_KEY=<api key>
 <br/>
 
 ## 🆕! LangSmith integration
+<details><summary>👇click me</summary>
+
 If you have access to LangSmith, you can add these environment variables to enable:
 ```
 LANGCHAIN_TRACING_V2=false # default off
@@ -228,6 +230,10 @@ LANGCHAIN_API_KEY=YOUR_LANGCHAIN_API_KEY
 LANGCHAIN_PROJECT=YOUR_LANGCHAIN_PROJECT
 ```
 And it should work out of the box.
+
+</details>
+
+<br/>
 
 ## ⭐️ Star History
 

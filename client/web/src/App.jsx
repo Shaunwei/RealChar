@@ -1,3 +1,4 @@
+// App.js
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
@@ -290,31 +291,37 @@ const App = () => {
           </div>
         ) : null}
 
-        { isConnected.current && characterConfirmed ?
-            (isTalkView ? 
-              <CallView 
-                isRecording={isRecording} 
-                isPlaying={isPlaying}
-                audioPlayer={audioPlayer} 
-                handleStopCall={handleStopCall} 
-                handleContinueCall={handleContinueCall}
-                audioQueue={audioQueue}
-                setIsPlaying={setIsPlaying}
-                handleDisconnect={handleDisconnect}
-                setIsTalkView={setIsTalkView}
-              /> : 
-              <TextView 
-                send={send} 
-                isPlaying={isPlaying}
-                stopAudioPlayback={stopAudioPlayback}
-                textAreaValue={textAreaValue}
-                setTextAreaValue={setTextAreaValue}
-                messageInput={messageInput}
-                setMessageInput={setMessageInput}
-                handleDisconnect={handleDisconnect}
-                setIsTalkView={setIsTalkView}
-            />) : null
-        }
+        {/* we render both views but only display one. */}
+        <div style={{ display: isConnected.current && characterConfirmed ? "flex" : "none" }}>
+          <div style={{ display: isTalkView ? "flex" : "none" }}>
+            <CallView 
+              isRecording={isRecording} 
+              isPlaying={isPlaying}
+              audioPlayer={audioPlayer} 
+              handleStopCall={handleStopCall} 
+              handleContinueCall={handleContinueCall}
+              audioQueue={audioQueue}
+              setIsPlaying={setIsPlaying}
+              handleDisconnect={handleDisconnect}
+              setIsTalkView={setIsTalkView}
+            />
+          </div>
+
+          <div style={{ display: isTalkView ? "none" : "flex" }}>
+            <TextView 
+              send={send} 
+              isPlaying={isPlaying}
+              stopAudioPlayback={stopAudioPlayback}
+              textAreaValue={textAreaValue}
+              setTextAreaValue={setTextAreaValue}
+              messageInput={messageInput}
+              setMessageInput={setMessageInput}
+              handleDisconnect={handleDisconnect}
+              setIsTalkView={setIsTalkView}
+            />
+          </div>
+        </div>
+
 
         <Footer />
       </div>

@@ -19,11 +19,11 @@ const CallView = ( {isRecording, isPlaying, audioPlayer, handleStopCall, handleC
     
     return (
         <div className="main-screen">
+            <audio ref={audioPlayer} className="audio-player"><source src="" type="audio/mp3" /></audio>
             {isRecording ? (
                 <>
                   <div>
-                    <div className="sound-wave"><span></span><span></span><span></span><span></span><span></span><span></span></div>
-                    <audio ref={audioPlayer} className="audio-player"><source src="" type="audio/mp3" /></audio>
+                   <div className="sound-wave"><span></span><span></span><span></span><span></span><span></span><span></span></div>
                   </div>
                   <div className="stop-call" onClick={handleStopCall}>
                     <MdCallEnd className="icon-instance-node"/>

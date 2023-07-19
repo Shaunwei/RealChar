@@ -158,13 +158,6 @@ const App = () => {
     finalTranscripts.current = [];
   };
 
-  const handleRecognitionOnEnd = () => {
-    console.log("onend");
-    if (isConnected.current && callActive.current) {
-      startListening();
-    }
-  };
-
   const stopAudioPlayback = () => {
     if (audioPlayer.current) {
       audioPlayer.current.pause();
@@ -177,7 +170,7 @@ const App = () => {
   // Use custom hooks
   const { send, connectSocket, closeSocket } = useWebsocket(handleSocketOnOpen,handleSocketOnMessage);
   const { isRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder } = useMediaRecorder(handleRecorderOnDataAvailable, handleRecorderOnStop);
-  const { startListening, stopListening, closeRecognition, initializeSpeechRecognition } = useSpeechRecognition(handleRecognitionOnResult, handleRecognitionOnSpeechEnd, handleRecognitionOnEnd);
+  const { startListening, stopListening, closeRecognition, initializeSpeechRecognition } = useSpeechRecognition(handleRecognitionOnResult, handleRecognitionOnSpeechEnd, callActive);
   
   // Handle Button Clicks
   const handleConnectButtonClick = () => connectSocket();

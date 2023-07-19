@@ -50,6 +50,7 @@ const useWebsocket = (onOpen, onMessage) => {
 
     // send message to server
     const send = (data) => {
+        console.log("message sent to server");
         if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
             socketRef.current.send(data);
         }

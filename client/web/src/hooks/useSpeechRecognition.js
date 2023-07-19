@@ -7,18 +7,8 @@
 
 import { useRef, useEffect } from 'react';
 
-const useSpeechRecognition = (onResult, onend, onSpeechEnd) => {
+const useSpeechRecognition = (onResult, onSpeechEnd, callActive) => {
   const recognition = useRef(null);
-
-  const startListening = () => {
-    console.log("start listening");
-    recognition.current.start();
-  }
-
-  const stopListening = () => {
-    console.log("stopListening");
-    recognition.current.stop();
-  }
 
   // initialize speech recognition
   const initializeSpeechRecognition = () => {
@@ -28,14 +18,27 @@ const useSpeechRecognition = (onResult, onend, onSpeechEnd) => {
     recognition.current.maxAlternatives = 1;
     recognition.current.continuous = true;
 
-    recognition.current.onstart = () => {
-      console.log("Speech recognition service has started");
+    recognition.current.onend = () => {
+      if (callActive.current) {
+        startListening();
+      }
     };
 
     recognition.current.onresult = onResult;
     recognition.current.onspeechend = onSpeechEnd;
-    recognition.current.onend = onend;
   };
+
+  const startListening = () => {
+    if (!recognition.current) return;
+    console.log("start listening");
+    recognition.current.start();
+  }
+
+  const stopListening = () => {
+    if (!recognition.current) return;
+    console.log("stop listening");
+    recognition.current.stop();
+  }
 
   const closeRecognition = () => {
     stopListening();

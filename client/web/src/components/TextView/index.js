@@ -52,6 +52,7 @@ const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAr
                 className="chat-window" 
                 readOnly 
                 draggable="false"
+                ref={chatWindowRef}
                 value={textAreaValue}
             ></textarea>
             <div className="message-input-container">

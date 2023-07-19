@@ -5,7 +5,7 @@
  * created by Lynchee on 7/16/23
  */
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 
 const useMediaRecorder = (onDataAvailable, onStop) => {
   const [isRecording, setIsRecording] = useState(false);
@@ -45,12 +45,6 @@ const useMediaRecorder = (onDataAvailable, onStop) => {
     stopRecording();
     mediaRecorder.current = null;
   };
-
-  useEffect(() => {
-    return () => {
-      stopRecording();
-    };
-  }, []);
 
   return { isRecording, setIsRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder };
 };

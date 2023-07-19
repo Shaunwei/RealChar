@@ -222,7 +222,7 @@ ELEVEN_LABS_API_KEY=<api key>
 ## 🆕! LangSmith integration
 <details><summary>👇click me</summary>
 
-If you have access to LangSmith, you can add these environment variables to enable:
+If you have access to LangSmith, you can edit these environment variables to enable:
 ```
 LANGCHAIN_TRACING_V2=false # default off
 LANGCHAIN_ENDPOINT=https://api.smith.langchain.com

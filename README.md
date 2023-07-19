@@ -59,7 +59,7 @@ __Demo settings: Web, GPT4, ElevenLabs with voice clone, Chroma, Google Speech t
 - ✅**Web**: [Vanilla JS](http://vanilla-js.com/), [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
 - ✅**Mobile**: [Swift](https://developer.apple.com/swift/), [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
 - ✅**Backend**: [FastAPI](https://fastapi.tiangolo.com/), [SQLite](https://www.sqlite.org/index.html), [Docker](https://www.docker.com/)
-- ✅**Data Ingession**: [LlamaIndex](https://www.llamaindex.ai/), [Chroma](https://www.trychroma.com/)
+- ✅**Data Ingestion**: [LlamaIndex](https://www.llamaindex.ai/), [Chroma](https://www.trychroma.com/)
 - ✅**LLM Orchestration**: [LangChain](https://langchain.com/), [Chroma](https://www.trychroma.com/)
 - ✅**LLM**: [OpenAI GPT3.5/4](https://platform.openai.com/docs/api-reference/chat), [Anthropic Claude 2](https://docs.anthropic.com/claude/docs/getting-started-with-claude)
 - ✅**Speech to Text**: [Local Whisper](https://github.com/openai/whisper), [OpenAI Whisper API](https://platform.openai.com/docs/api-reference/audio), [Google Speech to Text](https://cloud.google.com/speech-to-text/docs#docs)

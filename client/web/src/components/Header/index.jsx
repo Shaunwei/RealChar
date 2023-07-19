@@ -5,7 +5,6 @@
  * created by Lynchee on 7/16/23
  */
 
-
 import React from 'react';
 import logo from '../../assets/svgs/logo.svg';
 import './style.css';

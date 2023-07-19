@@ -20,6 +20,7 @@ const useSpeechRecognition = (onResult, onend, onSpeechEnd) => {
     recognition.current.stop();
   }
 
+  // initialize speech recognition
   const initializeSpeechRecognition = () => {
     window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     recognition.current = new window.SpeechRecognition();

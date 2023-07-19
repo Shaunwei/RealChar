@@ -11,6 +11,7 @@ const useMediaRecorder = (onDataAvailable, onStop) => {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorder = useRef(null);
 
+  // initialize media recorder
   const connectMicrophone = (deviceId) => {
     if (mediaRecorder.current) return;
     navigator.mediaDevices.getUserMedia({

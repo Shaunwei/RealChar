@@ -18,6 +18,7 @@ const unlockAudioContext = (audioContext) => {
     }
 }
 
+// play a single audio chunk
 const playAudio = (audioContextRef, audioPlayer, url) => {
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
@@ -35,6 +36,7 @@ const playAudio = (audioContextRef, audioPlayer, url) => {
     });
 }
 
+// play all audio chunks
 export const playAudios = async (audioContextRef, audioPlayer, audioQueue, setIsPlaying) => {
   while (audioQueue.current.length > 0) {
     let data = audioQueue.current[0];
@@ -43,5 +45,7 @@ export const playAudios = async (audioContextRef, audioPlayer, audioQueue, setIs
     await playAudio(audioContextRef, audioPlayer, audioUrl);
     audioQueue.current.shift();
   }
+
+  // done playing audios
   setIsPlaying(false);
 }

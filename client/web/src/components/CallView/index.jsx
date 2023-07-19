@@ -15,8 +15,9 @@ import IconButton from '../Common/IconButton';
 // utils
 import { playAudios } from '../../utils/audioUtils';
 
-const CallView = ( {isRecording, isPlaying, audioPlayer, handleStopCall, handleContinueCall, audioQueue, setIsPlaying, handleDisconnect, setIsTalkView} ) => {
+const CallView = ( {isRecording, isPlaying, audioPlayer, handleStopCall, handleContinueCall, audioQueue, setIsPlaying, handleDisconnect, setIsCallView} ) => {
     const audioContextRef = useRef(null);
+
     useEffect(() => {
       if (isPlaying) {
         playAudios(audioContextRef, audioPlayer, audioQueue, setIsPlaying);
@@ -24,21 +25,20 @@ const CallView = ( {isRecording, isPlaying, audioPlayer, handleStopCall, handleC
     }, [isPlaying]);
     
     return (
-          <>
+        <>
+          <div className='call-container'>
             <audio ref={audioPlayer} className="audio-player"><source src="" type="audio/mp3" /></audio>
-            {isRecording ? (
-                <>
-                  <div className="sound-wave"><span></span><span></span><span></span><span></span><span></span><span></span></div>
-                  <IconButton Icon={MdCallEnd} className="icon-red" bgcolor="red" onClick={handleStopCall} />
-                </>
-              ) : (
-                <IconButton Icon={TbPhoneCall} className="icon-green" bgcolor="green" onClick={handleContinueCall} />
-            )}
-            <div className="options-container">
-              <IconButton Icon={TbPower} className="icon-red" onClick={handleDisconnect} />
-              <IconButton Icon={TbMessageChatbot} className="icon-green" onClick={() => setIsTalkView(false)} />
+            <div className={`sound-wave ${isRecording ? '' : 'stop-animation'}`}>
+                <span></span><span></span><span></span><span></span><span></span><span></span>
             </div>
-          </>
+            <IconButton Icon={MdCallEnd} className={`icon-red ${isRecording ? '' : 'hidden'}`} bgcolor="red" onClick={handleStopCall} />
+            <IconButton Icon={TbPhoneCall} className={`icon-green ${isRecording ? 'hidden' : ''}`} bgcolor="green" onClick={handleContinueCall} />
+          </div>
+          <div className="options-container">
+              <IconButton Icon={TbPower} className="icon-red" onClick={handleDisconnect} />
+              <IconButton Icon={TbMessageChatbot} className="icon-green" onClick={() => setIsCallView(false)} />
+          </div>
+        </>
     )
 }
 

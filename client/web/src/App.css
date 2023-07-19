@@ -26,15 +26,13 @@
 .header {
   color: #cccccc;
   font-family: "Prompt", Helvetica;
-  font-size: 25px;
+  font-size: 20px;
   font-weight: 200;
-  margin-top: 10px;
 }
 
 .recording {
   color: firebrick;
   padding-left: 1.2em;
-  line-height: 1.5em;
 }
 
 .recording::before {

@@ -9,6 +9,8 @@ import { useRef, useState, useCallback } from 'react';
 
 const useWebsocket = (onOpen, onMessage) => {
     const socketRef = useRef(null);
+
+    // initialize web socket and connect to server.
     const connectSocket = useCallback(() => {
         if (!socketRef.current) {
             const clientId = Math.floor(Math.random() * 1010000);
@@ -46,6 +48,7 @@ const useWebsocket = (onOpen, onMessage) => {
         }
     }, [onOpen, onMessage]);
 
+    // send message to server
     const send = (data) => {
         if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
             socketRef.current.send(data);

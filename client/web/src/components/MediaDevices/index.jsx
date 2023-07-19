@@ -11,6 +11,7 @@ import './style.css';
 const MediaDevices = ({ selectedDevice, setSelectedDevice }) => {
   const [devices, setDevices] = useState([]);
 
+  // get media devices from browser.
   useEffect(() => {
     navigator.mediaDevices.enumerateDevices()
       .then(devices => {

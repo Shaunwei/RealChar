@@ -17,7 +17,7 @@ import bruce from '../../assets/images/bruce.png';
 import steve from '../../assets/images/jobs.png';
 import realchar from '../../assets/svgs/realchar.svg';
 
-// character groups
+// create character groups
 const createCharacterGroups = (message) => {
     const options = message.split('\n').slice(1);
 
@@ -54,6 +54,7 @@ const createCharacterGroups = (message) => {
 const Characters = ({ characterGroups, selectedCharacter, setSelectedCharacter, isPlaying, characterConfirmed }) => {
     const [pulseAnimation, setPulseAnimation] = useState(null);
 
+    // when the character is talking, show animation 
     useEffect(() => {
         if (isPlaying) {
             setPulseAnimation(Math.random() > 0.5 ? "pulse-animation-1" : "pulse-animation-2");

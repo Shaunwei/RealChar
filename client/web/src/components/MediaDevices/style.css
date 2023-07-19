@@ -1,17 +1,15 @@
 .devices-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-  }
-  
-  .audio-device-label {
-    margin-top: 40px;
-    margin-bottom: 20px;
-    color: #e0e0e0;
-  }
-  
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
 
+.audio-device-label {
+	margin-top: 40px;
+	margin-bottom: 20px;
+	color: #e0e0e0;
+}
 
 /* media devices select */
 .select-dropdown,

@@ -27,7 +27,7 @@ const App = () => {
   const [headerText, setHeaderText] = useState("");
   const [selectedDevice, setSelectedDevice] = useState("");
   const [characterConfirmed, setCharacterConfirmed] = useState(false);
-  const [isTalkView, setIsTalkView] = useState(false);
+  const [isCallView, setIsCallView] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [characterGroups, setCharacterGroups] = useState([]);
@@ -184,29 +184,34 @@ const App = () => {
 
   const handleTalkClick = () => {
     if (isConnected.current && selectedCharacter) {
+      // tell server which character the user selects
       send(selectedCharacter);
-
       setCharacterConfirmed(true);
-      setIsTalkView(true);
-      
-      shouldPlayAudio.current = true;
+
+      // display callview
+      setIsCallView(true);
       setHeaderText("Hi, my friend, what brings you here today?");
 
+      // start media recorder and speech recognition
       startRecording();      
       startListening();
+      shouldPlayAudio.current = true;
       callActive.current = true;
     }
   }
 
   const handleTextClick = () => {
     if (isConnected.current && selectedCharacter) {
-      send(selectedCharacter);    
+      // tell server which character the user selects
+      send(selectedCharacter);   
+      setCharacterConfirmed(true); 
 
-      setCharacterConfirmed(true);
+      // display textview
+      setIsCallView(false);
       setHeaderText("");
       setTextAreaValue(prevState => prevState + "Hi, my friend, what brings you here today?\n");
+
       shouldPlayAudio.current = true;
-      setIsTalkView(false);
     }
   }
 
@@ -224,6 +229,7 @@ const App = () => {
   }
 
   const handleDisconnect = () => {
+    // stop media recorder, speech recognition and audio playing
     stopAudioPlayback();
     closeMediaRecorder();
     closeRecognition();
@@ -233,12 +239,14 @@ const App = () => {
     confidence.current = 0;
     chunks.current = []
     
+    // reset everything to initial states
     setSelectedCharacter(null);
     setCharacterConfirmed(false);
-    setIsTalkView(false);
+    setIsCallView(false);
     setHeaderText("");
     setTextAreaValue("");
 
+    // close web socket connection
     closeSocket();
     isConnected.current = false;
   }
@@ -286,7 +294,7 @@ const App = () => {
 
           {/* we render both views but only display one. */}
           <div style={{ display: isConnected.current && characterConfirmed ? "flex" : "none" }}>
-            <div className="main-screen" style={{ display: isTalkView ? "flex" : "none" }}>
+            <div className="main-screen" style={{ display: isCallView ? "flex" : "none" }}>
               <CallView 
                 isRecording={isRecording} 
                 isPlaying={isPlaying}
@@ -296,11 +304,11 @@ const App = () => {
                 audioQueue={audioQueue}
                 setIsPlaying={setIsPlaying}
                 handleDisconnect={handleDisconnect}
-                setIsTalkView={setIsTalkView}
+                setIsCallView={setIsCallView}
               />
             </div>
 
-            <div className="main-screen" style={{ display: isTalkView ? "none" : "flex" }}>
+            <div className="main-screen" style={{ display: isCallView ? "none" : "flex" }}>
               <TextView 
                 send={send} 
                 isPlaying={isPlaying}
@@ -310,7 +318,7 @@ const App = () => {
                 messageInput={messageInput}
                 setMessageInput={setMessageInput}
                 handleDisconnect={handleDisconnect}
-                setIsTalkView={setIsTalkView}
+                setIsCallView={setIsCallView}
               />
             </div>
           </div>

@@ -10,15 +10,17 @@ import './style.css';
 import { TbPower, TbMicrophone } from 'react-icons/tb';
 import IconButton from '../Common/IconButton';
 
-const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAreaValue, messageInput, setMessageInput, handleDisconnect, setIsTalkView }) => {
+const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAreaValue, messageInput, setMessageInput, handleDisconnect, setIsCallView }) => {
     const chatWindowRef = useRef(null);
     
+    // always show the latest chat log
     useEffect(() => {
         if (chatWindowRef.current) {
             chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
         }
     }, [textAreaValue]);
 
+    // send message to server. stop audio if it's playing to interrupt character.
     const sendMessage = () => {
         setTextAreaValue(prevState => prevState + `\nYou> ${messageInput}\n`);
         send(messageInput);
@@ -66,7 +68,7 @@ const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAr
             <button className="send-btn" onClick={handleSendClick}>Send Message</button>
             <div className="options-container">
                 <IconButton Icon={TbPower} className="icon-red" onClick={handleDisconnect} />
-                <IconButton Icon={TbMicrophone} className="icon-blue" onClick={() => setIsTalkView(true)} />
+                <IconButton Icon={TbMicrophone} className="icon-blue" onClick={() => setIsCallView(true)} />
             </div>
         </>
     )

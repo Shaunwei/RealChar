@@ -26,6 +26,8 @@ router = APIRouter()
 
 manager = get_connection_manager()
 
+GREETING_TXT = 'Hi, my friend, what brings you here today?'
+
 
 @router.websocket("/ws/{client_id}")
 async def websocket_endpoint(
@@ -112,6 +114,16 @@ async def handle_receive(
         tts_task = None
         previous_transcript = None
         token_buffer = []
+
+        # Greet the user
+        await manager.send_message(message=GREETING_TXT, websocket=websocket)
+        tts_task = asyncio.create_task(text_to_speech.stream(
+            text=GREETING_TXT,
+            websocket=websocket,
+            tts_event = tts_event,
+            characater_name = character.name,
+            first_sentence=True,
+        ))
 
         async def on_new_token(token):
             return await manager.send_message(message=token, websocket=websocket)

@@ -261,8 +261,9 @@ And it should work out of the box.
 - [x] Launch v0.0.1 and build a community
 - [x] Move away from Vanilla JS
 - [x] Launch mobile app (iOS TestFlight Beta link: https://testflight.apple.com/join/JA6p9sZQ)
-- [ ] Add more characters
-- [ ] Add authentication
+- [ ] Add authentication for customization
+- [ ] Allow selecting different LLM
+- [ ] Add ability to add community characters
 
 ## 🫶 Contribute to RealChar
 Please check out our [Contribution Guide](contribute.md)!

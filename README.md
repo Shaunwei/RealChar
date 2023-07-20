@@ -195,7 +195,14 @@ ELEVEN_LABS_API_KEY=<api key>
     ```
 - **Step 7**. Run client:
     - Use **GPT4** for better conversation and **Wear headphone** for best audio(avoid echo)
-    - Web client: Open your web browser and navigate to http://localhost:8000 (NOT 0.0.0.0:8000)
+    - There are two ways to access the web client:
+        - **Option 1**: Open your web browser and navigate to http://localhost:8000 (NOT 0.0.0.0:8000)
+        - **Option 2**: Running the client in React.
+            ```sh
+            cd client/web
+            npm start
+            ```
+            After running these commands, a local development server will start, and your default web browser will open a new tab/window pointing to this server (usually http://localhost:3000).
     - (Optional) Terminal client: Run the following command in your terminal
     ```sh
     python client/cli.py

@@ -31,6 +31,8 @@
 ## ✨ Demo
 Try our site at [RealChar.ai](https://realchar.ai/)
 
+(We are also beta-testing our iOS mobile app📱! Sign up [here](https://twitter.com/pycui64/status/1682129815858741248?s=20).)
+
 ### Demo 1 - with AI Elon about cage fight!
 
 https://github.com/Shaunwei/RealChar/assets/5101573/5de0b023-6cf3-4947-84cb-596f429d109e

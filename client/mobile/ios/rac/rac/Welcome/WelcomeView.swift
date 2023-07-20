@@ -11,13 +11,15 @@ struct WelcomeView: View {
     let webSocket: any WebSocket
     @State var isWebSocketConnected = false
     enum Tab {
-        case about, config
+        case about, config, settings
     }
     @Binding var tab: WelcomeView.Tab
     @Binding var character: CharacterOption?
     @Binding var options: [CharacterOption]
     @Binding var openMic: Bool
     @Binding var hapticFeedback: Bool
+    @Binding var loggedIn: Bool
+    @Binding var llmOption: LlmOption
 
     let onConfirmConfig: (CharacterOption) -> Void
     let onWebSocketReconnected: () -> Void
@@ -35,6 +37,11 @@ struct WelcomeView: View {
                         .onTapGesture {
                             tab = .config
                         }
+
+                    TabView(text: "Settings", currentTab: $tab, tab: .settings)
+                        .onTapGesture {
+                            tab = .settings
+                        }
                 }
                 .padding(.horizontal, 32)
                 .padding(.top, 24)
@@ -46,11 +53,16 @@ struct WelcomeView: View {
                         .padding(.horizontal, 48)
                 case .config:
                     ConfigView(options: options,
+                               hapticFeedback: hapticFeedback,
                                loaded: $isWebSocketConnected,
                                selectedOption: $character,
                                openMic: $openMic,
-                               hapticFeedback: $hapticFeedback,
                                onConfirmConfig: onConfirmConfig)
+                        .padding(.horizontal, 48)
+                case .settings:
+                    SettingsView(hapticFeedback: $hapticFeedback,
+                                 loggedIn: $loggedIn,
+                                 llmOption: $llmOption)
                         .padding(.horizontal, 48)
                 }
             }
@@ -66,16 +78,25 @@ struct WelcomeView: View {
         }
         .onChange(of: character) { newValue in
             if webSocket.isConnected && webSocket.isInteractiveMode {
-                webSocket.isConnected = false
-                webSocket.isInteractiveMode = false
-                webSocket.closeSession()
-                webSocket.onCharacterOptionsReceived = { options in
-                    self.options = options
-                }
-                webSocket.connectSession()
-                onWebSocketReconnected()
+                reconnectWebSocket()
             }
         }
+        .onChange(of: loggedIn) { newValue in
+            if newValue {
+                reconnectWebSocket()
+            }
+        }
+    }
+
+    private func reconnectWebSocket() {
+        webSocket.isConnected = false
+        webSocket.isInteractiveMode = false
+        webSocket.closeSession()
+        webSocket.onCharacterOptionsReceived = { options in
+            self.options = options
+        }
+        webSocket.connectSession()
+        onWebSocketReconnected()
     }
 }
 
@@ -89,6 +110,8 @@ struct WelcomeView_Previews: PreviewProvider {
                               .init(id: 2, name: "Realtime AI", description: "Kind", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!)]),
                     openMic: .constant(false),
                     hapticFeedback: .constant(false),
+                    loggedIn: .constant(true),
+                    llmOption: .constant(.gpt35),
                     onConfirmConfig: { _ in },
                     onWebSocketReconnected: { }
         )

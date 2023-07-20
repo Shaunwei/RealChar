@@ -16,6 +16,8 @@ struct RootView: View {
     @State var messages: [ChatMessage] = []
     @State var openMic: Bool = false
     @State var hapticFeedback: Bool = true
+    @State var loggedIn: Bool = false
+    @State var llmOption: LlmOption = .gpt35
 
     let webSocket: any WebSocket
 
@@ -43,6 +45,8 @@ struct RootView: View {
                                 options: $options,
                                 openMic: $openMic,
                                 hapticFeedback: $hapticFeedback,
+                                loggedIn: $loggedIn,
+                                llmOption: $llmOption,
                                 onConfirmConfig: { selected in
                         if shouldSendCharacter {
                             shouldSendCharacter = false

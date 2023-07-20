@@ -196,7 +196,7 @@ async def handle_receive(
                 binary_data = data['bytes']
                 # 1. Transcribe audio
                 transcript: str = speech_to_text.transcribe(
-                    binary_data, platform=platform, prompt=character.name).strip()
+                    binary_data, platform=platform, prompt=character.name).strip() # TODO: Make this async
 
                 # ignore audio that picks up background noise
                 if (not transcript or len(transcript) < 2):

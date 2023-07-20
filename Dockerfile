@@ -1,7 +1,7 @@
-FROM python:3.10-bullseye
+FROM python:slim
 
 # Install system-level dependencies
-RUN apt-get update && apt-get install -y portaudio19-dev libffi-dev libssl-dev ffmpeg
+RUN apt-get update && apt-get install -y build-essential portaudio19-dev libffi-dev libssl-dev ffmpeg
 
 WORKDIR /realtime_ai_character
 

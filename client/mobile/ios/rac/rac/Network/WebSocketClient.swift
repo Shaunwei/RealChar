@@ -21,7 +21,7 @@ protocol WebSocket: NSObject, ObservableObject {
     var onCharacterOptionsReceived: (([CharacterOption]) -> Void)? { get set }
     var onDataReceived: ((Data) -> Void)? { get set }
     var onErrorReceived: ((Error) -> Void)? { get set }
-    func connectSession()
+    func connectSession(llmOption: LlmOption)
     func closeSession()
     func send(message: String)
 }
@@ -31,6 +31,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
     private var webSocket: URLSessionWebSocketTask!
     var isConnected: Bool = false
     var isInteractiveMode: Bool = false
+    var lastUsedLlmOption: LlmOption = .gpt35
 
     var onConnectionChanged: ((Bool) -> Void)?
 
@@ -70,10 +71,11 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
         super.init()
     }
 
-    func connectSession() {
+    func connectSession(llmOption: LlmOption) {
+        lastUsedLlmOption = llmOption
         let clientId = Int.random(in: 0...1010000)
         let wsScheme = serverUrl.scheme == "https" ? "wss" : "ws"
-        let wsPath = "\(wsScheme)://\(serverUrl.host ?? "")\(serverUrl.port.flatMap { ":\($0)" } ?? "")/ws/\(clientId)"
+        let wsPath = "\(wsScheme)://\(serverUrl.host ?? "")\(serverUrl.port.flatMap { ":\($0)" } ?? "")/ws/\(clientId)?llm_model=\(llmOption.rawValue)"
         let session = URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue())
         webSocket = session.webSocketTask(with: URL(string: wsPath)!)
         webSocket.resume()
@@ -126,7 +128,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
                 print("Error Receiving: \(error)")
                 self.onErrorReceived?(error)
                 retry = false
-                self.connectSession()
+                self.connectSession(llmOption: lastUsedLlmOption)
             }
 
             if retry {
@@ -226,7 +228,7 @@ class MockWebSocket: NSObject, WebSocket {
 
     var onErrorReceived: ((Error) -> Void)?
 
-    func connectSession() {
+    func connectSession(llmOption: LlmOption) {
     }
 
     func closeSession() {

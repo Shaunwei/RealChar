@@ -95,7 +95,7 @@ struct RootView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
-            webSocket.connectSession()
+            webSocket.connectSession(llmOption: llmOption)
         }
         .onDisappear {
             webSocket.closeSession()

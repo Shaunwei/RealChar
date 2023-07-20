@@ -81,6 +81,11 @@ struct WelcomeView: View {
                 reconnectWebSocket()
             }
         }
+        .onChange(of: llmOption) { newValue in
+            if loggedIn {
+                reconnectWebSocket()
+            }
+        }
         .onChange(of: loggedIn) { newValue in
             if newValue {
                 reconnectWebSocket()
@@ -95,7 +100,7 @@ struct WelcomeView: View {
         webSocket.onCharacterOptionsReceived = { options in
             self.options = options
         }
-        webSocket.connectSession()
+        webSocket.connectSession(llmOption: llmOption)
         onWebSocketReconnected()
     }
 }

@@ -24,11 +24,22 @@ enum LlmOption: RawRepresentable, Hashable, CaseIterable, Identifiable {
     var rawValue: String {
         switch self {
         case .gpt35:
+            return "gpt-3.5-turbo-16k"
+        case .gpt4:
+            return "gpt-4"
+        case .claude:
+            return "claude-2"
+        }
+    }
+
+    var displayName: String {
+        switch self {
+        case .gpt35:
             return "gpt-3.5"
         case .gpt4:
             return "gpt-4"
         case .claude:
-            return "claude"
+            return "claude-2"
         }
     }
 }
@@ -85,7 +96,7 @@ struct SettingsView: View {
 
                     Picker("LLM Model", selection: $llmOption) {
                         ForEach(LlmOption.allCases) { llmOption in
-                            Text(llmOption.rawValue)
+                            Text(llmOption.displayName)
                                 .font(
                                     Font.custom("Prompt", size: 16)
                                 )

@@ -13,6 +13,10 @@ import SwiftUI
 //let serverUrl: URL = URL(string: "http://127.0.0.1:8000/")!
 let serverUrl: URL = URL(string: "https://realchar.ai/")!
 
+enum WebSocketError: Error {
+    case disconnected
+}
+
 protocol WebSocket: NSObject, ObservableObject {
     var isConnected: Bool { get set }
     var isInteractiveMode: Bool { get set }
@@ -21,7 +25,7 @@ protocol WebSocket: NSObject, ObservableObject {
     var onCharacterOptionsReceived: (([CharacterOption]) -> Void)? { get set }
     var onDataReceived: ((Data) -> Void)? { get set }
     var onErrorReceived: ((Error) -> Void)? { get set }
-    func connectSession(llmOption: LlmOption)
+    func connectSession(llmOption: LlmOption, userId: String?)
     func closeSession()
     func send(message: String)
 }
@@ -32,6 +36,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
     var isConnected: Bool = false
     var isInteractiveMode: Bool = false
     var lastUsedLlmOption: LlmOption = .gpt35
+    var lastUsedUserId: String? = nil
 
     var onConnectionChanged: ((Bool) -> Void)?
 
@@ -65,15 +70,17 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
         }
     }
 
+    private var lastError: Error? = nil
     var onErrorReceived: ((Error) -> Void)? = nil
 
     override init() {
         super.init()
     }
 
-    func connectSession(llmOption: LlmOption) {
+    func connectSession(llmOption: LlmOption, userId: String?) {
         lastUsedLlmOption = llmOption
-        let clientId = Int.random(in: 0...1010000)
+        let clientId = userId ?? String(Int.random(in: 0...1010000))
+        lastUsedUserId = clientId
         let wsScheme = serverUrl.scheme == "https" ? "wss" : "ws"
         let wsPath = "\(wsScheme)://\(serverUrl.host ?? "")\(serverUrl.port.flatMap { ":\($0)" } ?? "")/ws/\(clientId)?llm_model=\(llmOption.rawValue)"
         let session = URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue())
@@ -82,10 +89,16 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
     }
 
     func closeSession() {
-        webSocket.cancel()
+        webSocket?.cancel()
     }
 
     func receive() {
+        guard let webSocket else {
+            print("Web socket disconnected")
+            onError(WebSocketError.disconnected)
+            return
+        }
+
         webSocket.receive(completionHandler: { [weak self] result in
             guard let self else { return }
 
@@ -126,9 +139,9 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
 
             case .failure(let error):
                 print("Error Receiving: \(error)")
-                self.onErrorReceived?(error)
+                onError(error)
                 retry = false
-                self.connectSession(llmOption: lastUsedLlmOption)
+                self.connectSession(llmOption: lastUsedLlmOption, userId: lastUsedUserId)
             }
 
             if retry {
@@ -140,6 +153,12 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
 
     func send(message: String) {
         print("Send websocket string: \(message)")
+        guard let webSocket else {
+            print("Web socket disconnected")
+            onError(WebSocketError.disconnected)
+            return
+        }
+
         webSocket.send(.string(message)) { error in
             if let error {
                 print(error)
@@ -210,6 +229,14 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
 
         return firstCharacters.allSatisfy { characterSet.contains(UnicodeScalar(String($0))!) }
     }
+
+    private func onError(_ error: Error) {
+        if self.onErrorReceived == nil {
+            self.lastError = error
+        } else {
+            self.onErrorReceived?(error)
+        }
+    }
 }
 
 class MockWebSocket: NSObject, WebSocket {
@@ -228,7 +255,7 @@ class MockWebSocket: NSObject, WebSocket {
 
     var onErrorReceived: ((Error) -> Void)?
 
-    func connectSession(llmOption: LlmOption) {
+    func connectSession(llmOption: LlmOption, userId: String?) {
     }
 
     func closeSession() {

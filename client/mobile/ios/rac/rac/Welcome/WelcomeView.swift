@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct WelcomeView: View {
+    @EnvironmentObject private var userSettings: UserSettings
+
     let webSocket: any WebSocket
     @State var isWebSocketConnected = false
     enum Tab {
@@ -18,7 +20,6 @@ struct WelcomeView: View {
     @Binding var options: [CharacterOption]
     @Binding var openMic: Bool
     @Binding var hapticFeedback: Bool
-    @Binding var loggedIn: Bool
     @Binding var llmOption: LlmOption
 
     let onConfirmConfig: (CharacterOption) -> Void
@@ -61,7 +62,6 @@ struct WelcomeView: View {
                         .padding(.horizontal, 48)
                 case .settings:
                     SettingsView(hapticFeedback: $hapticFeedback,
-                                 loggedIn: $loggedIn,
                                  llmOption: $llmOption)
                         .padding(.horizontal, 48)
                 }
@@ -71,6 +71,9 @@ struct WelcomeView: View {
             isWebSocketConnected = webSocket.isConnected
             webSocket.onConnectionChanged = { connected in
                 self.isWebSocketConnected = connected
+            }
+            webSocket.onErrorReceived = { error in
+                // TODO: Display network error
             }
             webSocket.onCharacterOptionsReceived = { options in
                 self.options = options
@@ -82,14 +85,12 @@ struct WelcomeView: View {
             }
         }
         .onChange(of: llmOption) { newValue in
-            if loggedIn {
+            if userSettings.isLoggedIn {
                 reconnectWebSocket()
             }
         }
-        .onChange(of: loggedIn) { newValue in
-            if newValue {
-                reconnectWebSocket()
-            }
+        .onChange(of: userSettings.isLoggedIn) { newValue in
+            reconnectWebSocket()
         }
     }
 
@@ -100,7 +101,7 @@ struct WelcomeView: View {
         webSocket.onCharacterOptionsReceived = { options in
             self.options = options
         }
-        webSocket.connectSession(llmOption: llmOption)
+        webSocket.connectSession(llmOption: llmOption, userId: userSettings.userId)
         onWebSocketReconnected()
     }
 }
@@ -115,7 +116,6 @@ struct WelcomeView_Previews: PreviewProvider {
                               .init(id: 2, name: "Realtime AI", description: "Kind", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!)]),
                     openMic: .constant(false),
                     hapticFeedback: .constant(false),
-                    loggedIn: .constant(true),
                     llmOption: .constant(.gpt35),
                     onConfirmConfig: { _ in },
                     onWebSocketReconnected: { }

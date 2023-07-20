@@ -26,6 +26,9 @@
     <a href="https://hub.docker.com/repository/docker/shaunly/real_char/general" target="_blank">
     <img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/shaunly/real_char?style=for-the-badge"  height="20">
     </a>
+    <a href='https://github.com/repo-reviews/repo-reviews.github.io/blob/main/create.md' target="_blank">
+    <img alt='Github' src='https://img.shields.io/badge/review_me-100000?style=flat&logo=Github&logoColor=white&labelColor=888888&color=555555'/>
+    </a>
 </div>
 
 ## ✨ Demo

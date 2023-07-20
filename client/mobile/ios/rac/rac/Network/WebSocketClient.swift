@@ -20,6 +20,7 @@ protocol WebSocket: NSObject, ObservableObject {
     var onStringReceived: ((String) -> Void)? { get set }
     var onCharacterOptionsReceived: (([CharacterOption]) -> Void)? { get set }
     var onDataReceived: ((Data) -> Void)? { get set }
+    var onErrorReceived: ((Error) -> Void)? { get set }
     func connectSession()
     func closeSession()
     func send(message: String)
@@ -62,6 +63,8 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
             }
         }
     }
+
+    var onErrorReceived: ((Error) -> Void)? = nil
 
     override init() {
         super.init()
@@ -120,7 +123,8 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
                 }
 
             case .failure(let error):
-                print("Error Receiving \(error)")
+                print("Error Receiving: \(error)")
+                self.onErrorReceived?(error)
                 retry = false
                 self.connectSession()
             }
@@ -207,6 +211,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
 }
 
 class MockWebSocket: NSObject, WebSocket {
+
     var isConnected: Bool = false
 
     var isInteractiveMode: Bool = false
@@ -218,6 +223,8 @@ class MockWebSocket: NSObject, WebSocket {
     var onCharacterOptionsReceived: (([CharacterOption]) -> Void)?
 
     var onDataReceived: ((Data) -> Void)?
+
+    var onErrorReceived: ((Error) -> Void)?
 
     func connectSession() {
     }

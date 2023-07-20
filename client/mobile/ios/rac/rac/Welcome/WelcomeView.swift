@@ -9,6 +9,7 @@ import SwiftUI
 
 struct WelcomeView: View {
     @EnvironmentObject private var userSettings: UserSettings
+    @EnvironmentObject private var preferenceSettings: PreferenceSettings
 
     let webSocket: any WebSocket
     @StateObject var webSocketConnectionStatusObserver = WebSocketConnectionStatusObserver(delay: .seconds(0.5))
@@ -20,8 +21,6 @@ struct WelcomeView: View {
     @Binding var character: CharacterOption?
     @Binding var options: [CharacterOption]
     @Binding var openMic: Bool
-    @Binding var hapticFeedback: Bool
-    @Binding var llmOption: LlmOption
 
     let onConfirmConfig: (CharacterOption) -> Void
     let onWebSocketReconnected: () -> Void
@@ -55,7 +54,7 @@ struct WelcomeView: View {
                         .padding(.horizontal, 48)
                 case .config:
                     ConfigView(options: options,
-                               hapticFeedback: hapticFeedback,
+                               hapticFeedback: preferenceSettings.hapticFeedback,
                                loaded: .init(get: { webSocketConnectionStatusObserver.status == .connected }, set: { _ in }),
                                selectedOption: $character,
                                openMic: $openMic,
@@ -68,8 +67,7 @@ struct WelcomeView: View {
                     })
                         .padding(.horizontal, 48)
                 case .settings:
-                    SettingsView(hapticFeedback: $hapticFeedback,
-                                 llmOption: $llmOption)
+                    SettingsView()
                         .padding(.horizontal, 48)
                 }
 
@@ -77,7 +75,7 @@ struct WelcomeView: View {
                     VStack {
                         Button {
                             if webSocketConnectionStatusObserver.status == .disconnected {
-                                webSocket.connectSession(llmOption: llmOption, userId: userSettings.userId)
+                                webSocket.connectSession(llmOption: preferenceSettings.llmOption, userId: userSettings.userId)
                             }
                         } label: {
                             Text(webSocketConnectionStatusObserver.debouncedStatus == .disconnected ? "Failed to connect to server, tap to retry" : "Connecting")
@@ -106,7 +104,7 @@ struct WelcomeView: View {
                 reconnectWebSocket()
             }
         }
-        .onChange(of: llmOption) { newValue in
+        .onChange(of: preferenceSettings.llmOption) { newValue in
             if userSettings.isLoggedIn {
                 reconnectWebSocket()
             }
@@ -126,7 +124,7 @@ struct WelcomeView: View {
         webSocket.onCharacterOptionsReceived = { options in
             self.options = options
         }
-        webSocket.connectSession(llmOption: llmOption, userId: userSettings.userId)
+        webSocket.connectSession(llmOption: preferenceSettings.llmOption, userId: userSettings.userId)
         onWebSocketReconnected()
     }
 }
@@ -140,8 +138,6 @@ struct WelcomeView_Previews: PreviewProvider {
                               .init(id: 1, name: "Anime hero", description: "Noble", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!),
                               .init(id: 2, name: "Realtime AI", description: "Kind", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!)]),
                     openMic: .constant(false),
-                    hapticFeedback: .constant(false),
-                    llmOption: .constant(.gpt35),
                     onConfirmConfig: { _ in },
                     onWebSocketReconnected: { }
         )

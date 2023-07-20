@@ -21,11 +21,13 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct racApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var userSettings = UserSettings()
+    @StateObject private var preferenceSettings = PreferenceSettings()
 
     var body: some Scene {
         WindowGroup {
             RootView(webSocket: WebSocketClient())
                 .environmentObject(userSettings)
+                .environmentObject(preferenceSettings)
         }
     }
 }

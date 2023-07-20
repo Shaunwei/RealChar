@@ -21,6 +21,7 @@
 		2600B08C2A68FC8C003E8388 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2600B08B2A68FC8C003E8388 /* GoogleSignInSwift */; };
 		2600B08E2A68FCA9003E8388 /* GoogleSignInButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B08D2A68FCA9003E8388 /* GoogleSignInButton.swift */; };
 		2600B0902A69DCC7003E8388 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B08F2A69DCC7003E8388 /* UserSettings.swift */; };
+		2600B0922A69F786003E8388 /* PreferenceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B0912A69F786003E8388 /* PreferenceSettings.swift */; };
 		26FE4D092A5B6F0D006A1882 /* racApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D082A5B6F0D006A1882 /* racApp.swift */; };
 		26FE4D0B2A5B6F0D006A1882 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D0A2A5B6F0D006A1882 /* RootView.swift */; };
 		26FE4D0D2A5B6F0E006A1882 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26FE4D0C2A5B6F0E006A1882 /* Assets.xcassets */; };
@@ -46,6 +47,7 @@
 		2600B07F2A68F517003E8388 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2600B08D2A68FCA9003E8388 /* GoogleSignInButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSignInButton.swift; sourceTree = "<group>"; };
 		2600B08F2A69DCC7003E8388 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
+		2600B0912A69F786003E8388 /* PreferenceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceSettings.swift; sourceTree = "<group>"; };
 		26FE4D052A5B6F0D006A1882 /* rac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = rac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		26FE4D082A5B6F0D006A1882 /* racApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = racApp.swift; sourceTree = "<group>"; };
 		26FE4D0A2A5B6F0D006A1882 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 				2600B07D2A68D641003E8388 /* SettingsView.swift */,
 				2600B08D2A68FCA9003E8388 /* GoogleSignInButton.swift */,
 				2600B08F2A69DCC7003E8388 /* UserSettings.swift */,
+				2600B0912A69F786003E8388 /* PreferenceSettings.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -308,6 +311,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				26FE4D232A5B707B006A1882 /* ConfigView.swift in Sources */,
+				2600B0922A69F786003E8388 /* PreferenceSettings.swift in Sources */,
 				26FE4D0B2A5B6F0D006A1882 /* RootView.swift in Sources */,
 				2600B0762A60A024003E8388 /* WebSocketClient.swift in Sources */,
 				2600B0732A60985F003E8388 /* SpeechRecognizer.swift in Sources */,

@@ -9,7 +9,7 @@ import SwiftUI
 import GoogleSignIn
 import Firebase
 
-enum LlmOption: RawRepresentable, Hashable, CaseIterable, Identifiable {
+enum LlmOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Codable {
 
     case gpt35, gpt4, claude
 
@@ -17,6 +17,7 @@ enum LlmOption: RawRepresentable, Hashable, CaseIterable, Identifiable {
         for option in LlmOption.allCases {
             if rawValue == option.rawValue {
                 self = option
+                return
             }
         }
         return nil
@@ -48,9 +49,8 @@ enum LlmOption: RawRepresentable, Hashable, CaseIterable, Identifiable {
 
 struct SettingsView: View {
     @EnvironmentObject private var userSettings: UserSettings
+    @EnvironmentObject private var preferenceSettings: PreferenceSettings
 
-    @Binding var hapticFeedback: Bool
-    @Binding var llmOption: LlmOption
     @State var showAuth: Bool = false
 
     var body: some View {
@@ -105,7 +105,7 @@ struct SettingsView: View {
                         )
                         .padding(.horizontal, 2)
 
-                    Picker("LLM Model", selection: $llmOption) {
+                    Picker("LLM Model", selection: $preferenceSettings.llmOption) {
                         ForEach(LlmOption.allCases) { llmOption in
                             Text(llmOption.displayName)
                                 .font(
@@ -116,7 +116,7 @@ struct SettingsView: View {
                     }
                     .pickerStyle(.segmented)
 
-                    Toggle(isOn: $hapticFeedback) {
+                    Toggle(isOn: $preferenceSettings.hapticFeedback) {
                         Text("Haptic feedback?")
                             .font(
                                 Font.custom("Prompt", size: 16)
@@ -140,10 +140,10 @@ struct SettingsView: View {
         }
         .onChange(of: userSettings.isLoggedIn) { newValue in
             if !newValue {
-                llmOption = .gpt35
+                preferenceSettings.llmOption = .gpt35
             }
         }
-        .onChange(of: llmOption) { newValue in
+        .onChange(of: preferenceSettings.llmOption) { newValue in
             if newValue != .gpt35 && !userSettings.isLoggedIn {
                 showAuth = true
             }
@@ -153,7 +153,7 @@ struct SettingsView: View {
                 signIn()
             }
             if !newValue && !userSettings.isLoggedIn {
-                llmOption = .gpt35
+                preferenceSettings.llmOption = .gpt35
             }
         }
     }
@@ -222,8 +222,7 @@ struct SettingsView: View {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView(hapticFeedback: .constant(false),
-                     llmOption: .constant(.gpt35))
+        SettingsView()
     }
 }
 

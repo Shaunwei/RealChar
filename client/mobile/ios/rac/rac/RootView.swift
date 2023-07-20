@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RootView: View {
     @EnvironmentObject private var userSettings: UserSettings
+    @EnvironmentObject private var preferenceSettings: PreferenceSettings
 
     @State var interactive = false
     @State var welcomeTab: WelcomeView.Tab = .about
@@ -17,8 +18,6 @@ struct RootView: View {
     @State var shouldSendCharacter: Bool = true
     @State var messages: [ChatMessage] = []
     @State var openMic: Bool = false
-    @State var hapticFeedback: Bool = true
-    @State var llmOption: LlmOption = .gpt35
 
     let webSocket: any WebSocket
 
@@ -29,7 +28,7 @@ struct RootView: View {
                     InteractiveView(webSocket: webSocket,
                                     character: character,
                                     openMic: openMic,
-                                    hapticFeedback: hapticFeedback,
+                                    hapticFeedback: preferenceSettings.hapticFeedback,
                                     onExit: {
                         welcomeTab = .about
                         character = nil
@@ -45,8 +44,6 @@ struct RootView: View {
                                 character: $character,
                                 options: $options,
                                 openMic: $openMic,
-                                hapticFeedback: $hapticFeedback,
-                                llmOption: $llmOption,
                                 onConfirmConfig: { selected in
                         if shouldSendCharacter {
                             shouldSendCharacter = false
@@ -96,7 +93,8 @@ struct RootView: View {
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
             userSettings.checkUserLoggedIn()
-            webSocket.connectSession(llmOption: llmOption, userId: userSettings.userId)
+            preferenceSettings.loadSettings(isUserLoggedIn: userSettings.isLoggedIn)
+            webSocket.connectSession(llmOption: preferenceSettings.llmOption, userId: userSettings.userId)
         }
         .onDisappear {
             webSocket.closeSession()

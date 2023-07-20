@@ -17,8 +17,10 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column('interactions', sa.Column('platform', sa.String(50), nullable=True))
-    op.add_column('interactions', sa.Column('action_type', sa.String(50), nullable=True))
+    op.add_column('interactions', sa.Column(
+        'platform', sa.String(50), nullable=True))
+    op.add_column('interactions', sa.Column(
+        'action_type', sa.String(50), nullable=True))
 
 
 def downgrade() -> None:

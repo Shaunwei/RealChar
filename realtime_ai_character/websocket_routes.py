@@ -120,8 +120,8 @@ async def handle_receive(
         tts_task = asyncio.create_task(text_to_speech.stream(
             text=GREETING_TXT,
             websocket=websocket,
-            tts_event = tts_event,
-            characater_name = character.name,
+            tts_event=tts_event,
+            characater_name=character.name,
             first_sentence=True,
         ))
 

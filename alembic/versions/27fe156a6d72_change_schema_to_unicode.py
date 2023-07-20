@@ -17,8 +17,11 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column('interactions', sa.Column('client_message_unicode', sa.Unicode(65535)))
-    op.add_column('interactions', sa.Column('server_message_unicode', sa.Unicode(65535)))
+    op.add_column('interactions', sa.Column(
+        'client_message_unicode', sa.Unicode(65535)))
+    op.add_column('interactions', sa.Column(
+        'server_message_unicode', sa.Unicode(65535)))
+
 
 def downgrade() -> None:
     op.drop_column('interactions', 'client_message_unicode')

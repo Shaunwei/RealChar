@@ -258,11 +258,12 @@ And it should work out of the box.
 [![Star History Chart](https://api.star-history.com/svg?repos=Shaunwei/RealChar&type=Date)](https://star-history.com/#Shaunwei/RealChar&Date)
 
 ## 📍 Roadmap
-- [ ] Launch v0.0.0 and build a community
-- [ ] Add more characters
-- [ ] Move away from Vanilla JS
-- [ ] Launch mobile app
-- [ ] Add authentication
+- [x] Launch v0.0.1 and build a community
+- [x] Move away from Vanilla JS
+- [x] Launch mobile app (iOS TestFlight Beta link: https://testflight.apple.com/join/JA6p9sZQ)
+- [ ] Add authentication for customization
+- [ ] Allow selecting different LLM
+- [ ] Add ability to add community characters
 
 ## 🫶 Contribute to RealChar
 Please check out our [Contribution Guide](contribute.md)!

@@ -258,10 +258,10 @@ And it should work out of the box.
 [![Star History Chart](https://api.star-history.com/svg?repos=Shaunwei/RealChar&type=Date)](https://star-history.com/#Shaunwei/RealChar&Date)
 
 ## 📍 Roadmap
-- [ ] Launch v0.0.0 and build a community
+- [x] Launch v0.0.1 and build a community
+- [x] Move away from Vanilla JS
+- [x] Launch mobile app (iOS TestFlight Beta link: https://testflight.apple.com/join/JA6p9sZQ)
 - [ ] Add more characters
-- [ ] Move away from Vanilla JS
-- [ ] Launch mobile app
 - [ ] Add authentication
 
 ## 🫶 Contribute to RealChar

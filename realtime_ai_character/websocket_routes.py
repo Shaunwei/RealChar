@@ -124,6 +124,8 @@ async def handle_receive(
             characater_name=character.name,
             first_sentence=True,
         ))
+        # Send end of the greeting so the client knows when to start listening
+        await manager.send_message(message='[end]\n', websocket=websocket)
 
         async def on_new_token(token):
             return await manager.send_message(message=token, websocket=websocket)

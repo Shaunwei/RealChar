@@ -17,7 +17,8 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column('interactions', sa.Column('user_id', sa.String(50), nullable=True))
+    op.add_column('interactions', sa.Column(
+        'user_id', sa.String(50), nullable=True))
 
     # Populate the new column with the old column's data
     op.execute("""

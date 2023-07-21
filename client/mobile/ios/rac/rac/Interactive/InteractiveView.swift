@@ -132,12 +132,6 @@ struct InteractiveView: View {
         .background(Constants.realBlack)
         .onAppear {
             prepareHaptics()
-
-            if messages.isEmpty {
-                // TODO: Allow user to provide first message
-                messages.append(.init(id: UUID(), role: .user, content: Constants.greeting))
-                webSocket.send(message: Constants.greeting)
-            }
             webSocket.isInteractiveMode = true
             webSocket.onStringReceived = { message in
                 guard !(openMic && voiceState == .listeningToUser) else { return }

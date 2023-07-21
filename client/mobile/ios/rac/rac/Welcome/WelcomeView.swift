@@ -78,7 +78,7 @@ struct WelcomeView: View {
                                 webSocket.connectSession(llmOption: preferenceSettings.llmOption, userId: userSettings.userId)
                             }
                         } label: {
-                            Text(webSocketConnectionStatusObserver.debouncedStatus == .disconnected ? "Failed to connect to server, tap to retry" : "Connecting")
+                            Text(webSocketConnectionStatusObserver.debouncedStatus == .disconnected ? "Failed to connect to server, tap to retry" : "Connecting to server...")
                                 .foregroundColor(.white)
                                 .modifier(ShakeEffect(shakes: invalidAttempts * 2))
                                 .animation(Animation.linear, value: invalidAttempts)

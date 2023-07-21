@@ -22,10 +22,11 @@ struct racApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var userSettings = UserSettings()
     @StateObject private var preferenceSettings = PreferenceSettings()
+    private let webSocket = WebSocketClient()
 
     var body: some Scene {
         WindowGroup {
-            RootView(webSocket: WebSocketClient())
+            RootView(webSocket: webSocket)
                 .environmentObject(userSettings)
                 .environmentObject(preferenceSettings)
         }

@@ -9,14 +9,14 @@ import React from 'react';
 import auth from '../../utils/firebase';
 import { signOut } from "firebase/auth";
 
-const SignOut = ({ setIsLoggedIn }) => {
+const SignOut = ({ isLoggedIn }) => {
 
   const signout = async (e) => {
     e.preventDefault();
 
     signOut(auth).then(() => {
       console.log("Sign-out successful.");
-      setIsLoggedIn(false);
+      isLoggedIn.current = false;
     }).catch((error) => {
       console.log(`Sign-out failed: ${error.message}`);
     });

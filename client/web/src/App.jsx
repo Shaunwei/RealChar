@@ -17,6 +17,7 @@ import CallView from './components/CallView';
 import Button from './components/Common/Button';
 import { Characters, createCharacterGroups } from './components/Characters';
 import SignIn from './components/Auth/SignIn';
+import { signInWithGoogle } from './components/Auth/SignIn';
 import SignOut from './components/Auth/SignOut';
 import Models from './components/Models';
 
@@ -40,7 +41,6 @@ const App = () => {
   const [textAreaValue, setTextAreaValue] = useState('');
   const [messageInput, setMessageInput] = useState('');
   const [selectedModel, setSelectedModel] = useState("gpt-3.5-turbo-16k");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   
   const onresultTimeout = useRef(null);
@@ -54,6 +54,8 @@ const App = () => {
   const chunks = useRef([]);
   const confidence = useRef(0);
   const isConnected = useRef(false);
+  const isLoggedIn = useRef(false);
+
 
   useEffect(() => {
     auth.onAuthStateChanged(user => {
@@ -188,7 +190,18 @@ const App = () => {
   const { startListening, stopListening, closeRecognition, initializeSpeechRecognition } = useSpeechRecognition(handleRecognitionOnResult, handleRecognitionOnSpeechEnd, callActive);
   
   // Handle Button Clicks
-  const handleConnectButtonClick = () => connectSocket();
+  const handleConnectButtonClick = async () => {
+    // requires login if user wants to use gpt4 or claude.
+    if(selectedModel !== 'gpt-3.5-turbo-16k' && !isLoggedIn.current) {
+      signInWithGoogle(isLoggedIn).then(() => {
+        if(isLoggedIn.current) {
+          connectSocket();
+        }
+      });
+    } else {
+      connectSocket();
+    }
+  }
 
   const handleTalkClick = () => {
     if (isConnected.current && selectedCharacter) {
@@ -266,9 +279,9 @@ const App = () => {
           <>
           <h1 className='text-white'>Hello, <span></span>{user.displayName}</h1>
           <img src={user.photoURL} alt="" />
-          <SignOut setIsLoggedIn={setIsLoggedIn}/>
+          <SignOut isLoggedIn={isLoggedIn}/>
          </>
-      ) : <SignIn setIsLoggedIn={setIsLoggedIn}/>}
+      ) : <SignIn isLoggedIn={isLoggedIn}/>}
      
 
       { !isConnected.current ? 
@@ -293,11 +306,7 @@ const App = () => {
           <p className="header">{headerText}</p>
 
           { !isConnected.current ? 
-            <Button 
-              onClick={handleConnectButtonClick} 
-              name="Connect" 
-              disabled={selectedModel !== 'gpt-3.5-turbo-16k' && !isLoggedIn}
-            /> : null
+            <Button onClick={handleConnectButtonClick} name="Connect" /> : null
           }
 
           { isConnected.current && 

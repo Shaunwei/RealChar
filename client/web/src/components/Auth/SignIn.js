@@ -10,17 +10,43 @@ import auth from '../../utils/firebase';
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import './styles.css';
 
-export const signInWithGoogle = async (isLoggedIn) => {
+export const signInWithGoogle = async (isLoggedIn, setToken) => {
   const provider = new GoogleAuthProvider();
   return signInWithPopup(auth, provider) // Return the promise here
-    .then((result) => {
+    .then(async (result) => {
       // This gives you a Google Access Token. You can use it to access the Google API.
       const credential = GoogleAuthProvider.credentialFromResult(result);
       const token = credential.accessToken;
+      setToken(token);
+
+      // Send token to server
+      // http://127.0.0.1:8000
+      const scheme = window.location.protocol;
+      var currentHost = window.location.host;
+      var parts = currentHost.split(':');
+      var ipAddress = parts[0];
+      var newPort = '8000';
+      var newHost = ipAddress + ':' + newPort;
+      const url = scheme + '//' + newHost;
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          console.error("Sent token failed");
+        }
+      } catch (error) {
+        console.error("Sent token failed. ", error);
+      }
+      
       // The signed-in user info.
       const user = result.user;
-      // IdP data available using getAdditionalUserInfo(result)
-      // ...
       isLoggedIn.current = true;
     }).catch((error) => {
       // Handle Errors here.
@@ -31,18 +57,21 @@ export const signInWithGoogle = async (isLoggedIn) => {
       const email = error.customData.email;
       // The AuthCredential type that was used.
       const credential = GoogleAuthProvider.credentialFromError(error);
-      // ...
       isLoggedIn.current = false;
     });
 }
 
-const SignIn = ({ isLoggedIn }) => {
+const SignIn = ({ isLoggedIn, setToken }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const signIn = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    signInWithGoogle(isLoggedIn);
+    try {
+      await signInWithGoogle(isLoggedIn, setToken);
+    } catch (error) {
+      console.error('Error during sign in:', error);
+    }
     setIsLoading(false);
   }
 

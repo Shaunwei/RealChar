@@ -7,7 +7,7 @@
 
 import { useRef, useState, useCallback } from 'react';
 
-const useWebsocket = (onOpen, onMessage) => {
+const useWebsocket = (onOpen, onMessage, selectedModel) => {
     const socketRef = useRef(null);
 
     // initialize web socket and connect to server.
@@ -32,7 +32,7 @@ const useWebsocket = (onOpen, onMessage) => {
             // Generate the new host value with the same IP but different port
             var newHost = ipAddress + ':' + newPort;
 
-            const ws_path = ws_scheme + '://' + newHost + `/ws/${clientId}`;
+            const ws_path = ws_scheme + '://' + newHost + `/ws/${clientId}?llm_model=${selectedModel}`;
 
             socketRef.current = new WebSocket(ws_path);
             const socket = socketRef.current;

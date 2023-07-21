@@ -4,7 +4,7 @@
  * created by Lynchee on 7/14/23
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
 
 // Components
@@ -16,6 +16,8 @@ import TextView from './components/TextView';
 import CallView from './components/CallView';
 import Button from './components/Common/Button';
 import { Characters, createCharacterGroups } from './components/Characters';
+import Auth from './components/Auth';
+import Models from './components/Models';
 
 // Custom hooks
 import useWebsocket from './hooks/useWebsocket';
@@ -33,6 +35,7 @@ const App = () => {
   const [characterGroups, setCharacterGroups] = useState([]);
   const [textAreaValue, setTextAreaValue] = useState('');
   const [messageInput, setMessageInput] = useState('');
+  const [selectedModel, setSelectedModel] = useState("gpt-3.5-turbo-16k");
   
   const onresultTimeout = useRef(null);
   const onspeechTimeout = useRef(null);
@@ -45,7 +48,7 @@ const App = () => {
   const chunks = useRef([]);
   const confidence = useRef(0);
   const isConnected = useRef(false);
-  
+
   // Helper functions
   const handleSocketOnOpen = (event) => {
     console.log("successfully connected");
@@ -168,7 +171,7 @@ const App = () => {
   }
 
   // Use custom hooks
-  const { send, connectSocket, closeSocket } = useWebsocket(handleSocketOnOpen,handleSocketOnMessage);
+  const { send, connectSocket, closeSocket } = useWebsocket(handleSocketOnOpen,handleSocketOnMessage, selectedModel);
   const { isRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder } = useMediaRecorder(handleRecorderOnDataAvailable, handleRecorderOnStop);
   const { startListening, stopListening, closeRecognition, initializeSpeechRecognition } = useSpeechRecognition(handleRecognitionOnResult, handleRecognitionOnSpeechEnd, callActive);
   
@@ -247,11 +250,17 @@ const App = () => {
   return (
     <div className="app">
       <Header />
+      <Auth />
+
+      { !isConnected.current ? 
+        <Models selectedModel={selectedModel} setSelectedModel={setSelectedModel} /> : null 
+      }
+
       { isMobile ? (
         <MobileWarning />
       ) : (
         <div id="desktop-content">
-          <p className="alert">
+          <p className="alert text-white">
             Please wear headphone 🎧 
             { isConnected.current && characterConfirmed && isRecording ? 
               (<span className="recording">Recording</span>) : null

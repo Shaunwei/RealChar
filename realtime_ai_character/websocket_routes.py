@@ -31,7 +31,8 @@ manager = get_connection_manager()
 GREETING_TXT = 'Hi, my friend, what brings you here today?'
 
 
-async def _get_current_user(token: str):
+async def get_current_user(token: str):
+    """Heler function for auth with Firebase."""
     if not token:
         return ""
     try:
@@ -64,7 +65,7 @@ async def websocket_endpoint(websocket: WebSocket,
             await websocket.close(code=1008, reason="Unauthorized")
             return
         try:
-            user_id = await _get_current_user(token)
+            user_id = await get_current_user(token)
         except HTTPException:
             await websocket.close(code=1008, reason="Unauthorized")
             return

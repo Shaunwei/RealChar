@@ -18,6 +18,7 @@ if os.getenv('USE_AUTH', ''):
     firebase_admin.initialize_app(cred)
 
 async def get_current_user(request: Request):
+    """Heler function for auth with Firebase."""
     if os.getenv('USE_AUTH', ''):
         # Extracts the token from the Authorization header
         if 'Authorization' not in request.headers:

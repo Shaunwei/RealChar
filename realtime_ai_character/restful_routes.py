@@ -10,12 +10,12 @@ from firebase_admin.exceptions import FirebaseError
 
 router = APIRouter()
 
+templates = Jinja2Templates(directory=os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 'static'))
+
 if os.getenv('USE_AUTH', ''):
     cred = credentials.Certificate(os.environ.get('FIREBASE_CONFIG_PATH'))
     firebase_admin.initialize_app(cred)
-
-templates = Jinja2Templates(directory=os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), 'static'))
 
 async def get_current_user(request: Request):
     if os.getenv('USE_AUTH', ''):

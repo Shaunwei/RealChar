@@ -32,7 +32,7 @@ const useWebsocket = (token, onOpen, onMessage, selectedModel) => {
             // Generate the new host value with the same IP but different port
             var newHost = ipAddress + ':' + newPort;
 
-            const ws_path = ws_scheme + '://' + newHost + `/ws/${clientId}`;
+            const ws_path = ws_scheme + '://' + newHost + `/ws/${clientId}?llm_model=${selectedModel}&token=${token}`;
             
             socketRef.current = new WebSocket(ws_path);
             const socket = socketRef.current;

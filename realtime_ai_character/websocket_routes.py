@@ -31,25 +31,24 @@ manager = get_connection_manager()
 GREETING_TXT = 'Hi, my friend, what brings you here today?'
 
 
-async def get_current_user(token: str = None):
-    if token is None:
-        raise HTTPException(status_code=400,
-                            detail="Invalid request: no token provided")
-
+async def _get_current_user(token: str):
+    if not token:
+        return ""
     try:
         decoded_token = auth.verify_id_token(token)
-    except FirebaseError:
+    except FirebaseError as e:
+        logger.info(f'Receveid invalid token: {token} with error {e}')
         raise HTTPException(status_code=401,
                             detail="Invalid authentication credentials")
 
-    return decoded_token
+    return decoded_token['uid']
 
 
-@router.websocket("/ws/${clientId}")
+@router.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket,
                              client_id: int = Path(...),
-                            #  llm_model: str = Query(...),
-                            #  token: str = Query(...),
+                             llm_model: str = Query(...),
+                             token: str = Query(...),
                              api_key: str = Query(None),
                              db: Session = Depends(get_db),
                              catalog_manager=Depends(get_catalog_manager),
@@ -57,16 +56,20 @@ async def websocket_endpoint(websocket: WebSocket,
                              text_to_speech=Depends(get_text_to_speech)):
     # basic authentication
     print('llm_model, token: ')
-    # print(llm_model, token)
-    # if os.getenv('USE_AUTH', ''):
-    #     try:
-    #         await get_current_user(token)
-    #     except HTTPException:
-    #         await websocket.close(code=1008, reason="Unauthorized")
-    #         return
-    # TODO: replace client_id with user_id completely.
-    user_id = str(client_id)
-    llm = get_llm(model='gpt-4')
+    print(llm_model, token)
+    if os.getenv('USE_AUTH', ''):
+        # Do not allow anonymous users to use non-GPT3.5 model.
+        if token == '' and llm_model != 'gpt-3.5-turbo-16k':
+            await websocket.close(code=1008, reason="Unauthorized")
+            return
+        try:
+            user_id = await _get_current_user(token)
+        except HTTPException:
+            await websocket.close(code=1008, reason="Unauthorized")
+            return
+    if not user_id:
+        user_id = str(client_id)
+    llm = get_llm(model=llm_model)
     await manager.connect(websocket)
     try:
         main_task = asyncio.create_task(

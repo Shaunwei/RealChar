@@ -13,25 +13,40 @@ import SwiftUI
 //let serverUrl: URL = URL(string: "http://127.0.0.1:8000/")!
 let serverUrl: URL = URL(string: "https://realchar.ai/")!
 
+enum WebSocketError: Error {
+    case disconnected
+}
+
 protocol WebSocket: NSObject, ObservableObject {
-    var isConnected: Bool { get set }
+    var status: WebSocketConnectionStatus { get set }
     var isInteractiveMode: Bool { get set }
-    var onConnectionChanged: ((Bool) -> Void)? { get set }
+    var onConnectionChanged: ((WebSocketConnectionStatus) -> Void)? { get set }
     var onStringReceived: ((String) -> Void)? { get set }
     var onCharacterOptionsReceived: (([CharacterOption]) -> Void)? { get set }
     var onDataReceived: ((Data) -> Void)? { get set }
-    func connectSession()
+    var onErrorReceived: ((Error) -> Void)? { get set }
+    func connectSession(llmOption: LlmOption, userId: String?)
     func closeSession()
     func send(message: String)
+}
+
+enum WebSocketConnectionStatus {
+    case disconnected, connecting, connected
 }
 
 class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
 
     private var webSocket: URLSessionWebSocketTask!
-    var isConnected: Bool = false
+    var status: WebSocketConnectionStatus = .connected {
+        didSet {
+            onConnectionChanged?(status)
+        }
+    }
     var isInteractiveMode: Bool = false
+    var lastUsedLlmOption: LlmOption = .gpt35
+    var lastUsedUserId: String? = nil
 
-    var onConnectionChanged: ((Bool) -> Void)?
+    var onConnectionChanged: ((WebSocketConnectionStatus) -> Void)?
 
     private var lastStrMessage: String? = nil
     var onStringReceived: ((String) -> Void)? {
@@ -63,24 +78,37 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
         }
     }
 
+    private var lastError: Error? = nil
+    var onErrorReceived: ((Error) -> Void)? = nil
+
     override init() {
         super.init()
     }
 
-    func connectSession() {
-        let clientId = Int.random(in: 0...1010000)
+    func connectSession(llmOption: LlmOption, userId: String?) {
+        status = .connecting
+        lastUsedLlmOption = llmOption
+        // TODO: Use userId once it's ready
+        let clientId = String(Int.random(in: 0...1010000))
+        lastUsedUserId = clientId
         let wsScheme = serverUrl.scheme == "https" ? "wss" : "ws"
-        let wsPath = "\(wsScheme)://\(serverUrl.host ?? "")\(serverUrl.port.flatMap { ":\($0)" } ?? "")/ws/\(clientId)"
+        let wsPath = "\(wsScheme)://\(serverUrl.host ?? "")\(serverUrl.port.flatMap { ":\($0)" } ?? "")/ws/\(clientId)?llm_model=\(llmOption.rawValue)"
         let session = URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue())
         webSocket = session.webSocketTask(with: URL(string: wsPath)!)
         webSocket.resume()
+        receive()
     }
 
     func closeSession() {
-        webSocket.cancel()
+        webSocket?.cancel()
     }
 
     func receive() {
+        guard let webSocket else {
+            onError(WebSocketError.disconnected)
+            return
+        }
+
         webSocket.receive(completionHandler: { [weak self] result in
             guard let self else { return }
 
@@ -120,9 +148,8 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
                 }
 
             case .failure(let error):
-                print("Error Receiving \(error)")
+                onError(error)
                 retry = false
-                self.connectSession()
             }
 
             if retry {
@@ -134,6 +161,11 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
 
     func send(message: String) {
         print("Send websocket string: \(message)")
+        guard let webSocket else {
+            onError(WebSocketError.disconnected)
+            return
+        }
+
         webSocket.send(.string(message)) { error in
             if let error {
                 print(error)
@@ -145,9 +177,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
                     webSocketTask: URLSessionWebSocketTask,
                     didOpenWithProtocol protocol: String?) {
         print("Connected to server")
-        isConnected = true
-        onConnectionChanged?(isConnected)
-        receive()
+        status = .connected
         send(message: "mobile")
     }
 
@@ -156,8 +186,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
                     didCloseWith closeCode: URLSessionWebSocketTask.CloseCode,
                     reason: Data?) {
         print("Disconnect from Server \(String(describing: reason))")
-        isConnected = false
-        onConnectionChanged?(isConnected)
+        status = .disconnected
     }
 
     // MARK: - Private
@@ -204,14 +233,25 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
 
         return firstCharacters.allSatisfy { characterSet.contains(UnicodeScalar(String($0))!) }
     }
+
+    private func onError(_ error: Error) {
+        print("WebSocket Error: \(error)")
+        if self.onErrorReceived == nil {
+            self.lastError = error
+        } else {
+            self.onErrorReceived?(error)
+        }
+        status = .disconnected
+    }
 }
 
 class MockWebSocket: NSObject, WebSocket {
-    var isConnected: Bool = false
+
+    var status: WebSocketConnectionStatus = .disconnected
 
     var isInteractiveMode: Bool = false
 
-    var onConnectionChanged: ((Bool) -> Void)?
+    var onConnectionChanged: ((WebSocketConnectionStatus) -> Void)?
 
     var onStringReceived: ((String) -> Void)?
 
@@ -219,7 +259,9 @@ class MockWebSocket: NSObject, WebSocket {
 
     var onDataReceived: ((Data) -> Void)?
 
-    func connectSession() {
+    var onErrorReceived: ((Error) -> Void)?
+
+    func connectSession(llmOption: LlmOption, userId: String?) {
     }
 
     func closeSession() {

@@ -19,10 +19,10 @@ struct CharacterOption: Identifiable, Equatable {
 struct ConfigView: View {
 
     let options: [CharacterOption]
+    let hapticFeedback: Bool
     @Binding var loaded: Bool
     @Binding var selectedOption: CharacterOption?
     @Binding var openMic: Bool
-    @Binding var hapticFeedback: Bool
     let onConfirmConfig: (CharacterOption) -> Void
 
     var body: some View {
@@ -63,16 +63,7 @@ struct ConfigView: View {
                       )
                 }
                 .tint(.accentColor)
-                .padding(.horizontal, 8)
-
-                Toggle(isOn: $hapticFeedback) {
-                    Text("Haptic feedback?")
-                      .font(
-                        Font.custom("Prompt", size: 16)
-                      )
-                }
-                .tint(.accentColor)
-                .padding(.horizontal, 8)
+                .padding(.horizontal, 2)
 
                 CtaButton(style: .primary, action: {
                     guard let selectedOption else { return }
@@ -167,10 +158,10 @@ struct ConfigView_Previews: PreviewProvider {
         ConfigView(options: [.init(id: 0, name: "Mythical god", description: "Rogue", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!),
                              .init(id: 1, name: "Anime hero", description: "Noble", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!),
                              .init(id: 2, name: "Realtime AI", description: "Kind", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!)],
+                   hapticFeedback: false,
                    loaded: .constant(true),
                    selectedOption: .constant(nil),
                    openMic: .constant(false),
-                   hapticFeedback: .constant(false),
                    onConfirmConfig: { _ in })
         .frame(width: 310)
     }

@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct RootView: View {
+    @EnvironmentObject private var userSettings: UserSettings
+    @EnvironmentObject private var preferenceSettings: PreferenceSettings
+
     @State var interactive = false
     @State var welcomeTab: WelcomeView.Tab = .about
     @State var character: CharacterOption? = nil
@@ -15,21 +18,21 @@ struct RootView: View {
     @State var shouldSendCharacter: Bool = true
     @State var messages: [ChatMessage] = []
     @State var openMic: Bool = false
-    @State var hapticFeedback: Bool = true
 
     let webSocket: any WebSocket
 
     var body: some View {
         NavigationView {
             VStack {
-                if interactive {
+                if interactive, let character {
                     InteractiveView(webSocket: webSocket,
                                     character: character,
                                     openMic: openMic,
-                                    hapticFeedback: hapticFeedback,
+                                    hapticFeedback: preferenceSettings.hapticFeedback,
+                                    shouldSendCharacter: $shouldSendCharacter,
                                     onExit: {
                         welcomeTab = .about
-                        character = nil
+                        self.character = nil
                         withAnimation {
                             interactive.toggle()
                         }
@@ -42,12 +45,7 @@ struct RootView: View {
                                 character: $character,
                                 options: $options,
                                 openMic: $openMic,
-                                hapticFeedback: $hapticFeedback,
                                 onConfirmConfig: { selected in
-                        if shouldSendCharacter {
-                            shouldSendCharacter = false
-                            webSocket.send(message: String(selected.id))
-                        }
                         // TODO: figure out why animation does not work well
 //                        withAnimation {
                             interactive.toggle()
@@ -91,7 +89,9 @@ struct RootView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
-            webSocket.connectSession()
+            userSettings.checkUserLoggedIn()
+            preferenceSettings.loadSettings(isUserLoggedIn: userSettings.isLoggedIn)
+            webSocket.connectSession(llmOption: preferenceSettings.llmOption, userId: userSettings.userId)
         }
         .onDisappear {
             webSocket.closeSession()

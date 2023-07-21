@@ -19,13 +19,14 @@ struct InteractiveView: View {
         static let realOrange500: Color = Color(red: 0.95, green: 0.29, blue: 0.16)
         static let realBlack: Color = Color(red: 0.01, green: 0.03, blue: 0.11)
         static let greeting: String = "Hi, my friend, what brings you here today?"
-        static let serverError: String = "Disconnected, try again later."
+        static let serverError: String = "Disconnected, retry by tapping the red button and restart."
     }
 
     let webSocket: any WebSocket
-    let character: CharacterOption?
+    let character: CharacterOption
     let openMic: Bool
     let hapticFeedback: Bool
+    @Binding var shouldSendCharacter: Bool
     let onExit: () -> Void
     @Binding var messages: [ChatMessage]
     @State var mode: InteractiveMode = .voice
@@ -132,13 +133,6 @@ struct InteractiveView: View {
         .background(Constants.realBlack)
         .onAppear {
             prepareHaptics()
-
-            if messages.isEmpty {
-                // TODO: Allow user to provide first message
-                messages.append(.init(id: UUID(), role: .user, content: Constants.greeting))
-                webSocket.send(message: Constants.greeting)
-            }
-            webSocket.isInteractiveMode = true
             webSocket.onStringReceived = { message in
                 guard !(openMic && voiceState == .listeningToUser) else { return }
 
@@ -160,7 +154,7 @@ struct InteractiveView: View {
                     lightHapticFeedback()
                 } else {
                     if mode == .voice {
-                        voiceState = .characterSpeaking(characterImageUrl: character?.imageUrl)
+                        voiceState = .characterSpeaking(characterImageUrl: character.imageUrl)
                     }
                     streamingEnded = false
                     messages.append(ChatMessage(id: UUID(), role: .assistant, content: message))
@@ -172,11 +166,16 @@ struct InteractiveView: View {
                     audioPlayer.playAudio(data: data)
                 }
             }
-            webSocket.onCharacterOptionsReceived = { _ in
+            webSocket.onErrorReceived = { _ in
                 if messages.last?.content != Constants.serverError {
                     messages.append(.init(id: UUID(), role: .assistant, content: Constants.serverError))
                     simpleError()
                 }
+            }
+            webSocket.isInteractiveMode = true
+            if shouldSendCharacter {
+                shouldSendCharacter = false
+                webSocket.send(message: String(character.id))
             }
         }
         .onDisappear {
@@ -190,9 +189,14 @@ struct InteractiveView: View {
             }
         }
         .onChange(of: mode) { newValue in
-            if mode == .text {
+            switch mode {
+            case .text:
                 voiceState = .idle(streamingEnded: streamingEnded)
                 audioPlayer.pauseAudio()
+            case .voice:
+                if voiceState == .idle(streamingEnded: false) {
+                    voiceState = .characterSpeaking(characterImageUrl: character.imageUrl)
+                }
             }
         }
         .onChange(of: audioPlayer.isPlaying) { newValue in
@@ -279,6 +283,7 @@ struct InteractiveView_Previews: PreviewProvider {
                         character: .init(id: 0, name: "Name", description: "Description", imageUrl: nil),
                         openMic: false,
                         hapticFeedback: false,
+                        shouldSendCharacter: .constant(true),
                         onExit: {},
                         messages: .constant([]))
     }

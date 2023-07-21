@@ -8,16 +8,19 @@
 import SwiftUI
 
 struct WelcomeView: View {
+    @EnvironmentObject private var userSettings: UserSettings
+    @EnvironmentObject private var preferenceSettings: PreferenceSettings
+
     let webSocket: any WebSocket
-    @State var isWebSocketConnected = false
+    @StateObject var webSocketConnectionStatusObserver = WebSocketConnectionStatusObserver(delay: .seconds(0.5))
+    @State var invalidAttempts = 0
     enum Tab {
-        case about, config
+        case about, config, settings
     }
     @Binding var tab: WelcomeView.Tab
     @Binding var character: CharacterOption?
     @Binding var options: [CharacterOption]
     @Binding var openMic: Bool
-    @Binding var hapticFeedback: Bool
 
     let onConfirmConfig: (CharacterOption) -> Void
     let onWebSocketReconnected: () -> Void
@@ -35,6 +38,11 @@ struct WelcomeView: View {
                         .onTapGesture {
                             tab = .config
                         }
+
+                    TabView(text: "Settings", currentTab: $tab, tab: .settings)
+                        .onTapGesture {
+                            tab = .settings
+                        }
                 }
                 .padding(.horizontal, 32)
                 .padding(.top, 24)
@@ -46,36 +54,78 @@ struct WelcomeView: View {
                         .padding(.horizontal, 48)
                 case .config:
                     ConfigView(options: options,
-                               loaded: $isWebSocketConnected,
+                               hapticFeedback: preferenceSettings.hapticFeedback,
+                               loaded: .init(get: { webSocketConnectionStatusObserver.status == .connected }, set: { _ in }),
                                selectedOption: $character,
                                openMic: $openMic,
-                               hapticFeedback: $hapticFeedback,
-                               onConfirmConfig: onConfirmConfig)
+                               onConfirmConfig: { option in
+                        if webSocketConnectionStatusObserver.status == .connected {
+                            onConfirmConfig(option)
+                        } else {
+                            invalidAttempts += 1
+                        }
+                    })
                         .padding(.horizontal, 48)
+                case .settings:
+                    SettingsView()
+                        .padding(.horizontal, 48)
+                }
+
+                if webSocketConnectionStatusObserver.debouncedStatus != .connected {
+                    VStack {
+                        Button {
+                            if webSocketConnectionStatusObserver.status == .disconnected {
+                                webSocket.connectSession(llmOption: preferenceSettings.llmOption, userId: userSettings.userId)
+                            }
+                        } label: {
+                            Text(webSocketConnectionStatusObserver.debouncedStatus == .disconnected ? "Failed to connect to server, tap to retry" : "Connecting to server...")
+                                .foregroundColor(.white)
+                                .modifier(ShakeEffect(shakes: invalidAttempts * 2))
+                                .animation(Animation.linear, value: invalidAttempts)
+                                .padding()
+                                .frame(width: geometry.size.width, height: 44)
+                                .background(webSocketConnectionStatusObserver.debouncedStatus == .disconnected ? .red : .orange)
+                        }
+                    }
                 }
             }
         }
         .onAppear {
-            isWebSocketConnected = webSocket.isConnected
-            webSocket.onConnectionChanged = { connected in
-                self.isWebSocketConnected = connected
+            webSocketConnectionStatusObserver.update(status: webSocket.status)
+            webSocket.onConnectionChanged = { status in
+                self.webSocketConnectionStatusObserver.update(status: status)
             }
             webSocket.onCharacterOptionsReceived = { options in
                 self.options = options
             }
         }
         .onChange(of: character) { newValue in
-            if webSocket.isConnected && webSocket.isInteractiveMode {
-                webSocket.isConnected = false
-                webSocket.isInteractiveMode = false
-                webSocket.closeSession()
-                webSocket.onCharacterOptionsReceived = { options in
-                    self.options = options
-                }
-                webSocket.connectSession()
-                onWebSocketReconnected()
+            if webSocketConnectionStatusObserver.status == .connected && webSocket.isInteractiveMode {
+                reconnectWebSocket()
             }
         }
+        .onChange(of: preferenceSettings.llmOption) { newValue in
+            if userSettings.isLoggedIn {
+                reconnectWebSocket()
+            }
+        }
+        .onChange(of: userSettings.isLoggedIn) { newValue in
+            reconnectWebSocket()
+        }
+    }
+
+    private func reconnectWebSocket() {
+        webSocket.status = .disconnected
+        webSocket.isInteractiveMode = false
+        webSocket.closeSession()
+        webSocket.onConnectionChanged = { status in
+            self.webSocketConnectionStatusObserver.update(status: webSocket.status)
+        }
+        webSocket.onCharacterOptionsReceived = { options in
+            self.options = options
+        }
+        webSocket.connectSession(llmOption: preferenceSettings.llmOption, userId: userSettings.userId)
+        onWebSocketReconnected()
     }
 }
 
@@ -88,7 +138,6 @@ struct WelcomeView_Previews: PreviewProvider {
                               .init(id: 1, name: "Anime hero", description: "Noble", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!),
                               .init(id: 2, name: "Realtime AI", description: "Kind", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!)]),
                     openMic: .constant(false),
-                    hapticFeedback: .constant(false),
                     onConfirmConfig: { _ in },
                     onWebSocketReconnected: { }
         )
@@ -136,5 +185,38 @@ struct UnderlineModifier: ViewModifier {
         let descent = font.descender
         let leading = lineHeight - ascent + descent
         return leading
+    }
+}
+
+class WebSocketConnectionStatusObserver: ObservableObject {
+    @Published var debouncedStatus: WebSocketConnectionStatus = .connected
+    @Published var status: WebSocketConnectionStatus = .connected
+
+    init(delay: DispatchQueue.SchedulerTimeType.Stride) {
+        $status
+            .debounce(for: delay, scheduler: DispatchQueue.main)
+            .assign(to: &$debouncedStatus)
+    }
+
+    func update(status: WebSocketConnectionStatus) {
+        DispatchQueue.main.async {
+            self.status = status
+        }
+    }
+}
+
+struct ShakeEffect: GeometryEffect {
+    func effectValue(size: CGSize) -> ProjectionTransform {
+        return ProjectionTransform(CGAffineTransform(translationX: -30 * sin(position * 2 * .pi), y: 0))
+    }
+
+    init(shakes: Int) {
+        position = CGFloat(shakes)
+    }
+
+    var position: CGFloat
+    var animatableData: CGFloat {
+        get { position }
+        set { position = newValue }
     }
 }

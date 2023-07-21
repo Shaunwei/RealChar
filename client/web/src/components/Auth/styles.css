@@ -1,0 +1,45 @@
+.auth-btn {
+    transition: background-color .3s, box-shadow .3s;
+    
+    padding: 5px 8px;
+    border: none;
+    border-radius: 8px;
+    
+    color: #757575;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
+
+    &:hover {
+      box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.9), 0 2px 4px rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+    }
+    
+    &:active {
+      background-color: #eeeeee;
+    }
+    
+    &:focus {
+      outline: none;
+      box-shadow: 
+        0 -1px 0 rgba(0, 0, 0, .04),
+        0 2px 4px rgba(0, 0, 0, .25),
+        0 0 0 3px #c8dafc;
+    }
+    
+    &:disabled {
+      filter: grayscale(100%);
+      background-color: #ebebeb;
+      box-shadow: 0 -1px 0 rgba(0, 0, 0, .04), 0 1px 1px rgba(0, 0, 0, .25);
+      cursor: not-allowed;
+    }
+  }
+
+.signout-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+  
+  

@@ -8,10 +8,17 @@
 import React from 'react';
 import logo from '../../assets/svgs/logo.svg';
 import './style.css';
+import SignIn from '../Auth/SignIn';
+import SignOut from '../Auth/SignOut';
 
-const Header = () => (
+const Header = ({ user, isLoggedIn }) => (
   <header>
-    <img src={logo} alt="Logo" />
+    <div className="logo-container">
+      <img src={logo} alt="Logo" />
+    </div>
+    <div className="auth-container">
+      { user ? ( <SignOut isLoggedIn={isLoggedIn} user={user}/> ) : <SignIn isLoggedIn={isLoggedIn}/> }
+    </div>
   </header>
 );
 

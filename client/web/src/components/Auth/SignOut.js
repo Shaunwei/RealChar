@@ -8,8 +8,9 @@
 import React from 'react';
 import auth from '../../utils/firebase';
 import { signOut } from "firebase/auth";
+import './styles.css';
 
-const SignOut = ({ isLoggedIn }) => {
+const SignOut = ({ isLoggedIn, user }) => {
 
   const signout = async (e) => {
     e.preventDefault();
@@ -23,8 +24,9 @@ const SignOut = ({ isLoggedIn }) => {
   }
 
   return (
-    <form onSubmit={signout}>
-      <button type="submit">Sign out</button>
+    <form onSubmit={signout} className='signout-container'>
+      <p className='text-white'>Hello, <span>{user.displayName}</span></p>
+      <button type="submit" className='auth-btn'>Sign out</button>
     </form>
   )
 }

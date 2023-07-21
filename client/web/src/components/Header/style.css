@@ -2,7 +2,17 @@ header {
   margin-top: 50px;
   margin-bottom: 20px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  flex-direction: column;
+  width: 100%;
+}
+
+.logo-container {
+  text-align: center;
+  width: 100%;
+}
+
+.auth-container {
+  position: absolute;
+  right: 3vw;
 }

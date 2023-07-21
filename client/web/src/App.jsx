@@ -16,9 +16,7 @@ import TextView from './components/TextView';
 import CallView from './components/CallView';
 import Button from './components/Common/Button';
 import { Characters, createCharacterGroups } from './components/Characters';
-import SignIn from './components/Auth/SignIn';
 import { signInWithGoogle } from './components/Auth/SignIn';
-import SignOut from './components/Auth/SignOut';
 import Models from './components/Models';
 
 // Custom hooks
@@ -274,19 +272,7 @@ const App = () => {
 
   return (
     <div className="app">
-      <Header />
-      { user ? (
-          <>
-          <h1 className='text-white'>Hello, <span></span>{user.displayName}</h1>
-          <img src={user.photoURL} alt="" />
-          <SignOut isLoggedIn={isLoggedIn}/>
-         </>
-      ) : <SignIn isLoggedIn={isLoggedIn}/>}
-     
-
-      { !isConnected.current ? 
-        <Models selectedModel={selectedModel} setSelectedModel={setSelectedModel} /> : null 
-      }
+      <Header user={user} isLoggedIn={isLoggedIn} />
 
       { isMobile ? (
         <MobileWarning />
@@ -301,6 +287,10 @@ const App = () => {
 
           { !isConnected.current ? 
             <MediaDevices selectedDevice={selectedDevice} setSelectedDevice={setSelectedDevice} /> : null 
+          }
+
+          { !isConnected.current ? 
+            <Models selectedModel={selectedModel} setSelectedModel={setSelectedModel} /> : null 
           }
 
           <p className="header">{headerText}</p>

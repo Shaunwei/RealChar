@@ -8,6 +8,7 @@
 import React, { useState } from 'react';
 import auth from '../../utils/firebase';
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import './styles.css';
 
 export const signInWithGoogle = async (isLoggedIn) => {
   const provider = new GoogleAuthProvider();
@@ -48,8 +49,8 @@ const SignIn = ({ isLoggedIn }) => {
 
   return (
     <form onSubmit={signIn}>
-      <button type="submit" disabled={isLoading}>
-        {isLoading ? "Signing In..." : "Sign In/Sign Up with Google"}
+      <button type="submit" disabled={isLoading} className="auth-btn" >
+        {isLoading ? "Signing In..." : "Sign in"}
       </button>
     </form>
   )

@@ -29,6 +29,9 @@ class AudioPlayer: NSObject, ObservableObject {
             }
         } catch {
             print("Error playing audio: \(error.localizedDescription)")
+            DispatchQueue.main.async {
+                self.isPlaying = false
+            }
         }
     }
 

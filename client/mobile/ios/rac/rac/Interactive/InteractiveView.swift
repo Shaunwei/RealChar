@@ -23,9 +23,10 @@ struct InteractiveView: View {
     }
 
     let webSocket: any WebSocket
-    let character: CharacterOption?
+    let character: CharacterOption
     let openMic: Bool
     let hapticFeedback: Bool
+    @Binding var shouldSendCharacter: Bool
     let onExit: () -> Void
     @Binding var messages: [ChatMessage]
     @State var mode: InteractiveMode = .voice
@@ -132,7 +133,6 @@ struct InteractiveView: View {
         .background(Constants.realBlack)
         .onAppear {
             prepareHaptics()
-            webSocket.isInteractiveMode = true
             webSocket.onStringReceived = { message in
                 guard !(openMic && voiceState == .listeningToUser) else { return }
 
@@ -154,7 +154,7 @@ struct InteractiveView: View {
                     lightHapticFeedback()
                 } else {
                     if mode == .voice {
-                        voiceState = .characterSpeaking(characterImageUrl: character?.imageUrl)
+                        voiceState = .characterSpeaking(characterImageUrl: character.imageUrl)
                     }
                     streamingEnded = false
                     messages.append(ChatMessage(id: UUID(), role: .assistant, content: message))
@@ -171,6 +171,11 @@ struct InteractiveView: View {
                     messages.append(.init(id: UUID(), role: .assistant, content: Constants.serverError))
                     simpleError()
                 }
+            }
+            webSocket.isInteractiveMode = true
+            if shouldSendCharacter {
+                shouldSendCharacter = false
+                webSocket.send(message: String(character.id))
             }
         }
         .onDisappear {
@@ -190,7 +195,7 @@ struct InteractiveView: View {
                 audioPlayer.pauseAudio()
             case .voice:
                 if voiceState == .idle(streamingEnded: false) {
-                    voiceState = .characterSpeaking(characterImageUrl: character?.imageUrl)
+                    voiceState = .characterSpeaking(characterImageUrl: character.imageUrl)
                 }
             }
         }
@@ -278,6 +283,7 @@ struct InteractiveView_Previews: PreviewProvider {
                         character: .init(id: 0, name: "Name", description: "Description", imageUrl: nil),
                         openMic: false,
                         hapticFeedback: false,
+                        shouldSendCharacter: .constant(true),
                         onExit: {},
                         messages: .constant([]))
     }

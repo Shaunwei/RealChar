@@ -24,14 +24,15 @@ struct RootView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if interactive {
+                if interactive, let character {
                     InteractiveView(webSocket: webSocket,
                                     character: character,
                                     openMic: openMic,
                                     hapticFeedback: preferenceSettings.hapticFeedback,
+                                    shouldSendCharacter: $shouldSendCharacter,
                                     onExit: {
                         welcomeTab = .about
-                        character = nil
+                        self.character = nil
                         withAnimation {
                             interactive.toggle()
                         }
@@ -45,10 +46,6 @@ struct RootView: View {
                                 options: $options,
                                 openMic: $openMic,
                                 onConfirmConfig: { selected in
-                        if shouldSendCharacter {
-                            shouldSendCharacter = false
-                            webSocket.send(message: String(selected.id))
-                        }
                         // TODO: figure out why animation does not work well
 //                        withAnimation {
                             interactive.toggle()

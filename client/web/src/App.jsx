@@ -238,7 +238,6 @@ const App = () => {
       // display textview
       setIsCallView(false);
       setHeaderText("");
-      setTextAreaValue(prevState => prevState + "Hi, my friend, what brings you here today?\n");
 
       shouldPlayAudio.current = true;
     }

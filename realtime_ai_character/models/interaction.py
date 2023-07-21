@@ -7,11 +7,13 @@ class Interaction(Base):
     __tablename__ = "interactions"
 
     id = Column(Integer, primary_key=True, index=True, nullable=False)
-    client_id = Column(Integer) # deprecated, use user_id instead
+    client_id = Column(Integer)  # deprecated, use user_id instead
     user_id = Column(String(50))
     session_id = Column(String(50))
-    client_message = Column(String) # deprecated, use client_message_unicode instead
-    server_message = Column(String) # deprecated, use server_message_unicode instead
+    # deprecated, use client_message_unicode instead
+    client_message = Column(String)
+    # deprecated, use server_message_unicode instead
+    server_message = Column(String)
     client_message_unicode = Column(Unicode(65535))
     server_message_unicode = Column(Unicode(65535))
 

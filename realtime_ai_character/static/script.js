@@ -377,7 +377,6 @@ textButton.addEventListener("click", function() {
     messageButton.click();
     disconnectButton.style.display = "flex";
     textContainer.textContent = "";
-    chatWindow.value += "Hi, my friend, what brings you here today?\n";
     shouldPlayAudio=true;
 
     socket.send(selectedCharacter);

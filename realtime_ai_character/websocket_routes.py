@@ -45,26 +45,28 @@ async def get_current_user(token: str = None):
     return decoded_token
 
 
-@router.websocket("/ws/${clientId}?llm_model=${llm_model}?uid=${uid}")
+@router.websocket("/ws/${clientId}")
 async def websocket_endpoint(websocket: WebSocket,
                              client_id: int = Path(...),
+                            #  llm_model: str = Query(...),
+                            #  token: str = Query(...),
                              api_key: str = Query(None),
-                             llm_model: str = Path(...),
-                             uid: str = Path(...),
                              db: Session = Depends(get_db),
                              catalog_manager=Depends(get_catalog_manager),
                              speech_to_text=Depends(get_speech_to_text),
                              text_to_speech=Depends(get_text_to_speech)):
     # basic authentication
-    if os.getenv('USE_AUTH', ''):
-        try:
-            await get_current_user(uid)
-        except HTTPException:
-            await websocket.close(code=1008, reason="Unauthorized")
-            return
+    print('llm_model, token: ')
+    # print(llm_model, token)
+    # if os.getenv('USE_AUTH', ''):
+    #     try:
+    #         await get_current_user(token)
+    #     except HTTPException:
+    #         await websocket.close(code=1008, reason="Unauthorized")
+    #         return
     # TODO: replace client_id with user_id completely.
     user_id = str(client_id)
-    llm = get_llm(model=llm_model)
+    llm = get_llm(model='gpt-4')
     await manager.connect(websocket)
     try:
         main_task = asyncio.create_task(

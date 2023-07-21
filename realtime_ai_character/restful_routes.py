@@ -10,8 +10,9 @@ from firebase_admin.exceptions import FirebaseError
 
 router = APIRouter()
 
-cred = credentials.Certificate(os.environ.get('FIREBASE_CONFIG_PATH'))
-firebase_admin.initialize_app(cred)
+if os.getenv('USE_AUTH', ''):
+    cred = credentials.Certificate(os.environ.get('FIREBASE_CONFIG_PATH'))
+    firebase_admin.initialize_app(cred)
 
 templates = Jinja2Templates(directory=os.path.join(
     os.path.dirname(os.path.abspath(__file__)), 'static'))
@@ -42,6 +43,7 @@ async def status():
     return {"status": "ok"}
 
 
-@router.get("/", response_class=HTMLResponse, user=Depends(get_current_user))
-async def index(request: Request):
+@router.get("/", response_class=HTMLResponse)
+async def index(request: Request, user=Depends(get_current_user)):
+    print('user: ', user)
     return templates.TemplateResponse("index.html", {"request": request})

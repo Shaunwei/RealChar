@@ -16,13 +16,17 @@ import TextView from './components/TextView';
 import CallView from './components/CallView';
 import Button from './components/Common/Button';
 import { Characters, createCharacterGroups } from './components/Characters';
-import Auth from './components/Auth';
+import SignIn from './components/Auth/SignIn';
+import SignOut from './components/Auth/SignOut';
 import Models from './components/Models';
 
 // Custom hooks
 import useWebsocket from './hooks/useWebsocket';
 import useMediaRecorder from './hooks/useMediaRecorder';
 import useSpeechRecognition from './hooks/useSpeechRecognition'; 
+
+// utils
+import auth from './utils/firebase';
 
 const App = () => {
   const isMobile = window.innerWidth <= 768; 
@@ -36,6 +40,8 @@ const App = () => {
   const [textAreaValue, setTextAreaValue] = useState('');
   const [messageInput, setMessageInput] = useState('');
   const [selectedModel, setSelectedModel] = useState("gpt-3.5-turbo-16k");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
   
   const onresultTimeout = useRef(null);
   const onspeechTimeout = useRef(null);
@@ -48,6 +54,12 @@ const App = () => {
   const chunks = useRef([]);
   const confidence = useRef(0);
   const isConnected = useRef(false);
+
+  useEffect(() => {
+    auth.onAuthStateChanged(user => {
+      setUser(user);
+    })
+  }, [])
 
   // Helper functions
   const handleSocketOnOpen = (event) => {
@@ -250,7 +262,14 @@ const App = () => {
   return (
     <div className="app">
       <Header />
-      <Auth />
+      { user ? (
+          <>
+          <h1 className='text-white'>Hello, <span></span>{user.displayName}</h1>
+          <img src={user.photoURL} alt="" />
+          <SignOut setIsLoggedIn={setIsLoggedIn}/>
+         </>
+      ) : <SignIn setIsLoggedIn={setIsLoggedIn}/>}
+     
 
       { !isConnected.current ? 
         <Models selectedModel={selectedModel} setSelectedModel={setSelectedModel} /> : null 
@@ -274,7 +293,11 @@ const App = () => {
           <p className="header">{headerText}</p>
 
           { !isConnected.current ? 
-            <Button onClick={handleConnectButtonClick} name="Connect" /> : null
+            <Button 
+              onClick={handleConnectButtonClick} 
+              name="Connect" 
+              disabled={selectedModel !== 'gpt-3.5-turbo-16k' && !isLoggedIn}
+            /> : null
           }
 
           { isConnected.current && 

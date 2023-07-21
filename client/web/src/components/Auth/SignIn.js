@@ -1,13 +1,20 @@
+/**
+ * src/components/Auth/SignIn.jsx
+ * signin and signup with google account
+ * 
+ * created by Lynchee on 7/20/23
+ */
+
 import React, { useState } from 'react';
-import app from '../../firebase';
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import auth from '../../utils/firebase';
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 
-const Auth = () => {
+const SignIn = ({ setIsLoggedIn }) => {
+  console.log("signin");
   const signIn = async (e) => {
     e.preventDefault();
 
-    const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
       .then((result) => {
@@ -16,8 +23,10 @@ const Auth = () => {
         const token = credential.accessToken;
         // The signed-in user info.
         const user = result.user;
+        console.log(user);
         // IdP data available using getAdditionalUserInfo(result)
         // ...
+        setIsLoggedIn(true);
       }).catch((error) => {
         // Handle Errors here.
         const errorCode = error.code;
@@ -27,6 +36,7 @@ const Auth = () => {
         // The AuthCredential type that was used.
         const credential = GoogleAuthProvider.credentialFromError(error);
         // ...
+        setIsLoggedIn(false);
       });
   }
 
@@ -37,4 +47,4 @@ const Auth = () => {
   )
 }
 
-export default Auth;
+export default SignIn;

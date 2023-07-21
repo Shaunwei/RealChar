@@ -25,6 +25,8 @@ struct WelcomeView: View {
     let onConfirmConfig: (CharacterOption) -> Void
     let onWebSocketReconnected: () -> Void
 
+    @State private var webSocketReconnectTimer: Timer? = nil
+
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
@@ -75,7 +77,7 @@ struct WelcomeView: View {
                     VStack {
                         Button {
                             if webSocketConnectionStatusObserver.status == .disconnected {
-                                webSocket.connectSession(llmOption: preferenceSettings.llmOption, userId: userSettings.userId)
+                                webSocket.connectSession(llmOption: preferenceSettings.llmOption, userId: userSettings.userId, token: userSettings.userToken)
                             }
                         } label: {
                             Text(webSocketConnectionStatusObserver.debouncedStatus == .disconnected ? "Failed to connect to server, tap to retry" : "Connecting to server...")
@@ -115,17 +117,22 @@ struct WelcomeView: View {
     }
 
     private func reconnectWebSocket() {
-        webSocket.status = .disconnected
-        webSocket.isInteractiveMode = false
-        webSocket.closeSession()
-        webSocket.onConnectionChanged = { status in
-            self.webSocketConnectionStatusObserver.update(status: webSocket.status)
+        webSocketReconnectTimer?.invalidate()
+        webSocketReconnectTimer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { _ in
+            webSocket.status = .disconnected
+            webSocket.isInteractiveMode = false
+            webSocket.closeSession()
+            webSocket.onConnectionChanged = { status in
+                self.webSocketConnectionStatusObserver.update(status: webSocket.status)
+            }
+            webSocket.onCharacterOptionsReceived = { options in
+                self.options = options
+            }
+            webSocket.connectSession(llmOption: preferenceSettings.llmOption,
+                                     userId: userSettings.userId,
+                                     token: userSettings.userToken)
+            onWebSocketReconnected()
         }
-        webSocket.onCharacterOptionsReceived = { options in
-            self.options = options
-        }
-        webSocket.connectSession(llmOption: preferenceSettings.llmOption, userId: userSettings.userId)
-        onWebSocketReconnected()
     }
 }
 

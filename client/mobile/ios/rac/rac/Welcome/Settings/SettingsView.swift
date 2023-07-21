@@ -192,11 +192,16 @@ struct SettingsView: View {
 
         Auth.auth().signIn(with: credential) { data, error in
             if let error = error {
+                // TODO: Show error on auth
                 print(error.localizedDescription)
-            } else if let user = data?.user {
-                self.userSettings.save(user: user)
+            } else {
+                self.userSettings.checkUserLoggedIn() { isUserLoggedIn in
+                    if !isUserLoggedIn {
+                        // TODO: Show error on auth
+                    }
+                    self.showAuth = false
+                }
             }
-            self.showAuth = false
         }
     }
 

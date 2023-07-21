@@ -58,6 +58,11 @@ const App = () => {
   useEffect(() => {
     auth.onAuthStateChanged(user => {
       setUser(user);
+      if (user) {
+        isLoggedIn.current = true;
+      } else {
+        isLoggedIn.current = false;
+      }
     })
   }, [])
 

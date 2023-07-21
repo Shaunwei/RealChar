@@ -19,7 +19,6 @@ export const signInWithGoogle = async (isLoggedIn) => {
       const token = credential.accessToken;
       // The signed-in user info.
       const user = result.user;
-      console.log(user);
       // IdP data available using getAdditionalUserInfo(result)
       // ...
       isLoggedIn.current = true;

@@ -10,7 +10,7 @@ import auth from '../../utils/firebase';
 import { signOut } from "firebase/auth";
 import './styles.css';
 
-const SignOut = ({ isLoggedIn, user }) => {
+const SignOut = ({ isLoggedIn, user, handleDisconnect }) => {
 
   const signout = async (e) => {
     e.preventDefault();
@@ -21,6 +21,8 @@ const SignOut = ({ isLoggedIn, user }) => {
     }).catch((error) => {
       console.log(`Sign-out failed: ${error.message}`);
     });
+
+    handleDisconnect();
   }
 
   return (

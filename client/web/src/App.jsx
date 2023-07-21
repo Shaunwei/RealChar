@@ -264,6 +264,7 @@ const App = () => {
     setIsCallView(false);
     setHeaderText("");
     setTextAreaValue("");
+    setSelectedModel("gpt-3.5-turbo-16k");
 
     // close web socket connection
     closeSocket();
@@ -272,7 +273,7 @@ const App = () => {
 
   return (
     <div className="app">
-      <Header user={user} isLoggedIn={isLoggedIn} />
+      <Header user={user} isLoggedIn={isLoggedIn} handleDisconnect={handleDisconnect} />
 
       { isMobile ? (
         <MobileWarning />

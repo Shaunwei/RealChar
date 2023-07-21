@@ -11,13 +11,13 @@ import './style.css';
 import SignIn from '../Auth/SignIn';
 import SignOut from '../Auth/SignOut';
 
-const Header = ({ user, isLoggedIn }) => (
+const Header = ({ user, isLoggedIn, handleDisconnect }) => (
   <header>
     <div className="logo-container">
       <img src={logo} alt="Logo" />
     </div>
     <div className="auth-container">
-      { user ? ( <SignOut isLoggedIn={isLoggedIn} user={user}/> ) : <SignIn isLoggedIn={isLoggedIn}/> }
+      { user ? ( <SignOut isLoggedIn={isLoggedIn} user={user} handleDisconnect={handleDisconnect} /> ) : <SignIn isLoggedIn={isLoggedIn}/> }
     </div>
   </header>
 );

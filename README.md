@@ -202,6 +202,7 @@ ELEVEN_LABS_API_KEY=<api key>
         - **Option 2**: Running the client in React.
             ```sh
             cd client/web
+            npm install
             npm start
             ```
             After running these commands, a local development server will start, and your default web browser will open a new tab/window pointing to this server (usually http://localhost:3000).

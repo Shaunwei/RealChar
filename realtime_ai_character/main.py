@@ -3,6 +3,7 @@ import warnings
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from realtime_ai_character.audio.speech_to_text import get_speech_to_text
@@ -15,6 +16,15 @@ from realtime_ai_character.websocket_routes import router as websocket_router
 load_dotenv()
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    # Change to domains if you deploy this to production
+    allow_origins=['*'],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(restful_router)
 app.include_router(websocket_router)

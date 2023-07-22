@@ -171,14 +171,22 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                     pass
                 tts_event.clear()
 
+        use_search = False
         while True:
             data = await websocket.receive()
             if data['type'] != 'websocket.receive':
                 raise WebSocketDisconnect('disconnected')
-
             # handle text message
             if 'text' in data:
                 msg_data = data['text']
+                # Handle client side commands
+                if msg_data.startswith('[!'):
+                    command_end = msg_data.find(']')
+                    command = msg_data[2:command_end]
+                    command_conent = msg_data[command_end + 1:]
+                    if command == 'USE_SEARCH':
+                        use_search = (command_conent == 'true')
+                    continue
                 # 0. itermidiate transcript starts with [&]
                 if msg_data.startswith('[&]'):
                     logger.info(f'intermediate transcript: {msg_data}')
@@ -204,7 +212,8 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                                                       token_buffer),
                     audioCallback=AsyncCallbackAudioHandler(
                         text_to_speech, websocket, tts_event, character.name),
-                    character=character)
+                    character=character,
+                    useSearch=use_search)
 
                 # 2. Send response to client
                 await manager.send_message(message='[end]\n',
@@ -274,7 +283,8 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                               audioCallback=AsyncCallbackAudioHandler(
                                   text_to_speech, websocket, tts_event,
                                   character.name),
-                              character=character))
+                              character=character,
+                              useSearch=use_search))
 
     except WebSocketDisconnect:
         logger.info(f"User #{user_id} closed the connection")

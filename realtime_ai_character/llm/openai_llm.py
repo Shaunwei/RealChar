@@ -52,11 +52,11 @@ class OpenaiLlm(LLM):
                     callback: AsyncCallbackTextHandler,
                     audioCallback: AsyncCallbackAudioHandler,
                     character: Character,
-                    ifSearch: bool=False) -> str:
+                    useSearch: bool=False) -> str:
         # 1. Generate context
         context = self._generate_context(user_input, character)
         # Get search result if enabled
-        if ifSearch:
+        if useSearch:
             if self.search_agent is None:
                 logger.warning('Search is not enabled, please set SERPER_API_KEY to enable it.')
             else:

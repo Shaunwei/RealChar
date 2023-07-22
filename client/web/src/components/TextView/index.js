@@ -10,7 +10,7 @@ import './style.css';
 import { TbPower, TbMicrophone } from 'react-icons/tb';
 import IconButton from '../Common/IconButton';
 
-const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAreaValue, messageInput, setMessageInput, handleDisconnect, setIsCallView }) => {
+const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAreaValue, messageInput, setMessageInput, handleDisconnect, setIsCallView, useSearch, setUseSearch }) => {
     const chatWindowRef = useRef(null);
     
     // always show the latest chat log
@@ -46,6 +46,11 @@ const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAr
         setMessageInput(event.target.value);
     };
 
+    const handleChange = () => {
+        send('[!USE_SEARCH]' + (!useSearch).toString());
+        setUseSearch(!useSearch);
+    };
+
     return (
         <>
             <textarea 
@@ -67,6 +72,14 @@ const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAr
                 <span className="focus-border"><i></i></span>
             </div>
             <button className="send-btn" onClick={handleSendClick}>Send Message</button>
+            <label className='search-checkbox'>
+                <input
+                type="checkbox"
+                checked={useSearch}
+                onChange={handleChange}
+                />
+                Enable Google Search
+            </label>
             <div className="options-container">
                 <IconButton Icon={TbPower} className="icon-red" onClick={handleDisconnect} />
                 <IconButton Icon={TbMicrophone} className="icon-blue" onClick={() => setIsCallView(true)} />

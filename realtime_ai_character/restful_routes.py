@@ -44,6 +44,6 @@ async def status():
     return {"status": "ok"}
 
 
-@router.post("/", response_class=HTMLResponse)
+@router.get("/", response_class=HTMLResponse)
 async def index(request: Request, user=Depends(get_current_user)):
     return templates.TemplateResponse("index.html", {"request": request})

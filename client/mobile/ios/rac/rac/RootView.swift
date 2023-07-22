@@ -89,9 +89,12 @@ struct RootView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
-            userSettings.checkUserLoggedIn()
-            preferenceSettings.loadSettings(isUserLoggedIn: userSettings.isLoggedIn)
-            webSocket.connectSession(llmOption: preferenceSettings.llmOption, userId: userSettings.userId)
+            userSettings.checkUserLoggedIn() { isUserLoggedIn in
+                preferenceSettings.loadSettings(isUserLoggedIn: isUserLoggedIn)
+                if !isUserLoggedIn {
+                    webSocket.connectSession(llmOption: preferenceSettings.llmOption, userId: nil, token: nil)
+                }
+            }
         }
         .onDisappear {
             webSocket.closeSession()

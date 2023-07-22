@@ -7,6 +7,7 @@ click
 elevenlabs
 fastapi
 ffmpeg
+firebase-admin
 google-cloud-speech
 httpx
 ipywidgets

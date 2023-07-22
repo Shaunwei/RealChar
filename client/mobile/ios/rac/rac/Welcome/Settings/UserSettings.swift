@@ -20,26 +20,25 @@ class UserSettings: ObservableObject {
     @Published var userId: String? = nil
     @Published var userEmail: String? = nil
     @Published var userName: String? = nil
+    @Published var userToken: String? = nil
     @Published var isLoggedIn: Bool = false
 
-    // Function to save user data
-    func save(user: User) {
-        self.userId = user.uid
-        self.userEmail = user.email
-        self.userName = user.displayName
-        self.isLoggedIn = true
-        UserDefaults.standard.set(userId, forKey: Constants.loggedInUserIdKey)
-        UserDefaults.standard.set(userEmail, forKey: Constants.loggedInUserEmailKey)
-        UserDefaults.standard.set(userName, forKey: Constants.loggedInUserNameKey)
-    }
-
     // Function to check if the user is logged in
-    func checkUserLoggedIn() {
-        if let userId = UserDefaults.standard.string(forKey: Constants.loggedInUserIdKey) {
-            self.userId = userId
-            self.userEmail = UserDefaults.standard.string(forKey: Constants.loggedInUserEmailKey)
-            self.userName = UserDefaults.standard.string(forKey: Constants.loggedInUserNameKey)
-            self.isLoggedIn = true
+    func checkUserLoggedIn(completion: ((Bool) -> Void)? = nil) {
+        if let currentUser = Auth.auth().currentUser {
+            currentUser.getIDToken() { token, error in
+                if let error {
+                    print("Fail to get ID Token from user: \(error.localizedDescription)")
+                    completion?(false)
+                    return
+                }
+                self.userId = currentUser.uid
+                self.userEmail = currentUser.email
+                self.userName = currentUser.displayName
+                self.userToken = token
+                self.isLoggedIn = true
+                completion?(true)
+            }
         }
     }
 
@@ -48,9 +47,7 @@ class UserSettings: ObservableObject {
         self.userId = nil
         self.userEmail = nil
         self.userName = nil
+        self.userToken = nil
         self.isLoggedIn = false
-        UserDefaults.standard.removeObject(forKey: Constants.loggedInUserIdKey)
-        UserDefaults.standard.removeObject(forKey: Constants.loggedInUserEmailKey)
-        UserDefaults.standard.removeObject(forKey: Constants.loggedInUserNameKey)
     }
 }

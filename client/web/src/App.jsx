@@ -61,6 +61,7 @@ const App = () => {
       setUser(user);
       if (user) {
         isLoggedIn.current = true;
+        setToken(auth.currentUser.getIdToken());
       } else {
         isLoggedIn.current = false;
       }
@@ -198,7 +199,7 @@ const App = () => {
     try {
       // requires login if user wants to use gpt4 or claude.
       if (selectedModel !== 'gpt-3.5-turbo-16k' && !isLoggedIn.current) {
-        signInWithGoogle(isLoggedIn).then(() => {
+        signInWithGoogle(isLoggedIn, setToken).then(() => {
           if(isLoggedIn.current) {
             connectSocket();
           }

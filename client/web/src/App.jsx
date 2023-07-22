@@ -4,7 +4,7 @@
  * created by Lynchee on 7/14/23
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
 
 // Components
@@ -16,11 +16,16 @@ import TextView from './components/TextView';
 import CallView from './components/CallView';
 import Button from './components/Common/Button';
 import { Characters, createCharacterGroups } from './components/Characters';
+import { sendTokenToServer, signInWithGoogle } from './components/Auth/SignIn';
+import Models from './components/Models';
 
 // Custom hooks
 import useWebsocket from './hooks/useWebsocket';
 import useMediaRecorder from './hooks/useMediaRecorder';
 import useSpeechRecognition from './hooks/useSpeechRecognition'; 
+
+// utils
+import auth from './utils/firebase';
 
 const App = () => {
   const isMobile = window.innerWidth <= 768; 
@@ -33,6 +38,9 @@ const App = () => {
   const [characterGroups, setCharacterGroups] = useState([]);
   const [textAreaValue, setTextAreaValue] = useState('');
   const [messageInput, setMessageInput] = useState('');
+  const [selectedModel, setSelectedModel] = useState("gpt-3.5-turbo-16k");
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState("");
   
   const onresultTimeout = useRef(null);
   const onspeechTimeout = useRef(null);
@@ -45,7 +53,22 @@ const App = () => {
   const chunks = useRef([]);
   const confidence = useRef(0);
   const isConnected = useRef(false);
-  
+  const isLoggedIn = useRef(false);
+
+
+  useEffect(() => {
+    auth.onAuthStateChanged(async user => {
+      setUser(user);
+      if (user) {
+        isLoggedIn.current = true;
+        let curToken = auth.currentUser.getIdToken()
+        setToken(curToken);
+      } else {
+        isLoggedIn.current = false;
+      }
+    })
+  }, [])
+
   // Helper functions
   const handleSocketOnOpen = (event) => {
     console.log("successfully connected");
@@ -168,12 +191,32 @@ const App = () => {
   }
 
   // Use custom hooks
-  const { send, connectSocket, closeSocket } = useWebsocket(handleSocketOnOpen,handleSocketOnMessage);
+  const { socketRef, send, connectSocket, closeSocket } = useWebsocket(token, handleSocketOnOpen,handleSocketOnMessage, selectedModel);
   const { isRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder } = useMediaRecorder(handleRecorderOnDataAvailable, handleRecorderOnStop);
   const { startListening, stopListening, closeRecognition, initializeSpeechRecognition } = useSpeechRecognition(handleRecognitionOnResult, handleRecognitionOnSpeechEnd, callActive);
   
   // Handle Button Clicks
-  const handleConnectButtonClick = () => connectSocket();
+  const handleConnectButtonClick = async () => {
+    try {
+      // requires login if user wants to use gpt4 or claude.
+      if (selectedModel !== 'gpt-3.5-turbo-16k') {
+        if (isLoggedIn.current) {
+          await sendTokenToServer(token);
+          connectSocket();
+        } else {
+          signInWithGoogle(isLoggedIn, setToken).then(() => {
+            if(isLoggedIn.current) {
+              connectSocket();
+            }
+          });
+        }
+      } else {
+        connectSocket();
+      }
+    } catch (error) {
+      console.error('Error during sign in or connect:', error);
+    }
+  }
 
   const handleTalkClick = () => {
     if (isConnected.current && selectedCharacter) {
@@ -221,36 +264,40 @@ const App = () => {
   }
 
   const handleDisconnect = () => {
-    // stop media recorder, speech recognition and audio playing
-    stopAudioPlayback();
-    closeMediaRecorder();
-    closeRecognition();
-    callActive.current = false;
-    shouldPlayAudio.current = false;
-    audioSent.current = false;
-    confidence.current = 0;
-    chunks.current = []
-    
-    // reset everything to initial states
-    setSelectedCharacter(null);
-    setCharacterConfirmed(false);
-    setIsCallView(false);
-    setHeaderText("");
-    setTextAreaValue("");
+    if (socketRef && socketRef.current) {
+      // stop media recorder, speech recognition and audio playing
+      stopAudioPlayback();
+      closeMediaRecorder();
+      closeRecognition();
+      callActive.current = false;
+      shouldPlayAudio.current = false;
+      audioSent.current = false;
+      confidence.current = 0;
+      chunks.current = []
+      
+      // reset everything to initial states
+      setSelectedCharacter(null);
+      setCharacterConfirmed(false);
+      setIsCallView(false);
+      setHeaderText("");
+      setTextAreaValue("");
+      setSelectedModel("gpt-3.5-turbo-16k");
 
-    // close web socket connection
-    closeSocket();
-    isConnected.current = false;
+      // close web socket connection
+      closeSocket();
+      isConnected.current = false;
+    }
   }
 
   return (
     <div className="app">
-      <Header />
+      <Header user={user} isLoggedIn={isLoggedIn} setToken={setToken} handleDisconnect={handleDisconnect} />
+
       { isMobile ? (
         <MobileWarning />
       ) : (
         <div id="desktop-content">
-          <p className="alert">
+          <p className="alert text-white">
             Please wear headphone 🎧 
             { isConnected.current && characterConfirmed && isRecording ? 
               (<span className="recording">Recording</span>) : null
@@ -259,6 +306,10 @@ const App = () => {
 
           { !isConnected.current ? 
             <MediaDevices selectedDevice={selectedDevice} setSelectedDevice={setSelectedDevice} /> : null 
+          }
+
+          { !isConnected.current ? 
+            <Models selectedModel={selectedModel} setSelectedModel={setSelectedModel} /> : null 
           }
 
           <p className="header">{headerText}</p>

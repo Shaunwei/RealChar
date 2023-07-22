@@ -49,7 +49,8 @@ export const signInWithGoogle = async (isLoggedIn, setToken) => {
       const user = result.user;
       isLoggedIn.current = true;
       setToken(token);
-      
+      await sendTokenToServer(token);
+
       console.log("Sign-in successfully");
     }).catch((error) => {
       // Handle Errors here.

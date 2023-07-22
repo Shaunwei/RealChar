@@ -63,7 +63,6 @@ const App = () => {
         isLoggedIn.current = true;
         let curToken = auth.currentUser.getIdToken()
         setToken(curToken);
-        await sendTokenToServer(token);
       } else {
         isLoggedIn.current = false;
       }
@@ -200,12 +199,17 @@ const App = () => {
   const handleConnectButtonClick = async () => {
     try {
       // requires login if user wants to use gpt4 or claude.
-      if (selectedModel !== 'gpt-3.5-turbo-16k' && !isLoggedIn.current) {
-        signInWithGoogle(isLoggedIn, setToken).then(() => {
-          if(isLoggedIn.current) {
-            connectSocket();
-          }
-        });
+      if (selectedModel !== 'gpt-3.5-turbo-16k') {
+        if (isLoggedIn.current) {
+          await sendTokenToServer(token);
+          connectSocket();
+        } else {
+          signInWithGoogle(isLoggedIn, setToken).then(() => {
+            if(isLoggedIn.current) {
+              connectSocket();
+            }
+          });
+        }
       } else {
         connectSocket();
       }

@@ -65,10 +65,6 @@ class OpenaiLlm(LLM):
                 logger.info(f'Search result: {search_context}')
                 # Append to context
                 context += '\n' + search_context
-                # Add back to context store
-                self.db.add_texts([search_context], [{
-                    'character_name': character.name,
-                }])
 
         # 2. Add user input to history
         history.append(HumanMessage(content=user_input_template.format(

@@ -25,6 +25,7 @@ class Whisper(Singleton, SpeechToText):
         super().__init__()
         if use == 'local':
             logger.info(f"Loading [Local Whisper] model: [{config.model}]...")
+            whisper.load_model(config.model)            
         self.recognizer = sr.Recognizer()
         self.use = use
         if DEBUG:

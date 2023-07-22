@@ -16,7 +16,7 @@ import TextView from './components/TextView';
 import CallView from './components/CallView';
 import Button from './components/Common/Button';
 import { Characters, createCharacterGroups } from './components/Characters';
-import { signInWithGoogle } from './components/Auth/SignIn';
+import { sendTokenToServer, signInWithGoogle } from './components/Auth/SignIn';
 import Models from './components/Models';
 
 // Custom hooks
@@ -57,11 +57,13 @@ const App = () => {
 
 
   useEffect(() => {
-    auth.onAuthStateChanged(user => {
+    auth.onAuthStateChanged(async user => {
       setUser(user);
       if (user) {
         isLoggedIn.current = true;
-        setToken(auth.currentUser.getIdToken());
+        let curToken = auth.currentUser.getIdToken()
+        setToken(curToken);
+        await sendTokenToServer(token);
       } else {
         isLoggedIn.current = false;
       }

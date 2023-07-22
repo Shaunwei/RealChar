@@ -10,6 +10,33 @@ import auth from '../../utils/firebase';
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import './styles.css';
 
+export const sendTokenToServer = async (token) => {
+  // Send token to server
+  const scheme = window.location.protocol;
+  var currentHost = window.location.host;
+  var parts = currentHost.split(':');
+  var ipAddress = parts[0];
+  var newPort = '8000';
+  var newHost = ipAddress + ':' + newPort;
+  const url = scheme + '//' + newHost;
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      console.error("Sent token failed");
+    }
+  } catch (error) {
+    console.error("Sent token failed. ", error);
+  }
+}
+
 export const signInWithGoogle = async (isLoggedIn, setToken) => {
   const provider = new GoogleAuthProvider();
   return signInWithPopup(auth, provider) // Return the promise here
@@ -17,37 +44,12 @@ export const signInWithGoogle = async (isLoggedIn, setToken) => {
       // This gives you a Google Access Token. You can use it to access the Google API.
       const credential = GoogleAuthProvider.credentialFromResult(result);
       const token = await auth.currentUser.getIdToken();
-      setToken(token);
 
-      // Send token to server
-      // http://127.0.0.1:8000
-      const scheme = window.location.protocol;
-      var currentHost = window.location.host;
-      var parts = currentHost.split(':');
-      var ipAddress = parts[0];
-      var newPort = '8000';
-      var newHost = ipAddress + ':' + newPort;
-      const url = scheme + '//' + newHost;
-
-      try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (!response.ok) {
-          console.error("Sent token failed");
-        }
-      } catch (error) {
-        console.error("Sent token failed. ", error);
-      }
-      
       // The signed-in user info.
       const user = result.user;
       isLoggedIn.current = true;
+      setToken(token);
+      
       console.log("Sign-in successfully");
     }).catch((error) => {
       // Handle Errors here.

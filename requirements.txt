@@ -2,7 +2,7 @@ aioconsole
 aiofiles
 alembic
 anthropic
-chromadb==0.3.29 # Avoid migration issues
+chromadb>=0.4.2
 click
 elevenlabs
 fastapi
@@ -11,7 +11,7 @@ firebase-admin
 google-cloud-speech
 httpx
 ipywidgets
-langchain
+langchain>=0.0.240
 llama_index
 openai-whisper
 psycopg2-binary

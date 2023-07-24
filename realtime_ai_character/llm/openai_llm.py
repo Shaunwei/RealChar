@@ -38,9 +38,15 @@ class OpenaiLlm(LLM):
             )
         self.db = get_chroma()
         self.search_agent = None
+        llm = OpenAI(temperature=0)
+        tools = None
         if os.getenv('SERPER_API_KEY'):
-            llm = OpenAI(temperature=0)
             tools = load_tools(["google-serper"], llm=llm)
+        elif os.getenv('SERPAPI_API_KEY'):
+            tools = load_tools(["serpapi"], llm=llm)
+        elif os.getenv('GOOGLE_API_KEY') and os.getenv('GOOGLE_CSE_ID'):
+            tools = load_tools(["google-search"], llm=llm)
+        if tools:
             self.search_agent = initialize_agent(
                 tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION
             )
@@ -60,11 +66,14 @@ class OpenaiLlm(LLM):
             if self.search_agent is None:
                 logger.warning('Search is not enabled, please set SERPER_API_KEY to enable it.')
             else:
-                search_result: str = self.search_agent.run(character.name + ' ' + user_input)
-                search_context = 'Search input: ' + user_input + '\n' + 'Search result: ' + search_result
-                logger.info(f'Search result: {search_context}')
-                # Append to context
-                context += '\n' + search_context
+                try:
+                    search_result: str = self.search_agent.run(character.name + ' ' + user_input)
+                    search_context = 'Search input: ' + user_input + '\n' + 'Search result: ' + search_result
+                    logger.info(f'Search result: {search_context}')
+                    # Append to context
+                    context += '\n' + search_context
+                except Exception as e:
+                    logger.error(f'Error when searching: {e}')
 
         # 2. Add user input to history
         history.append(HumanMessage(content=user_input_template.format(

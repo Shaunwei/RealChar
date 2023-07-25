@@ -9,20 +9,27 @@ import React, { useState } from 'react';
 import auth from '../../utils/firebase';
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import './styles.css';
+import {isIP, isIPv4} from 'is-ip';
 
 export const sendTokenToServer = async (token) => {
   // Send token to server
   const scheme = window.location.protocol;
   var currentHost = window.location.host;
   var parts = currentHost.split(':');
-  var ipAddress = parts[0];
+  var hostname = parts[0];
   var newPort = '8000';
-  var newHost = ipAddress + ':' + newPort;
+
+  if (hostname === 'localhost' || (isIP(hostname) || isIPv4(hostname))) {
+    // continue with the current host
+  } else {
+    hostname = 'api.' + hostname;
+  }
+  var newHost = hostname + ':' + newPort;
   const url = scheme + '//' + newHost;
 
   try {
     const response = await fetch(url, {
-      method: 'POST',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`

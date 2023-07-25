@@ -26,9 +26,7 @@ const useWebsocket = (token, onOpen, onMessage, selectedModel) => {
             var hostname = parts[0];
             var currentPort = parts[1];
 
-            if (hostname === 'localhost' || (isIP(hostname) || isIPv4(hostname))) {
-                // continue with the current host
-            } else {
+            if (!(hostname === 'localhost' || isIP(hostname))) {
                 hostname = 'api.' + hostname;
             }
 

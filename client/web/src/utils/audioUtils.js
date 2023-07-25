@@ -28,11 +28,16 @@ const playAudio = (audioContextRef, audioPlayer, url) => {
     return new Promise((resolve) => {
       audioPlayer.current.src = url;
       audioPlayer.current.muted = true;  // Start muted
-      audioPlayer.current.play();
       audioPlayer.current.onended = resolve;
       audioPlayer.current.play().then(() => {
         audioPlayer.current.muted = false;  // Unmute after playback starts
-      }).catch(error => alert(`Playback failed because: ${error}`));
+      }).catch(error => {
+        if (error.name === 'NotSupportedError') {
+          alert(`Playback failed because: ${error}. Please check https://elevenlabs.io/subscription if you have encough characters left.`);
+        } else {
+          alert(`Playback failed because: ${error}`);
+        }
+      });
     });
 }
 

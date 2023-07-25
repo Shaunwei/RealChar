@@ -5,9 +5,10 @@
  * created by Lynchee on 7/16/23
  */
 
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useCallback } from 'react';
+import {isIP, isIPv4} from 'is-ip';
 
-const useWebsocket = (onOpen, onMessage) => {
+const useWebsocket = (token, onOpen, onMessage, selectedModel) => {
     const socketRef = useRef(null);
 
     // initialize web socket and connect to server.
@@ -15,7 +16,6 @@ const useWebsocket = (onOpen, onMessage) => {
         if (!socketRef.current) {
             const clientId = Math.floor(Math.random() * 1010000);
             const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
-            // const ws_path = ws_scheme + '://realchar.ai:8000/ws/' + clientId;
             // Get the current host value
             var currentHost = window.location.host;
 
@@ -23,17 +23,21 @@ const useWebsocket = (onOpen, onMessage) => {
             var parts = currentHost.split(':');
 
             // Extract the IP address and port number
-            var ipAddress = parts[0];
+            var hostname = parts[0];
             var currentPort = parts[1];
+
+            if (!(hostname === 'localhost' || isIP(hostname))) {
+                hostname = 'api.' + hostname;
+            }
 
             // Define the new port number
             var newPort = '8000';
 
             // Generate the new host value with the same IP but different port
-            var newHost = ipAddress + ':' + newPort;
+            var newHost = hostname + ':' + newPort;
 
-            const ws_path = ws_scheme + '://' + newHost + `/ws/${clientId}`;
-
+            const ws_path = ws_scheme + '://' + newHost + `/ws/${clientId}?llm_model=${selectedModel}&token=${token}`;
+            
             socketRef.current = new WebSocket(ws_path);
             const socket = socketRef.current;
             socket.binaryType = 'arraybuffer';
@@ -61,7 +65,7 @@ const useWebsocket = (onOpen, onMessage) => {
         socketRef.current = null;
     }
 
-    return { send, connectSocket, closeSocket };
+    return { socketRef, send, connectSocket, closeSocket };
 };
 
 export default useWebsocket;

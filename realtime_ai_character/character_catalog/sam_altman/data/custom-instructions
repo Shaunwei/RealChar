@@ -1,0 +1,49 @@
+We’re introducing custom instructions so that you can tailor ChatGPT to better meet your needs. This feature will be available in beta starting with the Plus plan today, expanding to all users in the coming weeks. Custom instructions allow you to add preferences or requirements that you’d like ChatGPT to consider when generating its responses.
+
+We’ve heard your feedback about the friction of starting each ChatGPT conversation afresh. Through our conversations with users across 22 countries, we’ve deepened our understanding of the essential role steerability plays in enabling our models to effectively reflect the diverse contexts and unique needs of each person.
+
+ChatGPT will consider your custom instructions for every conversation going forward. The model will consider the instructions every time it responds, so you won’t have to repeat your preferences or information in every conversation. 
+
+For example, a teacher crafting a lesson plan no longer has to repeat that they're teaching 3rd grade science. A developer preferring efficient code in a language that’s not Python – they can say it once, and it's understood. Grocery shopping for a big family becomes easier, with the model accounting for 6 servings in the grocery list.
+
+Lesson plan
+Code generation
+Grocery list
+Custom instructions
+Scroll down to see output change
+
+What would you like ChatGPT to know about you to provide better responses?
+I work on science education programs for third-grade students.
+How would you like ChatGPT to respond?
+When discussing potential solutions for work-related items, present the information in a table format, outlining the pros and cons of each option—allowing for easier comparison and decision-making.
+What would be three important things to teach about the moon?
+
+Teaching third-grade students about the moon involves several core concepts. Here are three key topics to consider:
+
+Phases of the Moon
+The Moon's Relationship with the Earth
+Physical Features of the Moon
+Topic	Pros	Cons
+Phases of the Moon	Helps students understand cyclical patterns and time. It's also quite observable, offering an immediate connection to their own experiences.	It may be a slightly complex concept for some students to grasp initially, particularly the reasons behind the moon's different phases.
+The Moon's Relationship with the Earth	This topic is vital for explaining concepts like gravity, tides, and how the moon orbits the earth. It can also lead to further discussions about the solar system.	Understanding the moon's impact on Earth requires some basic understanding of physical science, which may be challenging for some third graders.
+Physical Features of the Moon	Students usually find this interesting, particularly topics like craters and the absence of atmosphere. This can lead to discussions about space exploration.	Without proper visual aids (like high-quality images or models), this topic can be somewhat abstract for third-grade students.
+Ultimately, your choice of what to emphasize will depend on your students' existing knowledge, the curriculum you are following, and the resources you have available.
+
+Plugins
+Adding instructions can also help improve your experience with plugins by sharing relevant information with the plugins that you use. For example, if you specify the city you live in within your instructions and use a plugin that helps you make restaurant reservations, the model might include your city when it calls the plugin.
+
+Beta
+Especially during the beta period, ChatGPT won’t always interpret custom instructions perfectly—at times it might overlook instructions, or apply them when not intended.
+
+Safety
+We’ve adapted our safety measures to account for the new ways that users can instruct the model.  For example, our Moderation API is designed to help ensure instructions won't be saved if they violate our Usage Policies. The model can also refuse or ignore instructions that lead to responses that violate our usage policies.
+
+Privacy
+We may use your custom instructions to improve model performance for our users, but you can disable this via your data controls. As with ChatGPT conversations, we take steps to remove personal identifiers found in custom instructions before they are used to improve model performance. Learn more about how we use conversations to improve model performance and your choices in our Help Center.
+
+Try it now
+Plus users can start using custom instructions today by opting into the beta for custom instructions:
+
+On web, click on your name → Settings → Beta features → opt into Custom instructions. Custom instructions will appear in the menu when you click on your name going forward.
+On iOS, go to Settings → New Features → turn on Custom instructions. Custom instructions will appear in settings.
+This feature is not yet available in the UK and EU.

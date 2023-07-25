@@ -202,6 +202,7 @@ ELEVEN_LABS_API_KEY=<api key>
         - **Option 2**: Running the client in React.
             ```sh
             cd client/web
+            npm install
             npm start
             ```
             After running these commands, a local development server will start, and your default web browser will open a new tab/window pointing to this server (usually http://localhost:3000).
@@ -255,10 +256,6 @@ And it should work out of the box.
 
 <br/>
 
-## ⭐️ Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=Shaunwei/RealChar&type=Date)](https://star-history.com/#Shaunwei/RealChar&Date)
-
 ## 📍 Roadmap
 - [x] Launch v0.0.1 and build a community
 - [x] Move away from Vanilla JS
@@ -269,6 +266,11 @@ And it should work out of the box.
 
 ## 🫶 Contribute to RealChar
 Please check out our [Contribution Guide](contribute.md)!
+
+## 💪 Contributors
+<a href="https://github.com/Shaunwei/RealChar">
+  <img src="https://contrib.rocks/image?repo=Shaunwei/RealChar" />
+</a>
 
 ## 🎲 Community
 - Join us on [Discord](https://discord.gg/e4AYNnFg2F)

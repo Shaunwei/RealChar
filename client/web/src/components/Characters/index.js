@@ -8,7 +8,7 @@
 // Characters
 import React, { useEffect, useState } from 'react';
 import './style.css';
-import raiden from '../../assets/svgs/raiden.svg';
+import raiden from '../../assets/images/raiden.png';
 import loki from '../../assets/svgs/loki.svg';
 import aiHelper from '../../assets/images/ai_helper.png';
 import pi from '../../assets/images/pi.jpeg';
@@ -16,6 +16,7 @@ import elon from '../../assets/images/elon.png';
 import bruce from '../../assets/images/bruce.png';
 import steve from '../../assets/images/jobs.png';
 import realchar from '../../assets/svgs/realchar.svg';
+import sam from '../../assets/images/sam.png';
 
 // create character groups
 const createCharacterGroups = (message) => {
@@ -29,6 +30,7 @@ const createCharacterGroups = (message) => {
         'Elon Musk': elon,
         'Bruce Wayne': bruce,
         'Steve Jobs': steve,
+        'Sam Altman': sam
     };
 
     const newCharacterGroups = [];

@@ -39,6 +39,8 @@ class UserSettings: ObservableObject {
                 self.isLoggedIn = true
                 completion?(true)
             }
+        } else {
+            completion?(false)
         }
     }
 

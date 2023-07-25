@@ -16,7 +16,6 @@ const useWebsocket = (token, onOpen, onMessage, selectedModel) => {
         if (!socketRef.current) {
             const clientId = Math.floor(Math.random() * 1010000);
             const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
-            // const ws_path = ws_scheme + '://realchar.ai:8000/ws/' + clientId;
             // Get the current host value
             var currentHost = window.location.host;
 
@@ -24,21 +23,20 @@ const useWebsocket = (token, onOpen, onMessage, selectedModel) => {
             var parts = currentHost.split(':');
 
             // Extract the IP address and port number
-            var ipAddress = parts[0];
+            var hostname = parts[0];
             var currentPort = parts[1];
 
-            // Check if the host is 'localhost', IP address or 'realchar.ai'
-            if (ipAddress === 'localhost' || (isIP(ipAddress) || isIPv4(ipAddress))) {
+            if (hostname === 'localhost' || (isIP(hostname) || isIPv4(hostname))) {
                 // continue with the current host
-            } else if (ipAddress === 'realchar.ai') {
-                ipAddress = 'api.' + ipAddress;
+            } else {
+                hostname = 'api.' + hostname;
             }
 
             // Define the new port number
             var newPort = '8000';
 
             // Generate the new host value with the same IP but different port
-            var newHost = ipAddress + ':' + newPort;
+            var newHost = hostname + ':' + newPort;
 
             const ws_path = ws_scheme + '://' + newHost + `/ws/${clientId}?llm_model=${selectedModel}&token=${token}`;
             

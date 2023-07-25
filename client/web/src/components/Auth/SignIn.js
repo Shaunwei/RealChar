@@ -16,15 +16,15 @@ export const sendTokenToServer = async (token) => {
   const scheme = window.location.protocol;
   var currentHost = window.location.host;
   var parts = currentHost.split(':');
-  var ipAddress = parts[0];
+  var hostname = parts[0];
   var newPort = '8000';
-  // Check if the host is 'localhost', IP address or 'realchar.ai'
-  if (ipAddress === 'localhost' || (isIP(ipAddress) || isIPv4(ipAddress))) {
+
+  if (hostname === 'localhost' || (isIP(hostname) || isIPv4(hostname))) {
     // continue with the current host
-  } else if (ipAddress === 'realchar.ai') {
-      ipAddress = 'api.' + ipAddress;
+  } else {
+    hostname = 'api.' + hostname;
   }
-  var newHost = ipAddress + ':' + newPort;
+  var newHost = hostname + ':' + newPort;
   const url = scheme + '//' + newHost;
 
   try {

@@ -29,3 +29,5 @@ uvicorn
 websockets
 firebase_admin
 pypdf
+EbookLib
+html2text

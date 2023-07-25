@@ -1,5 +1,5 @@
 # We are using a Node.js base image
-FROM --platform=linux/amd64 node:alpine as build
+FROM node:alpine as build
 
 
 # Working directory be app

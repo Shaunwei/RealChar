@@ -9,6 +9,7 @@ import React, { useState } from 'react';
 import auth from '../../utils/firebase';
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import './styles.css';
+import {isIP, isIPv4} from 'is-ip';
 
 export const sendTokenToServer = async (token) => {
   // Send token to server
@@ -17,12 +18,18 @@ export const sendTokenToServer = async (token) => {
   var parts = currentHost.split(':');
   var ipAddress = parts[0];
   var newPort = '8000';
+  // Check if the host is 'localhost', IP address or 'realchar.ai'
+  if (ipAddress === 'localhost' || (isIP(ipAddress) || isIPv4(ipAddress))) {
+    // continue with the current host
+  } else if (ipAddress === 'realchar.ai') {
+      ipAddress = 'api.' + ipAddress;
+  }
   var newHost = ipAddress + ':' + newPort;
   const url = scheme + '//' + newHost;
 
   try {
     const response = await fetch(url, {
-      method: 'POST',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`

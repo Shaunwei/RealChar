@@ -6,6 +6,7 @@
  */
 
 import { useRef, useCallback } from 'react';
+import {isIP, isIPv4} from 'is-ip';
 
 const useWebsocket = (token, onOpen, onMessage, selectedModel) => {
     const socketRef = useRef(null);
@@ -25,6 +26,13 @@ const useWebsocket = (token, onOpen, onMessage, selectedModel) => {
             // Extract the IP address and port number
             var ipAddress = parts[0];
             var currentPort = parts[1];
+
+            // Check if the host is 'localhost', IP address or 'realchar.ai'
+            if (ipAddress === 'localhost' || (isIP(ipAddress) || isIPv4(ipAddress))) {
+                // continue with the current host
+            } else if (ipAddress === 'realchar.ai') {
+                ipAddress = 'api.' + ipAddress;
+            }
 
             // Define the new port number
             var newPort = '8000';

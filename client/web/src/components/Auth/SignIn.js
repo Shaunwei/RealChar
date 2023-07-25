@@ -19,9 +19,7 @@ export const sendTokenToServer = async (token) => {
   var hostname = parts[0];
   var newPort = '8000';
 
-  if (hostname === 'localhost' || (isIP(hostname) || isIPv4(hostname))) {
-    // continue with the current host
-  } else {
+  if (!(hostname === 'localhost' || isIP(hostname))) {
     hostname = 'api.' + hostname;
   }
   var newHost = hostname + ':' + newPort;

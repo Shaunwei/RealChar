@@ -464,6 +464,7 @@ function createCharacterGroups(message) {
     'Elon Musk': '/static/elon.png',
     'Bruce Wayne': '/static/bruce.png',
     'Steve Jobs': '/static/jobs.png',
+    'Sam Altman': '/static/sam.png',
   };
 
   const radioButtonDiv = document.getElementsByClassName('radio-buttons')[0];

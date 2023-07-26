@@ -8,6 +8,7 @@
 import SwiftUI
 import CachedAsyncImage
 import AVFAudio
+import Shimmer
 
 struct CharacterOption: Identifiable, Equatable {
     let id: Int
@@ -46,12 +47,12 @@ struct ConfigView: View {
                             .padding(.horizontal, 2)
                     }
                 } else {
-                    ProgressView()
-
-                    Text("Loading characters")
-                      .font(
-                        Font.custom("Prompt", size: 16)
-                      )
+                    ForEach(0..<6) { id in
+                        CharacterOptionView(option: .init(id: id, name: "Placeholder", description: "", imageUrl: nil), selected: false)
+                            .redacted(reason: .placeholder)
+                            .shimmering()
+                            .padding(.horizontal, 2)
+                    }
                 }
 
                 Spacer(minLength: 0)

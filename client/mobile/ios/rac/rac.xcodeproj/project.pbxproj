@@ -22,6 +22,7 @@
 		2600B08E2A68FCA9003E8388 /* GoogleSignInButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B08D2A68FCA9003E8388 /* GoogleSignInButton.swift */; };
 		2600B0902A69DCC7003E8388 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B08F2A69DCC7003E8388 /* UserSettings.swift */; };
 		2600B0922A69F786003E8388 /* PreferenceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B0912A69F786003E8388 /* PreferenceSettings.swift */; };
+		262ACBCB2A71C10700F87797 /* Shimmer in Frameworks */ = {isa = PBXBuildFile; productRef = 262ACBCA2A71C10700F87797 /* Shimmer */; };
 		26FE4D092A5B6F0D006A1882 /* racApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D082A5B6F0D006A1882 /* racApp.swift */; };
 		26FE4D0B2A5B6F0D006A1882 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D0A2A5B6F0D006A1882 /* RootView.swift */; };
 		26FE4D0D2A5B6F0E006A1882 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26FE4D0C2A5B6F0E006A1882 /* Assets.xcassets */; };
@@ -70,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				262ACBCB2A71C10700F87797 /* Shimmer in Frameworks */,
 				2600B08C2A68FC8C003E8388 /* GoogleSignInSwift in Frameworks */,
 				2600B0832A68F585003E8388 /* FirebaseAnalytics in Frameworks */,
 				2600B0852A68F585003E8388 /* FirebaseAuth in Frameworks */,
@@ -246,6 +248,7 @@
 				2600B0842A68F585003E8388 /* FirebaseAuth */,
 				2600B0862A68F585003E8388 /* FirebaseAuthCombine-Community */,
 				2600B08B2A68FC8C003E8388 /* GoogleSignInSwift */,
+				262ACBCA2A71C10700F87797 /* Shimmer */,
 			);
 			productName = rac;
 			productReference = 26FE4D052A5B6F0D006A1882 /* rac.app */;
@@ -279,6 +282,7 @@
 				2600B0792A61EA86003E8388 /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */,
 				2600B0812A68F585003E8388 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				2600B08A2A68FC8C003E8388 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				262ACBC92A71C10700F87797 /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */,
 			);
 			productRefGroup = 26FE4D062A5B6F0D006A1882 /* Products */;
 			projectDirPath = "";
@@ -563,6 +567,14 @@
 				minimumVersion = 7.0.0;
 			};
 		};
+		262ACBC92A71C10700F87797 /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/markiv/SwiftUI-Shimmer";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -590,6 +602,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2600B08A2A68FC8C003E8388 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignInSwift;
+		};
+		262ACBCA2A71C10700F87797 /* Shimmer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 262ACBC92A71C10700F87797 /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */;
+			productName = Shimmer;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

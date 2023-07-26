@@ -27,52 +27,51 @@ struct ConfigView: View {
     let onConfirmConfig: (CharacterOption) -> Void
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 20) {
-                Text("Choose your partner")
-                    .font(
-                        Font.custom("Prompt", size: 18).weight(.medium)
-                    )
+        VStack(alignment: .leading, spacing: 20) {
+            Text("Choose your partner")
+                .font(
+                    Font.custom("Prompt", size: 18).weight(.medium)
+                )
 
-                if loaded && !options.isEmpty {
-                    ForEach(options) { option in
-                        CharacterOptionView(option: option, selected: option == selectedOption)
-                            .onTapGesture {
-                                if selectedOption == option {
-                                    selectedOption = nil
-                                } else {
-                                    selectedOption = option
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 20) {
+                    if loaded && !options.isEmpty {
+                        ForEach(options) { option in
+                            CharacterOptionView(option: option, selected: option == selectedOption)
+                                .onTapGesture {
+                                    if selectedOption == option {
+                                        selectedOption = nil
+                                    } else {
+                                        selectedOption = option
+                                    }
                                 }
-                            }
-                            .padding(.horizontal, 2)
-                    }
-                } else {
-                    ForEach(0..<6) { id in
-                        CharacterOptionView(option: .init(id: id, name: "Placeholder", description: "", imageUrl: nil), selected: false)
-                            .redacted(reason: .placeholder)
-                            .shimmering()
-                            .padding(.horizontal, 2)
+                        }
+                    } else {
+                        ForEach(0..<6) { id in
+                            CharacterOptionView(option: .init(id: id, name: "Placeholder", description: "", imageUrl: nil), selected: false)
+                                .redacted(reason: .placeholder)
+                                .shimmering()
+                        }
                     }
                 }
-
-                Spacer(minLength: 0)
-
-                Toggle(isOn: $openMic) {
-                    Text("Wearing headphone?")
-                      .font(
-                        Font.custom("Prompt", size: 16)
-                      )
-                }
-                .tint(.accentColor)
-                .padding(.horizontal, 2)
-
-                CtaButton(style: .primary, action: {
-                    guard let selectedOption else { return }
-                    simpleSuccess()
-                    onConfirmConfig(selectedOption)
-                }, text: "Get started")
-                .disabled(selectedOption == nil)
+                .padding(2)
             }
+
+            Toggle(isOn: $openMic) {
+                Text("Wearing headphone?")
+                    .font(
+                        Font.custom("Prompt", size: 16)
+                    )
+            }
+            .tint(.accentColor)
+            .padding(.trailing, 2)
+
+            CtaButton(style: .primary, action: {
+                guard let selectedOption else { return }
+                simpleSuccess()
+                onConfirmConfig(selectedOption)
+            }, text: "Get started")
+            .disabled(selectedOption == nil)
         }
         .onAppear {
             openMic = headphoneOrBluetoothDeviceConnected

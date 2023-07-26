@@ -30,6 +30,9 @@ struct CtaButton: View {
                 .padding(.vertical, 9)
                 .frame(maxWidth: .infinity, minHeight: 52, maxHeight: 52, alignment: .center)
                 .background(style == .primary ? (colorScheme == .dark ? .white : Color(red: 0.01, green: 0.03, blue: 0.11)) : (colorScheme == .dark ? Color(red: 0.01, green: 0.03, blue: 0.11) : .white))
+                .if(style == .secondary, transform: { text in
+                    text.border(.bar, width: 2)
+                })
                 .cornerRadius(4)
         }
         .buttonStyle(CustomButtonStyle())
@@ -41,7 +44,7 @@ struct CustomButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .opacity(!isEnabled ? 0.25 : configuration.isPressed ? 0.8 : 1.0)
+            .opacity(!isEnabled ? 0.25 : configuration.isPressed ? 0.6 : 1.0)
     }
 }
 

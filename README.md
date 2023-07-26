@@ -185,6 +185,7 @@ ELEVEN_LABS_API_KEY=<api key>
     ```sh
     alembic upgrade head
     ```
+    This ensures your database schema is up to date. Please run this after every time you pull the main branch.
 - **Step 5**. Setup `.env`: update API keys and select module
    ```sh
    cp .env.example .env

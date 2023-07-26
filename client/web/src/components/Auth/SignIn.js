@@ -17,10 +17,12 @@ export const sendTokenToServer = async (token) => {
   var currentHost = window.location.host;
   var parts = currentHost.split(':');
   var hostname = parts[0];
+  // Local deployment uses 8000 port by default.
   var newPort = '8000';
 
   if (!(hostname === 'localhost' || isIP(hostname))) {
-    hostname = 'api.' + hostname;
+      hostname = 'api.' + hostname;
+      newPort = window.location.protocol === "https:" ? 443 : 80;
   }
   var newHost = hostname + ':' + newPort;
   const url = scheme + '//' + newHost;

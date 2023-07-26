@@ -24,14 +24,13 @@ const useWebsocket = (token, onOpen, onMessage, selectedModel) => {
 
             // Extract the IP address and port number
             var hostname = parts[0];
-            var currentPort = parts[1];
+            // Local deployment uses 8000 port by default.
+            var newPort = '8000';
 
             if (!(hostname === 'localhost' || isIP(hostname))) {
                 hostname = 'api.' + hostname;
+                newPort = window.location.protocol === "https:" ? 443 : 80;
             }
-
-            // Define the new port number
-            var newPort = '8000';
 
             // Generate the new host value with the same IP but different port
             var newHost = hostname + ':' + newPort;

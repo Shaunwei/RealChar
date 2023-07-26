@@ -1,7 +1,6 @@
 # We are using a Node.js base image
 FROM node:alpine as build
 
-
 # Working directory be app
 WORKDIR /app
 

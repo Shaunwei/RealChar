@@ -1,4 +1,3 @@
-import os
 from dotenv import load_dotenv
 from pathlib import Path
 from contextlib import ExitStack
@@ -46,6 +45,7 @@ class CatalogManager(Singleton):
             llm_system_prompt=system_prompt,
             llm_user_prompt=user_prompt
         )
+        print('character name: ', name)
         return name
 
     def load_characters(self, overwrite):

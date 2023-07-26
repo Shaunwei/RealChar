@@ -201,7 +201,6 @@ const App = () => {
       // requires login if user wants to use gpt4 or claude.
       if (selectedModel !== 'gpt-3.5-turbo-16k') {
         if (isLoggedIn.current) {
-          await sendTokenToServer(token);
           connectSocket();
         } else {
           signInWithGoogle(isLoggedIn, setToken).then(() => {

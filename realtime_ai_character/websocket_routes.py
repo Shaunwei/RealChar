@@ -135,6 +135,7 @@ async def handle_receive(websocket: WebSocket, client_id: int, db: Session,
                 user_input_template = character.llm_user_prompt
                 logger.info(
                     f"User #{user_id} selected character: {character.name}")
+                character_id = character.name.replace(' ', '_').lower()
 
         tts_event = asyncio.Event()
         tts_task = None
@@ -222,7 +223,8 @@ async def handle_receive(websocket: WebSocket, client_id: int, db: Session,
                             client_message_unicode=msg_data,
                             server_message_unicode=response,
                             platform=platform,
-                            action_type='text').save(db)
+                            action_type='text',
+                            character_id=character_id).save(db)
 
             # handle binary message(audio)
             elif 'bytes' in data:
@@ -260,7 +262,8 @@ async def handle_receive(websocket: WebSocket, client_id: int, db: Session,
                                 client_message_unicode=transcript,
                                 server_message_unicode=response,
                                 platform=platform,
-                                action_type='audio').save(db)
+                                action_type='audio',
+                                character_id=character_id).save(db)
 
                 # 4. Send message to LLM
                 tts_task = asyncio.create_task(

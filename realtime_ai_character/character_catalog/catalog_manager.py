@@ -1,4 +1,3 @@
-import os
 from dotenv import load_dotenv
 from pathlib import Path
 from contextlib import ExitStack

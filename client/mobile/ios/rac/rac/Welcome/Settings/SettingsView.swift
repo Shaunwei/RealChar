@@ -116,14 +116,16 @@ struct SettingsView: View {
                     }
                     .pickerStyle(.segmented)
 
-                    Toggle(isOn: $preferenceSettings.hapticFeedback) {
-                        Text("Haptic feedback?")
-                            .font(
-                                Font.custom("Prompt", size: 16)
-                            )
+                    if UIDevice.current.userInterfaceIdiom == .phone {
+                        Toggle(isOn: $preferenceSettings.hapticFeedback) {
+                            Text("Haptic feedback?")
+                                .font(
+                                    Font.custom("Prompt", size: 16)
+                                )
+                        }
+                        .tint(.accentColor)
+                        .padding(.horizontal, 2)
                     }
-                    .tint(.accentColor)
-                    .padding(.horizontal, 2)
                 }
 
                 VStack(alignment: .leading, spacing: 8) {

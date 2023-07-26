@@ -26,7 +26,7 @@ struct ConfigView: View {
     let onConfirmConfig: (CharacterOption) -> Void
 
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 20) {
                 Text("Choose your partner")
                     .font(

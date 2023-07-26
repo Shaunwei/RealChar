@@ -54,7 +54,7 @@ struct SettingsView: View {
     @State var showAuth: Bool = false
 
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 40) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("User settings")

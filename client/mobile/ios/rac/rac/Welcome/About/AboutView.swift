@@ -10,7 +10,7 @@ import SwiftUI
 struct AboutView: View {
 
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             VStack(alignment: .leading) {
 
                 Spacer(minLength: 24)

@@ -12,7 +12,7 @@ struct RootView: View {
     @EnvironmentObject private var preferenceSettings: PreferenceSettings
 
     @State var interactive = false
-    @State var welcomeTab: WelcomeView.Tab = .about
+    @State var welcomeTab: WelcomeView.Tab = .config
     @State var character: CharacterOption? = nil
     @State var options: [CharacterOption] = []
     @State var shouldSendCharacter: Bool = true

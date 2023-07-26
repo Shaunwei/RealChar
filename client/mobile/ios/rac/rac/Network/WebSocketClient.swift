@@ -12,6 +12,7 @@ import SwiftUI
 
 //let serverUrl: URL = URL(string: "http://127.0.0.1:8000/")!
 let serverUrl: URL = URL(string: "https://api.realchar.ai/")!
+let fallbackServerUrl: URL = URL(string: "https://realchar.ai/")!
 
 enum WebSocketError: Error {
     case disconnected
@@ -91,10 +92,29 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
         // TODO: Use userId once it's ready
         let clientId = String(Int.random(in: 0...1010000000))
         lastUsedUserId = clientId
+
+        let session = URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue())
+        session.dataTask(with: URLRequest(url: serverUrl)) { data, response, error in
+            if error != nil {
+                session.dataTask(with: URLRequest(url: fallbackServerUrl)) { fallbackData, fallbackResponse, fallbackError in
+                    if let fallbackError {
+                        self.onError(fallbackError)
+                    } else {
+                        self.connectWebSocket(session: session, serverUrl: fallbackServerUrl, llmOption: llmOption, clientId: clientId, token: token)
+                    }
+                }
+                .resume()
+            } else {
+                self.connectWebSocket(session: session, serverUrl: serverUrl, llmOption: llmOption, clientId: clientId, token: token)
+            }
+        }
+        .resume()
+    }
+
+    private func connectWebSocket(session: URLSession, serverUrl: URL, llmOption: LlmOption, clientId: String, token: String?) {
         let wsScheme = serverUrl.scheme == "https" ? "wss" : "ws"
         let wsPath = "\(wsScheme)://\(serverUrl.host ?? "")\(serverUrl.port.flatMap { ":\($0)" } ?? "")/ws/\(clientId)?llm_model=\(llmOption.rawValue)&token=\(token ?? "")"
         print("Connecting websocket: \(wsPath)")
-        let session = URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue())
         webSocket = session.webSocketTask(with: URL(string: wsPath)!)
         webSocket.resume()
         receive()

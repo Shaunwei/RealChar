@@ -33,7 +33,7 @@ struct ConfigView: View {
                         Font.custom("Prompt", size: 18).weight(.medium)
                     )
 
-                if loaded || !options.isEmpty {
+                if loaded && !options.isEmpty {
                     ForEach(options) { option in
                         CharacterOptionView(option: option, selected: option == selectedOption)
                             .onTapGesture {

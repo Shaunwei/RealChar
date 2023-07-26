@@ -61,7 +61,7 @@ const App = () => {
       setUser(user);
       if (user) {
         isLoggedIn.current = true;
-        let curToken = auth.currentUser.getIdToken()
+        let curToken = await auth.currentUser.getIdToken();
         setToken(curToken);
       } else {
         isLoggedIn.current = false;

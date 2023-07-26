@@ -29,7 +29,7 @@ const useWebsocket = (token, onOpen, onMessage, selectedModel) => {
 
             if (!(hostname === 'localhost' || isIP(hostname))) {
                 hostname = 'api.' + hostname;
-                newPort = '80';
+                newPort = window.location.protocol === "https:" ? 443 : 80;
             }
 
             // Generate the new host value with the same IP but different port

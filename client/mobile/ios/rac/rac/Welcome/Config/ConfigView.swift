@@ -68,7 +68,6 @@ struct ConfigView: View {
 
             CtaButton(style: .primary, action: {
                 guard let selectedOption else { return }
-                simpleSuccess()
                 onConfirmConfig(selectedOption)
             }, text: "Get started")
             .disabled(selectedOption == nil)
@@ -86,12 +85,6 @@ struct ConfigView: View {
              $0.portType == .bluetoothHFP ||
              $0.portType == .bluetoothLE) ? true : nil
         }.isEmpty
-    }
-
-    private func simpleSuccess() {
-        guard hapticFeedback else { return }
-        let generator = UINotificationFeedbackGenerator()
-        generator.notificationOccurred(.success)
     }
 }
 

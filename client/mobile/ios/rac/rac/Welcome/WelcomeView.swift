@@ -62,8 +62,10 @@ struct WelcomeView: View {
                                openMic: $openMic,
                                onConfirmConfig: { option in
                         if webSocketConnectionStatusObserver.status == .connected {
+                            simpleSuccess()
                             onConfirmConfig(option)
                         } else {
+                            simpleError()
                             invalidAttempts += 1
                         }
                     })
@@ -87,6 +89,7 @@ struct WelcomeView: View {
                                 .padding()
                                 .frame(width: geometry.size.width, height: 44)
                                 .background(webSocketConnectionStatusObserver.debouncedStatus == .disconnected ? .red : .orange)
+                                .padding(.top, 20)
                         }
                     }
                 }
@@ -133,6 +136,18 @@ struct WelcomeView: View {
                                      token: userSettings.userToken)
             onWebSocketReconnected()
         }
+    }
+
+    private func simpleSuccess() {
+        guard preferenceSettings.hapticFeedback else { return }
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+    }
+
+    private func simpleError() {
+        guard preferenceSettings.hapticFeedback else { return }
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.error)
     }
 }
 

@@ -183,9 +183,9 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                 if msg_data.startswith('[!'):
                     command_end = msg_data.find(']')
                     command = msg_data[2:command_end]
-                    command_conent = msg_data[command_end + 1:]
+                    command_content = msg_data[command_end + 1:]
                     if command == 'USE_SEARCH':
-                        use_search = (command_conent == 'true')
+                        use_search = (command_content == 'true')
                     continue
                 # 0. itermidiate transcript starts with [&]
                 if msg_data.startswith('[&]'):

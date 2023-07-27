@@ -1,4 +1,5 @@
 import asyncio
+import io
 import os
 import uuid
 
@@ -17,10 +18,13 @@ from realtime_ai_character.character_catalog.catalog_manager import (
 from realtime_ai_character.database.connection import get_db
 from realtime_ai_character.llm import (AsyncCallbackAudioHandler,
                                        AsyncCallbackTextHandler, get_llm, LLM)
+from realtime_ai_character.llm.base import AsyncCallbackRTCAudioHandler
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.utils import (ConversationHistory, build_history,
                                          get_connection_manager)
+from realtime_ai_character.webrtc.signaling import handle_rtc_signaling
+from realtime_ai_character.webrtc.tracks import TTSStreamingTrack
 
 logger = get_logger(__name__)
 
@@ -114,6 +118,9 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 raise WebSocketDisconnect('disconnected')
             platform = data['text']
 
+        enable_webrtc = False
+        if (platform == 'web'):
+            enable_webrtc = (await websocket.receive())['text'] == 'enableWebRTC'
         logger.info(f"User #{user_id}:{platform} connected to server with "
                     f"session_id {session_id}")
 
@@ -131,7 +138,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
             ])
             await manager.send_message(
                 message=f"Select your character by entering the corresponding number:\n"
-                f"{character_message}\n",
+                        f"{character_message}\n",
                 websocket=websocket)
             data = await websocket.receive()
 
@@ -143,7 +150,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 if selection > len(character_list) or selection < 1:
                     await manager.send_message(
                         message=f"Invalid selection. Select your character ["
-                        f"{', '.join(catalog_manager.characters.keys())}]\n",
+                                f"{', '.join(catalog_manager.characters.keys())}]\n",
                         websocket=websocket)
                     continue
                 character = catalog_manager.get_character(
@@ -154,6 +161,13 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
         user_input_template = character.llm_user_prompt
         logger.info(
             f"User #{user_id} selected character: {character.name}")
+        use_rtc_for_audio = False
+        audio_track: TTSStreamingTrack = None
+        # Currently only implemented web.
+        if enable_webrtc:
+            audio_track = await handle_rtc_signaling(websocket, user_id)
+            use_rtc_for_audio = True
+            logger.info('Finished RTC Signal handling.')
 
         tts_event = asyncio.Event()
         tts_task = None
@@ -163,15 +177,20 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
         # Greet the user
         greeting_text = GREETING_TXT_MAP[language]
         await manager.send_message(message=greeting_text, websocket=websocket)
-        tts_task = asyncio.create_task(
-            text_to_speech.stream(
-                text=greeting_text,
-                websocket=websocket,
-                tts_event=tts_event,
-                voice_id=character.voice_id,
-                first_sentence=True,
-                language=language
-            ))
+        if use_rtc_for_audio:
+            tts_task = asyncio.create_task(audio_track.add_stream(asyncio.create_task(
+                text_to_speech.get_audio(text=greeting_text, voice_id=character.voice_id, first_sentence=True))))
+            audio_track.start_playing()
+        else:
+            tts_task = asyncio.create_task(
+                text_to_speech.stream(
+                    text=greeting_text,
+                    websocket=websocket,
+                    tts_event=tts_event,
+                    voice_id=character.voice_id,
+                    first_sentence=True,
+                    language=language
+                ))
         # Send end of the greeting so the client knows when to start listening
         await manager.send_message(message='[end]\n', websocket=websocket)
 
@@ -180,6 +199,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                                               websocket=websocket)
 
         async def stop_audio():
+            if use_rtc_for_audio:
+                await audio_track.cancel_stream()
             if tts_task and not tts_task.done():
                 tts_event.set()
                 tts_task.cancel()
@@ -192,6 +213,9 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 except asyncio.CancelledError:
                     pass
                 tts_event.clear()
+
+        async def rtc_start_audio_signal():
+            await manager.send_message(message='[#]\n', websocket=websocket)
 
         while True:
             data = await websocket.receive()
@@ -225,14 +249,20 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                                 character.voice_id)))
                     continue
                 # 1. Send message to LLM
+                audio_callback = AsyncCallbackAudioHandler(text_to_speech, websocket, tts_event, character.voice_id)
+                if use_rtc_for_audio:
+                    audio_callback = AsyncCallbackRTCAudioHandler(text_to_speech, audio_track, character.voice_id)
+                    # Stop the previous audio stream and start generate new
+                    await stop_audio()
+                    await rtc_start_audio_signal()
+                    audio_track.start_playing()
                 response = await llm.achat(
                     history=build_history(conversation_history),
                     user_input=msg_data,
                     user_input_template=user_input_template,
                     callback=AsyncCallbackTextHandler(on_new_token,
                                                       token_buffer),
-                    audioCallback=AsyncCallbackAudioHandler(
-                        text_to_speech, websocket, tts_event, character.voice_id),
+                    audioCallback=audio_callback,
                     character=character,
                     useSearch=use_search)
 
@@ -277,6 +307,10 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
 
                 # 3. stop the previous audio stream, if new transcript is received
                 await stop_audio()
+                # Signal the client to start playing audio
+                if use_rtc_for_audio:
+                    await rtc_start_audio_signal()
+                    audio_track.start_playing()
 
                 previous_transcript = transcript
 
@@ -301,6 +335,9 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                                 language=language,
                                 llm_config=llm.get_config()).save(db)
 
+                audio_callback = AsyncCallbackAudioHandler(text_to_speech, websocket, tts_event, character.voice_id)
+                if use_rtc_for_audio:
+                    audio_callback = AsyncCallbackRTCAudioHandler(text_to_speech, audio_track, character.voice_id)
                 # 4. Send message to LLM
                 tts_task = asyncio.create_task(
                     llm.achat(history=build_history(conversation_history),
@@ -309,9 +346,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                               callback=AsyncCallbackTextHandler(
                                   on_new_token, token_buffer,
                                   tts_task_done_call_back),
-                              audioCallback=AsyncCallbackAudioHandler(
-                                  text_to_speech, websocket, tts_event,
-                                  character.voice_id),
+                              audioCallback=audio_callback,
                               character=character,
                               useSearch=use_search))
 

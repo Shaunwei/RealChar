@@ -1,4 +1,5 @@
 import os
+import asyncio
 from abc import ABC, abstractmethod
 
 from langchain.callbacks.base import AsyncCallbackHandler
@@ -91,7 +92,7 @@ class SearchAgent:
             self.search_wrapper = SerpAPIWrapper()
         elif os.getenv('GOOGLE_API_KEY') and os.getenv('GOOGLE_CSE_ID'):
             self.search_wrapper = GoogleSearchAPIWrapper()
-    
+
     def search(self, query: str) -> str:
         if self.search_wrapper is None:
             logger.warning('Search is not enabled, please set SERPER_API_KEY to enable it.')
@@ -111,6 +112,43 @@ class SearchAgent:
             except Exception as e:
                 logger.error(f'Error when searching: {e}')
         return ''
+
+class AsyncCallbackRTCAudioHandler(AsyncCallbackHandler):
+    def __init__(self, text_to_speech=None, audio_track=None, voice_id="", *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if text_to_speech is None:
+            def text_to_speech(token): return print(
+                f'New audio token: {token}')
+        self.text_to_speech = text_to_speech
+        self.audio_track = audio_track
+        self.current_sentence = ""
+        self.voice_id = voice_id
+        self.is_reply = False  # the start of the reply. i.e. the substring after '>'
+        # optimization: trade off between latency and quality for the first sentence
+        self.is_first_sentence = True
+
+    async def on_chat_model_start(self, *args, **kwargs):
+        pass
+
+    async def on_llm_new_token(self, token: str, *args, **kwargs):
+        if not self.is_reply and token == ">":
+            self.is_reply = True
+        elif self.is_reply:
+            if token != ".":
+                self.current_sentence += token
+            else:
+                await self.audio_track.add_stream(asyncio.create_task(
+                    self.text_to_speech.get_audio(text=self.current_sentence, voice_id=self.voice_id, first_sentence=self.is_first_sentence)))
+                self.current_sentence = ""
+                if self.is_first_sentence:
+                    self.is_first_sentence = False
+
+    async def on_llm_end(self, *args, **kwargs):
+        if self.current_sentence != "":
+            await self.audio_track.add_stream(asyncio.create_task(
+                self.text_to_speech.get_audio(text=self.current_sentence, voice_id=self.voice_id,
+                                              first_sentence=self.is_first_sentence)))
+
 
 class LLM(ABC):
     @abstractmethod

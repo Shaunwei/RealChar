@@ -60,3 +60,21 @@ class ElevenLabs(Singleton, TextToSpeech):
                     # stop streaming audio
                     break
                 await websocket.send_bytes(chunk)
+
+    async def get_audio(self, text, voice_id="21m00Tcm4TlvDq8ikWAM", first_sentence=False):
+        if DEBUG:
+            return
+        if voice_id == "":
+            logger.info(f"voice_id is not found in .env file, using ElevenLabs default voice")
+            voice_id = "21m00Tcm4TlvDq8ikWAM"
+        headers = config.headers
+        data = {
+            "text": text,
+            **config.data,
+        }
+        url = config.url.format(voice_id=voice_id)
+        if first_sentence:
+            url = url + '?optimize_streaming_latency=4'
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, json=data, headers=headers)
+            return response.read()

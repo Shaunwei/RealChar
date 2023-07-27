@@ -29,3 +29,4 @@ typing
 uvicorn
 websockets
 google-auth
+aiortc

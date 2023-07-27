@@ -25,6 +25,8 @@ import auth from './utils/firebase';
 import useWebsocket from './hooks/useWebsocket';
 import useMediaRecorder from './hooks/useMediaRecorder';
 import useSpeechRecognition from './hooks/useSpeechRecognition'; 
+import useWebRTC from './hooks/useWebRTC';
+import useHark from './hooks/useVAD.js'
 
 const App = () => {
   const [preferredLanguage, setPreferredLanguage] = useState("English");
@@ -41,6 +43,7 @@ const App = () => {
   const [textAreaValue, setTextAreaValue] = useState('');
   const [characterGroups, setCharacterGroups] = useState([]);
   const [characterConfirmed, setCharacterConfirmed] = useState(false);
+  const [enableWebRTC, setEnableWebRTC] = React.useState(true);
   const audioPlayer = useRef(null);
   const callActive = useRef(false);
   const audioSent = useRef(false);
@@ -50,7 +53,6 @@ const App = () => {
   const isConnected = useRef(false);
   const isMobile = window.innerWidth <= 768; 
   
-
   useEffect(() => {
     auth.onAuthStateChanged(async user => {
       setUser(user);
@@ -66,11 +68,15 @@ const App = () => {
 
   const stopAudioPlayback = () => {
     if (audioPlayer.current) {
-      audioPlayer.current.pause();
-      shouldPlayAudio.current = false;
+      if (!enableWebRTC) {
+        audioPlayer.current.pause();
+      }
+      // shouldPlayAudio.current = false;
     }
     audioQueue.current = [];
-    setIsPlaying(false);
+    if (!enableWebRTC) {
+      setIsPlaying(false);
+    }
   }
 
   // Helper functions
@@ -78,7 +84,25 @@ const App = () => {
     console.log("successfully connected");
     isConnected.current = true;
     await connectMicrophone(selectedDevice);
-    initializeSpeechRecognition();
+    if(enableWebRTC) {
+      connectPeer();
+    } else {
+      initializeSpeechRecognition();
+    }
+    if (enableWebRTC) {
+      send("enableWebRTC");
+    } else {
+      send("disableWebRTC");
+    }
+  }
+
+  const isJSON = (str) => {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
   }
 
   const handleSocketOnMessage = (event) => {
@@ -95,6 +119,11 @@ const App = () => {
         // [=] or [=id] indicates the response is done
         setTextAreaValue(prevState => prevState + "\n\n");
       } else if (message.startsWith('Select')) {
+      } else if (message.startsWith('[#]')) {
+        // [#] indicates the audio data has started streaming.
+        setIsPlaying(true);
+      } else if (isJSON(message)) {
+        // JSON indicates RTC signalling result, do nothing.
       } else {
         setTextAreaValue(prevState => prevState + `${event.data}`);
 
@@ -103,7 +132,7 @@ const App = () => {
       }
     } else {  // binary data
       if (!shouldPlayAudio.current) {
-            console.log("should not play audio");
+        console.log("should not play audio");
         return;
       }
       audioQueue.current.push(event.data);
@@ -112,10 +141,21 @@ const App = () => {
       }
     }
   }
+  const handleOnTrack = (event) => {
+    if (event.streams && event.streams[0]) {
+      audioPlayer.current.srcObject = event.streams[0];
+      audioPlayer.current.play();
+    }
+    setIsPlaying(true);
+
+    speechEventsCallback(streamRef.current, stopAudioPlayback, stopRecording);
+  }
 
   // Use custom hooks
   const { socketRef, send, connectSocket, closeSocket } = useWebsocket(token, handleSocketOnOpen,handleSocketOnMessage, selectedModel, preferredLanguage, useSearch, selectedCharacter);
   const { isRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder } = useMediaRecorder(isConnected, audioSent, callActive, send, closeSocket);
+  const { pcRef, streamRef, connectPeer, closePeer } = useWebRTC(socketRef, handleOnTrack)
+  const { speechEventsCallback, enableHark, disableHark } = useHark();
   const { startListening, stopListening, closeRecognition, initializeSpeechRecognition } = useSpeechRecognition(callActive, preferredLanguage, shouldPlayAudio, isConnected, audioSent, stopAudioPlayback, send, stopRecording, setTextAreaValue);
   const connectSocketWithState = () => {
     isConnecting.current = true;
@@ -124,6 +164,9 @@ const App = () => {
   const closeSocketWithState = () => {
     isConnecting.current = false;
     closeSocket();
+    if (enableWebRTC) {
+      closePeer();
+    }
   }
   // Handle Button Clicks
   const connect = async () => {
@@ -149,14 +192,22 @@ const App = () => {
 
   const handleStopCall = () => {
     stopRecording();
-    stopListening();
+    if (enableWebRTC) {
+      disableHark();
+    } else {
+      stopListening();
+    }
     stopAudioPlayback();
     callActive.current = false;
   }
 
   const handleContinueCall = () => {
     startRecording();
-    startListening();
+    if (enableWebRTC) {
+      enableHark();
+    } else {
+      startListening();
+    }
     shouldPlayAudio.current = true;
     callActive.current = true;
   }
@@ -166,7 +217,11 @@ const App = () => {
       // stop media recorder, speech recognition and audio playing
       stopAudioPlayback();
       closeMediaRecorder();
-      closeRecognition();
+      if (!enableWebRTC) {
+        closeRecognition();
+      } else {
+        disableHark();
+      }
       callActive.current = false;
       shouldPlayAudio.current = false;
       audioSent.current = false;

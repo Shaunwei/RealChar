@@ -54,89 +54,82 @@ struct SettingsView: View {
     @State var showAuth: Bool = false
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 40) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("User settings")
-                        .font(
-                            Font.custom("Prompt", size: 18).weight(.medium)
-                        )
+        VStack(alignment: .leading, spacing: 20) {
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 40) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("User settings")
+                            .font(
+                                Font.custom("Prompt", size: 18).weight(.medium)
+                            )
 
-                    if !userSettings.isLoggedIn {
-                        GoogleSignInButton()
-                            .frame(height: 48)
-                            .onTapGesture {
-                                showAuth = true
+                        if !userSettings.isLoggedIn {
+                            GoogleSignInButton()
+                                .frame(height: 48)
+                                .onTapGesture {
+                                    showAuth = true
+                                }
+                        } else {
+                            Text("Name: \(userSettings.userName ?? "Name unavailable")")
+                                .font(
+                                    Font.custom("Prompt", size: 16)
+                                )
+
+                            Text("Email: \(userSettings.userEmail ?? "Email unavailable")")
+                                .font(
+                                    Font.custom("Prompt", size: 16)
+                                )
+
+                            Button(role: .destructive) {
+                                logout()
+                            } label: {
+                                Text("Log out")
+                                    .font(
+                                        Font.custom("Prompt", size: 16)
+                                    )
                             }
-                    } else {
-                        Text("Name: \(userSettings.userName ?? "Name unavailable")")
-                            .font(
-                                Font.custom("Prompt", size: 16)
-                            )
-                            .padding(.horizontal, 2)
-
-                        Text("Email: \(userSettings.userEmail ?? "Email unavailable")")
-                            .font(
-                                Font.custom("Prompt", size: 16)
-                            )
-                            .padding(.horizontal, 2)
-
-                        Button(role: .destructive) {
-                            logout()
-                        } label: {
-                            Text("Log out")
-                                .font(
-                                    Font.custom("Prompt", size: 16)
-                                )
-                        }
-                        .padding(.horizontal, 2)
-                    }
-                }
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("System settings")
-                        .font(
-                            Font.custom("Prompt", size: 18).weight(.medium)
-                        )
-
-                    Text("LLM Model?")
-                        .font(
-                            Font.custom("Prompt", size: 16)
-                        )
-                        .padding(.horizontal, 2)
-
-                    Picker("LLM Model", selection: $preferenceSettings.llmOption) {
-                        ForEach(LlmOption.allCases) { llmOption in
-                            Text(llmOption.displayName)
-                                .font(
-                                    Font.custom("Prompt", size: 16)
-                                )
-                                .tag(llmOption)
                         }
                     }
-                    .pickerStyle(.segmented)
 
-                    Toggle(isOn: $preferenceSettings.hapticFeedback) {
-                        Text("Haptic feedback?")
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("System settings")
+                            .font(
+                                Font.custom("Prompt", size: 18).weight(.medium)
+                            )
+
+                        Text("LLM Model?")
                             .font(
                                 Font.custom("Prompt", size: 16)
                             )
+
+                        Picker("LLM Model", selection: $preferenceSettings.llmOption) {
+                            ForEach(LlmOption.allCases) { llmOption in
+                                Text(llmOption.displayName)
+                                    .font(
+                                        Font.custom("Prompt", size: 16)
+                                    )
+                                    .tag(llmOption)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+
+                        if UIDevice.current.userInterfaceIdiom == .phone {
+                            Toggle(isOn: $preferenceSettings.hapticFeedback) {
+                                Text("Haptic feedback?")
+                                    .font(
+                                        Font.custom("Prompt", size: 16)
+                                    )
+                            }
+                            .tint(.accentColor)
+                            .padding(.trailing, 2)
+                        }
                     }
-                    .tint(.accentColor)
-                    .padding(.horizontal, 2)
-                }
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Beta feedback")
-                        .font(
-                            Font.custom("Prompt", size: 18).weight(.medium)
-                        )
-
-                    CtaButton(style: .primary, action: {
-                        openMail(emailTo: "realchar-dev@googlegroups.com", subject: "Feedback for RealChar", body: "Hi RealChar team,\n\n\n")
-                    }, text: "Leave feedback")
                 }
             }
+
+            CtaButton(style: .secondary, action: {
+                openMail(emailTo: "realchar-dev@googlegroups.com", subject: "Feedback for RealChar", body: "Hi RealChar team,\n\n\n")
+            }, text: "Leave Beta feedback")
         }
         .onChange(of: userSettings.isLoggedIn) { newValue in
             if !newValue {

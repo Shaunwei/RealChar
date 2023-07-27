@@ -1,3 +1,5 @@
+import os
+import yaml
 from dotenv import load_dotenv
 from pathlib import Path
 from contextlib import ExitStack
@@ -21,6 +23,7 @@ class CatalogManager(Singleton):
             self.db = get_chroma()
 
         self.characters = {}
+        self.load_characters_from_community(overwrite)
         self.load_characters(overwrite)
         if overwrite:
             logger.info('Persisting data in the chroma.')
@@ -39,11 +42,13 @@ class CatalogManager(Singleton):
             user_prompt = f_user.read()
 
         name = directory.stem.replace('_', ' ').title()
-
+        voice_id = os.environ.get(name.split(' ')[0].upper() + '_VOICE', '')
         self.characters[name] = Character(
             name=name,
             llm_system_prompt=system_prompt,
-            llm_user_prompt=user_prompt
+            llm_user_prompt=user_prompt,
+            voice_id=voice_id,
+            source='default'
         )
         return name
 
@@ -55,7 +60,7 @@ class CatalogManager(Singleton):
         :overwrite: if True, overwrite existing data in the chroma.
         """
         path = Path(__file__).parent
-        excluded_dirs = {'__pycache__', 'archive'}
+        excluded_dirs = {'__pycache__', 'archive', 'community'}
 
         directories = [d for d in path.iterdir() if d.is_dir()
                        and d.name not in excluded_dirs]
@@ -67,6 +72,28 @@ class CatalogManager(Singleton):
                 logger.info('Loaded data for character: ' + character_name)
         logger.info(
             f'Loaded {len(self.characters)} characters: names {list(self.characters.keys())}')
+
+    def load_characters_from_community(self, overwrite):
+        path = Path(__file__).parent / 'community'
+        excluded_dirs = {'__pycache__', 'archive'}
+
+        directories = [d for d in path.iterdir() if d.is_dir()
+                       and d.name not in excluded_dirs]
+        for directory in directories:
+            with ExitStack() as stack:
+                f_yaml = stack.enter_context(open(directory / 'config.yaml'))
+                yaml_content = yaml.safe_load(f_yaml)
+            character_name = yaml_content['character_name']
+            self.characters[character_name] = Character(
+                name=character_name,
+                llm_system_prompt=yaml_content["system"],
+                llm_user_prompt=yaml_content["user"],
+                voice_id=yaml_content["voice_id"],
+                source='community'
+            )
+            if overwrite:
+                self.load_data(character_name, directory / 'data')
+                logger.info('Loaded data for character: ' + character_name)
 
     def load_data(self, character_name: str, data_path: str):
         loader = SimpleDirectoryReader(Path(data_path))

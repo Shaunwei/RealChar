@@ -11,6 +11,8 @@ class Character:
     name: str
     llm_system_prompt: str
     llm_user_prompt: str
+    source: str = ''
+    voice_id: str = ''
 
 
 @dataclass

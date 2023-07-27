@@ -73,7 +73,7 @@ async def websocket_endpoint(websocket: WebSocket,
     await manager.connect(websocket)
     try:
         main_task = asyncio.create_task(
-            handle_receive(websocket, client_id, db, llm, catalog_manager,
+            handle_receive(websocket, client_id, user_id, db, llm, catalog_manager,
                            speech_to_text, text_to_speech))
 
         await asyncio.gather(main_task)
@@ -83,14 +83,12 @@ async def websocket_endpoint(websocket: WebSocket,
         await manager.broadcast_message(f"User #{user_id} left the chat")
 
 
-async def handle_receive(websocket: WebSocket, client_id: int, db: Session,
+async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db: Session,
                          llm: LLM, catalog_manager: CatalogManager,
                          speech_to_text: SpeechToText,
                          text_to_speech: TextToSpeech):
     try:
         conversation_history = ConversationHistory()
-        # TODO: clean up client_id once migration is done.
-        user_id = str(client_id)
         session_id = str(uuid.uuid4().hex)
 
         # 0. Receive client platform info (web, mobile, terminal)

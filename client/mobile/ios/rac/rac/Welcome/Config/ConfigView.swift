@@ -27,50 +27,53 @@ struct ConfigView: View {
     let onConfirmConfig: (CharacterOption) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("Choose your partner")
-                .font(
-                    Font.custom("Prompt", size: 18).weight(.medium)
-                )
+        GeometryReader { geometry in
+            VStack(alignment: .leading, spacing: 20) {
+                Text("Choose your partner")
+                    .font(
+                        Font.custom("Prompt", size: 18).weight(.medium)
+                    )
 
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 20) {
-                    if loaded && !options.isEmpty {
-                        ForEach(options) { option in
-                            CharacterOptionView(option: option, selected: option == selectedOption)
-                                .onTapGesture {
-                                    if selectedOption == option {
-                                        selectedOption = nil
-                                    } else {
-                                        selectedOption = option
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 20) {
+                        if loaded && !options.isEmpty {
+                            ForEach(options) { option in
+                                CharacterOptionView(option: option, selected: option == selectedOption)
+                                    .onTapGesture {
+                                        if selectedOption == option {
+                                            selectedOption = nil
+                                        } else {
+                                            selectedOption = option
+                                        }
                                     }
-                                }
-                        }
-                    } else {
-                        ForEach(0..<6) { id in
-                            CharacterOptionView(option: .init(id: id, name: "Placeholder", description: "", imageUrl: nil), selected: false)
-                                .redacted(reason: .placeholder)
-                                .shimmering()
+                            }
+                        } else {
+                            ForEach(0..<6) { id in
+                                CharacterOptionView(option: .init(id: id, name: "Placeholder", description: "", imageUrl: nil), selected: false)
+                                    .redacted(reason: .placeholder)
+                                    .shimmering()
+                            }
                         }
                     }
+                    .padding(2)
                 }
-                .padding(2)
-            }
 
-            Toggle(isOn: $openMic) {
-                Text("Wearing headphone?")
-                    .font(
-                        Font.custom("Prompt", size: 16)
-                    )
-            }
-            .tint(.accentColor)
-            .padding(.trailing, 2)
+                Toggle(isOn: $openMic) {
+                    Text("Wearing headphone?")
+                        .font(
+                            Font.custom("Prompt", size: 16)
+                        )
+                }
+                .tint(.accentColor)
+                .padding(.trailing, 2)
 
-            CtaButton(style: .primary, action: {
-                guard let selectedOption else { return }
-                onConfirmConfig(selectedOption)
-            }, text: "Get started")
-            .disabled(selectedOption == nil)
+                CtaButton(style: .primary, action: {
+                    guard let selectedOption else { return }
+                    onConfirmConfig(selectedOption)
+                }, text: "Get started")
+                .disabled(selectedOption == nil)
+            }
+            .padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? 0 : 20)
         }
         .onAppear {
             openMic = headphoneOrBluetoothDeviceConnected

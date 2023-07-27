@@ -217,9 +217,10 @@ ELEVEN_LABS_API_KEY=<api key>
 ## (Optional) 📀 Installation via Docker
 <details><summary>👇click me</summary>
 
-1. Docker image: you can use our docker image directly
+1. Docker image: you can use our docker image directly (if you are not using Apple M1/M2 CPUs)
     ```sh
     docker pull shaunly/real_char:latest
+    docker tag shaunly/real_char:latest realtime-ai-character
     ```
     (Or you want build yourself) Build docker image
     ```sh

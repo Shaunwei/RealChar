@@ -17,6 +17,7 @@ if os.getenv('USE_AUTH', ''):
     cred = credentials.Certificate(os.environ.get('FIREBASE_CONFIG_PATH'))
     firebase_admin.initialize_app(cred)
 
+
 async def get_current_user(request: Request):
     """Heler function for auth with Firebase."""
     if os.getenv('USE_AUTH', ''):
@@ -39,6 +40,7 @@ async def get_current_user(request: Request):
     else:
         return ""
 
+
 @router.get("/status")
 async def status():
     return {"status": "ok"}
@@ -47,3 +49,23 @@ async def status():
 @router.get("/", response_class=HTMLResponse)
 async def index(request: Request, user=Depends(get_current_user)):
     return templates.TemplateResponse("index.html", {"request": request})
+
+
+@router.get("/characters")
+async def characters():
+    from realtime_ai_character.character_catalog.catalog_manager import CatalogManager
+    catalog: CatalogManager = CatalogManager.get_instance()
+    return [
+        {
+            "name": character.name,
+            "source": character.source,
+            "voice_id": character.voice_id,
+        } for character in catalog.characters.values()
+    ]
+
+
+@router.get("/configs")
+async def configs():
+    return {
+        'llms': ['gpt-4', 'gpt-3.5-turbo-16k', 'claude-2']
+    }

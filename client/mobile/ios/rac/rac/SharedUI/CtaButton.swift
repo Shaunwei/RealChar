@@ -30,13 +30,13 @@ struct CtaButton: View {
                     Font.custom("Prompt", size: 18)
                         .weight(.medium)
                 )
-                .foregroundColor(style == .primary ? .white : (colorScheme == .dark ? .white : .black))
+                .foregroundColor(style == .primary ? .white : (colorScheme == .dark ? .white : Color(red: 0.01, green: 0.03, blue: 0.11).opacity(0.8)))
                 .padding(.horizontal, 20)
                 .padding(.vertical, 9)
                 .frame(maxWidth: .infinity, minHeight: 52, maxHeight: 52, alignment: .center)
-                .background(style == .primary ? (colorScheme == .dark ? Constants.realContrastBlue : Color(red: 0.01, green: 0.03, blue: 0.11)) : (colorScheme == .dark ? Color(red: 0.01, green: 0.03, blue: 0.11) : .white))
+                .background(style == .primary ? (colorScheme == .dark ? Constants.realContrastBlue : Color(red: 0.01, green: 0.03, blue: 0.11)) : (colorScheme == .dark ? .white.opacity(0.2) : .white))
                 .if(style == .secondary, transform: { text in
-                    text.border(.bar, width: 2)
+                    text.border(colorScheme == .dark ? Color(red: 0.65, green: 0.75, blue: 1) : Color(red: 0.4, green: 0.52, blue: 0.83).opacity(0.6), width: 2)
                 })
                 .cornerRadius(4)
         }

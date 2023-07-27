@@ -12,7 +12,6 @@ import SwiftUI
 
 //let serverUrl: URL = URL(string: "http://127.0.0.1:8000/")!
 let serverUrl: URL = URL(string: "https://api.realchar.ai/")!
-let fallbackServerUrl: URL = URL(string: "https://realchar.ai/")!
 
 enum WebSocketError: Error {
     case disconnected
@@ -43,9 +42,15 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
             onConnectionChanged?(status)
         }
     }
+
     var isInteractiveMode: Bool = false
-    var lastUsedLlmOption: LlmOption = .gpt35
-    var lastUsedUserId: String? = nil
+
+    private lazy var session = URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue())
+
+    private var lastUsedLlmOption: LlmOption = .gpt35
+    private var lastUsedUserId: String? = nil
+    private var lastUsedToken: String? = nil
+    private var lastConnectingDate: Date? = nil
 
     var onConnectionChanged: ((WebSocketConnectionStatus) -> Void)?
 
@@ -87,31 +92,34 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
     }
 
     func connectSession(llmOption: LlmOption, userId: String?, token: String?) {
-        status = .connecting
         lastUsedLlmOption = llmOption
         // TODO: Use userId once it's ready
         let clientId = String(Int.random(in: 0...1010000000))
         lastUsedUserId = clientId
-
-        let session = URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue())
-        session.dataTask(with: URLRequest(url: serverUrl)) { data, response, error in
-            if error != nil {
-                session.dataTask(with: URLRequest(url: fallbackServerUrl)) { fallbackData, fallbackResponse, fallbackError in
-                    if let fallbackError {
-                        self.onError(fallbackError)
-                    } else {
-                        self.connectWebSocket(session: session, serverUrl: fallbackServerUrl, llmOption: llmOption, clientId: clientId, token: token)
-                    }
-                }
-                .resume()
-            } else {
-                self.connectWebSocket(session: session, serverUrl: serverUrl, llmOption: llmOption, clientId: clientId, token: token)
-            }
-        }
-        .resume()
+        lastUsedToken = token
+        connectWebSocket(session: session,
+                         serverUrl: serverUrl,
+                         llmOption: llmOption,
+                         clientId: clientId,
+                         token: token)
     }
 
-    private func connectWebSocket(session: URLSession, serverUrl: URL, llmOption: LlmOption, clientId: String, token: String?) {
+    func reconnectSession() {
+        connectWebSocket(session: session,
+                         serverUrl: serverUrl,
+                         llmOption: lastUsedLlmOption,
+                         clientId: lastUsedUserId ?? String(Int.random(in: 0...1010000000)),
+                         token: lastUsedToken)
+    }
+
+    private func connectWebSocket(session: URLSession,
+                                  serverUrl: URL,
+                                  llmOption: LlmOption,
+                                  clientId: String,
+                                  token: String?) {
+        status = .connecting
+        lastConnectingDate = Date()
+
         let wsScheme = serverUrl.scheme == "https" ? "wss" : "ws"
         let wsPath = "\(wsScheme)://\(serverUrl.host ?? "")\(serverUrl.port.flatMap { ":\($0)" } ?? "")/ws/\(clientId)?llm_model=\(llmOption.rawValue)&token=\(token ?? "")"
         print("Connecting websocket: \(wsPath)")
@@ -263,6 +271,13 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
             self.onErrorReceived?(error)
         }
         status = .disconnected
+
+        if let lastConnectingDate, Date().timeIntervalSince(lastConnectingDate) < TimeInterval(60) {
+            // If last connecting time is less than 1 min, do no retry automatically.
+            return
+        } else {
+            reconnectSession()
+        }
     }
 }
 

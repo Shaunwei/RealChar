@@ -1,11 +1,15 @@
 import os
 from typing import List
 
+from langchain.agents import load_tools
+from langchain.agents import initialize_agent
+from langchain.agents import AgentType
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 if os.getenv('OPENAI_API_TYPE') == 'azure':
     from langchain.chat_models import AzureChatOpenAI
 else:
     from langchain.chat_models import ChatOpenAI
+from langchain.llms import OpenAI
 from langchain.schema import BaseMessage, HumanMessage
 
 from realtime_ai_character.database.chroma import get_chroma
@@ -33,6 +37,19 @@ class OpenaiLlm(LLM):
                 streaming=True
             )
         self.db = get_chroma()
+        self.search_agent = None
+        llm = OpenAI(temperature=0)
+        tools = None
+        if os.getenv('SERPER_API_KEY'):
+            tools = load_tools(["google-serper"], llm=llm)
+        elif os.getenv('SERPAPI_API_KEY'):
+            tools = load_tools(["serpapi"], llm=llm)
+        elif os.getenv('GOOGLE_API_KEY') and os.getenv('GOOGLE_CSE_ID'):
+            tools = load_tools(["google-search"], llm=llm)
+        if tools:
+            self.search_agent = initialize_agent(
+                tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION
+            )
 
     async def achat(self,
                     history: List[BaseMessage],
@@ -40,9 +57,23 @@ class OpenaiLlm(LLM):
                     user_input_template: str,
                     callback: AsyncCallbackTextHandler,
                     audioCallback: AsyncCallbackAudioHandler,
-                    character: Character) -> str:
+                    character: Character,
+                    useSearch: bool=False) -> str:
         # 1. Generate context
         context = self._generate_context(user_input, character)
+        # Get search result if enabled
+        if useSearch:
+            if self.search_agent is None:
+                logger.warning('Search is not enabled, please set SERPER_API_KEY to enable it.')
+            else:
+                try:
+                    search_result: str = self.search_agent.run(character.name + ' ' + user_input)
+                    search_context = 'Search input: ' + user_input + '\n' + 'Search result: ' + search_result
+                    logger.info(f'Search result: {search_context}')
+                    # Append to context
+                    context += '\n' + search_context
+                except Exception as e:
+                    logger.error(f'Error when searching: {e}')
 
         # 2. Add user input to history
         history.append(HumanMessage(content=user_input_template.format(

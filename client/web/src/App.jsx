@@ -41,6 +41,7 @@ const App = () => {
   const [selectedModel, setSelectedModel] = useState("gpt-3.5-turbo-16k");
   const [user, setUser] = useState(null);
   const [token, setToken] = useState("");
+  const [useSearch, setUseSearch] = React.useState(false);
   
   const onresultTimeout = useRef(null);
   const onspeechTimeout = useRef(null);
@@ -361,6 +362,8 @@ const App = () => {
                 setMessageInput={setMessageInput}
                 handleDisconnect={handleDisconnect}
                 setIsCallView={setIsCallView}
+                useSearch={useSearch}
+                setUseSearch={setUseSearch}
               />
             </div>
           </div>

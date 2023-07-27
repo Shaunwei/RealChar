@@ -96,6 +96,8 @@ struct ConfigView: View {
 }
 
 struct CharacterOptionView: View {
+    @Environment(\.colorScheme) var colorScheme
+
     let option: CharacterOption
     let selected: Bool
 
@@ -129,7 +131,7 @@ struct CharacterOptionView: View {
                     .font(
                         Font.custom("Prompt", size: 16).weight(.medium)
                     )
-                    .foregroundColor(Color(red: 0.01, green: 0.03, blue: 0.11).opacity(0.8))
+                    .foregroundColor(colorScheme == .dark ? .white : Color(red: 0.01, green: 0.03, blue: 0.11).opacity(0.8))
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
 
@@ -138,17 +140,17 @@ struct CharacterOptionView: View {
                     Font.custom("Prompt", size: 16).weight(.medium)
                 )
                 .multilineTextAlignment(.trailing)
-                .foregroundColor(Color(red: 0.4, green: 0.52, blue: 0.83))
+                .foregroundColor(colorScheme == .dark ? .white: Color(red: 0.4, green: 0.52, blue: 0.83))
                 .frame(alignment: .trailing)
         }
         .padding(.leading, 12)
         .padding(.trailing, 24)
         .padding(.vertical, 10)
-        .background(selected ? .white : Color(red: 0.93, green: 0.95, blue: 1))
+        .background(colorScheme == .dark ? (selected ? .white.opacity(0.2) : .white.opacity(0.1)) : (selected ? .white : Color(red: 0.93, green: 0.95, blue: 1)))
         .cornerRadius(40)
         .overlay(
             RoundedRectangle(cornerRadius: 40)
-                .stroke(Color(red: 0.4, green: 0.52, blue: 0.83).opacity(selected ? 0.6 : 0), lineWidth: 2)
+                .stroke((colorScheme == .dark ? Color(red: 0.65, green: 0.75, blue: 1).opacity(selected ? 1 : 0) : Color(red: 0.4, green: 0.52, blue: 0.83).opacity(selected ? 0.6 : 0)), lineWidth: 2)
         )
     }
 }

@@ -8,6 +8,11 @@
 import SwiftUI
 
 struct CtaButton: View {
+
+    struct Constants {
+        static let realContrastBlue: Color = Color(red: 0.12, green: 0.31, blue: 0.8)
+    }
+
     enum Style {
         case primary, secondary
     }
@@ -25,11 +30,11 @@ struct CtaButton: View {
                     Font.custom("Prompt", size: 18)
                         .weight(.medium)
                 )
-                .foregroundColor(style == .primary ? (colorScheme == .dark ? .black : .white) : (colorScheme == .dark ? .white : .black))
+                .foregroundColor(style == .primary ? .white : (colorScheme == .dark ? .white : .black))
                 .padding(.horizontal, 20)
                 .padding(.vertical, 9)
                 .frame(maxWidth: .infinity, minHeight: 52, maxHeight: 52, alignment: .center)
-                .background(style == .primary ? (colorScheme == .dark ? .white : Color(red: 0.01, green: 0.03, blue: 0.11)) : (colorScheme == .dark ? Color(red: 0.01, green: 0.03, blue: 0.11) : .white))
+                .background(style == .primary ? (colorScheme == .dark ? Constants.realContrastBlue : Color(red: 0.01, green: 0.03, blue: 0.11)) : (colorScheme == .dark ? Color(red: 0.01, green: 0.03, blue: 0.11) : .white))
                 .if(style == .secondary, transform: { text in
                     text.border(.bar, width: 2)
                 })

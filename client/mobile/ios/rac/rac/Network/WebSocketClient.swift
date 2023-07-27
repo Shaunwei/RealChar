@@ -12,7 +12,6 @@ import SwiftUI
 
 //let serverUrl: URL = URL(string: "http://127.0.0.1:8000/")!
 let serverUrl: URL = URL(string: "https://api.realchar.ai/")!
-let fallbackServerUrl: URL = URL(string: "https://realchar.ai/")!
 
 enum WebSocketError: Error {
     case disconnected
@@ -94,21 +93,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
         lastUsedUserId = clientId
 
         let session = URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue())
-        session.dataTask(with: URLRequest(url: serverUrl)) { data, response, error in
-            if error != nil {
-                session.dataTask(with: URLRequest(url: fallbackServerUrl)) { fallbackData, fallbackResponse, fallbackError in
-                    if let fallbackError {
-                        self.onError(fallbackError)
-                    } else {
-                        self.connectWebSocket(session: session, serverUrl: fallbackServerUrl, llmOption: llmOption, clientId: clientId, token: token)
-                    }
-                }
-                .resume()
-            } else {
-                self.connectWebSocket(session: session, serverUrl: serverUrl, llmOption: llmOption, clientId: clientId, token: token)
-            }
-        }
-        .resume()
+        connectWebSocket(session: session, serverUrl: serverUrl, llmOption: llmOption, clientId: clientId, token: token)
     }
 
     private func connectWebSocket(session: URLSession, serverUrl: URL, llmOption: LlmOption, clientId: String, token: String?) {

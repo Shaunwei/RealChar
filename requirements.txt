@@ -27,4 +27,3 @@ sqlalchemy
 typing
 uvicorn
 websockets
-firebase_admin

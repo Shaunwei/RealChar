@@ -112,6 +112,7 @@ struct SettingsView: View {
                                         .tag(llmOption)
                                 }
                             }
+                            .padding(.bottom, 2)
                             .pickerStyle(.segmented)
 
                             if UIDevice.current.userInterfaceIdiom == .phone {

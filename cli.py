@@ -3,10 +3,14 @@
 import click
 import os
 import subprocess
+import sys
 
 
 @click.group()
 def cli():
+    python_version = ".".join(map(str, sys.version_info[:2]))
+    click.echo(f"Python version: {python_version}")
+    assert float(python_version) <= "3.9", "Python 3.9+ is required."
     pass
 
 

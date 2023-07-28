@@ -39,7 +39,7 @@ const createCharacterGroups = (message) => {
         if (match) {
             let src = imageMap[match[2]];
             if (!src) {
-                src = {realchar};
+                src = realchar;
             }
             
             newCharacterGroups.push({

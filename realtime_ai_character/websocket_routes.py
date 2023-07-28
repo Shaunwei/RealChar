@@ -55,6 +55,8 @@ async def websocket_endpoint(websocket: WebSocket,
                                 'LLM_MODEL_USE', 'gpt-3.5-turbo-16k')),
                              language: str = Query(default='en-US'),
                              token: str = Query(None),
+                             character_id: str = Query(None),
+                             platform: str = Query(None),
                              db: Session = Depends(get_db),
                              catalog_manager=Depends(get_catalog_manager),
                              speech_to_text=Depends(get_speech_to_text),
@@ -77,6 +79,7 @@ async def websocket_endpoint(websocket: WebSocket,
     try:
         main_task = asyncio.create_task(
             handle_receive(websocket, client_id, user_id, db, llm, catalog_manager,
+                           character_id, platform,
                            speech_to_text, text_to_speech, language))
 
         await asyncio.gather(main_task)
@@ -88,6 +91,7 @@ async def websocket_endpoint(websocket: WebSocket,
 
 async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db: Session,
                          llm: LLM, catalog_manager: CatalogManager,
+                         character_id: str, platform: str,
                          speech_to_text: SpeechToText,
                          text_to_speech: TextToSpeech,
                          language: str):
@@ -96,17 +100,20 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
         session_id = str(uuid.uuid4().hex)
 
         # 0. Receive client platform info (web, mobile, terminal)
-        data = await websocket.receive()
-        if data['type'] != 'websocket.receive':
-            raise WebSocketDisconnect('disconnected')
-        platform = data['text']
+        if not platform:
+            data = await websocket.receive()
+            if data['type'] != 'websocket.receive':
+                raise WebSocketDisconnect('disconnected')
+            platform = data['text']
+
         logger.info(f"User #{user_id}:{platform} connected to server with "
                     f"session_id {session_id}")
 
         # 1. User selected a character
         character = None
+        if character_id:
+            character = catalog_manager.get_character(character_id.replace('_', ' ').title())
         character_list = list(catalog_manager.characters.keys())
-        user_input_template = 'Context:{context}\n User:{query}'
         while not character:
             character_message = "\n".join([
                 f"{i+1} - {character}"
@@ -133,11 +140,12 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                     continue
                 character = catalog_manager.get_character(
                     character_list[selection - 1])
-                conversation_history.system_prompt = character.llm_system_prompt
-                user_input_template = character.llm_user_prompt
-                logger.info(
-                    f"User #{user_id} selected character: {character.name}")
                 character_id = character.name.replace(' ', '_').lower()
+
+        conversation_history.system_prompt = character.llm_system_prompt
+        user_input_template = character.llm_user_prompt
+        logger.info(
+            f"User #{user_id} selected character: {character.name}")
 
         tts_event = asyncio.Event()
         tts_task = None

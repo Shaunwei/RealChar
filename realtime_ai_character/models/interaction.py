@@ -22,6 +22,7 @@ class Interaction(Base):
     action_type = Column(String(50))
     character_id = Column(String(100))
     tools = Column(String(100))
+    language = Column(String(10))
 
     def save(self, db):
         db.add(self)

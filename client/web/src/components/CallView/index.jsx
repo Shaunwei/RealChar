@@ -25,7 +25,7 @@ const CallView = ( {isRecording, isPlaying, audioPlayer, handleStopCall, handleC
     }, [isPlaying]);
     
     return (
-        <>
+        <div className='call-screen'>
           <div className='call-container'>
             <audio ref={audioPlayer} className="audio-player"><source src="" type="audio/mp3" /></audio>
             <div className={`sound-wave ${isRecording ? '' : 'stop-animation'}`}>
@@ -38,7 +38,7 @@ const CallView = ( {isRecording, isPlaying, audioPlayer, handleStopCall, handleC
               <IconButton Icon={TbPower} className="icon-red" onClick={handleDisconnect} />
               <IconButton Icon={TbMessageChatbot} className="icon-green" onClick={() => setIsCallView(false)} />
           </div>
-        </>
+        </div>
     )
 }
 

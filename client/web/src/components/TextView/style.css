@@ -3,9 +3,24 @@
   color: white;
   font-size: 17px;
   width: 100%;
-  height: 100%;
+  height: 25vh;
   border: none;
   resize: none;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+}
+
+.text-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  flex-grow: 1;
+  width: 100%;
+  padding: 20px;
 }
 
 /* text input */
@@ -39,24 +54,6 @@ input[type="text"]{font: 15px/24px "Lato", Arial, sans-serif; color: white; widt
 .message-input:focus ~ .focus-border i:before,
 .message-input:focus ~ .focus-border i:after{height: 100%; transition: 0.4s;}
 
-.send-btn {
-    font-family: "Prompt", Helvetica;
-    font-size: 1rem;
-    border-color: #6785d3;
-    color: #fff;
-    box-shadow: 0 0 10px 0 #6785d3 inset, 0 0 10px 4px #6785d3;
-    transition: all 150ms ease-in-out;
-    cursor: pointer;
-    background-color: transparent;
-    padding: 0.6em 2em;
-    border-radius: 1.5em;
-}
-
-.send-btn:hover {
-    box-shadow: 0 0 40px 40px #6785d3 inset, 0 0 0 0 #6785d3;
-    outline: 0;
-}
-
 .options-container {
   display: flex;
   align-items: center;
@@ -67,6 +64,28 @@ input[type="text"]{font: 15px/24px "Lato", Arial, sans-serif; color: white; widt
 }
 
 .search-checkbox {
-  margin-top: 5px;
+  margin-top: 15px;
   color: white;
+}
+
+.white {
+  color: white;
+}
+
+.talk-on {
+  color: red;
+}
+
+.talk-off {
+  color: white;
+}
+
+.recording-animation {
+  animation: pulsate 1s infinite;
+}
+
+@keyframes pulsate {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }

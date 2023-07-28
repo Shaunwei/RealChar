@@ -5,13 +5,17 @@
  * created by Lynchee on 7/16/23
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState} from 'react';
 import './style.css';
-import { TbPower, TbMicrophone } from 'react-icons/tb';
+import { TbPower, TbPhoneCall, TbMicrophone, TbPlayerStopFilled, TbKeyboard } from 'react-icons/tb';
 import IconButton from '../Common/IconButton';
+import { MdVoiceChat } from 'react-icons/md';
+import Button from '../Common/Button';
 
-const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAreaValue, messageInput, setMessageInput, handleDisconnect, setIsCallView, useSearch, setUseSearch }) => {
+const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAreaValue, messageInput, setMessageInput, handleDisconnect, setIsCallView, useSearch, setUseSearch, callActive, startRecording, stopRecording }) => {
+    const [keyboard, SetKeyboard] = useState(true);
     const chatWindowRef = useRef(null);
+    const talking = useRef(false);
     
     // always show the latest chat log
     useEffect(() => {
@@ -51,8 +55,29 @@ const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAr
         setUseSearch(!useSearch);
     };
 
+    const handlePushTalk = () => {
+        if (!talking.current) {
+            startRecording();
+            talking.current = true;
+            if (isPlaying) {
+                stopAudioPlayback();
+            }
+        } else {
+            stopRecording();
+            talking.current = false;
+        }
+    }
+
+    const handleKeyboardClick = () => {
+        SetKeyboard(true);
+    }
+    
+    const handleAudioClick = () => {
+        SetKeyboard(false);
+    }
+
     return (
-        <>
+        <div className='text-screen'>
             <textarea 
                 className="chat-window" 
                 readOnly 
@@ -60,18 +85,33 @@ const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAr
                 ref={chatWindowRef}
                 value={textAreaValue}
             ></textarea>
-            <div className="message-input-container">
-                <input
-                    className="message-input" 
-                    type="text" 
-                    placeholder="Type your message"
-                    value={messageInput} 
-                    onChange={handleInputChange}
-                    onKeyDown={handleKeyDown} 
-                />
-                <span className="focus-border"><i></i></span>
+            <div className='input-container'>
+                <div className="message-input-container">
+                    <input
+                        className="message-input" 
+                        type="text" 
+                        placeholder="Type your message"
+                        value={messageInput} 
+                        onChange={handleInputChange}
+                        onKeyDown={handleKeyDown} 
+                    />
+                    <span className="focus-border"><i></i></span>
+                </div>
+                { !callActive.current && (
+                    <div>
+                        {keyboard ? 
+                            <IconButton Icon={MdVoiceChat} className="icon-blue" onClick={handleAudioClick} /> : 
+                            <IconButton Icon={TbKeyboard} className="icon-blue" onClick={handleKeyboardClick} />
+                        }
+                    </div>
+                )}
             </div>
-            <button className="send-btn" onClick={handleSendClick}>Send Message</button>
+
+            { !callActive.current && !keyboard ?
+                <IconButton Icon={talking.current ? TbPlayerStopFilled : TbMicrophone} className={`${talking.current ? "recording-animation" : "icon-blue"}`} bgcolor={`${talking.current ? "red":"default"}`} onClick={handlePushTalk} /> : 
+                <Button onClick={handleSendClick} name="Send Message" />
+            }
+            
             <label className='search-checkbox'>
                 <input
                 type="checkbox"
@@ -82,9 +122,9 @@ const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAr
             </label>
             <div className="options-container">
                 <IconButton Icon={TbPower} className="icon-red" onClick={handleDisconnect} />
-                <IconButton Icon={TbMicrophone} className="icon-blue" onClick={() => setIsCallView(true)} />
+                <IconButton Icon={TbPhoneCall} className="icon-blue" onClick={() => setIsCallView(true)} disabled={talking.current} />
             </div>
-        </>
+        </div>
     )
 }
 

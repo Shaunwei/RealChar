@@ -86,9 +86,10 @@ const App = () => {
       if (message === '[end]\n') {
         setTextAreaValue(prevState => prevState + "\n\n");
         
-      } else if (message.startsWith('[+]')) {
+      } else if (message.startsWith('[+]You said: ')) {
         // [+] indicates the transcription is done. stop playing audio
-        setTextAreaValue(prevState => prevState + `\nYou> ${message}\n`);
+        let msg = message.split("[+]You said: ");
+        setTextAreaValue(prevState => prevState + `\nYou> ${msg[1]}\n`);
         stopAudioPlayback();
       } else if (message.startsWith('[=]')) {
         // [=] indicates the response is done
@@ -125,7 +126,7 @@ const App = () => {
     // TODO: debug download video
 
     if (isConnected.current) {
-      if (!audioSent.current && callActive.current) {
+      if (!audioSent.current) {
         send(blob);
       }
       audioSent.current = false;
@@ -330,7 +331,7 @@ const App = () => {
 
           { isConnected.current && !characterConfirmed ? 
             ( <div className="actions">
-              <Button onClick={handleTalkClick} name="Talk" disabled={!selectedCharacter} />
+              <Button onClick={handleTalkClick} name="Call" disabled={!selectedCharacter} />
               <Button onClick={handleTextClick} name="Text" disabled={!selectedCharacter} />
             </div> ) : null
           }
@@ -364,6 +365,9 @@ const App = () => {
                 setIsCallView={setIsCallView}
                 useSearch={useSearch}
                 setUseSearch={setUseSearch}
+                callActive={callActive}
+                startRecording={startRecording}
+                stopRecording={stopRecording}
               />
             </div>
           </div>

@@ -89,3 +89,14 @@
   justify-content: space-between;
   flex-grow: 1;
 }
+
+.call-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  flex-grow: 1;
+  width: 100%;
+  height: 30vh;
+  padding: 20px;
+}

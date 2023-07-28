@@ -9,6 +9,7 @@ fastapi
 ffmpeg
 firebase-admin
 google-cloud-speech
+google-search-results
 httpx
 ipywidgets
 langchain>=0.0.240

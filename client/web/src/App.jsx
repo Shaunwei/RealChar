@@ -229,7 +229,7 @@ const App = () => {
 
       // display callview
       setIsCallView(true);
-      greeting = {
+      const greeting = {
         "English": "Hi, my friend, what brings you here today?",
         "Spanish": "Hola, mi amigo, ¿qué te trae por aquí hoy?"
       }

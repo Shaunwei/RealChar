@@ -1,8 +1,8 @@
 /**
  * src/components/Languages/index.jsx
- * Select a language: English or Spanish
+ * Select a language: currently support English or Spanish
  * 
- * created by Lynchee on 7/20/23
+ * created by pycui on 7/28/23
  */
 
 import React from 'react';

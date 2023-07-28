@@ -28,7 +28,8 @@ class AsyncCallbackTextHandler(AsyncCallbackHandler):
 
 
 class AsyncCallbackAudioHandler(AsyncCallbackHandler):
-    def __init__(self, text_to_speech=None, websocket=None, tts_event=None, character_name="", *args, **kwargs):
+    def __init__(self, text_to_speech=None, websocket=None, tts_event=None, character_name="",
+                 language="en-us", *args, **kwargs):
         super().__init__(*args, **kwargs)
         if text_to_speech is None:
             def text_to_speech(token): return print(
@@ -37,6 +38,7 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
         self.websocket = websocket
         self.current_sentence = ""
         self.character_name = character_name
+        self.language = language
         self.is_reply = False  # the start of the reply. i.e. the substring after '>'
         self.tts_event = tts_event
         # optimization: trade off between latency and quality for the first sentence
@@ -57,7 +59,8 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
                     self.websocket,
                     self.tts_event,
                     self.character_name,
-                    self.is_first_sentence)
+                    self.is_first_sentence,
+                    self.language)
                 self.current_sentence = ""
                 if self.is_first_sentence:
                     self.is_first_sentence = False
@@ -66,7 +69,11 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
         if self.current_sentence != "":
             await self.text_to_speech.stream(
                 self.current_sentence,
-                self.websocket, self.tts_event, self.character_name, self.is_first_sentence)
+                self.websocket,
+                self.tts_event,
+                self.character_name,
+                self.is_first_sentence,
+                self.language)
 
 
 class LLM(ABC):

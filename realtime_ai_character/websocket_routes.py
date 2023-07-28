@@ -51,6 +51,7 @@ async def websocket_endpoint(websocket: WebSocket,
                              api_key: str = Query(None),
                              llm_model: str = Query(default=os.getenv(
                                 'LLM_MODEL_USE', 'gpt-3.5-turbo-16k')),
+                             language: str = Query(default='en-us'),
                              token: str = Query(None),
                              db: Session = Depends(get_db),
                              catalog_manager=Depends(get_catalog_manager),
@@ -74,7 +75,7 @@ async def websocket_endpoint(websocket: WebSocket,
     try:
         main_task = asyncio.create_task(
             handle_receive(websocket, client_id, user_id, db, llm, catalog_manager,
-                           speech_to_text, text_to_speech))
+                           speech_to_text, text_to_speech, language))
 
         await asyncio.gather(main_task)
 
@@ -86,7 +87,8 @@ async def websocket_endpoint(websocket: WebSocket,
 async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db: Session,
                          llm: LLM, catalog_manager: CatalogManager,
                          speech_to_text: SpeechToText,
-                         text_to_speech: TextToSpeech):
+                         text_to_speech: TextToSpeech,
+                         language: str):
     try:
         conversation_history = ConversationHistory()
         session_id = str(uuid.uuid4().hex)
@@ -149,6 +151,7 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                 tts_event=tts_event,
                 characater_name=character.name,
                 first_sentence=True,
+                language=language
             ))
         # Send end of the greeting so the client knows when to start listening
         await manager.send_message(message='[end]\n', websocket=websocket)

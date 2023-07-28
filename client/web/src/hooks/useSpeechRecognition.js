@@ -6,8 +6,9 @@
  */
 
 import { useRef, useEffect } from 'react';
+import { languageCode } from './languageCode';
 
-const useSpeechRecognition = (onResult, onSpeechEnd, callActive) => {
+const useSpeechRecognition = (onResult, onSpeechEnd, callActive, preferredLanguage) => {
   const recognition = useRef(null);
 
   // initialize speech recognition
@@ -17,6 +18,9 @@ const useSpeechRecognition = (onResult, onSpeechEnd, callActive) => {
     recognition.current.interimResults = true;
     recognition.current.maxAlternatives = 1;
     recognition.current.continuous = true;
+
+    var language = languageCode[preferredLanguage];
+    recognition.current.lang = language;
 
     recognition.current.onend = () => {
       if (callActive.current) {

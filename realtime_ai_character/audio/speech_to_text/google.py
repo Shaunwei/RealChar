@@ -28,10 +28,13 @@ class Google(Singleton, SpeechToText):
         logger.info("Setting up [Google Speech to Text]...")
         self.client = speech.SpeechClient()
 
-    def transcribe(self, audio_bytes, platform, prompt='') -> str:
+    def transcribe(self, audio_bytes, platform, prompt='', language='en-US') -> str:
         batch_config = speech.RecognitionConfig({
             'speech_contexts': [speech.SpeechContext(phrases=prompt.split(','))],
             **config.__dict__[platform]})
+        batch_config.language_code = language
+        if language != 'en-US':
+            batch_config.alternative_language_codes = ['en-US']
         response = self.client.recognize(
             config=batch_config,
             audio=speech.RecognitionAudio(content=audio_bytes)

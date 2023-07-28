@@ -28,8 +28,10 @@ router = APIRouter()
 
 manager = get_connection_manager()
 
-GREETING_TXT = 'Hi, my friend, what brings you here today?'
-
+GREETING_TXT_MAP = {
+    "en-US": "Hi, my friend, what brings you here today?",
+    "es-ES": "Hola, mi amigo, ¿qué te trae por aquí hoy?",
+}
 
 async def get_current_user(token: str):
     """Heler function for auth with Firebase."""
@@ -51,7 +53,7 @@ async def websocket_endpoint(websocket: WebSocket,
                              api_key: str = Query(None),
                              llm_model: str = Query(default=os.getenv(
                                 'LLM_MODEL_USE', 'gpt-3.5-turbo-16k')),
-                             language: str = Query(default='en-us'),
+                             language: str = Query(default='en-US'),
                              token: str = Query(None),
                              db: Session = Depends(get_db),
                              catalog_manager=Depends(get_catalog_manager),
@@ -143,10 +145,11 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
         token_buffer = []
 
         # Greet the user
-        await manager.send_message(message=GREETING_TXT, websocket=websocket)
+        greeting_text = GREETING_TXT_MAP[language]
+        await manager.send_message(message=greeting_text, websocket=websocket)
         tts_task = asyncio.create_task(
             text_to_speech.stream(
-                text=GREETING_TXT,
+                text=greeting_text,
                 websocket=websocket,
                 tts_event=tts_event,
                 characater_name=character.name,

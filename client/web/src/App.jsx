@@ -229,10 +229,14 @@ const App = () => {
 
       // display callview
       setIsCallView(true);
-      setHeaderText("Hi, my friend, what brings you here today?");
+      greeting = {
+        "English": "Hi, my friend, what brings you here today?",
+        "Spanish": "Hola, mi amigo, ¿qué te trae por aquí hoy?"
+      }
+      setHeaderText(greeting[preferredLanguage]);
 
       // start media recorder and speech recognition
-      startRecording();      
+      startRecording();
       startListening();
       shouldPlayAudio.current = true;
       callActive.current = true;

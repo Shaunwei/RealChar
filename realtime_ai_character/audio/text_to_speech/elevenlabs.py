@@ -49,11 +49,11 @@ class ElevenLabs(Singleton, TextToSpeech):
         return self.voice_ids.get(name, config.default_voice)
 
     async def stream(self, text, websocket, tts_event: asyncio.Event, characater_name="", 
-                     first_sentence=False, language='en-us') -> None:
+                     first_sentence=False, language='en-US') -> None:
         if DEBUG:
             return
         headers = config.headers
-        if language != 'en-us':
+        if language != 'en-US':
             config.data["model_id"] = 'eleven_multilingual_v1'
         data = {
             "text": text,

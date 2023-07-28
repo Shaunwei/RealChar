@@ -29,7 +29,7 @@ class AsyncCallbackTextHandler(AsyncCallbackHandler):
 
 class AsyncCallbackAudioHandler(AsyncCallbackHandler):
     def __init__(self, text_to_speech=None, websocket=None, tts_event=None, character_name="",
-                 language="en-us", *args, **kwargs):
+                 language="en-US", *args, **kwargs):
         super().__init__(*args, **kwargs)
         if text_to_speech is None:
             def text_to_speech(token): return print(

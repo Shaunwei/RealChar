@@ -18,6 +18,7 @@ import Button from './components/Common/Button';
 import { Characters, createCharacterGroups } from './components/Characters';
 import { sendTokenToServer, signInWithGoogle } from './components/Auth/SignIn';
 import Models from './components/Models';
+import Languages from './components/Languages';
 
 // Custom hooks
 import useWebsocket from './hooks/useWebsocket';
@@ -41,7 +42,9 @@ const App = () => {
   const [selectedModel, setSelectedModel] = useState("gpt-3.5-turbo-16k");
   const [user, setUser] = useState(null);
   const [token, setToken] = useState("");
-  const [useSearch, setUseSearch] = React.useState(false);
+  const [useSearch, setUseSearch] = useState(false);
+  const [preferredLanguage, setPreferredLanguage] = useState("English");
+
   
   const onresultTimeout = useRef(null);
   const onspeechTimeout = useRef(null);
@@ -193,9 +196,9 @@ const App = () => {
   }
 
   // Use custom hooks
-  const { socketRef, send, connectSocket, closeSocket } = useWebsocket(token, handleSocketOnOpen,handleSocketOnMessage, selectedModel);
+  const { socketRef, send, connectSocket, closeSocket } = useWebsocket(token, handleSocketOnOpen,handleSocketOnMessage, selectedModel, preferredLanguage);
   const { isRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder } = useMediaRecorder(handleRecorderOnDataAvailable, handleRecorderOnStop);
-  const { startListening, stopListening, closeRecognition, initializeSpeechRecognition } = useSpeechRecognition(handleRecognitionOnResult, handleRecognitionOnSpeechEnd, callActive);
+  const { startListening, stopListening, closeRecognition, initializeSpeechRecognition } = useSpeechRecognition(handleRecognitionOnResult, handleRecognitionOnSpeechEnd, callActive, preferredLanguage);
   
   // Handle Button Clicks
   const handleConnectButtonClick = async () => {
@@ -227,10 +230,14 @@ const App = () => {
 
       // display callview
       setIsCallView(true);
-      setHeaderText("Hi, my friend, what brings you here today?");
+      const greeting = {
+        "English": "Hi, my friend, what brings you here today?",
+        "Spanish": "Hola, mi amigo, ¿qué te trae por aquí hoy?"
+      }
+      setHeaderText(greeting[preferredLanguage]);
 
       // start media recorder and speech recognition
-      startRecording();      
+      startRecording();
       startListening();
       shouldPlayAudio.current = true;
       callActive.current = true;
@@ -283,6 +290,7 @@ const App = () => {
       setHeaderText("");
       setTextAreaValue("");
       setSelectedModel("gpt-3.5-turbo-16k");
+      setPreferredLanguage("English");
 
       // close web socket connection
       closeSocket();
@@ -311,6 +319,10 @@ const App = () => {
 
           { !isConnected.current ? 
             <Models selectedModel={selectedModel} setSelectedModel={setSelectedModel} /> : null 
+          }
+
+          { !isConnected.current ? 
+            <Languages preferredLanguage={preferredLanguage} setPreferredLanguage={setPreferredLanguage} /> : null 
           }
 
           <p className="header">{headerText}</p>
@@ -368,6 +380,8 @@ const App = () => {
                 callActive={callActive}
                 startRecording={startRecording}
                 stopRecording={stopRecording}
+                preferredLanguage={preferredLanguage}
+                setPreferredLanguage={setPreferredLanguage}
               />
             </div>
           </div>

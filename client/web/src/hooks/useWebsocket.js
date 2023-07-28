@@ -7,8 +7,9 @@
 
 import { useRef, useCallback } from 'react';
 import {isIP, isIPv4} from 'is-ip';
+import { languageCode } from './languageCode';
 
-const useWebsocket = (token, onOpen, onMessage, selectedModel) => {
+const useWebsocket = (token, onOpen, onMessage, selectedModel, preferredLanguage) => {
     const socketRef = useRef(null);
 
     // initialize web socket and connect to server.
@@ -35,8 +36,10 @@ const useWebsocket = (token, onOpen, onMessage, selectedModel) => {
             // Generate the new host value with the same IP but different port
             var newHost = hostname + ':' + newPort;
 
-            const ws_path = ws_scheme + '://' + newHost + `/ws/${clientId}?llm_model=${selectedModel}&token=${token}`;
-            
+            var language = languageCode[preferredLanguage];
+
+            const ws_path = ws_scheme + '://' + newHost + `/ws/${clientId}?llm_model=${selectedModel}&language=${language}&token=${token}`;
+
             socketRef.current = new WebSocket(ws_path);
             const socket = socketRef.current;
             socket.binaryType = 'arraybuffer';

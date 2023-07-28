@@ -10,21 +10,34 @@ import CachedAsyncImage
 import AVFAudio
 import Shimmer
 
-struct CharacterOption: Identifiable, Equatable {
-    let id: Int
+struct CharacterOption: Identifiable, Equatable, Codable {
+    let id: String
     let name: String
-    let description: String
+    let description: String?
     let imageUrl: URL?
+    let authorName: String
+    let source: String
+
+    enum CodingKeys: String, CodingKey {
+        case id = "character_id"
+        case name
+        case description
+        case imageUrl = "image_url"
+        case authorName = "author_name"
+        case source
+    }
 }
 
 struct ConfigView: View {
 
     let options: [CharacterOption]
     let hapticFeedback: Bool
-    @Binding var loaded: Bool
     @Binding var selectedOption: CharacterOption?
     @Binding var openMic: Bool
     let onConfirmConfig: (CharacterOption) -> Void
+
+    @State var includedCommunityCharacterIds = [String]()
+    @State var showCommunityCharacters = false
 
     var body: some View {
         GeometryReader { geometry in
@@ -36,9 +49,19 @@ struct ConfigView: View {
 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20) {
-                        if loaded && !options.isEmpty {
-                            ForEach(options) { option in
-                                CharacterOptionView(option: option, selected: option == selectedOption)
+                        if !options.isEmpty {
+                            ForEach(options.filter({ option in
+                                option.source != "community" || includedCommunityCharacterIds.contains(option.id)
+                            })) { option in
+                                CharacterOptionView(option: option,
+                                                    selected: option == selectedOption,
+                                                    showRemoveButton: option.source == "community",
+                                                    onRemove: {
+                                    includedCommunityCharacterIds.removeAll(where: { $0 == option.id })
+                                    if selectedOption == option {
+                                        selectedOption = nil
+                                    }
+                                })
                                     .onTapGesture {
                                         if selectedOption == option {
                                             selectedOption = nil
@@ -49,13 +72,30 @@ struct ConfigView: View {
                             }
                         } else {
                             ForEach(0..<6) { id in
-                                CharacterOptionView(option: .init(id: id, name: "Placeholder", description: "", imageUrl: nil), selected: false)
+                                CharacterOptionView(option: .init(id: String(id),
+                                                                  name: "Placeholder",
+                                                                  description: "",
+                                                                  imageUrl: nil,
+                                                                  authorName: "",
+                                                                  source: "default"))
                                     .redacted(reason: .placeholder)
                                     .shimmering()
                             }
                         }
                     }
                     .padding(2)
+                }
+
+                if options.contains(where: { $0.source == "community" && !includedCommunityCharacterIds.contains($0.id) }) {
+                    CharacterOptionView(option: .init(id: UUID().uuidString,
+                                                      name: "Select from community",
+                                                      description: "",
+                                                      imageUrl: URL(string: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Noun_Project_Community_icon_986471.svg/100px-Noun_Project_Community_icon_986471.svg.png")!,
+                                                      authorName: "",
+                                                      source: "default"))
+                    .onTapGesture {
+                        showCommunityCharacters = true
+                    }
                 }
 
                 Toggle(isOn: $openMic) {
@@ -74,6 +114,31 @@ struct ConfigView: View {
                 .disabled(selectedOption == nil)
             }
             .padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? 0 : 20)
+        }
+        .sheet(isPresented: $showCommunityCharacters) {
+            NavigationView {
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 20) {
+                        if !options.isEmpty {
+                            ForEach(options.filter({ option in
+                                option.source == "community" && !includedCommunityCharacterIds.contains(option.id)
+                            })) { option in
+                                CharacterOptionView(option: option)
+                                    .onTapGesture {
+                                        includedCommunityCharacterIds.append(option.id)
+                                        showCommunityCharacters = false
+                                        selectedOption = option
+                                    }
+                            }
+                        }
+                    }
+                    .padding(2)
+                }
+                .padding(.horizontal, 48)
+                .navigationTitle("Select from community")
+                .navigationBarTitleDisplayMode(.inline)
+            }
+            .navigationViewStyle(StackNavigationViewStyle())
         }
         .onAppear {
             openMic = headphoneOrBluetoothDeviceConnected
@@ -95,7 +160,9 @@ struct CharacterOptionView: View {
     @Environment(\.colorScheme) var colorScheme
 
     let option: CharacterOption
-    let selected: Bool
+    var selected: Bool = false
+    var showRemoveButton: Bool = false
+    var onRemove: (() -> Void)? = nil
 
     var body: some View {
         HStack(alignment: .center, spacing: 22) {
@@ -127,17 +194,29 @@ struct CharacterOptionView: View {
                     .font(
                         Font.custom("Prompt", size: 16).weight(.medium)
                     )
+                    .lineLimit(2)
                     .foregroundColor(colorScheme == .dark ? .white : Color(red: 0.01, green: 0.03, blue: 0.11).opacity(0.8))
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            Text(option.description)
-                .font(
-                    Font.custom("Prompt", size: 16).weight(.medium)
-                )
-                .multilineTextAlignment(.trailing)
-                .foregroundColor(colorScheme == .dark ? .white: Color(red: 0.4, green: 0.52, blue: 0.83))
-                .frame(alignment: .trailing)
+            if !option.authorName.isEmpty {
+                Text("by \(option.authorName)")
+                    .font(
+                        Font.custom("Prompt", size: 12).weight(.medium)
+                    )
+                    .lineLimit(2)
+                    .multilineTextAlignment(.trailing)
+                    .foregroundColor(colorScheme == .dark ? .white: Color(red: 0.4, green: 0.52, blue: 0.83))
+                    .frame(alignment: .trailing)
+            }
+
+            if showRemoveButton {
+                Button {
+                    onRemove?()
+                } label: {
+                    Image(systemName: "xmark.circle")
+                }
+            }
         }
         .padding(.leading, 12)
         .padding(.trailing, 24)
@@ -153,11 +232,26 @@ struct CharacterOptionView: View {
 
 struct ConfigView_Previews: PreviewProvider {
     static var previews: some View {
-        ConfigView(options: [.init(id: 0, name: "Mythical god", description: "Rogue", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!),
-                             .init(id: 1, name: "Anime hero", description: "Noble", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!),
-                             .init(id: 2, name: "Realtime AI", description: "Kind", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!)],
+        ConfigView(options: [
+            .init(id: "god",
+                  name: "Mythical god",
+                  description: "Rogue",
+                  imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!,
+                  authorName: "",
+                  source: "default"),
+            .init(id: "hero",
+                  name: "Anime hero",
+                  description: "Noble",
+                  imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!,
+                  authorName: "",
+                  source: "default"),
+            .init(id: "ai",
+                  name: "Realtime AI",
+                  description: "Kind",
+                  imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!,
+                  authorName: "",
+                  source: "default")],
                    hapticFeedback: false,
-                   loaded: .constant(true),
                    selectedOption: .constant(nil),
                    openMic: .constant(false),
                    onConfirmConfig: { _ in })

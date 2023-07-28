@@ -113,7 +113,7 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
         character = None
         if character_id:
             character = catalog_manager.get_character(character_id.replace('_', ' ').title())
-        character_list = list(catalog_manager.characters.keys())
+        character_list = [character.name for character in catalog_manager.characters.values() if character.source != 'community']
         while not character:
             character_message = "\n".join([
                 f"{i+1} - {character}"

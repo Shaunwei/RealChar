@@ -44,6 +44,7 @@ class CatalogManager(Singleton):
         name = directory.stem.replace('_', ' ').title()
         voice_id = os.environ.get(name.split(' ')[0].upper() + '_VOICE', '')
         self.characters[name] = Character(
+            character_id=directory.stem,
             name=name,
             llm_system_prompt=system_prompt,
             llm_user_prompt=user_prompt,
@@ -83,8 +84,10 @@ class CatalogManager(Singleton):
             with ExitStack() as stack:
                 f_yaml = stack.enter_context(open(directory / 'config.yaml'))
                 yaml_content = yaml.safe_load(f_yaml)
+            character_id = yaml_content['character_id']
             character_name = yaml_content['character_name']
             self.characters[character_name] = Character(
+                character_id=character_id,
                 name=character_name,
                 llm_system_prompt=yaml_content["system"],
                 llm_user_prompt=yaml_content["user"],

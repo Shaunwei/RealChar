@@ -224,6 +224,7 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                 conversation_history.ai.append(response)
                 token_buffer.clear()
                 # 4. Persist interaction in the database
+                tools = "search" if use_search else ""
                 Interaction(client_id=client_id,
                             user_id=user_id,
                             session_id=session_id,
@@ -231,7 +232,8 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                             server_message_unicode=response,
                             platform=platform,
                             action_type='text',
-                            character_id=character_id).save(db)
+                            character_id=character_id,
+                            tools=tools).save(db)
 
             # handle binary message(audio)
             elif 'bytes' in data:
@@ -263,6 +265,7 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                     conversation_history.ai.append(response)
                     token_buffer.clear()
                     # Persist interaction in the database
+                    tools = "search" if use_search else ""
                     Interaction(client_id=client_id,
                                 user_id=user_id,
                                 session_id=session_id,
@@ -270,7 +273,8 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                                 server_message_unicode=response,
                                 platform=platform,
                                 action_type='audio',
-                                character_id=character_id).save(db)
+                                character_id=character_id,
+                                tools=tools).save(db)
 
                 # 4. Send message to LLM
                 tts_task = asyncio.create_task(

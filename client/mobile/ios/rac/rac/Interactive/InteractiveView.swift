@@ -26,7 +26,6 @@ struct InteractiveView: View {
     let character: CharacterOption
     let openMic: Bool
     let hapticFeedback: Bool
-    @Binding var shouldSendCharacter: Bool
     let onExit: () -> Void
     @Binding var messages: [ChatMessage]
     @State var mode: InteractiveMode = .voice
@@ -172,15 +171,13 @@ struct InteractiveView: View {
                     simpleError()
                 }
             }
-            webSocket.isInteractiveMode = true
-            if shouldSendCharacter {
-                shouldSendCharacter = false
-                webSocket.send(message: String(character.id))
-            }
         }
         .onDisappear {
             voiceState = .idle(streamingEnded: true)
             audioPlayer.pauseAudio()
+            webSocket.onStringReceived = nil
+            webSocket.onDataReceived = nil
+            webSocket.onErrorReceived = nil
         }
         .onChange(of: voiceState) { newValue in
             if newValue == .listeningToUser {
@@ -280,10 +277,14 @@ struct InteractiveView: View {
 struct InteractiveView_Previews: PreviewProvider {
     static var previews: some View {
         InteractiveView(webSocket: MockWebSocket(),
-                        character: .init(id: 0, name: "Name", description: "Description", imageUrl: nil),
+                        character: .init(id: "id",
+                                         name: "Name",
+                                         description: "Description",
+                                         imageUrl: nil,
+                                         authorName: "",
+                                         source: "default"),
                         openMic: false,
                         hapticFeedback: false,
-                        shouldSendCharacter: .constant(true),
                         onExit: {},
                         messages: .constant([]))
     }

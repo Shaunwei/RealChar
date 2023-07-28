@@ -10,18 +10,28 @@ import CachedAsyncImage
 import AVFAudio
 import Shimmer
 
-struct CharacterOption: Identifiable, Equatable {
-    let id: Int
+struct CharacterOption: Identifiable, Equatable, Codable {
+    let id: String
     let name: String
-    let description: String
+    let description: String?
     let imageUrl: URL?
+    let authorName: String
+    let source: String
+
+    enum CodingKeys: String, CodingKey {
+        case id = "character_id"
+        case name
+        case description
+        case imageUrl = "image_url"
+        case authorName = "author_name"
+        case source
+    }
 }
 
 struct ConfigView: View {
 
     let options: [CharacterOption]
     let hapticFeedback: Bool
-    @Binding var loaded: Bool
     @Binding var selectedOption: CharacterOption?
     @Binding var openMic: Bool
     let onConfirmConfig: (CharacterOption) -> Void
@@ -36,8 +46,10 @@ struct ConfigView: View {
 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20) {
-                        if loaded && !options.isEmpty {
-                            ForEach(options) { option in
+                        if !options.isEmpty {
+                            ForEach(options.filter({ option in
+                                option.source != "community"
+                            })) { option in
                                 CharacterOptionView(option: option, selected: option == selectedOption)
                                     .onTapGesture {
                                         if selectedOption == option {
@@ -49,7 +61,12 @@ struct ConfigView: View {
                             }
                         } else {
                             ForEach(0..<6) { id in
-                                CharacterOptionView(option: .init(id: id, name: "Placeholder", description: "", imageUrl: nil), selected: false)
+                                CharacterOptionView(option: .init(id: String(id),
+                                                                  name: "Placeholder",
+                                                                  description: "",
+                                                                  imageUrl: nil,
+                                                                  authorName: "",
+                                                                  source: "default"), selected: false)
                                     .redacted(reason: .placeholder)
                                     .shimmering()
                             }
@@ -131,7 +148,7 @@ struct CharacterOptionView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            Text(option.description)
+            Text(option.description ?? "")
                 .font(
                     Font.custom("Prompt", size: 16).weight(.medium)
                 )
@@ -153,11 +170,26 @@ struct CharacterOptionView: View {
 
 struct ConfigView_Previews: PreviewProvider {
     static var previews: some View {
-        ConfigView(options: [.init(id: 0, name: "Mythical god", description: "Rogue", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!),
-                             .init(id: 1, name: "Anime hero", description: "Noble", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!),
-                             .init(id: 2, name: "Realtime AI", description: "Kind", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!)],
+        ConfigView(options: [
+            .init(id: "god",
+                  name: "Mythical god",
+                  description: "Rogue",
+                  imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!,
+                  authorName: "",
+                  source: "default"),
+            .init(id: "hero",
+                  name: "Anime hero",
+                  description: "Noble",
+                  imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!,
+                  authorName: "",
+                  source: "default"),
+            .init(id: "ai",
+                  name: "Realtime AI",
+                  description: "Kind",
+                  imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!,
+                  authorName: "",
+                  source: "default")],
                    hapticFeedback: false,
-                   loaded: .constant(true),
                    selectedOption: .constant(nil),
                    openMic: .constant(false),
                    onConfirmConfig: { _ in })

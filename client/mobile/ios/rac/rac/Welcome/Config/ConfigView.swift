@@ -36,6 +36,9 @@ struct ConfigView: View {
     @Binding var openMic: Bool
     let onConfirmConfig: (CharacterOption) -> Void
 
+    @State var includedCommunityCharacterIds = [String]()
+    @State var showCommunityCharacters = false
+
     var body: some View {
         GeometryReader { geometry in
             VStack(alignment: .leading, spacing: 20) {
@@ -48,9 +51,17 @@ struct ConfigView: View {
                     VStack(spacing: 20) {
                         if !options.isEmpty {
                             ForEach(options.filter({ option in
-                                option.source != "community"
+                                option.source != "community" || includedCommunityCharacterIds.contains(option.id)
                             })) { option in
-                                CharacterOptionView(option: option, selected: option == selectedOption)
+                                CharacterOptionView(option: option,
+                                                    selected: option == selectedOption,
+                                                    showRemoveButton: option.source == "community",
+                                                    onRemove: {
+                                    includedCommunityCharacterIds.removeAll(where: { $0 == option.id })
+                                    if selectedOption == option {
+                                        selectedOption = nil
+                                    }
+                                })
                                     .onTapGesture {
                                         if selectedOption == option {
                                             selectedOption = nil
@@ -66,13 +77,25 @@ struct ConfigView: View {
                                                                   description: "",
                                                                   imageUrl: nil,
                                                                   authorName: "",
-                                                                  source: "default"), selected: false)
+                                                                  source: "default"))
                                     .redacted(reason: .placeholder)
                                     .shimmering()
                             }
                         }
                     }
                     .padding(2)
+                }
+
+                if options.contains(where: { $0.source == "community" && !includedCommunityCharacterIds.contains($0.id) }) {
+                    CharacterOptionView(option: .init(id: UUID().uuidString,
+                                                      name: "Select from community",
+                                                      description: "",
+                                                      imageUrl: URL(string: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Noun_Project_Community_icon_986471.svg/100px-Noun_Project_Community_icon_986471.svg.png")!,
+                                                      authorName: "",
+                                                      source: "default"))
+                    .onTapGesture {
+                        showCommunityCharacters = true
+                    }
                 }
 
                 Toggle(isOn: $openMic) {
@@ -91,6 +114,31 @@ struct ConfigView: View {
                 .disabled(selectedOption == nil)
             }
             .padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? 0 : 20)
+        }
+        .sheet(isPresented: $showCommunityCharacters) {
+            NavigationView {
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 20) {
+                        if !options.isEmpty {
+                            ForEach(options.filter({ option in
+                                option.source == "community" && !includedCommunityCharacterIds.contains(option.id)
+                            })) { option in
+                                CharacterOptionView(option: option)
+                                    .onTapGesture {
+                                        includedCommunityCharacterIds.append(option.id)
+                                        showCommunityCharacters = false
+                                        selectedOption = option
+                                    }
+                            }
+                        }
+                    }
+                    .padding(2)
+                }
+                .padding(.horizontal, 48)
+                .navigationTitle("Select from community")
+                .navigationBarTitleDisplayMode(.inline)
+            }
+            .navigationViewStyle(StackNavigationViewStyle())
         }
         .onAppear {
             openMic = headphoneOrBluetoothDeviceConnected
@@ -112,7 +160,9 @@ struct CharacterOptionView: View {
     @Environment(\.colorScheme) var colorScheme
 
     let option: CharacterOption
-    let selected: Bool
+    var selected: Bool = false
+    var showRemoveButton: Bool = false
+    var onRemove: (() -> Void)? = nil
 
     var body: some View {
         HStack(alignment: .center, spacing: 22) {
@@ -144,17 +194,29 @@ struct CharacterOptionView: View {
                     .font(
                         Font.custom("Prompt", size: 16).weight(.medium)
                     )
+                    .lineLimit(2)
                     .foregroundColor(colorScheme == .dark ? .white : Color(red: 0.01, green: 0.03, blue: 0.11).opacity(0.8))
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            Text(option.description ?? "")
-                .font(
-                    Font.custom("Prompt", size: 16).weight(.medium)
-                )
-                .multilineTextAlignment(.trailing)
-                .foregroundColor(colorScheme == .dark ? .white: Color(red: 0.4, green: 0.52, blue: 0.83))
-                .frame(alignment: .trailing)
+            if !option.authorName.isEmpty {
+                Text("by \(option.authorName)")
+                    .font(
+                        Font.custom("Prompt", size: 12).weight(.medium)
+                    )
+                    .lineLimit(2)
+                    .multilineTextAlignment(.trailing)
+                    .foregroundColor(colorScheme == .dark ? .white: Color(red: 0.4, green: 0.52, blue: 0.83))
+                    .frame(alignment: .trailing)
+            }
+
+            if showRemoveButton {
+                Button {
+                    onRemove?()
+                } label: {
+                    Image(systemName: "xmark.circle")
+                }
+            }
         }
         .padding(.leading, 12)
         .padding(.trailing, 24)

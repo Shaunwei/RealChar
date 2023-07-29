@@ -32,7 +32,7 @@ const MediaDevices = ({ selectedDevice, setSelectedDevice }) => {
 
   return (
     <div className="devices-container">
-      <label className="audio-device-label" htmlFor="audio-device-selection">Select an audio input device:</label>
+      <label className="audio-device-label" htmlFor="audio-device-selection">Microphone</label>
       <div className="select-dropdown">
         <select
             id="audio-device-selection"

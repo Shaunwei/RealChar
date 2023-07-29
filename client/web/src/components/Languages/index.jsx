@@ -13,7 +13,7 @@ const Languages = ({preferredLanguage, setPreferredLanguage}) => {
 
     return (
         <div className="languages-container">
-            <label className="languages-label" htmlFor="languages-selection">Select preferred language:</label>
+            <label className="languages-label" htmlFor="languages-selection">Language</label>
             <div id="languages-selection" className="select-dropdown">
                 <select value={preferredLanguage} onChange={(e) => setPreferredLanguage(e.target.value)}>
                     <option disabled value="">Select Language</option>

@@ -13,7 +13,7 @@ const Models = ({selectedModel, setSelectedModel}) => {
 
     return (
         <div className="models-container">
-            <label className="models-label" htmlFor="models-selection">Select a model:</label>
+            <label className="models-label" htmlFor="models-selection">Large langauge model(LLM)</label>
             <div id="models-selection" className="select-dropdown">
                 <select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)}>
                     <option disabled value="">Select Model</option>

@@ -177,8 +177,6 @@ const App = () => {
 
     const interval = setInterval(() => {
       if (isConnected.current && selectedCharacter) {
-        // tell server which character the user selects
-        send(selectedCharacter);
         setCharacterConfirmed(true);
 
         // display callview
@@ -208,8 +206,6 @@ const App = () => {
 
     const interval = setInterval(() => {
       if (isConnected.current && selectedCharacter) {
-        // tell server which character the user selects
-        send(selectedCharacter);   
         setCharacterConfirmed(true); 
 
         // display textview

@@ -47,6 +47,44 @@ enum LlmOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Codable 
     }
 }
 
+enum LanguageOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Codable {
+
+    case english, spanish
+
+    init?(rawValue: String) {
+        for option in LanguageOption.allCases {
+            if rawValue == option.rawValue {
+                self = option
+                return
+            }
+        }
+        return nil
+    }
+
+    var id: String { rawValue }
+    var rawValue: String {
+        switch self {
+        case .english:
+            return "en-US"
+        case .spanish:
+            return "es-ES"
+        }
+    }
+
+    var displayName: String {
+        switch self {
+        case .english:
+            return "English"
+        case .spanish:
+            return "Spanish"
+        }
+    }
+
+    var locale: Locale {
+        Locale(identifier: rawValue)
+    }
+}
+
 struct SettingsView: View {
     @EnvironmentObject private var userSettings: UserSettings
     @EnvironmentObject private var preferenceSettings: PreferenceSettings
@@ -97,6 +135,23 @@ struct SettingsView: View {
                                 .font(
                                     Font.custom("Prompt", size: 18).weight(.medium)
                                 )
+
+                            Text("Conversation Language?")
+                                .font(
+                                    Font.custom("Prompt", size: 16)
+                                )
+
+                            Picker("Conversation Language", selection: $preferenceSettings.languageOption) {
+                                ForEach(LanguageOption.allCases) { languageOption in
+                                    Text(languageOption.displayName)
+                                        .font(
+                                            Font.custom("Prompt", size: 16)
+                                        )
+                                        .tag(languageOption)
+                                }
+                            }
+                            .padding(.bottom, 2)
+                            .pickerStyle(.segmented)
 
                             Text("LLM Model?")
                                 .font(

@@ -14,6 +14,7 @@ class PreferenceSettings: ObservableObject {
         static let hapticFeedbackKey = "enableHapticFeedback"
         static let useSearch = "useSearch"
         static let llmOptionKey = "largeLanguageModel"
+        static let languageOption = "languageOption"
         static let includedCommunityCharacterIds = "includedCommunityCharacterIds"
     }
 
@@ -36,6 +37,13 @@ class PreferenceSettings: ObservableObject {
             guard llmOption != oldValue else { return }
             UserDefaults.standard.set(llmOption.rawValue, forKey: Constants.llmOptionKey)
             print("Saved large language model preference: \(llmOption.displayName)")
+        }
+    }
+    @Published var languageOption: LanguageOption = LanguageOption(rawValue: UserDefaults.standard.string(forKey: Constants.languageOption) ?? "en-US") ?? .english {
+        didSet {
+            guard languageOption != oldValue else { return }
+            UserDefaults.standard.set(languageOption.rawValue, forKey: Constants.languageOption)
+            print("Saved language preference: \(languageOption.displayName)")
         }
     }
     @Published var includedCommunityCharacterIds: [String] = (UserDefaults.standard.string(forKey: Constants.includedCommunityCharacterIds) ?? "").split(separator: ",").map { String($0) } {

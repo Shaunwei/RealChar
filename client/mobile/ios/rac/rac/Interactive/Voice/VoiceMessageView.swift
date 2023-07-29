@@ -82,7 +82,7 @@ struct VoiceMessageView: View {
     let openMic: Bool
     @Binding var messages: [ChatMessage]
     @Binding var state: VoiceState
-    @StateObject var speechRecognizer = SpeechRecognizer()
+    @StateObject var speechRecognizer: SpeechRecognizer
 
     @State private var isInputUpdated: Bool = true
     @State private var timer: Timer? = nil
@@ -325,6 +325,7 @@ struct VoiceMessageView_Previews: PreviewProvider {
             ChatMessage(id: UUID(), role: .assistant, content: "Well thank you, Karina! I like your nam too. Now tell me, where do you live?")
         ]),
                          state: .constant(.idle(streamingEnded: true)),
+                         speechRecognizer: SpeechRecognizer(),
                          onUpdateUserMessage: { _ in },
                          onSendUserMessage: { _ in },
                          onTapVoiceButton: { })

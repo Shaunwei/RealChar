@@ -38,8 +38,8 @@ actor SpeechRecognizer: ObservableObject {
      Initializes a new speech recognizer. If this is the first time you've used the class, it
      requests access to the speech recognizer and the microphone.
      */
-    init() {
-        recognizer = SFSpeechRecognizer()
+    init(locale: Locale = .current) {
+        recognizer = SFSpeechRecognizer(locale: locale)
         guard recognizer != nil else {
             transcribe(RecognizerError.nilRecognizer)
             return

@@ -1,4 +1,4 @@
-name: Build and Push Docker Image for Frontend
+name: Build Push and Deploy Docker Image for Frontend
 
 on:
   release:
@@ -28,3 +28,9 @@ jobs:
         file: ./client/web/Dockerfile
         push: true
         tags: shaunly/real_char_frontend:latest
+
+    - name: Deploy to Kubernetes
+      run: |
+        echo "${{ secrets.KUBECONFIG }}" | base64 --decode > ./kubeconfig.yaml
+        export KUBECONFIG=./kubeconfig.yaml
+        kubectl rollout restart deployment deployment/react-dev-deployment

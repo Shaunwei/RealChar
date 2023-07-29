@@ -33,4 +33,4 @@ jobs:
       run: |
         echo "${{ secrets.KUBECONFIG }}" | base64 --decode > ./kubeconfig.yaml
         export KUBECONFIG=./kubeconfig.yaml
-        kubectl rollout restart deployment deployment/realchar-dev-deployment
+        kubectl rollout restart deployment realchar-dev-deployment

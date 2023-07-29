@@ -7,7 +7,7 @@
 
 import { useState, useRef } from 'react';
 
-const useMediaRecorder = (isConnected, audioSent, callActive, send) => {
+const useMediaRecorder = (isConnected, audioSent, callActive, send, closeSocket) => {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorder = useRef(null);
   const chunks = useRef([]);
@@ -42,6 +42,14 @@ const useMediaRecorder = (isConnected, audioSent, callActive, send) => {
     })
     .catch(function(err) {
       console.log('An error occurred: ' + err);
+      if (err.name === 'NotAllowedError') {
+        alert("Permission Denied: Please grant permission to access the microphone and refresh the website to try again!");
+      } else if (err.name === 'NotFoundError') {
+        alert("No Device Found: Please check your microphone device and refresh the website to try again.");
+      }
+      isConnected.current = false;
+      closeMediaRecorder();  
+      closeSocket();
     });
   };
 

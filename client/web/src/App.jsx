@@ -92,10 +92,10 @@ const App = () => {
   }, [])
 
   // Helper functions
-  const handleSocketOnOpen = (event) => {
+  const handleSocketOnOpen = async (event) => {
     console.log("successfully connected");
     isConnected.current = true;
-    connectMicrophone(selectedDevice);
+    await connectMicrophone(selectedDevice);
     initializeSpeechRecognition();
   }
 
@@ -145,7 +145,7 @@ const App = () => {
 
   // Use custom hooks
   const { socketRef, send, connectSocket, closeSocket } = useWebsocket(token, handleSocketOnOpen,handleSocketOnMessage, selectedModel, preferredLanguage, selectedCharacter);
-  const { isRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder } = useMediaRecorder(isConnected, audioSent, callActive, send);
+  const { isRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder } = useMediaRecorder(isConnected, audioSent, callActive, send, closeSocket);
   const { startListening, stopListening, closeRecognition, initializeSpeechRecognition } = useSpeechRecognition(callActive, preferredLanguage, shouldPlayAudio, isConnected, audioSent, stopAudioPlayback, send, stopRecording, setTextAreaValue);
   
   // Handle Button Clicks
@@ -187,12 +187,6 @@ const App = () => {
         }
         setHeaderText(greeting[preferredLanguage]);
 
-        // start media recorder and speech recognition
-        startRecording();
-        startListening();
-        shouldPlayAudio.current = true;
-        callActive.current = true;
-
         clearInterval(interval); // Stop checking
         // Hide loading animation
       }
@@ -230,6 +224,7 @@ const App = () => {
   const handleContinueCall = () => {
     startRecording();
     startListening();
+    shouldPlayAudio.current = true;
     callActive.current = true;
   }
 

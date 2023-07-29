@@ -33,6 +33,7 @@ GREETING_TXT_MAP = {
     "es-ES": "Hola, mi amigo, ¿qué te trae por aquí hoy?",
 }
 
+
 async def get_current_user(token: str):
     """Heler function for auth with Firebase."""
     if not token:
@@ -52,7 +53,7 @@ async def websocket_endpoint(websocket: WebSocket,
                              client_id: int = Path(...),
                              api_key: str = Query(None),
                              llm_model: str = Query(default=os.getenv(
-                                'LLM_MODEL_USE', 'gpt-3.5-turbo-16k')),
+                                 'LLM_MODEL_USE', 'gpt-3.5-turbo-16k')),
                              language: str = Query(default='en-US'),
                              token: str = Query(None),
                              character_id: str = Query(None),
@@ -112,16 +113,17 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
         # 1. User selected a character
         character = None
         if character_id:
-            character = catalog_manager.get_character(character_id.replace('_', ' ').title())
-        character_list = [character.name for character in catalog_manager.characters.values() if character.source != 'community']
+            character = catalog_manager.get_character(
+                character_id.replace('_', ' ').title())
+        character_list = [character.name for character in catalog_manager.characters.values(
+        ) if character.source != 'community']
         while not character:
             character_message = "\n".join([
                 f"{i+1} - {character}"
                 for i, character in enumerate(character_list)
             ])
             await manager.send_message(
-                message=
-                f"Select your character by entering the corresponding number:\n"
+                message=f"Select your character by entering the corresponding number:\n"
                 f"{character_message}\n",
                 websocket=websocket)
             data = await websocket.receive()
@@ -133,8 +135,7 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                 selection = int(data['text'])
                 if selection > len(character_list) or selection < 1:
                     await manager.send_message(
-                        message=
-                        f"Invalid selection. Select your character ["
+                        message=f"Invalid selection. Select your character ["
                         f"{', '.join(catalog_manager.characters.keys())}]\n",
                         websocket=websocket)
                     continue
@@ -160,7 +161,7 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                 text=greeting_text,
                 websocket=websocket,
                 tts_event=tts_event,
-                characater_name=character.name,
+                voice_id=character.voice_id,
                 first_sentence=True,
                 language=language
             ))
@@ -215,7 +216,7 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                                 on_new_token, []),
                             audioCallback=AsyncCallbackAudioHandler(
                                 text_to_speech, websocket, tts_event,
-                                character.name)))
+                                character.voice_id)))
                     continue
                 # 1. Send message to LLM
                 response = await llm.achat(
@@ -225,7 +226,7 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                     callback=AsyncCallbackTextHandler(on_new_token,
                                                       token_buffer),
                     audioCallback=AsyncCallbackAudioHandler(
-                        text_to_speech, websocket, tts_event, character.name),
+                        text_to_speech, websocket, tts_event, character.voice_id),
                     character=character,
                     useSearch=use_search)
 
@@ -302,7 +303,7 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                                   tts_task_done_call_back),
                               audioCallback=AsyncCallbackAudioHandler(
                                   text_to_speech, websocket, tts_event,
-                                  character.name),
+                                  character.voice_id),
                               character=character,
                               useSearch=use_search))
 

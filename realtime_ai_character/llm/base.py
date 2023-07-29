@@ -28,7 +28,7 @@ class AsyncCallbackTextHandler(AsyncCallbackHandler):
 
 
 class AsyncCallbackAudioHandler(AsyncCallbackHandler):
-    def __init__(self, text_to_speech=None, websocket=None, tts_event=None, character_name="",
+    def __init__(self, text_to_speech=None, websocket=None, tts_event=None, voice_id="",
                  language="en-US", *args, **kwargs):
         super().__init__(*args, **kwargs)
         if text_to_speech is None:
@@ -37,7 +37,7 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
         self.text_to_speech = text_to_speech
         self.websocket = websocket
         self.current_sentence = ""
-        self.character_name = character_name
+        self.voice_id = voice_id
         self.language = language
         self.is_reply = False  # the start of the reply. i.e. the substring after '>'
         self.tts_event = tts_event
@@ -51,14 +51,14 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
         if not self.is_reply and token == ">":
             self.is_reply = True
         elif self.is_reply:
-            if token != ".":
+            if not token in {'.', '?', '!'}:
                 self.current_sentence += token
             else:
                 await self.text_to_speech.stream(
                     self.current_sentence,
                     self.websocket,
                     self.tts_event,
-                    self.character_name,
+                    self.voice_id,
                     self.is_first_sentence,
                     self.language)
                 self.current_sentence = ""
@@ -71,7 +71,7 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
                 self.current_sentence,
                 self.websocket,
                 self.tts_event,
-                self.character_name,
+                self.voice_id,
                 self.is_first_sentence,
                 self.language)
 

@@ -29,6 +29,7 @@ struct CharacterOption: Identifiable, Equatable, Codable {
 }
 
 struct ConfigView: View {
+    @EnvironmentObject private var preferenceSettings: PreferenceSettings
 
     let options: [CharacterOption]
     let hapticFeedback: Bool
@@ -36,7 +37,6 @@ struct ConfigView: View {
     @Binding var openMic: Bool
     let onConfirmConfig: (CharacterOption) -> Void
 
-    @State var includedCommunityCharacterIds = [String]()
     @State var showCommunityCharacters = false
 
     var body: some View {
@@ -51,22 +51,26 @@ struct ConfigView: View {
                     VStack(spacing: 20) {
                         if !options.isEmpty {
                             ForEach(options.filter({ option in
-                                option.source != "community" || includedCommunityCharacterIds.contains(option.id)
+                                option.source != "community" || preferenceSettings.includedCommunityCharacterIds.contains(option.id)
                             })) { option in
                                 CharacterOptionView(option: option,
                                                     selected: option == selectedOption,
                                                     showRemoveButton: option.source == "community",
                                                     onRemove: {
-                                    includedCommunityCharacterIds.removeAll(where: { $0 == option.id })
-                                    if selectedOption == option {
-                                        selectedOption = nil
+                                    withAnimation {
+                                        preferenceSettings.includedCommunityCharacterIds.removeAll(where: { $0 == option.id })
+                                        if selectedOption == option {
+                                            selectedOption = nil
+                                        }
                                     }
                                 })
                                     .onTapGesture {
-                                        if selectedOption == option {
-                                            selectedOption = nil
-                                        } else {
-                                            selectedOption = option
+                                        withAnimation {
+                                            if selectedOption == option {
+                                                selectedOption = nil
+                                            } else {
+                                                selectedOption = option
+                                            }
                                         }
                                     }
                             }
@@ -86,7 +90,7 @@ struct ConfigView: View {
                     .padding(2)
                 }
 
-                if options.contains(where: { $0.source == "community" && !includedCommunityCharacterIds.contains($0.id) }) {
+                if options.contains(where: { $0.source == "community" && !preferenceSettings.includedCommunityCharacterIds.contains($0.id) }) {
                     CharacterOptionView(option: .init(id: UUID().uuidString,
                                                       name: "Select from community",
                                                       description: "",
@@ -121,13 +125,15 @@ struct ConfigView: View {
                     VStack(spacing: 20) {
                         if !options.isEmpty {
                             ForEach(options.filter({ option in
-                                option.source == "community" && !includedCommunityCharacterIds.contains(option.id)
+                                option.source == "community" && !preferenceSettings.includedCommunityCharacterIds.contains(option.id)
                             })) { option in
                                 CharacterOptionView(option: option)
                                     .onTapGesture {
-                                        includedCommunityCharacterIds.append(option.id)
-                                        showCommunityCharacters = false
-                                        selectedOption = option
+                                        withAnimation {
+                                            preferenceSettings.includedCommunityCharacterIds.append(option.id)
+                                            showCommunityCharacters = false
+                                            selectedOption = option
+                                        }
                                     }
                             }
                         }

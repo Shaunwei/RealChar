@@ -26,11 +26,6 @@ const Settings = ({ preferredLanguage, setPreferredLanguage, selectedDevice, set
         const interval = setInterval(() => {
             // display callview
             setIsCallView(commMethod === "call");
-            const greeting = {
-                "English": "Hi, my friend, what brings you here today?",
-                "Spanish": "Hola, mi amigo, ¿qué te trae por aquí hoy?"
-            }
-            // TODO(logic): setHeaderText(greeting[preferredLanguage]);
     
             shouldPlayAudio.current = true;
             clearInterval(interval);
@@ -51,22 +46,26 @@ const Settings = ({ preferredLanguage, setPreferredLanguage, selectedDevice, set
     };
 
     return (
-        <div>
+        <div className='settings'>
             <h2>Confirm your setting</h2>
             
-            <h4>Communication method</h4>
-            <select value={commMethod} onChange={handleCommMethodChange}>
-                <option value="call">Call</option>
-                <option value="text">Text</option>
-            </select>
+            <div className="comm-container">
+                <label className="comm-label" htmlFor="comm-selection">Communication method</label>
+                <div id="comm-selection" className="select-dropdown">
+                    <select value={commMethod} onChange={handleCommMethodChange}>
+                        <option disabled value="">Select Language</option>
+                        <option value="call">Call</option>
+                        <option value="text">Text</option>
+                    </select>
+                </div>
+            </div>
 
             <Languages preferredLanguage={preferredLanguage} setPreferredLanguage={setPreferredLanguage} />
             
             <MediaDevices selectedDevice={selectedDevice} setSelectedDevice={setSelectedDevice} />
             
             <Models selectedModel={selectedModel} setSelectedModel={setSelectedModel} />
-            
-            <h4>advanced option</h4>
+
             <label className='search-checkbox'>
                 <input
                 type="checkbox"
@@ -76,7 +75,9 @@ const Settings = ({ preferredLanguage, setPreferredLanguage, selectedDevice, set
                 Enable Google Search
             </label>
 
-            <Button onClick={handleStartClick} name="Get Started"/>
+            <div className='start-btn'>
+                <Button onClick={handleStartClick} name="Get Started"/>
+            </div>
         </div>
     );
 };

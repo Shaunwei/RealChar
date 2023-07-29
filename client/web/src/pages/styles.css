@@ -1,3 +1,32 @@
 h2, h4, p {
     color: white
 }
+
+.comm-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+
+.comm-label {
+	margin-top: 40px;
+	margin-bottom: 20px;
+	color: #e0e0e0;
+}
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  align-items: center;	
+}
+
+.start-btn {
+	padding: 30px;
+}
+
+.conversation-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;	
+}

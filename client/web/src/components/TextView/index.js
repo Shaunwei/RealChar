@@ -58,11 +58,6 @@ const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAr
         setMessageInput(event.target.value);
     };
 
-    const handleChange = () => {
-        send('[!USE_SEARCH]' + (!useSearch).toString());
-        setUseSearch(!useSearch);
-    };
-
     const handlePushTalk = () => {
         if (!talking.current) {
             startRecording();
@@ -120,14 +115,6 @@ const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAr
                 <Button onClick={handleSendClick} name="Send Message" />
             }
             
-            <label className='search-checkbox'>
-                <input
-                type="checkbox"
-                checked={useSearch}
-                onChange={handleChange}
-                />
-                Enable Google Search
-            </label>
             <div className="options-container">
                 <IconButton Icon={TbPower} className="icon-red" onClick={handlePowerOffClick} />
                 <IconButton Icon={TbPhoneCall} className="icon-blue" onClick={() => setIsCallView(true)} disabled={talking.current} />

@@ -46,17 +46,11 @@ const App = () => {
   const [useSearch, setUseSearch] = useState(false);
   const [preferredLanguage, setPreferredLanguage] = useState("English");
 
-  
-  const onresultTimeout = useRef(null);
-  const onspeechTimeout = useRef(null);
   const audioPlayer = useRef(null);
   const callActive = useRef(false);
   const audioSent = useRef(false);
   const shouldPlayAudio = useRef(false);
-  const finalTranscripts = useRef([]);
   const audioQueue = useRef([]);
-  const chunks = useRef([]);
-  const confidence = useRef(0);
   const isConnected = useRef(false);
   const isLoggedIn = useRef(false);
 
@@ -140,74 +134,6 @@ const App = () => {
     }
   }
 
-  const handleRecorderOnDataAvailable = (event) => {
-    chunks.current.push(event.data);
-  }
-
-  const handleRecorderOnStop = () => {
-    let blob = new Blob(chunks.current, {'type' : 'audio/webm'});
-    chunks.current = [];
-
-    // TODO: debug download video
-
-    if (isConnected.current) {
-      if (!audioSent.current) {
-        send(blob);
-      }
-      audioSent.current = false;
-      if (callActive.current) {
-        startRecording();
-      }
-    }
-  }
-
-  const handleRecognitionOnResult = (event) => {
-    // Clear the timeout if a result is received
-    clearTimeout(onresultTimeout.current);
-    clearTimeout(onspeechTimeout.current);
-    stopAudioPlayback();
-    const result = event.results[event.results.length - 1];
-    const transcriptObj = result[0];
-    const transcript = transcriptObj.transcript;
-    const ifFinal = result.isFinal;
-    if (ifFinal) {
-      console.log(`final transcript: {${transcript}}`);
-      finalTranscripts.current.push(transcript);
-      confidence.current = transcriptObj.confidence;
-      send(`[&]${transcript}`);
-    } else {
-      console.log(`interim transcript: {${transcript}}`);
-    }
-    // Set a new timeout
-    onresultTimeout.current = setTimeout(() => {
-      if (ifFinal) {
-        return;
-      }
-      // If the timeout is reached, send the interim transcript
-      console.log(`TIMEOUT: interim transcript: {${transcript}}`);
-      send(`[&]${transcript}`);
-    }, 500); // 500 ms
-
-    onspeechTimeout.current = setTimeout(() => {
-      stopListening();
-    }, 2000); // 2 seconds
-  };
-
-  const handleRecognitionOnSpeechEnd = () => {
-    if (isConnected.current) {
-      audioSent.current = true;
-      stopRecording();
-      if (confidence.current > 0.8 && finalTranscripts.current.length > 0) {
-        let message = finalTranscripts.current.join(' ');
-        send(message);
-        setTextAreaValue(prevState => prevState + `\nYou> ${message}\n`);
-        
-        shouldPlayAudio.current = true;
-      }
-    }
-    finalTranscripts.current = [];
-  };
-
   const stopAudioPlayback = () => {
     if (audioPlayer.current) {
       audioPlayer.current.pause();
@@ -219,8 +145,8 @@ const App = () => {
 
   // Use custom hooks
   const { socketRef, send, connectSocket, closeSocket } = useWebsocket(token, handleSocketOnOpen,handleSocketOnMessage, selectedModel, preferredLanguage, selectedCharacter);
-  const { isRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder } = useMediaRecorder(handleRecorderOnDataAvailable, handleRecorderOnStop);
-  const { startListening, stopListening, closeRecognition, initializeSpeechRecognition } = useSpeechRecognition(handleRecognitionOnResult, handleRecognitionOnSpeechEnd, callActive, preferredLanguage);
+  const { isRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder } = useMediaRecorder(isConnected, audioSent, callActive, send);
+  const { startListening, stopListening, closeRecognition, initializeSpeechRecognition } = useSpeechRecognition(callActive, preferredLanguage, shouldPlayAudio, isConnected, audioSent, stopAudioPlayback, send, stopRecording, setTextAreaValue);
   
   // Handle Button Clicks
   const connect = async () => {
@@ -320,8 +246,6 @@ const App = () => {
       callActive.current = false;
       shouldPlayAudio.current = false;
       audioSent.current = false;
-      confidence.current = 0;
-      chunks.current = []
       
       // reset everything to initial states
       setSelectedCharacter(null);

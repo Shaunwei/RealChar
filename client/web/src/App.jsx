@@ -39,6 +39,8 @@ const App = () => {
   const [messageInput, setMessageInput] = useState('');
   const [isCallView, setIsCallView] = useState(false);
   const [textAreaValue, setTextAreaValue] = useState('');
+  const [characterGroups, setCharacterGroups] = useState([]);
+  const [characterConfirmed, setCharacterConfirmed] = useState(false);
   const audioPlayer = useRef(null);
   const callActive = useRef(false);
   const audioSent = useRef(false);
@@ -164,7 +166,8 @@ const App = () => {
       
       // reset everything to initial states
       setSelectedCharacter(null);
-      // setCharacterConfirmed(false);
+      setCharacterConfirmed(false);
+      setCharacterGroups([]);
       setIsCallView(false);
       setTextAreaValue("");
       setSelectedModel("gpt-3.5-turbo-16k");
@@ -186,7 +189,11 @@ const App = () => {
               <Home
                 selectedCharacter={selectedCharacter} 
                 setSelectedCharacter={setSelectedCharacter} 
-                isPlaying={isPlaying} 
+                isPlaying={isPlaying}
+                characterGroups={characterGroups}
+                setCharacterGroups={setCharacterGroups}
+                setCharacterConfirmed={setCharacterConfirmed}
+                characterConfirmed={characterConfirmed}
               />} 
             />
             <Route path="/settings" element={
@@ -231,6 +238,10 @@ const App = () => {
                 stopRecording={stopRecording} 
                 preferredLanguage={preferredLanguage} 
                 setPreferredLanguage={setPreferredLanguage}
+                characterGroups={characterGroups}
+                selectedCharacter={selectedCharacter}
+                setSelectedCharacter={setSelectedCharacter}
+                characterConfirmed={characterConfirmed}
               />} 
             />
         </Routes>

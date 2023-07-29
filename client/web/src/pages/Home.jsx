@@ -12,14 +12,24 @@ import MobileWarning from '../components/MobileWarning';
 import Characters from '../components/Characters';
 import Button from '../components/Common/Button';
 
-const Home = ({ selectedCharacter, setSelectedCharacter, isPlaying }) => {
+const Home = ({ 
+  selectedCharacter, 
+  setSelectedCharacter, 
+  isPlaying,
+  characterGroups,
+  setCharacterGroups,
+  setCharacterConfirmed,
+  characterConfirmed
+}) => {
   const navigate = useNavigate();
   const isMobile = window.innerWidth <= 768; 
-  const [characterGroups, setCharacterGroups] = useState([]);
-  const [characterConfirmed, setCharacterConfirmed] = useState(false);
+  const [loading, setLoading] = useState(true);
+  
 
   // Get characters
   useEffect(() => {
+    setLoading(true);
+
     // Get host
     const scheme = window.location.protocol;
     var currentHost = window.location.host;
@@ -37,8 +47,13 @@ const Home = ({ selectedCharacter, setSelectedCharacter, isPlaying }) => {
 
     fetch(url)
       .then(response => response.json())
-      .then(data => setCharacterGroups(data))
-      .catch(err => console.error(err));
+      .then(data => {
+        setCharacterGroups(data);
+        setLoading(false);
+      }).catch(err => {
+        setLoading(false);
+        console.error(err);
+      });
   }, [])
 
   const handleNextClick = () => {
@@ -51,18 +66,21 @@ const Home = ({ selectedCharacter, setSelectedCharacter, isPlaying }) => {
         <MobileWarning />
       ) : (
         <div id="desktop-content">
-          <p className="header">Choose Your Partner</p>
-  
-          <Characters 
-              characterGroups={characterGroups} 
-              selectedCharacter={selectedCharacter} 
-              setSelectedCharacter={setSelectedCharacter} 
-              isPlaying={isPlaying} 
-              characterConfirmed={characterConfirmed} 
-          />
+          { loading ? (<h2>Loading...</h2>) : (
+            <>
+              <p className="header">Choose Your Partner</p>
+      
+              <Characters 
+                  characterGroups={characterGroups} 
+                  selectedCharacter={selectedCharacter} 
+                  setSelectedCharacter={setSelectedCharacter} 
+                  isPlaying={isPlaying} 
+                  characterConfirmed={characterConfirmed} 
+              />
 
-          <Button onClick={handleNextClick} name="Next"  disabled={!selectedCharacter}/>
-        </div>
+              <Button onClick={handleNextClick} name="Next"  disabled={!selectedCharacter}/>
+              </>)}
+          </div>
       )
     )
 };

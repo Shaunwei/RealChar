@@ -7,9 +7,10 @@
 
 import { useState, useRef } from 'react';
 
-const useMediaRecorder = (onDataAvailable, onStop) => {
+const useMediaRecorder = (isConnected, audioSent, callActive, send) => {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorder = useRef(null);
+  const chunks = useRef([]);
 
   // initialize media recorder
   const connectMicrophone = (deviceId) => {
@@ -19,8 +20,25 @@ const useMediaRecorder = (onDataAvailable, onStop) => {
     })
     .then((stream) => {
       mediaRecorder.current = new MediaRecorder(stream);
-      mediaRecorder.current.ondataavailable = onDataAvailable;
-      mediaRecorder.current.onstop = onStop;
+      mediaRecorder.current.ondataavailable = (event) => {
+        chunks.current.push(event.data);
+      };
+      mediaRecorder.current.onstop = () => {
+        let blob = new Blob(chunks.current, {'type' : 'audio/webm'});
+        chunks.current = [];
+    
+        // TODO: debug download video
+    
+        if (isConnected.current) {
+          if (!audioSent.current) {
+            send(blob);
+          }
+          audioSent.current = false;
+          if (callActive.current) {
+            startRecording();
+          }
+        }
+      };
     })
     .catch(function(err) {
       console.log('An error occurred: ' + err);
@@ -44,6 +62,7 @@ const useMediaRecorder = (onDataAvailable, onStop) => {
   const closeMediaRecorder = () => {
     stopRecording();
     mediaRecorder.current = null;
+    chunks.current = [];
   };
 
   return { isRecording, setIsRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder };

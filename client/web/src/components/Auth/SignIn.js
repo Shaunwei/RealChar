@@ -9,7 +9,7 @@ import React, { useState } from 'react';
 import auth from '../../utils/firebase';
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import './styles.css';
-import {isIP, isIPv4} from 'is-ip';
+import {isIP} from 'is-ip';
 
 export const sendTokenToServer = async (token) => {
   // Send token to server

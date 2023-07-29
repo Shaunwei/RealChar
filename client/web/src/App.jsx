@@ -6,6 +6,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
+import {isIP} from 'is-ip';
 
 // Components
 import Header from './components/Header';
@@ -15,7 +16,7 @@ import MediaDevices from './components/MediaDevices';
 import TextView from './components/TextView';
 import CallView from './components/CallView';
 import Button from './components/Common/Button';
-import { Characters, createCharacterGroups } from './components/Characters';
+import Characters from './components/Characters';
 import { sendTokenToServer, signInWithGoogle } from './components/Auth/SignIn';
 import Models from './components/Models';
 import Languages from './components/Languages';
@@ -30,7 +31,7 @@ import auth from './utils/firebase';
 
 const App = () => {
   const isMobile = window.innerWidth <= 768; 
-  const [headerText, setHeaderText] = useState("");
+  const [headerText, setHeaderText] = useState("Choose your partner");
   const [selectedDevice, setSelectedDevice] = useState("");
   const [characterConfirmed, setCharacterConfirmed] = useState(false);
   const [isCallView, setIsCallView] = useState(false);
@@ -45,17 +46,11 @@ const App = () => {
   const [useSearch, setUseSearch] = useState(false);
   const [preferredLanguage, setPreferredLanguage] = useState("English");
 
-  
-  const onresultTimeout = useRef(null);
-  const onspeechTimeout = useRef(null);
   const audioPlayer = useRef(null);
   const callActive = useRef(false);
   const audioSent = useRef(false);
   const shouldPlayAudio = useRef(false);
-  const finalTranscripts = useRef([]);
   const audioQueue = useRef([]);
-  const chunks = useRef([]);
-  const confidence = useRef(0);
   const isConnected = useRef(false);
   const isLoggedIn = useRef(false);
 
@@ -73,14 +68,35 @@ const App = () => {
     })
   }, [])
 
+  useEffect(() => {
+    // Get host
+    const scheme = window.location.protocol;
+    var currentHost = window.location.host;
+    var parts = currentHost.split(':');
+    var hostname = parts[0];
+    // Local deployment uses 8000 port by default.
+    var newPort = '8000';
+
+    if (!(hostname === 'localhost' || isIP(hostname))) {
+        hostname = 'api.' + hostname;
+        newPort = window.location.protocol === "https:" ? 443 : 80;
+    }
+    var newHost = hostname + ':' + newPort + '/characters';
+    const url = scheme + '//' + newHost;
+
+    // Get characters
+    fetch(url)
+      .then(response => response.json())
+      .then(data => setCharacterGroups(data))
+      .catch(err => console.error(err));
+  }, [])
+
   // Helper functions
   const handleSocketOnOpen = (event) => {
     console.log("successfully connected");
     isConnected.current = true;
     connectMicrophone(selectedDevice);
     initializeSpeechRecognition();
-    send("web"); // select web as the platform
-    setHeaderText("Select a character");
   }
 
   const handleSocketOnMessage = (event) => {
@@ -99,7 +115,7 @@ const App = () => {
         setTextAreaValue(prevState => prevState + "\n\n");
         
       } else if (message.startsWith('Select')) {
-        setCharacterGroups(createCharacterGroups(message));
+        // setCharacterGroups(createCharacterGroups(message));
       } else {
         setTextAreaValue(prevState => prevState + `${event.data}`);
 
@@ -118,74 +134,6 @@ const App = () => {
     }
   }
 
-  const handleRecorderOnDataAvailable = (event) => {
-    chunks.current.push(event.data);
-  }
-
-  const handleRecorderOnStop = () => {
-    let blob = new Blob(chunks.current, {'type' : 'audio/webm'});
-    chunks.current = [];
-
-    // TODO: debug download video
-
-    if (isConnected.current) {
-      if (!audioSent.current) {
-        send(blob);
-      }
-      audioSent.current = false;
-      if (callActive.current) {
-        startRecording();
-      }
-    }
-  }
-
-  const handleRecognitionOnResult = (event) => {
-    // Clear the timeout if a result is received
-    clearTimeout(onresultTimeout.current);
-    clearTimeout(onspeechTimeout.current);
-    stopAudioPlayback();
-    const result = event.results[event.results.length - 1];
-    const transcriptObj = result[0];
-    const transcript = transcriptObj.transcript;
-    const ifFinal = result.isFinal;
-    if (ifFinal) {
-      console.log(`final transcript: {${transcript}}`);
-      finalTranscripts.current.push(transcript);
-      confidence.current = transcriptObj.confidence;
-      send(`[&]${transcript}`);
-    } else {
-      console.log(`interim transcript: {${transcript}}`);
-    }
-    // Set a new timeout
-    onresultTimeout.current = setTimeout(() => {
-      if (ifFinal) {
-        return;
-      }
-      // If the timeout is reached, send the interim transcript
-      console.log(`TIMEOUT: interim transcript: {${transcript}}`);
-      send(`[&]${transcript}`);
-    }, 500); // 500 ms
-
-    onspeechTimeout.current = setTimeout(() => {
-      stopListening();
-    }, 2000); // 2 seconds
-  };
-
-  const handleRecognitionOnSpeechEnd = () => {
-    if (isConnected.current) {
-      audioSent.current = true;
-      stopRecording();
-      if (confidence.current > 0.8 && finalTranscripts.current.length > 0) {
-        let message = finalTranscripts.current.join(' ');
-        send(message);
-        setTextAreaValue(prevState => prevState + `\nYou> ${message}\n`);
-        
-        shouldPlayAudio.current = true;
-      }
-    }
-    finalTranscripts.current = [];
-  };
-
   const stopAudioPlayback = () => {
     if (audioPlayer.current) {
       audioPlayer.current.pause();
@@ -196,12 +144,12 @@ const App = () => {
   }
 
   // Use custom hooks
-  const { socketRef, send, connectSocket, closeSocket } = useWebsocket(token, handleSocketOnOpen,handleSocketOnMessage, selectedModel, preferredLanguage);
-  const { isRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder } = useMediaRecorder(handleRecorderOnDataAvailable, handleRecorderOnStop);
-  const { startListening, stopListening, closeRecognition, initializeSpeechRecognition } = useSpeechRecognition(handleRecognitionOnResult, handleRecognitionOnSpeechEnd, callActive, preferredLanguage);
+  const { socketRef, send, connectSocket, closeSocket } = useWebsocket(token, handleSocketOnOpen,handleSocketOnMessage, selectedModel, preferredLanguage, selectedCharacter);
+  const { isRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder } = useMediaRecorder(isConnected, audioSent, callActive, send);
+  const { startListening, stopListening, closeRecognition, initializeSpeechRecognition } = useSpeechRecognition(callActive, preferredLanguage, shouldPlayAudio, isConnected, audioSent, stopAudioPlayback, send, stopRecording, setTextAreaValue);
   
   // Handle Button Clicks
-  const handleConnectButtonClick = async () => {
+  const connect = async () => {
     try {
       // requires login if user wants to use gpt4 or claude.
       if (selectedModel !== 'gpt-3.5-turbo-16k') {
@@ -223,39 +171,53 @@ const App = () => {
   }
 
   const handleTalkClick = () => {
-    if (isConnected.current && selectedCharacter) {
-      // tell server which character the user selects
-      send(selectedCharacter);
-      setCharacterConfirmed(true);
+    connect();
 
-      // display callview
-      setIsCallView(true);
-      const greeting = {
-        "English": "Hi, my friend, what brings you here today?",
-        "Spanish": "Hola, mi amigo, ¿qué te trae por aquí hoy?"
+    // Show loading animation
+
+    const interval = setInterval(() => {
+      if (isConnected.current && selectedCharacter) {
+        setCharacterConfirmed(true);
+
+        // display callview
+        setIsCallView(true);
+        const greeting = {
+          "English": "Hi, my friend, what brings you here today?",
+          "Spanish": "Hola, mi amigo, ¿qué te trae por aquí hoy?"
+        }
+        setHeaderText(greeting[preferredLanguage]);
+
+        // start media recorder and speech recognition
+        startRecording();
+        startListening();
+        shouldPlayAudio.current = true;
+        callActive.current = true;
+
+        clearInterval(interval); // Stop checking
+        // Hide loading animation
       }
-      setHeaderText(greeting[preferredLanguage]);
-
-      // start media recorder and speech recognition
-      startRecording();
-      startListening();
-      shouldPlayAudio.current = true;
-      callActive.current = true;
-    }
+    }, 500); // Check every 0.5 second
   }
 
   const handleTextClick = () => {
-    if (isConnected.current && selectedCharacter) {
-      // tell server which character the user selects
-      send(selectedCharacter);   
-      setCharacterConfirmed(true); 
+    connect();
 
-      // display textview
-      setIsCallView(false);
-      setHeaderText("");
+    // Show loading animation
 
-      shouldPlayAudio.current = true;
-    }
+    const interval = setInterval(() => {
+      if (isConnected.current && selectedCharacter) {
+        setCharacterConfirmed(true); 
+
+        // display textview
+        setIsCallView(false);
+        setHeaderText("");
+
+        shouldPlayAudio.current = true;
+
+        // Hide loading animation
+        clearInterval(interval); // Stop checking
+      }
+    }, 500); // Check every 0.5 second
   }
 
   const handleStopCall = () => {
@@ -280,14 +242,12 @@ const App = () => {
       callActive.current = false;
       shouldPlayAudio.current = false;
       audioSent.current = false;
-      confidence.current = 0;
-      chunks.current = []
       
       // reset everything to initial states
       setSelectedCharacter(null);
       setCharacterConfirmed(false);
       setIsCallView(false);
-      setHeaderText("");
+      setHeaderText("Choose your partner");
       setTextAreaValue("");
       setSelectedModel("gpt-3.5-turbo-16k");
       setPreferredLanguage("English");
@@ -313,6 +273,16 @@ const App = () => {
             } 
           </p>
 
+          <p className="header">{headerText}</p>
+
+          <Characters 
+              characterGroups={characterGroups} 
+              selectedCharacter={selectedCharacter} 
+              setSelectedCharacter={setSelectedCharacter} 
+              isPlaying={isPlaying} 
+              characterConfirmed={characterConfirmed} 
+          />
+
           { !isConnected.current ? 
             <MediaDevices selectedDevice={selectedDevice} setSelectedDevice={setSelectedDevice} /> : null 
           }
@@ -325,23 +295,7 @@ const App = () => {
             <Languages preferredLanguage={preferredLanguage} setPreferredLanguage={setPreferredLanguage} /> : null 
           }
 
-          <p className="header">{headerText}</p>
-
-          { !isConnected.current ? 
-            <Button onClick={handleConnectButtonClick} name="Connect" /> : null
-          }
-
-          { isConnected.current && 
-            <Characters 
-              characterGroups={characterGroups} 
-              selectedCharacter={selectedCharacter} 
-              setSelectedCharacter={setSelectedCharacter} 
-              isPlaying={isPlaying} 
-              characterConfirmed={characterConfirmed} 
-            />
-          }
-
-          { isConnected.current && !characterConfirmed ? 
+          { !isConnected.current && !characterConfirmed ? 
             ( <div className="actions">
               <Button onClick={handleTalkClick} name="Call" disabled={!selectedCharacter} />
               <Button onClick={handleTextClick} name="Text" disabled={!selectedCharacter} />

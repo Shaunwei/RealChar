@@ -9,7 +9,7 @@ import { useRef, useCallback } from 'react';
 import {isIP, isIPv4} from 'is-ip';
 import { languageCode } from './languageCode';
 
-const useWebsocket = (token, onOpen, onMessage, selectedModel, preferredLanguage) => {
+const useWebsocket = (token, onOpen, onMessage, selectedModel, preferredLanguage, selectedCharacter) => {
     const socketRef = useRef(null);
 
     // initialize web socket and connect to server.
@@ -38,7 +38,7 @@ const useWebsocket = (token, onOpen, onMessage, selectedModel, preferredLanguage
 
             var language = languageCode[preferredLanguage];
 
-            const ws_path = ws_scheme + '://' + newHost + `/ws/${clientId}?llm_model=${selectedModel}&language=${language}&token=${token}`;
+            const ws_path = ws_scheme + '://' + newHost + `/ws/${clientId}?llm_model=${selectedModel}&platform=web&character_id=${selectedCharacter}&language=${language}&token=${token}`;
 
             socketRef.current = new WebSocket(ws_path);
             const socket = socketRef.current;

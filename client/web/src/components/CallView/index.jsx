@@ -31,8 +31,10 @@ const CallView = ( {isRecording, isPlaying, audioPlayer, handleStopCall, handleC
             <div className={`sound-wave ${isRecording ? '' : 'stop-animation'}`}>
                 <span></span><span></span><span></span><span></span><span></span><span></span>
             </div>
-            <IconButton Icon={MdCallEnd} className={`icon-red ${isRecording ? '' : 'hidden'}`} bgcolor="red" onClick={handleStopCall} />
-            <IconButton Icon={TbPhoneCall} className={`icon-green ${isRecording ? 'hidden' : ''}`} bgcolor="green" onClick={handleContinueCall} />
+            { isRecording ? 
+              <IconButton Icon={MdCallEnd} className="icon-red" bgcolor="red" onClick={handleStopCall} /> : 
+              <IconButton Icon={TbPhoneCall} className="icon-green" bgcolor="green" onClick={handleContinueCall} />
+            }
           </div>
           <div className="options-container">
               <IconButton Icon={TbPower} className="icon-red" onClick={handleDisconnect} />

@@ -13,7 +13,6 @@ import { MdVoiceChat } from 'react-icons/md';
 import Button from '../Common/Button';
 import { useNavigate } from 'react-router-dom';
 
-
 const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAreaValue, messageInput, setMessageInput, handleDisconnect, setIsCallView, useSearch, setUseSearch, callActive, startRecording, stopRecording }) => {
     const navigate = useNavigate();
     const [keyboard, SetKeyboard] = useState(true);
@@ -56,11 +55,6 @@ const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAr
 
     const handleInputChange = (event) => {
         setMessageInput(event.target.value);
-    };
-
-    const handleChange = () => {
-        send('[!USE_SEARCH]' + (!useSearch).toString());
-        setUseSearch(!useSearch);
     };
 
     const handlePushTalk = () => {
@@ -120,14 +114,6 @@ const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAr
                 <Button onClick={handleSendClick} name="Send Message" />
             }
             
-            <label className='search-checkbox'>
-                <input
-                type="checkbox"
-                checked={useSearch}
-                onChange={handleChange}
-                />
-                Enable Google Search
-            </label>
             <div className="options-container">
                 <IconButton Icon={TbPower} className="icon-red" onClick={handlePowerOffClick} />
                 <IconButton Icon={TbPhoneCall} className="icon-blue" onClick={() => setIsCallView(true)} disabled={talking.current} />

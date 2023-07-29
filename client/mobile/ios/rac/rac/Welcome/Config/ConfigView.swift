@@ -36,8 +36,18 @@ struct ConfigView: View {
     @Binding var selectedOption: CharacterOption?
     @Binding var openMic: Bool
     let onConfirmConfig: (CharacterOption) -> Void
+    let loadCharacters: () async -> Void
 
-    @State var showCommunityCharacters = false
+    @State private var showCommunityCharacters = false
+
+    private var displayOptions: [CharacterOption] {
+        options.filter({ option in
+            option.source != "community" || preferenceSettings.includedCommunityCharacterIds.contains(option.id)
+        })
+            .sorted(by: { option1, option2 in
+                option1.source > option2.source
+            })
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -47,24 +57,14 @@ struct ConfigView: View {
                         Font.custom("Prompt", size: 18).weight(.medium)
                     )
 
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 20) {
+                ScrollViewReader { scrollView in
+                    List {
                         if !options.isEmpty {
-                            ForEach(options.filter({ option in
-                                option.source != "community" || preferenceSettings.includedCommunityCharacterIds.contains(option.id)
-                            })) { option in
-                                CharacterOptionView(option: option,
-                                                    selected: option == selectedOption,
-                                                    showRemoveButton: option.source == "community",
-                                                    onRemove: {
-                                    withAnimation {
-                                        preferenceSettings.includedCommunityCharacterIds.removeAll(where: { $0 == option.id })
-                                        if selectedOption == option {
-                                            selectedOption = nil
-                                        }
-                                    }
-                                })
-                                    .onTapGesture {
+                            ForEach(displayOptions) { option in
+                                    CharacterOptionView(option: option,
+                                                        selected: option == selectedOption,
+                                                        showRemoveButton: option.source == "community",
+                                                        onTap: {
                                         withAnimation {
                                             if selectedOption == option {
                                                 selectedOption = nil
@@ -72,8 +72,20 @@ struct ConfigView: View {
                                                 selectedOption = option
                                             }
                                         }
-                                    }
-                            }
+                                    },
+                                                        onRemove: {
+                                        withAnimation {
+                                            preferenceSettings.includedCommunityCharacterIds.removeAll(where: { $0 == option.id })
+                                            if selectedOption == option {
+                                                selectedOption = nil
+                                            }
+                                        }
+                                    })
+                                    .listRowBackground(Color.clear)
+                                    .listRowSeparator(.hidden)
+                                    .padding(2)
+                                    .listRowInsets(.init(top: 0, leading: 0, bottom: 20, trailing: 0))
+                                }
                         } else {
                             ForEach(0..<6) { id in
                                 CharacterOptionView(option: .init(id: String(id),
@@ -82,12 +94,35 @@ struct ConfigView: View {
                                                                   imageUrl: nil,
                                                                   authorName: "",
                                                                   source: "default"))
-                                    .redacted(reason: .placeholder)
-                                    .shimmering()
+                                .redacted(reason: .placeholder)
+                                .shimmering()
+                                .listRowBackground(Color.clear)
+                                .listRowSeparator(.hidden)
+                                .padding(2)
+                                .listRowInsets(.init(top: 0, leading: 0, bottom: 20, trailing: 0))
                             }
                         }
                     }
-                    .padding(2)
+                    .scrollIndicators(.hidden)
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                    .onChange(of: selectedOption) { _ in
+                        if let selectedOption {
+                            withAnimation {
+                                scrollView.scrollTo(selectedOption.id)
+                            }
+                        }
+                    }
+                    .onChange(of: preferenceSettings.includedCommunityCharacterIds) { _ in
+                        if let selectedOption {
+                            withAnimation {
+                                scrollView.scrollTo(selectedOption.id)
+                            }
+                        }
+                    }
+                    .refreshable {
+                        await loadCharacters()
+                    }
                 }
 
                 if options.contains(where: { $0.source == "community" && !preferenceSettings.includedCommunityCharacterIds.contains($0.id) }) {
@@ -96,10 +131,10 @@ struct ConfigView: View {
                                                       description: "",
                                                       imageUrl: URL(string: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Noun_Project_Community_icon_986471.svg/100px-Noun_Project_Community_icon_986471.svg.png")!,
                                                       authorName: "",
-                                                      source: "default"))
-                    .onTapGesture {
+                                                      source: "default"),
+                                        onTap: {
                         showCommunityCharacters = true
-                    }
+                    })
                 }
 
                 Toggle(isOn: $openMic) {
@@ -127,14 +162,14 @@ struct ConfigView: View {
                             ForEach(options.filter({ option in
                                 option.source == "community" && !preferenceSettings.includedCommunityCharacterIds.contains(option.id)
                             })) { option in
-                                CharacterOptionView(option: option)
-                                    .onTapGesture {
-                                        withAnimation {
-                                            preferenceSettings.includedCommunityCharacterIds.append(option.id)
-                                            showCommunityCharacters = false
-                                            selectedOption = option
-                                        }
+                                CharacterOptionView(option: option,
+                                                    onTap: {
+                                    withAnimation {
+                                        preferenceSettings.includedCommunityCharacterIds.append(option.id)
+                                        showCommunityCharacters = false
+                                        selectedOption = option
                                     }
+                                })
                             }
                         }
                     }
@@ -168,11 +203,12 @@ struct CharacterOptionView: View {
     let option: CharacterOption
     var selected: Bool = false
     var showRemoveButton: Bool = false
+    var onTap: (() -> Void)? = nil
     var onRemove: (() -> Void)? = nil
 
     var body: some View {
-        HStack(alignment: .center, spacing: 22) {
-            HStack(alignment: .center, spacing: 12) {
+        HStack(alignment: .center, spacing: 12) {
+            HStack(alignment: .center, spacing: 8) {
                 ZStack {
                     Rectangle()
                         .foregroundColor(.clear)
@@ -222,6 +258,7 @@ struct CharacterOptionView: View {
                 } label: {
                     Image(systemName: "xmark.circle")
                 }
+                .buttonStyle(CustomButtonStyle())
             }
         }
         .padding(.leading, 12)
@@ -233,6 +270,9 @@ struct CharacterOptionView: View {
             RoundedRectangle(cornerRadius: 40)
                 .stroke((colorScheme == .dark ? Color(red: 0.65, green: 0.75, blue: 1).opacity(selected ? 1 : 0) : Color(red: 0.4, green: 0.52, blue: 0.83).opacity(selected ? 0.6 : 0)), lineWidth: 2)
         )
+        .onTapGesture {
+            onTap?()
+        }
     }
 }
 
@@ -260,7 +300,8 @@ struct ConfigView_Previews: PreviewProvider {
                    hapticFeedback: false,
                    selectedOption: .constant(nil),
                    openMic: .constant(false),
-                   onConfirmConfig: { _ in })
+                   onConfirmConfig: { _ in },
+                   loadCharacters: {})
         .frame(width: 310)
     }
 }

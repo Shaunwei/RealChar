@@ -8,52 +8,6 @@
 // Characters
 import React, { useEffect, useState } from 'react';
 import './style.css';
-import raiden from '../../assets/images/raiden.png';
-import loki from '../../assets/svgs/loki.svg';
-import aiHelper from '../../assets/images/ai_helper.png';
-import pi from '../../assets/images/pi.jpeg';
-import elon from '../../assets/images/elon.png';
-import bruce from '../../assets/images/bruce.png';
-import steve from '../../assets/images/jobs.png';
-import realchar from '../../assets/svgs/realchar.svg';
-import sam from '../../assets/images/sam.png';
-import mark from '../../assets/images/mark_zuckerberg.png';
-
-// create character groups
-const createCharacterGroups = (message) => {
-    const options = message.split('\n').slice(1);
-
-    const imageMap = {
-        'Raiden Shogun And Ei': raiden,
-        'Loki': loki,
-        'Ai Character Helper': aiHelper,
-        'Reflection Pi': pi,
-        'Elon Musk': elon,
-        'Bruce Wayne': bruce,
-        'Steve Jobs': steve,
-        'Sam Altman': sam,
-        'Mark Zuckerberg': mark,
-    };
-
-    const newCharacterGroups = [];
-    options.forEach(option => {
-        const match = option.match(/^(\d+)\s-\s(.+)$/);
-        if (match) {
-            let src = imageMap[match[2]];
-            if (!src) {
-                src = realchar;
-            }
-            
-            newCharacterGroups.push({
-            id: match[1],
-            name: match[2],
-            imageSrc: src
-            });
-        }
-    });
-
-    return newCharacterGroups;
-}
 
 const Characters = ({ characterGroups, selectedCharacter, setSelectedCharacter, isPlaying, characterConfirmed }) => {
     const [pulseAnimation, setPulseAnimation] = useState(null);
@@ -75,17 +29,17 @@ const Characters = ({ characterGroups, selectedCharacter, setSelectedCharacter, 
         <div className="main-container">
             <div className='radio-buttons'>
                 {characterGroups.map(group => (
-                    (!characterConfirmed || group.id === selectedCharacter) && (
-                    <label key={group.id} className="custom-radio">
+                    (!characterConfirmed || group.character_id === selectedCharacter) && (
+                    <label key={group.character_id} className="custom-radio">
                         <input 
                             type='radio' 
                             name='radio' 
-                            value={group.id} 
+                            value={group.character_id} 
                             onChange={handleCharacterSelection}
                         />
-                        <span className={`radio-btn ${group.id === selectedCharacter ? pulseAnimation : ''}`}>
+                        <span className={`radio-btn ${group.character_id === selectedCharacter ? pulseAnimation : ''}`}>
                             <div className='hobbies-icon'>
-                                <img src={group.imageSrc} alt={group.name}/>
+                                <img src={group.image_url} alt={group.name}/>
                                 <h4>{group.name}</h4>
                             </div>
                         </span>
@@ -97,4 +51,4 @@ const Characters = ({ characterGroups, selectedCharacter, setSelectedCharacter, 
     )
 }
   
-export { Characters, createCharacterGroups };
+export default Characters;

@@ -1,4 +1,4 @@
-name: Build and Push Docker Image for Frontend
+name: Build Push and Deploy Docker Image
 
 on:
   release:
@@ -9,9 +9,6 @@ jobs:
     runs-on: self-hosted
 
     steps:
-    - name: Check out code
-      uses: actions/checkout@v3
-
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
@@ -24,7 +21,16 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
       with:
-        context: ./client/web
-        file: ./client/web/Dockerfile
         push: true
-        tags: shaunly/real_char_frontend:latest
+        tags: shaunly/real_char:latest
+
+    - name: Install and configure kubectl
+      uses: azure/setup-kubectl@v1
+      with:
+        version: 'v1.20.0'
+
+    - name: Deploy to Kubernetes
+      run: |
+        echo "${{ secrets.KUBECONFIG }}" | base64 --decode > ./kubeconfig.yaml
+        export KUBECONFIG=./kubeconfig.yaml
+        kubectl rollout restart deployment deployment/realchar-dev-deployment

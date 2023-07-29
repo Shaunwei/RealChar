@@ -17,6 +17,6 @@ export const languageCode = {
     "Portuguese": "pt-PT",
     "Russian": "ru-RU",
     "Spanish": "es-ES",
-    "Indian": "hi-IN",
+    "Hindi": "hi-IN",
     "Polish": "pl-PL"
 }

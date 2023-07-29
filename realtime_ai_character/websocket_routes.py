@@ -31,6 +31,12 @@ manager = get_connection_manager()
 GREETING_TXT_MAP = {
     "en-US": "Hi, my friend, what brings you here today?",
     "es-ES": "Hola, mi amigo, ¿qué te trae por aquí hoy?",
+    "fr-FR": "Salut mon ami, qu'est-ce qui t'amène ici aujourd'hui?",
+    "de-DE": "Hallo mein Freund, was bringt dich heute hierher?",
+    "it-IT": "Ciao amico mio, cosa ti porta qui oggi?",
+    "pt-PT": "Olá meu amigo, o que te traz aqui hoje?",
+    "hi-IN": "नमस्ते मेरे दोस्त, आज आपको यहां क्या लाया है?",
+    "pl-PL": "Cześć mój przyjacielu, co cię tu dziś przynosi?",
 }
 
 

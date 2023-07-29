@@ -1,0 +1,95 @@
+Last week, Meta made a game-changing move in the world of AI.
+
+At a time when other leading AI companies like Google and OpenAI are closely guarding their secret sauce, Meta decided to give away, for free, the code that powers its innovative new AI large language model, Llama 2. That means other companies can now use Meta’s Llama 2 model, which some technologists say is comparable to ChatGPT in its capabilities, to build their own customized chatbots.
+
+Llama 2 could challenge the dominance of ChatGPT, which broke records for being one of the fastest-growing apps of all time. But more importantly, its open source nature adds new urgency to an important ethical debate over who should control AI — and whether it can be made safe.
+
+As AI becomes more advanced and potentially more dangerous, is it better for society if the code is under wraps — limited to the staff of a small number of companies — or should it be shared with the public so that a wider group of people can have a hand in shaping the transformative technology?
+
+Top tech companies are taking different approaches
+In Meta’s Llama 2 announcement, Mark Zuckerberg posted an Instagram of himself smiling with Microsoft CEO Satya Nadella, announcing the two companies’ partnership on the release. Zuckerberg also made the case for why it’s better for leading AI models to be “open source,” which means making the technology’s underlying code largely available for anyone to use.
+
+“Open source drives innovation because it enables many more developers to build with new technology,” wrote Zuckerberg wrote in a separate Facebook post. “It also improves safety and security because when software is open, more people can scrutinize it to identify and fix potential issues.”
+
+The move is being welcomed by many AI developers, researchers, and academics who say this will give them unprecedented access to build new tools or study systems that would otherwise be prohibitively expensive to create. Cutting-edge large language models like the ones that power ChatGPT can cost tens of millions of dollars to create and maintain.
+
+“I’m just bracing myself for what kind of progress can happen,” said Nazneen Rajani, research lead at open source AI platform Hugging Face, which collaborated with Meta on the release. Rajani wrote a post on Twitter assessing Llama 2’s capabilities when it first came out and told Vox, “We will be able to uncover more secret ingredients about what it actually takes to build a model like GPT-4.”
+
+But open-sourcing AI comes with major risks. Some of the biggest players in the field, including Microsoft-backed OpenAI and Google, have been limiting how much of their AI systems are public because of what they cite as the grave dangers of these technologies.
+
+Some technologists are increasingly worried about hypothetical doomsday scenarios in which an AI could outsmart human beings to inflict harm like releasing a biological super weapon or causing other havoc in ways we can’t fully imagine. OpenAI’s co-founder, Ilya Sutskever, told The Verge in February that his company was “flat-out wrong” when it shared details about its models more openly in the past because if AI becomes as intelligent as humans one day, reaching what some call AGI or artificial general intelligence, it would be unwise to share that with the masses.
+
+“If you believe, as we do, that at some point, AI — AGI — is going to be extremely, unbelievably potent, then it just does not make sense to open-source. It is a bad idea,” Sutskever said at the time.
+
+While we may be far off from AIs that are capable of causing real human destruction, we have already seen AI tools from the open source community be misused in other ways. For example, soon after Meta released its first Llama model strictly for research use in February, it leaked on the anything-goes online message board 4Chan, where it was then used to create chatbots that spewed hateful content like racial slurs and, in some cases, scenes of graphic violence.
+
+“We take these concerns seriously and have put a number of things in place to support a responsible approach to building with Llama 2,” wrote Ahmad Al-Dahle, VP of generative AI at Meta, in an email to Vox. Those measures include “red-teaming,” or pressure-testing the model before its release by feeding it prompts expected to generate a “risky output,” such as ones about criminal conduct and hateful content, Al-Dahle said. Meta also fine-tuned its model to mitigate against this kind of behavior and put out new guidelines barring certain illegal and harmful uses.
+
+Meta says it will continue to fine-tune its model for safety after its release.
+
+“When technology is released and refined in the open, we believe it ultimately leads to more transparent discussions, increased responsiveness to addressing threats, and increased iteration in building more responsible AI tools and technologies,” Al-Dahle said.
+
+Some experts point out, for example, that we had the problem of misinformation even before AI existed in its current form. What matters more at this point, they say, is how that misinformation is distributed. Princeton computer science professor Arvind Narayanan told Vox that “the bottleneck for bad actors isn’t generating misinformation — it’s distributing it and persuading people.” He added, “AI, whether open source or not, hasn’t made those steps any easier.”
+
+To try to contain the spread of misinformation, companies creating AI models can put some restrictions on how their programs can be used. Meta, for example, has some rules barring users from using Llama 2 to promote violence or harassment, but those rules will likely prove difficult to enforce.
+
+It’s also worth noting that Llama 2 also isn’t fully open. Meta didn’t release the training data used to teach the latest model, which is a key component of any AI system; researchers say it’s crucial to measuring bias in AI systems. Lastly, Meta requires companies with over 700 million monthly users — so basically, only a handful of fellow tech giants like Google — to ask Meta’s permission before using the software.
+
+Still, overall, Llama 2 is the most open sourced AI project we’ve seen recently from a major tech company. Which brings up the question of how other companies will respond.
+
+So what exactly is the case for and against a more open sourced AI world? And what direction do we seem to be moving toward, especially given Meta’s recent announcement?
+
+Open source can lead to more innovation
+If you’re a casual user of AI tools like ChatGPT, you may not see the immediate benefits of open-sourcing AI models. But if you’re an AI developer or researcher, the introduction of open source LLMs like Llama 2 opens up a world of possibilities.
+
+“It’s a huge deal,” said Anton Troynikov, a co-founder and head of technology of AI startup Chroma which builds databases that developers plug into AI systems to customize it with their data, facts, and tools.
+
+For someone like Troynikov, using Llama 2 could allow the company to give its users more control over how its data is used.
+
+“Now you don’t have to send any data outside of your system, you can run it 100 percent internally on your own machines,” said Troynikov, who gave the example of doctors who don’t need to expose patients’ medical records out to a third party. “Your data no longer has to go anywhere to get these fantastic capabilities.”
+
+Troynikov said he’s personally just started using Llama 2 and is still testing how well it works with his company’s technology.
+
+It’s too early to see exactly how else Llama 2 will be used, but Meta’s Al-Dahle said it sees a “range of possibilities in the creation of chat-based agents and assistants that help improve productivity, customer service, and efficiency for businesses that may not have been able to access and deploy this technology otherwise.”
+
+There’s also a self-interest here for improving Meta’s own products. If Meta puts its AI models into the wild, the open source community of outside engineers will improve its models, which Meta can then use to build the in-app AI tools that the company has said it’s working on, like business assistant chatbots.
+
+This way, Meta doesn’t have to put all of its resources into catching up to OpenAI and Google, which are further along in putting generative AI tools in their main product line.
+
+Open-sourcing AI will tap into the “intelligence of the masses”
+Some leading experts think that if AI models are open sourced, they could become smarter and less ethically flawed overall.
+
+By open-sourcing AI models, more people can build on them and improve them. The open source AI company Stability AI has already created a model called “FreeWilly” that builds on top of Llama 2. It quickly became popular and can now outperform its genesis, Llama 2, in some tests. That has led it to rise to the top of Hugging Face’s leaderboard open source AI models.
+
+“People outside Meta are beating Meta at its own performance and its own models that they carefully collected and curated over the years. They were able to do it in a week,” said Rajani. “It’s very hard to beat the intelligence of the masses”
+
+Meanwhile, the AI community has a strong history of open-sourcing knowledge. Google built and publicly shared the transformer model, which is a neural network that understands context, like language, by tracking relationships in between parts of data, like the words in a sentence. The model has become foundational in cutting-edge AI models, and is used in many applications including in ChatGPT (the “T” in GPT stands for transformer).
+
+Open source models allow researchers to better study the capabilities and risks of AI and to stop the concentration of power in the hands of a few companies, Princeton professor Arvind Narayanan said, pointing out the risk of a technological “monoculture” forming.
+
+“Monoculture can have catastrophic consequences,” he said. “When the same model, say GPT-4, is used in thousands or millions of apps, any security vulnerability in that model, such as a jailbreak, can affect all those apps.”
+
+Historically, experts point out, AI has blossomed as a field because company researchers, academics, and other experts have been willing to share notes.
+
+“One of the reasons why data science and AI is a massive industry is actually because it’s built on a culture of knowledge sharing” said Rumman Chowdhury, co-founder of Humane Intelligence, a nonprofit developing accountable AI systems. “I think it’s really hard for people who aren’t in the data science community to realize how much we just give to each other.”
+
+Moreover, some AI academics say that open source models allow researchers to better find not just security flaws, but more qualitative flaws in large language models, which have been proven to perpetuate bias, hallucinations, or other problematic content.
+
+While companies can test for some of these biases beforehand, it’s difficult to anticipate every negative outcome until these models are out in the wild, some researchers argue.
+
+“I think there needs to be a lot more research done about to what point vulnerabilities can be exploited. There needs to be auditing and risk analysis and having a risk paper ... all of these can only be done if you have a model that is open and can be studied,” said Rajani.
+
+But open source AI could also go terribly wrong
+Even the most ardent supporters of open AI models acknowledge there are major risks. And exactly how AI could go wrong runs the spectrum from more easily faking people’s identities to wiping out humanity, at least in theory. The most pressing argument in this scenario is that if AI does reach some kind of artificial general intelligence, it could then one day outsmart humans in ways we won’t be able to control.
+
+In a recent senate hearing, OpenAI CEO Sam Altman told Congress that with “all of the dangers of AI, the fewer of us that you really have to keep a careful eye on — on the absolute, bleeding edge capabilities,” the easier it is for regulators to control.
+
+On the other hand, even Altman acknowledged the importance of allowing the open source community to grow. He suggested setting some kind of limit so that when a model meets certain “capability thresholds” for performing specific tasks, it should be forced to get a license from the government.
+
+That’s one on which some proponents of open source seem to agree with Altman. If we reach the point when AI models get close to overtaking humanity, then maybe we can pump the brakes on open source.
+
+But the challenging question with AI is at what point do we decide that it’s too powerful to leave unfettered? And if the genie is out of the bottle at that point, will it be impossible to stop the progress of AI? Those questions are impossible to answer with certainty right now. But in the meantime, open source AI is here, and while there are real immediate risks, as well as ones that could snowball down the road, there are also clear benefits for all of us in having a wider group of people thinking about it.
+
+It's safe to say that the artificial intelligence (AI) era is here to stay. Meta CEO Mark Zuckerberg and his Microsoft counterpart Satya Nadella have joined forces to introduce the world to Llama 2 (Large Language Model), the next generation of AI.
+
+What makes this collaboration even more intriguing is the decision to release Llama 2 as an open-source technology.

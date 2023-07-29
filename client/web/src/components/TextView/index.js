@@ -11,8 +11,11 @@ import { TbPower, TbPhoneCall, TbMicrophone, TbPlayerStopFilled, TbKeyboard } fr
 import IconButton from '../Common/IconButton';
 import { MdVoiceChat } from 'react-icons/md';
 import Button from '../Common/Button';
+import { useNavigate } from 'react-router-dom';
+
 
 const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAreaValue, messageInput, setMessageInput, handleDisconnect, setIsCallView, useSearch, setUseSearch, callActive, startRecording, stopRecording }) => {
+    const navigate = useNavigate();
     const [keyboard, SetKeyboard] = useState(true);
     const chatWindowRef = useRef(null);
     const talking = useRef(false);
@@ -23,6 +26,11 @@ const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAr
             chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
         }
     }, [textAreaValue]);
+
+    const handlePowerOffClick = () => {
+        navigate('/');
+        handleDisconnect();
+    }
 
     // send message to server. stop audio if it's playing to interrupt character.
     const sendMessage = () => {
@@ -121,7 +129,7 @@ const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAr
                 Enable Google Search
             </label>
             <div className="options-container">
-                <IconButton Icon={TbPower} className="icon-red" onClick={handleDisconnect} />
+                <IconButton Icon={TbPower} className="icon-red" onClick={handlePowerOffClick} />
                 <IconButton Icon={TbPhoneCall} className="icon-blue" onClick={() => setIsCallView(true)} disabled={talking.current} />
             </div>
         </div>

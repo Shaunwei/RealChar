@@ -5,55 +5,47 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
-import {isIP} from 'is-ip';
 
 // Components
 import Header from './components/Header';
 import Footer from './components/Footer';
-import MobileWarning from './components/MobileWarning';
-import MediaDevices from './components/MediaDevices';
-import TextView from './components/TextView';
-import CallView from './components/CallView';
-import Button from './components/Common/Button';
-import Characters from './components/Characters';
-import { sendTokenToServer, signInWithGoogle } from './components/Auth/SignIn';
-import Models from './components/Models';
-import Languages from './components/Languages';
+import { signInWithGoogle } from './components/Auth/SignIn';
+
+// Pages
+import Settings from './pages/Settings';
+import Conversation from './pages/Conversation';
+import Home from './pages/Home';
+
+// utils
+import auth from './utils/firebase';
 
 // Custom hooks
 import useWebsocket from './hooks/useWebsocket';
 import useMediaRecorder from './hooks/useMediaRecorder';
 import useSpeechRecognition from './hooks/useSpeechRecognition'; 
 
-// utils
-import auth from './utils/firebase';
-
 const App = () => {
-  const isMobile = window.innerWidth <= 768; 
-  const [headerText, setHeaderText] = useState("Choose your partner");
+  const [preferredLanguage, setPreferredLanguage] = useState("English");
   const [selectedDevice, setSelectedDevice] = useState("");
-  const [characterConfirmed, setCharacterConfirmed] = useState(false);
-  const [isCallView, setIsCallView] = useState(false);
+  const [selectedModel, setSelectedModel] = useState("gpt-3.5-turbo-16k");
+  const [useSearch, setUseSearch] = useState(false);
+  const [user, setUser] = useState(null);
+  const isLoggedIn = useRef(false);
+  const [token, setToken] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
-  const [characterGroups, setCharacterGroups] = useState([]);
-  const [textAreaValue, setTextAreaValue] = useState('');
   const [messageInput, setMessageInput] = useState('');
-  const [selectedModel, setSelectedModel] = useState("gpt-3.5-turbo-16k");
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState("");
-  const [useSearch, setUseSearch] = useState(false);
-  const [preferredLanguage, setPreferredLanguage] = useState("English");
-
+  const [isCallView, setIsCallView] = useState(false);
+  const [textAreaValue, setTextAreaValue] = useState('');
   const audioPlayer = useRef(null);
   const callActive = useRef(false);
   const audioSent = useRef(false);
   const shouldPlayAudio = useRef(false);
   const audioQueue = useRef([]);
   const isConnected = useRef(false);
-  const isLoggedIn = useRef(false);
-
+  
 
   useEffect(() => {
     auth.onAuthStateChanged(async user => {
@@ -68,28 +60,14 @@ const App = () => {
     })
   }, [])
 
-  useEffect(() => {
-    // Get host
-    const scheme = window.location.protocol;
-    var currentHost = window.location.host;
-    var parts = currentHost.split(':');
-    var hostname = parts[0];
-    // Local deployment uses 8000 port by default.
-    var newPort = '8000';
-
-    if (!(hostname === 'localhost' || isIP(hostname))) {
-        hostname = 'api.' + hostname;
-        newPort = window.location.protocol === "https:" ? 443 : 80;
+  const stopAudioPlayback = () => {
+    if (audioPlayer.current) {
+      audioPlayer.current.pause();
+      shouldPlayAudio.current = false;
     }
-    var newHost = hostname + ':' + newPort + '/characters';
-    const url = scheme + '//' + newHost;
-
-    // Get characters
-    fetch(url)
-      .then(response => response.json())
-      .then(data => setCharacterGroups(data))
-      .catch(err => console.error(err));
-  }, [])
+    audioQueue.current = [];
+    setIsPlaying(false);
+  }
 
   // Helper functions
   const handleSocketOnOpen = async (event) => {
@@ -115,7 +93,6 @@ const App = () => {
         setTextAreaValue(prevState => prevState + "\n\n");
         
       } else if (message.startsWith('Select')) {
-        // setCharacterGroups(createCharacterGroups(message));
       } else {
         setTextAreaValue(prevState => prevState + `${event.data}`);
 
@@ -132,15 +109,6 @@ const App = () => {
         setIsPlaying(true); // this will trigger playAudios in CallView.
       }
     }
-  }
-
-  const stopAudioPlayback = () => {
-    if (audioPlayer.current) {
-      audioPlayer.current.pause();
-      shouldPlayAudio.current = false;
-    }
-    audioQueue.current = [];
-    setIsPlaying(false);
   }
 
   // Use custom hooks
@@ -170,50 +138,6 @@ const App = () => {
     }
   }
 
-  const handleTalkClick = () => {
-    connect();
-
-    // Show loading animation
-
-    const interval = setInterval(() => {
-      if (isConnected.current && selectedCharacter) {
-        setCharacterConfirmed(true);
-
-        // display callview
-        setIsCallView(true);
-        const greeting = {
-          "English": "Hi, my friend, what brings you here today?",
-          "Spanish": "Hola, mi amigo, ¿qué te trae por aquí hoy?"
-        }
-        setHeaderText(greeting[preferredLanguage]);
-
-        clearInterval(interval); // Stop checking
-        // Hide loading animation
-      }
-    }, 500); // Check every 0.5 second
-  }
-
-  const handleTextClick = () => {
-    connect();
-
-    // Show loading animation
-
-    const interval = setInterval(() => {
-      if (isConnected.current && selectedCharacter) {
-        setCharacterConfirmed(true); 
-
-        // display textview
-        setIsCallView(false);
-        setHeaderText("");
-
-        shouldPlayAudio.current = true;
-
-        // Hide loading animation
-        clearInterval(interval); // Stop checking
-      }
-    }, 500); // Check every 0.5 second
-  }
-
   const handleStopCall = () => {
     stopRecording();
     stopListening();
@@ -240,9 +164,8 @@ const App = () => {
       
       // reset everything to initial states
       setSelectedCharacter(null);
-      setCharacterConfirmed(false);
+      // setCharacterConfirmed(false);
       setIsCallView(false);
-      setHeaderText("Choose your partner");
       setTextAreaValue("");
       setSelectedModel("gpt-3.5-turbo-16k");
       setPreferredLanguage("English");
@@ -254,90 +177,67 @@ const App = () => {
   }
 
   return (
-    <div className="app">
-      <Header user={user} isLoggedIn={isLoggedIn} setToken={setToken} handleDisconnect={handleDisconnect} />
+    <Router>
+      <div className="app">
+        <Header user={user} isLoggedIn={isLoggedIn} setToken={setToken} handleDisconnect={handleDisconnect} />
 
-      { isMobile ? (
-        <MobileWarning />
-      ) : (
-        <div id="desktop-content">
-          <p className="alert text-white">
-            Please wear headphone 🎧 
-            { isConnected.current && characterConfirmed && isRecording ? 
-              (<span className="recording">Recording</span>) : null
-            } 
-          </p>
-
-          <p className="header">{headerText}</p>
-
-          <Characters 
-              characterGroups={characterGroups} 
-              selectedCharacter={selectedCharacter} 
-              setSelectedCharacter={setSelectedCharacter} 
-              isPlaying={isPlaying} 
-              characterConfirmed={characterConfirmed} 
-          />
-
-          { !isConnected.current ? 
-            <MediaDevices selectedDevice={selectedDevice} setSelectedDevice={setSelectedDevice} /> : null 
-          }
-
-          { !isConnected.current ? 
-            <Models selectedModel={selectedModel} setSelectedModel={setSelectedModel} /> : null 
-          }
-
-          { !isConnected.current ? 
-            <Languages preferredLanguage={preferredLanguage} setPreferredLanguage={setPreferredLanguage} /> : null 
-          }
-
-          { !isConnected.current && !characterConfirmed ? 
-            ( <div className="actions">
-              <Button onClick={handleTalkClick} name="Call" disabled={!selectedCharacter} />
-              <Button onClick={handleTextClick} name="Text" disabled={!selectedCharacter} />
-            </div> ) : null
-          }
-
-          {/* we render both views but only display one. */}
-          <div style={{ display: isConnected.current && characterConfirmed ? "flex" : "none" }}>
-            <div className="main-screen" style={{ display: isCallView ? "flex" : "none" }}>
-              <CallView 
-                isRecording={isRecording} 
-                isPlaying={isPlaying}
-                audioPlayer={audioPlayer} 
-                handleStopCall={handleStopCall} 
-                handleContinueCall={handleContinueCall}
-                audioQueue={audioQueue}
-                setIsPlaying={setIsPlaying}
-                handleDisconnect={handleDisconnect}
-                setIsCallView={setIsCallView}
-              />
-            </div>
-
-            <div className="main-screen" style={{ display: isCallView ? "none" : "flex" }}>
-              <TextView 
-                send={send} 
-                isPlaying={isPlaying}
-                stopAudioPlayback={stopAudioPlayback}
-                textAreaValue={textAreaValue}
-                setTextAreaValue={setTextAreaValue}
-                messageInput={messageInput}
-                setMessageInput={setMessageInput}
-                handleDisconnect={handleDisconnect}
-                setIsCallView={setIsCallView}
+        <Routes>
+            <Route path="/" element={
+              <Home
+                selectedCharacter={selectedCharacter} 
+                setSelectedCharacter={setSelectedCharacter} 
+                isPlaying={isPlaying} 
+              />} 
+            />
+            <Route path="/settings" element={
+              <Settings 
+                preferredLanguage={preferredLanguage} 
+                setPreferredLanguage={setPreferredLanguage} 
+                selectedDevice={selectedDevice} 
+                setSelectedDevice={setSelectedDevice} 
+                selectedModel={selectedModel} 
+                setSelectedModel={setSelectedModel}
                 useSearch={useSearch}
                 setUseSearch={setUseSearch}
-                callActive={callActive}
-                startRecording={startRecording}
-                stopRecording={stopRecording}
-                preferredLanguage={preferredLanguage}
+                send={send}
+                connect={connect}
+                setIsCallView={setIsCallView}
+                shouldPlayAudio={shouldPlayAudio}
+              />} 
+            />
+            <Route path="/conversation" element={
+              <Conversation 
+                isConnected={isConnected}
+                isCallView={isCallView} 
+                isRecording={isRecording} 
+                isPlaying={isPlaying} 
+                audioPlayer={audioPlayer} 
+                handleStopCall={handleStopCall} 
+                handleContinueCall={handleContinueCall} 
+                audioQueue={audioQueue} 
+                setIsPlaying={setIsPlaying} 
+                handleDisconnect={handleDisconnect} 
+                setIsCallView={setIsCallView} 
+                send={send} 
+                stopAudioPlayback={stopAudioPlayback} 
+                textAreaValue={textAreaValue} 
+                setTextAreaValue={setTextAreaValue} 
+                messageInput={messageInput} 
+                setMessageInput={setMessageInput} 
+                useSearch={useSearch} 
+                setUseSearch={setUseSearch} 
+                callActive={callActive} 
+                startRecording={startRecording} 
+                stopRecording={stopRecording} 
+                preferredLanguage={preferredLanguage} 
                 setPreferredLanguage={setPreferredLanguage}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-      <Footer />
-    </div>
+              />} 
+            />
+        </Routes>
+
+        <Footer />
+      </div>
+    </Router>
   );
 }
 

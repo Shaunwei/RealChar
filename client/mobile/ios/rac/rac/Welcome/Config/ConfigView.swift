@@ -57,16 +57,20 @@ struct ConfigView: View {
                                                     selected: option == selectedOption,
                                                     showRemoveButton: option.source == "community",
                                                     onRemove: {
-                                    includedCommunityCharacterIds.removeAll(where: { $0 == option.id })
-                                    if selectedOption == option {
-                                        selectedOption = nil
+                                    withAnimation {
+                                        includedCommunityCharacterIds.removeAll(where: { $0 == option.id })
+                                        if selectedOption == option {
+                                            selectedOption = nil
+                                        }
                                     }
                                 })
                                     .onTapGesture {
-                                        if selectedOption == option {
-                                            selectedOption = nil
-                                        } else {
-                                            selectedOption = option
+                                        withAnimation {
+                                            if selectedOption == option {
+                                                selectedOption = nil
+                                            } else {
+                                                selectedOption = option
+                                            }
                                         }
                                     }
                             }
@@ -125,9 +129,11 @@ struct ConfigView: View {
                             })) { option in
                                 CharacterOptionView(option: option)
                                     .onTapGesture {
-                                        includedCommunityCharacterIds.append(option.id)
-                                        showCommunityCharacters = false
-                                        selectedOption = option
+                                        withAnimation {
+                                            includedCommunityCharacterIds.append(option.id)
+                                            showCommunityCharacters = false
+                                            selectedOption = option
+                                        }
                                     }
                             }
                         }

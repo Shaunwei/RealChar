@@ -14,7 +14,7 @@ struct WelcomeView: View {
     @StateObject var welcomeViewModel = WelcomeViewModel()
 
     let webSocket: any WebSocket
-    @StateObject var webSocketConnectionStatusObserver = WebSocketConnectionStatusObserver(delay: .seconds(0.5))
+    @StateObject var webSocketConnectionStatusObserver = WebSocketConnectionStatusObserver(delay: .seconds(1))
     @State var invalidAttempts = 0
     enum Tab {
         case about, config, settings

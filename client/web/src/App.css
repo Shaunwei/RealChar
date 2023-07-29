@@ -12,17 +12,6 @@
   align-items: center;
 }
 
-.main-screen {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  flex-grow: 1;
-  width: 100%;
-  height: 40vh;
-  padding: 20px;
-}
-
 .header {
   color: #cccccc;
   font-family: "Prompt", Helvetica;

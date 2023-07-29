@@ -8,9 +8,10 @@
 import React from 'react';
 import './styles.css';
 
-const IconButton = ({ Icon, className, onClick, bgcolor="default"}) => {
+const IconButton = ({ Icon, className, onClick, bgcolor="default", disabled=false}) => {
   return (
-    <div className={`icon-button ${className} ${bgcolor}`} onClick={onClick}>
+    <div className={`icon-button ${className} ${bgcolor} ${disabled ? "disabled" : ""}`} 
+         onClick={disabled ? null : onClick}>
       <Icon className="icon-instance-node-small" />
     </div>
   );

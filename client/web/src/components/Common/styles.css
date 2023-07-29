@@ -78,3 +78,8 @@
 .icon-button:hover .icon-instance-node-small {
   filter: brightness(2);
 }
+
+.icon-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

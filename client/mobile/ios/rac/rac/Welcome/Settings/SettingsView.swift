@@ -160,12 +160,7 @@ struct SettingsView: View {
                                     Font.custom("Prompt", size: 18).weight(.medium)
                                 )
 
-                            Text("Conversation Language?")
-                                .font(
-                                    Font.custom("Prompt", size: 16)
-                                )
-
-                            Picker("Conversation Language", selection: $preferenceSettings.languageOption) {
+                            Picker("Conversation Language?", selection: $preferenceSettings.languageOption) {
                                 ForEach(LanguageOption.allCases) { languageOption in
                                     Text(languageOption.displayName)
                                         .font(
@@ -174,8 +169,12 @@ struct SettingsView: View {
                                         .tag(languageOption)
                                 }
                             }
+                            .font(
+                                Font.custom("Prompt", size: 16)
+                            )
+                            .tint(.primary)
                             .padding(.bottom, 2)
-                            .pickerStyle(.segmented)
+                            .pickerStyle(.navigationLink)
 
                             Text("LLM Model?")
                                 .font(

@@ -8,8 +8,9 @@
 import React from 'react';
 import './style.css'
 
-const Languages = ({preferredLanguage, setPreferredLanguage}) => {
-    const languages = ["English", "Spanish"];
+const Languages = ({ preferredLanguage, setPreferredLanguage }) => {
+    const languages = ["English", "Spanish", "French", "German", "Hindi", "Italian", "Polish", 
+        "Portuguese"];
 
     return (
         <div className="languages-container">

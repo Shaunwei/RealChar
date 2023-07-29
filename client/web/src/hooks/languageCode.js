@@ -16,5 +16,7 @@ export const languageCode = {
     "Korean": "ko-KR",
     "Portuguese": "pt-PT",
     "Russian": "ru-RU",
-    "Spanish": "es-ES"
+    "Spanish": "es-ES",
+    "Indian": "hi-IN",
+    "Polish": "pl-PL"
 }

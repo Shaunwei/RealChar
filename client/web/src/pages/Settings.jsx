@@ -65,7 +65,7 @@ const Settings = ({ preferredLanguage, setPreferredLanguage, selectedDevice, set
             <MediaDevices selectedDevice={selectedDevice} setSelectedDevice={setSelectedDevice} />
             
             <Models selectedModel={selectedModel} setSelectedModel={setSelectedModel} />
-            
+
             <label className='search-checkbox'>
                 <input
                 type="checkbox"

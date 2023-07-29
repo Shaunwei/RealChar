@@ -14,6 +14,7 @@ enum InteractiveMode {
 }
 
 struct InteractiveView: View {
+    @EnvironmentObject private var preferenceSettings: PreferenceSettings
 
     struct Constants {
         static let realOrange500: Color = Color(red: 0.95, green: 0.29, blue: 0.16)
@@ -132,6 +133,7 @@ struct InteractiveView: View {
         .background(Constants.realBlack)
         .onAppear {
             prepareHaptics()
+            webSocket.send(message: "[!USE_SEARCH]\(preferenceSettings.useSearch)")
             webSocket.onStringReceived = { message in
                 guard !(openMic && voiceState == .listeningToUser) else { return }
 

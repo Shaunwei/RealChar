@@ -80,7 +80,8 @@ struct WelcomeView: View {
                     VStack {
                         Button {
                             if webSocketConnectionStatusObserver.status == .disconnected, let characterId = character?.id {
-                                webSocket.connectSession(llmOption: preferenceSettings.llmOption,
+                                webSocket.connectSession(languageOption: preferenceSettings.languageOption,
+                                                         llmOption: preferenceSettings.llmOption,
                                                          characterId: characterId,
                                                          userId: userSettings.userId,
                                                          token: userSettings.userToken)
@@ -122,6 +123,11 @@ struct WelcomeView: View {
                 reconnectWebSocket(characterId: characterId)
             }
         }
+        .onChange(of: preferenceSettings.languageOption) { newValue in
+            if let characterId = character?.id {
+                reconnectWebSocket(characterId: characterId)
+            }
+        }
         .onChange(of: userSettings.isLoggedIn) { newValue in
             if let characterId = character?.id {
                 reconnectWebSocket(characterId: characterId)
@@ -138,7 +144,8 @@ struct WelcomeView: View {
             webSocket.onConnectionChanged = { status in
                 self.webSocketConnectionStatusObserver.update(status: webSocket.status)
             }
-            webSocket.connectSession(llmOption: preferenceSettings.llmOption,
+            webSocket.connectSession(languageOption: preferenceSettings.languageOption,
+                                     llmOption: preferenceSettings.llmOption,
                                      characterId: characterId,
                                      userId: userSettings.userId,
                                      token: userSettings.userToken)

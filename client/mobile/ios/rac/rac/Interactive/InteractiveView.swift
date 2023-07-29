@@ -55,6 +55,7 @@ struct InteractiveView: View {
                 VoiceMessageView(openMic: openMic,
                                  messages: $messages,
                                  state: $voiceState,
+                                 speechRecognizer: SpeechRecognizer(locale: preferenceSettings.languageOption.locale),
                                  onUpdateUserMessage: { message in
                     if messages.last?.role == .user {
                         messages[messages.count - 1].content = message

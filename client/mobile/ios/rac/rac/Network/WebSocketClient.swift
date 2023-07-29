@@ -24,7 +24,7 @@ protocol WebSocket: NSObject, ObservableObject {
     var onStringReceived: ((String) -> Void)? { get set }
     var onDataReceived: ((Data) -> Void)? { get set }
     var onErrorReceived: ((Error) -> Void)? { get set }
-    func connectSession(llmOption: LlmOption, characterId: String, userId: String?, token: String?)
+    func connectSession(languageOption: LanguageOption, llmOption: LlmOption, characterId: String, userId: String?, token: String?)
     func reconnectSession()
     func closeSession()
     func send(message: String)
@@ -47,6 +47,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
 
     private lazy var session = URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue())
 
+    private var lastUsedLanguageOption: LanguageOption = .english
     private var lastUsedLlmOption: LlmOption = .gpt35
     private var lastUsedCharacterId: String = ""
     private var lastUsedUserId: String? = nil
@@ -86,7 +87,8 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
         super.init()
     }
 
-    func connectSession(llmOption: LlmOption, characterId: String, userId: String?, token: String?) {
+    func connectSession(languageOption: LanguageOption, llmOption: LlmOption, characterId: String, userId: String?, token: String?) {
+        lastUsedLanguageOption = languageOption
         lastUsedLlmOption = llmOption
         lastUsedCharacterId = characterId
         // TODO: Use userId once it's ready
@@ -96,6 +98,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
         connectWebSocket(session: session,
                          serverUrl: serverUrl,
                          characterId: characterId,
+                         languageOption: languageOption,
                          llmOption: llmOption,
                          clientId: clientId,
                          token: token)
@@ -105,6 +108,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
         connectWebSocket(session: session,
                          serverUrl: serverUrl,
                          characterId: lastUsedCharacterId,
+                         languageOption: lastUsedLanguageOption,
                          llmOption: lastUsedLlmOption,
                          clientId: lastUsedUserId ?? String(Int.random(in: 0...1010000000)),
                          token: lastUsedToken)
@@ -113,6 +117,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
     private func connectWebSocket(session: URLSession,
                                   serverUrl: URL,
                                   characterId: String,
+                                  languageOption: LanguageOption,
                                   llmOption: LlmOption,
                                   clientId: String,
                                   token: String?) {
@@ -122,7 +127,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
         lastConnectingDate = Date()
 
         let wsScheme = serverUrl.scheme == "https" ? "wss" : "ws"
-        let wsPath = "\(wsScheme)://\(serverUrl.host ?? "")\(serverUrl.port.flatMap { ":\($0)" } ?? "")/ws/\(clientId)?platform=mobile&character_id=\(characterId)&llm_model=\(llmOption.rawValue)&token=\(token ?? "")"
+        let wsPath = "\(wsScheme)://\(serverUrl.host ?? "")\(serverUrl.port.flatMap { ":\($0)" } ?? "")/ws/\(clientId)?platform=mobile&language=\(languageOption.rawValue)&character_id=\(characterId)&llm_model=\(llmOption.rawValue)&token=\(token ?? "")"
         print("Connecting websocket: \(wsPath)")
         webSocket = session.webSocketTask(with: URL(string: wsPath)!)
         webSocket.resume()
@@ -296,7 +301,7 @@ class MockWebSocket: NSObject, WebSocket {
 
     var onErrorReceived: ((Error) -> Void)?
 
-    func connectSession(llmOption: LlmOption, characterId: String, userId: String?, token: String?) {
+    func connectSession(languageOption: LanguageOption, llmOption: LlmOption, characterId: String, userId: String?, token: String?) {
     }
 
     func reconnectSession() {

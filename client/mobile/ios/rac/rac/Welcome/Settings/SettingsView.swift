@@ -125,6 +125,15 @@ struct SettingsView: View {
                                 .tint(.accentColor)
                                 .padding(.trailing, 2)
                             }
+
+                            Toggle(isOn: $preferenceSettings.useSearch) {
+                                Text("Enable Google search?")
+                                    .font(
+                                        Font.custom("Prompt", size: 16)
+                                    )
+                            }
+                            .tint(.accentColor)
+                            .padding(.trailing, 2)
                         }
                     }
                 }

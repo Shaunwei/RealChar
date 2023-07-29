@@ -92,7 +92,8 @@ class CatalogManager(Singleton):
                 llm_system_prompt=yaml_content["system"],
                 llm_user_prompt=yaml_content["user"],
                 voice_id=yaml_content["voice_id"],
-                source='community'
+                source='community',
+                author_name=yaml_content["author_name"],
             )
             if overwrite:
                 self.load_data(character_name, directory / 'data')

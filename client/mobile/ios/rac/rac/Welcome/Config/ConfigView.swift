@@ -36,8 +36,9 @@ struct ConfigView: View {
     @Binding var selectedOption: CharacterOption?
     @Binding var openMic: Bool
     let onConfirmConfig: (CharacterOption) -> Void
+    let loadCharacters: () async -> Void
 
-    @State var showCommunityCharacters = false
+    @State private var showCommunityCharacters = false
 
     var body: some View {
         GeometryReader { geometry in
@@ -88,6 +89,9 @@ struct ConfigView: View {
                         }
                     }
                     .padding(2)
+                }
+                .refreshable {
+                    await loadCharacters()
                 }
 
                 if options.contains(where: { $0.source == "community" && !preferenceSettings.includedCommunityCharacterIds.contains($0.id) }) {
@@ -260,7 +264,8 @@ struct ConfigView_Previews: PreviewProvider {
                    hapticFeedback: false,
                    selectedOption: .constant(nil),
                    openMic: .constant(false),
-                   onConfirmConfig: { _ in })
+                   onConfirmConfig: { _ in },
+                   loadCharacters: {})
         .frame(width: 310)
     }
 }

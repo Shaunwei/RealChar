@@ -69,6 +69,12 @@ struct WelcomeView: View {
                             simpleError()
                             invalidAttempts += 1
                         }
+                    }, loadCharacters: {
+                        do {
+                            options = try await welcomeViewModel.loadCharacters()
+                        } catch {
+                            print(error)
+                        }
                     })
                         .padding(.horizontal, 48)
                 case .settings:

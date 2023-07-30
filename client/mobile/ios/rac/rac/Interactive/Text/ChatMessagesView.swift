@@ -37,19 +37,19 @@ struct ChatMessagesView: View {
                     case .assistant:
                         CharacterMessage(message: message.content)
                             .listRowSeparator(.hidden)
-                            .listRowBackground(Constants.realBlack)
+//                            .listRowBackground(Constants.realBlack)
                             .id(messages.firstIndex(where: { $0.id == message.id}))
                     case .user:
                         UserMessage(message: message.content)
                             .listRowSeparator(.hidden)
-                            .listRowBackground(Constants.realBlack)
+//                            .listRowBackground(Constants.realBlack)
                             .id(messages.firstIndex(where: { $0.id == message.id}))
                     }
                 }
                 if isExpectingUserInput {
                     UserInputView(message: $userInput)
                         .listRowSeparator(.hidden)
-                        .listRowBackground(Constants.realBlack)
+//                        .listRowBackground(Constants.realBlack)
                         .onSubmit {
                             doSubmit()
                         }

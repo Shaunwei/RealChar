@@ -103,13 +103,13 @@ struct VoiceMessageView: View {
                         }) {
                             UserMessage(message: lastUserMessage.content)
                                 .listRowSeparator(.hidden)
-                                .listRowBackground(Constants.realBlack)
+//                                .listRowBackground(Constants.realBlack)
                                 .id(0)
                         }
                         if messages.last?.role == .assistant, let lastCharacterMessage = messages.last {
                             CharacterMessage(message: lastCharacterMessage.content)
                                 .listRowSeparator(.hidden)
-                                .listRowBackground(Constants.realBlack)
+//                                .listRowBackground(Constants.realBlack)
                                 .id(1)
                         }
                     case .listeningToUser, .characterSpeaking(_, false):
@@ -118,14 +118,14 @@ struct VoiceMessageView: View {
                         }) {
                             CharacterMessage(message: lastCharacterMessage.content)
                                 .listRowSeparator(.hidden)
-                                .listRowBackground(Constants.realBlack)
+//                                .listRowBackground(Constants.realBlack)
                                 .id(1)
                         }
 
                         if messages.last?.role == .user, let lastUserMessage = messages.last {
                             UserMessage(message: lastUserMessage.content)
                                 .listRowSeparator(.hidden)
-                                .listRowBackground(Constants.realBlack)
+//                                .listRowBackground(Constants.realBlack)
                                 .id(0)
                         }
                     }
@@ -147,17 +147,17 @@ struct VoiceMessageView: View {
                         scrollView.scrollTo(messages.last?.role == .user ? 0 : 1, anchor: .bottomTrailing)
                     }
                 }
-                .if(state.isSpeaking, transform: { view in
-                    view.mask(
-                        LinearGradient(
-                            gradient: Gradient(
-                                colors: [Constants.realBlack, Constants.realBlack, .clear]
-                            ),
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                })
+//                .if(state.isSpeaking, transform: { view in
+//                    view.mask(
+//                        LinearGradient(
+//                            gradient: Gradient(
+//                                colors: [Constants.realBlack, Constants.realBlack, .clear]
+//                            ),
+//                            startPoint: .top,
+//                            endPoint: .bottom
+//                        )
+//                    )
+//                })
             }
 
             VStack(spacing: 24) {
@@ -171,7 +171,7 @@ struct VoiceMessageView: View {
                         .background(Constants.realBlue500)
                         .opacity(state.isDisabled ? 0.25 : 1.0)
                         .disabled(state.isDisabled)
-                        .cornerRadius(50)
+                        .cornerRadius(40)
                         .onTapGesture(perform: onTapVoiceButton)
                         .background {
                             if state.isSpeaking || state == .listeningToUser {

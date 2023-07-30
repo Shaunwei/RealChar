@@ -17,7 +17,6 @@
 		2600B0802A68F517003E8388 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2600B07F2A68F517003E8388 /* GoogleService-Info.plist */; };
 		2600B0832A68F585003E8388 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 2600B0822A68F585003E8388 /* FirebaseAnalytics */; };
 		2600B0852A68F585003E8388 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 2600B0842A68F585003E8388 /* FirebaseAuth */; };
-		2600B0872A68F585003E8388 /* FirebaseAuthCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 2600B0862A68F585003E8388 /* FirebaseAuthCombine-Community */; };
 		2600B08C2A68FC8C003E8388 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2600B08B2A68FC8C003E8388 /* GoogleSignInSwift */; };
 		2600B08E2A68FCA9003E8388 /* GoogleSignInButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B08D2A68FCA9003E8388 /* GoogleSignInButton.swift */; };
 		2600B0902A69DCC7003E8388 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B08F2A69DCC7003E8388 /* UserSettings.swift */; };
@@ -81,7 +80,6 @@
 				2600B0832A68F585003E8388 /* FirebaseAnalytics in Frameworks */,
 				2600B0852A68F585003E8388 /* FirebaseAuth in Frameworks */,
 				2600B07B2A61EA86003E8388 /* CachedAsyncImage in Frameworks */,
-				2600B0872A68F585003E8388 /* FirebaseAuthCombine-Community in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -254,7 +252,6 @@
 				2600B07A2A61EA86003E8388 /* CachedAsyncImage */,
 				2600B0822A68F585003E8388 /* FirebaseAnalytics */,
 				2600B0842A68F585003E8388 /* FirebaseAuth */,
-				2600B0862A68F585003E8388 /* FirebaseAuthCombine-Community */,
 				2600B08B2A68FC8C003E8388 /* GoogleSignInSwift */,
 				262ACBCA2A71C10700F87797 /* Shimmer */,
 			);
@@ -490,9 +487,12 @@
 				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = ai.realchar.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,7";
 			};
 			name = Debug;
 		};
@@ -525,9 +525,12 @@
 				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = ai.realchar.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,7";
 			};
 			name = Release;
 		};
@@ -604,11 +607,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2600B0812A68F585003E8388 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
-		};
-		2600B0862A68F585003E8388 /* FirebaseAuthCombine-Community */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2600B0812A68F585003E8388 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = "FirebaseAuthCombine-Community";
 		};
 		2600B08B2A68FC8C003E8388 /* GoogleSignInSwift */ = {
 			isa = XCSwiftPackageProductDependency;

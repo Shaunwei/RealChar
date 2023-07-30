@@ -1,7 +1,13 @@
+import os
 from abc import ABC, abstractmethod
 
 from langchain.callbacks.base import AsyncCallbackHandler
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from langchain.utilities import GoogleSerperAPIWrapper, SerpAPIWrapper, GoogleSearchAPIWrapper
+
+from realtime_ai_character.logger import get_logger
+
+logger = get_logger(__name__)
 
 StreamingStdOutCallbackHandler.on_chat_model_start = lambda *args, **kwargs: None
 
@@ -75,6 +81,36 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
                 self.is_first_sentence,
                 self.language)
 
+class SearchAgent:
+
+    def __init__(self):
+        self.search_wrapper = None
+        if os.getenv('SERPER_API_KEY'):
+            self.search_wrapper = GoogleSerperAPIWrapper()
+        elif os.getenv('SERPAPI_API_KEY'):
+            self.search_wrapper = SerpAPIWrapper()
+        elif os.getenv('GOOGLE_API_KEY') and os.getenv('GOOGLE_CSE_ID'):
+            self.search_wrapper = GoogleSearchAPIWrapper()
+    
+    def search(self, query: str) -> str:
+        if self.search_wrapper is None:
+            logger.warning('Search is not enabled, please set SERPER_API_KEY to enable it.')
+        else:
+            try:
+                search_result: str = self.search_wrapper.run(query)
+                search_context = '\n'.join([
+                    '---',
+                    'Internet search result:',
+                    '---',
+                    'Question: ' + query,
+                    'Search Result: ' + search_result,
+                ])
+                logger.info(f'Search result: {search_context}')
+                # Append to context
+                return '\n' + search_context
+            except Exception as e:
+                logger.error(f'Error when searching: {e}')
+        return ''
 
 class LLM(ABC):
     @abstractmethod

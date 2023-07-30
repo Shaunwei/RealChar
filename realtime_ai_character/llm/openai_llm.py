@@ -51,7 +51,11 @@ class OpenaiLlm(LLM):
                     callback: AsyncCallbackTextHandler,
                     audioCallback: AsyncCallbackAudioHandler,
                     character: Character,
-                    useSearch: bool=False) -> str:
+                    useSearch: bool=False,
+                    useGmail: bool=False,
+                    emails: List[str]=None,
+                    subjects: List[str]=None,
+                    quickSummarizeGmail: bool=False) -> str:
         # 1. Generate context
         context = self._generate_context(user_input, character)
         # Get search result if enabled
@@ -70,7 +74,7 @@ class OpenaiLlm(LLM):
 
     def _generate_context(self, query, character: Character) -> str:
         docs = self.db.similarity_search(query)
-        docs = [d for d in docs if d.metadata['character_name'] == character.name]
+        docs = [d for d in docs if d.metadata['character_name'] == character.name or d.metadata['character_name'] == 'inbox_zero']
         logger.info(f'Found {len(docs)} documents')
 
         context = '\n'.join([d.page_content for d in docs])

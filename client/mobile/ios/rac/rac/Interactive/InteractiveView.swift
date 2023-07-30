@@ -136,6 +136,7 @@ struct InteractiveView: View {
         .onAppear {
             prepareHaptics()
             webSocket.send(message: "[!USE_SEARCH]\(preferenceSettings.useSearch)")
+            webSocket.send(message: "[!USE_GMAIL]\(preferenceSettings.useGmail)")
             webSocket.onStringReceived = { message in
                 guard !(openMic && voiceState == .listeningToUser) else { return }
                 let messageNewPattern = "\\[end=([a-zA-Z0-9]+)\\]"

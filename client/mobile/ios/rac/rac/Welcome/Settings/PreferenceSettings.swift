@@ -13,6 +13,7 @@ class PreferenceSettings: ObservableObject {
     struct Constants {
         static let hapticFeedbackKey = "enableHapticFeedback"
         static let useSearch = "useSearch"
+        static let useGmail = "useGmail"
         static let llmOptionKey = "largeLanguageModel"
         static let languageOption = "languageOption"
         static let includedCommunityCharacterIds = "includedCommunityCharacterIds"
@@ -30,6 +31,13 @@ class PreferenceSettings: ObservableObject {
             guard useSearch != oldValue else { return }
             UserDefaults.standard.set(useSearch, forKey: Constants.useSearch)
             print("Saved use search preference: \(useSearch)")
+        }
+    }
+    @Published var useGmail: Bool = UserDefaults.standard.bool(forKey: Constants.useGmail) {
+        didSet {
+            guard useGmail != oldValue else { return }
+            UserDefaults.standard.set(useGmail, forKey: Constants.useGmail)
+            print("Saved use gmail preference: \(useGmail)")
         }
     }
     @Published var llmOption: LlmOption = LlmOption(rawValue: UserDefaults.standard.string(forKey: Constants.llmOptionKey) ?? LlmOption.gpt35.rawValue) ?? .gpt35 {

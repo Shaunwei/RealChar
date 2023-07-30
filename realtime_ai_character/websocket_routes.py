@@ -193,6 +193,7 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                     pass
                 tts_event.clear()
 
+        use_gmail = False
         while True:
             data = await websocket.receive()
             if data['type'] != 'websocket.receive':
@@ -207,6 +208,8 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                     command_content = msg_data[command_end + 1:]
                     if command == 'USE_SEARCH':
                         use_search = (command_content == 'true')
+                    if command == 'USE_GMAIL':
+                        use_gmail = (command_content == 'true')
                     continue
                 # 0. itermidiate transcript starts with [&]
                 if msg_data.startswith('[&]'):
@@ -224,27 +227,78 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                                 text_to_speech, websocket, tts_event,
                                 character.voice_id)))
                     continue
-                # 1. Send message to LLM
-                response = await llm.achat(
-                    history=build_history(conversation_history),
-                    user_input=msg_data,
-                    user_input_template=user_input_template,
-                    callback=AsyncCallbackTextHandler(on_new_token,
-                                                      token_buffer),
-                    audioCallback=AsyncCallbackAudioHandler(
-                        text_to_speech, websocket, tts_event, character.voice_id),
-                    character=character,
-                    useSearch=use_search)
 
-                # 2. Send response to client
-                message_id = str(uuid.uuid4().hex)[:16]
-                await manager.send_message(message=f'[end={message_id}]\n',
-                                           websocket=websocket)
+                if 'summar' in msg_data.lower() and use_gmail == True:
 
-                # 3. Update conversation history
-                conversation_history.user.append(msg_data)
-                conversation_history.ai.append(response)
-                token_buffer.clear()
+                    # 1. Send message to LLM
+                    response = await llm.achat(
+                        history=build_history(conversation_history),
+                        user_input=msg_data,
+                        user_input_template=user_input_template,
+                        callback=AsyncCallbackTextHandler(on_new_token,
+                                                        token_buffer),
+                        audioCallback=AsyncCallbackAudioHandler(
+                            text_to_speech, websocket, tts_event, character.voice_id),
+                        character=character,
+                        useSearch=use_search,
+                        useGmail=use_gmail,
+                        emails=catalog_manager.get_unread_emails(),
+                        subjects=catalog_manager.get_unread_subjects(),
+                        quickSummarizeGmail=True)
+
+                    # 1. Send message to LLM
+                    response = await llm.achat(
+                        history=build_history(conversation_history),
+                        user_input=msg_data,
+                        user_input_template=user_input_template,
+                        callback=AsyncCallbackTextHandler(on_new_token,
+                                                        token_buffer),
+                        audioCallback=AsyncCallbackAudioHandler(
+                            text_to_speech, websocket, tts_event, character.voice_id),
+                        character=character,
+                        useSearch=use_search,
+                        useGmail=use_gmail,
+                        emails=catalog_manager.get_unread_emails(),
+                        subjects=catalog_manager.get_unread_subjects(),
+                        quickSummarizeGmail=False)
+                    # conversation_history.ai[-1] += response
+
+                    # 2. Send response to client
+                    message_id = str(uuid.uuid4().hex)[:16]
+                    await manager.send_message(message=f'[end={message_id}]\n',
+                                               websocket=websocket)
+
+                    # 3. Update conversation history
+                    conversation_history.user.append(msg_data)
+                    conversation_history.ai.append(response)
+                    token_buffer.clear()
+                else:
+                    # 1. Send message to LLM
+                    response = await llm.achat(
+                        history=build_history(conversation_history),
+                        user_input=msg_data,
+                        user_input_template=user_input_template,
+                        callback=AsyncCallbackTextHandler(on_new_token,
+                                                        token_buffer),
+                        audioCallback=AsyncCallbackAudioHandler(
+                            text_to_speech, websocket, tts_event, character.voice_id),
+                        character=character,
+                        useSearch=use_search,
+                        useGmail=use_gmail,
+                        emails=catalog_manager.get_unread_emails(),
+                        subjects=catalog_manager.get_unread_subjects(),
+                        quickSummarizeGmail=False)
+
+                    # 2. Send response to client
+                    message_id = str(uuid.uuid4().hex)[:16]
+                    await manager.send_message(message=f'[end={message_id}]\n',
+                                               websocket=websocket)
+
+                    # 3. Update conversation history
+                    conversation_history.user.append(msg_data)
+                    conversation_history.ai.append(response)
+                    token_buffer.clear()
+
                 # 4. Persist interaction in the database
                 tools = "search" if use_search else ""
                 Interaction(client_id=client_id,
@@ -315,7 +369,11 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                                   text_to_speech, websocket, tts_event,
                                   character.voice_id),
                               character=character,
-                              useSearch=use_search))
+                              useSearch=use_search,
+                              useGmail=use_gmail,
+                              emails=catalog_manager.get_unread_emails(),
+                              subjects=catalog_manager.get_unread_subjects(),
+                              quickSummarizeGmail=False))
 
     except WebSocketDisconnect:
         logger.info(f"User #{user_id} closed the connection")

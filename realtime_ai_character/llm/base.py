@@ -57,7 +57,7 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
         if not self.is_reply and token == ">":
             self.is_reply = True
         elif self.is_reply:
-            if token not in {'.', '?', '!'}:
+            if token not in {':', '.', '?', '!'}:
                 self.current_sentence += token
             else:
                 await self.text_to_speech.stream(

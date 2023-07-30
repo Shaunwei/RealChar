@@ -6,11 +6,10 @@ const connectButton = document.getElementById('connect');
 const disconnectButton = document.getElementById('disconnect');
 const devicesContainer = document.getElementById('devices-container');
 let socket;
-let clientId = Math.floor(Math.random() * 10000000);
 
 function connectSocket() {
   chatWindow.value = "";
-  var clientId = Math.floor(Math.random() * 1010000);
+  var clientId = Math.floor(Math.random() * 1010000000);
   var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
   var ws_path = ws_scheme + '://' + window.location.host + `/ws/${clientId}`;
   socket = new WebSocket(ws_path);

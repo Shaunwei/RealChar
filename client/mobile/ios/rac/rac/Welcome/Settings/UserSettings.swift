@@ -23,10 +23,17 @@ class UserSettings: ObservableObject {
     @Published var userToken: String? = nil
     @Published var isLoggedIn: Bool = false
 
+    private var lastIdTokenCheckedTime: Date = Date.distantPast
+
     // Function to check if the user is logged in
-    func checkUserLoggedIn(completion: ((Bool) -> Void)? = nil) {
+    func checkUserLoggedIn(useCache: Bool = true, completion: ((Bool) -> Void)? = nil) {
         if let currentUser = Auth.auth().currentUser {
+            if useCache && isLoggedIn && Date().timeIntervalSince(lastIdTokenCheckedTime) < TimeInterval(60 * 60) {
+                completion?(true)
+                return
+            }
             currentUser.getIDToken() { token, error in
+                self.lastIdTokenCheckedTime = Date()
                 if let error {
                     print("Fail to get ID Token from user: \(error.localizedDescription)")
                     completion?(false)

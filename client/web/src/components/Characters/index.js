@@ -6,49 +6,61 @@
  */
 
 // Characters
-import React, { useEffect, useState } from 'react';
+// Characters
+import React from 'react';
+import Button from '@mui/material/Button';
+import Avatar from '@mui/material/Avatar';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import './style.css';
 
 const Characters = ({ characterGroups, selectedCharacter, setSelectedCharacter, isPlaying, characterConfirmed }) => {
-    const [pulseAnimation, setPulseAnimation] = useState(null);
-
-    // when the character is talking, show animation 
-    useEffect(() => {
-        if (isPlaying) {
-            setPulseAnimation(Math.random() > 0.5 ? "pulse-animation-1" : "pulse-animation-2");
-        } else {
-            setPulseAnimation(null);
-        }
-    }, [isPlaying]);
-
     const handleCharacterSelection = (e) => {
-        setSelectedCharacter(e.target.value);
+        setSelectedCharacter(e.currentTarget.value);
     };
 
     return (
-        <div className="main-container">
-            <div className='radio-buttons'>
-                {characterGroups.map(group => (
-                    (!characterConfirmed || group.character_id === selectedCharacter) && (
-                    <label key={group.character_id} className="custom-radio">
-                        <input 
-                            type='radio' 
-                            name='radio' 
-                            value={group.character_id} 
-                            onChange={handleCharacterSelection}
+        <Grid container spacing={2} sx={{ marginBottom: 5}} className="main-container">
+            {characterGroups.map(character => (
+                (!characterConfirmed || character.character_id === selectedCharacter) && (
+                <Grid item xs={6}>
+                    <Button 
+                        value={character.character_id}
+                        variant="outlined" 
+                        onClick={handleCharacterSelection} 
+                        sx={{ 
+                            width: "100%", 
+                            backgroundColor: character.character_id === selectedCharacter ? "#35394A" : "#1B2134",
+                            borderColor: character.character_id === selectedCharacter ? "#A7BFFF" : "#1B2134",
+                            '&:hover': {
+                                backgroundColor: "#35394A",
+                                borderColor: "#617CC2",
+                            },
+                            display: 'flex',
+                            justifyContent: 'left',
+                            textTransform: 'none'
+                        }}
+                    >
+                        <Avatar 
+                            alt={character.name} 
+                            src={character.image_url} 
+                            sx={{ marginRight: 1 }}
                         />
-                        <span className={`radio-btn ${group.character_id === selectedCharacter ? pulseAnimation : ''}`}>
-                            <div className='hobbies-icon'>
-                                <img src={group.image_url} alt={group.name}/>
-                                <h4>{group.name}</h4>
-                            </div>
-                        </span>
-                    </label>
-                    )
-                ))}
-            </div>
-        </div>
-    )
-}
+                        <Typography 
+                            variant="body1" 
+                            sx={{
+                                color: "white",
+                                fontFamily: "Prompt, sans-serif"
+                            }}
+                        >
+                            {character.name}
+                        </Typography>
+                    </Button>
+                </Grid>
+                )
+            ))}
+        </Grid>
+    );
+};
   
 export default Characters;

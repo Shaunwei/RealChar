@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 
 import MobileWarning from '../components/MobileWarning';
 import Characters from '../components/Characters';
-import Button from '../components/Common/Button';
+import Button from '@mui/material/Button';
 
 const Home = ({ 
   selectedCharacter, 
@@ -65,7 +65,7 @@ const Home = ({
     isMobile ? (
         <MobileWarning />
       ) : (
-        <div id="desktop-content">
+        <div className="desktop-content">
           { loading ? (<h2>Loading...</h2>) : (
             <>
               <p className="header">Choose Your Partner</p>
@@ -78,7 +78,22 @@ const Home = ({
                   characterConfirmed={characterConfirmed} 
               />
 
-              <Button onClick={handleNextClick} name="Next"  disabled={!selectedCharacter}/>
+              <Button
+                variant="contained"
+                onClick={handleNextClick} 
+                fullWidth 
+                size='large'
+                disabled={!selectedCharacter}
+                sx={{
+                  '&.Mui-disabled': {
+                    backgroundColor: '#BEC5D9',
+                    color: '#636A84',
+                  },
+                  textTransform: 'none'
+                }}
+              >
+                  Next
+              </Button>
               </>)}
           </div>
       )

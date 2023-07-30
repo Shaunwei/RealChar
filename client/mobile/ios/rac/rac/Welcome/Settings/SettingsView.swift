@@ -176,12 +176,7 @@ struct SettingsView: View {
                             .padding(.bottom, 2)
                             .pickerStyle(.navigationLink)
 
-                            Text("LLM Model?")
-                                .font(
-                                    Font.custom("Prompt", size: 16)
-                                )
-
-                            Picker("LLM Model", selection: $preferenceSettings.llmOption) {
+                            Picker("LLM Model?", selection: $preferenceSettings.llmOption) {
                                 ForEach(LlmOption.allCases) { llmOption in
                                     Text(llmOption.displayName)
                                         .font(
@@ -190,8 +185,12 @@ struct SettingsView: View {
                                         .tag(llmOption)
                                 }
                             }
+                            .font(
+                                Font.custom("Prompt", size: 16)
+                            )
+                            .tint(.primary)
                             .padding(.bottom, 2)
-                            .pickerStyle(.segmented)
+                            .pickerStyle(.navigationLink)
 
                             if UIDevice.current.userInterfaceIdiom == .phone {
                                 Toggle(isOn: $preferenceSettings.hapticFeedback) {

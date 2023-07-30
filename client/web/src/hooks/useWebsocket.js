@@ -15,7 +15,7 @@ const useWebsocket = (token, onOpen, onMessage, selectedModel, preferredLanguage
     // initialize web socket and connect to server.
     const connectSocket = useCallback(() => {
         if (!socketRef.current) {
-            const clientId = Math.floor(Math.random() * 1010000);
+            const clientId = Math.floor(Math.random() * 1010000000);
             const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
             // Get the current host value
             var currentHost = window.location.host;

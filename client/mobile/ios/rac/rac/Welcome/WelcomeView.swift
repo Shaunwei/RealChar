@@ -86,11 +86,13 @@ struct WelcomeView: View {
                     VStack {
                         Button {
                             if webSocketConnectionStatusObserver.status == .disconnected, let characterId = character?.id {
-                                webSocket.connectSession(languageOption: preferenceSettings.languageOption,
-                                                         llmOption: preferenceSettings.llmOption,
-                                                         characterId: characterId,
-                                                         userId: userSettings.userId,
-                                                         token: userSettings.userToken)
+                                userSettings.checkUserLoggedIn(useCache: false) { _ in
+                                    webSocket.connectSession(languageOption: preferenceSettings.languageOption,
+                                                             llmOption: preferenceSettings.llmOption,
+                                                             characterId: characterId,
+                                                             userId: userSettings.userId,
+                                                             token: userSettings.userToken)
+                                }
                             }
                         } label: {
                             Text(webSocketConnectionStatusObserver.debouncedStatus == .disconnected ? "Failed to connect to server, tap to retry" : "Connecting to server...")
@@ -150,12 +152,14 @@ struct WelcomeView: View {
             webSocket.onConnectionChanged = { status in
                 self.webSocketConnectionStatusObserver.update(status: webSocket.status)
             }
-            webSocket.connectSession(languageOption: preferenceSettings.languageOption,
-                                     llmOption: preferenceSettings.llmOption,
-                                     characterId: characterId,
-                                     userId: userSettings.userId,
-                                     token: userSettings.userToken)
-            onWebSocketReconnected()
+            userSettings.checkUserLoggedIn() { _ in
+                webSocket.connectSession(languageOption: preferenceSettings.languageOption,
+                                         llmOption: preferenceSettings.llmOption,
+                                         characterId: characterId,
+                                         userId: userSettings.userId,
+                                         token: userSettings.userToken)
+                onWebSocketReconnected()
+            }
         }
     }
 

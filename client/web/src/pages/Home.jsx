@@ -62,42 +62,39 @@ const Home = ({
   }
 
   return (
-    isMobile ? (
-        <MobileWarning />
-      ) : (
-        <div className="home">
-          { loading ? (<h2>Loading...</h2>) : (
-            <>
-              <p className="header">Choose Your Partner</p>
-      
-              <Characters 
-                  characterGroups={characterGroups} 
-                  selectedCharacter={selectedCharacter} 
-                  setSelectedCharacter={setSelectedCharacter} 
-                  isPlaying={isPlaying} 
-                  characterConfirmed={characterConfirmed} 
-              />
+    <div className="home">
+      {isMobile && <MobileWarning />}
+      { loading ? (<h2>Loading...</h2>) : (
+        <>
+          <p className="header">Choose Your Partner</p>
+  
+          <Characters 
+              characterGroups={characterGroups} 
+              selectedCharacter={selectedCharacter} 
+              setSelectedCharacter={setSelectedCharacter} 
+              isPlaying={isPlaying} 
+              characterConfirmed={characterConfirmed} 
+          />
 
-              <Button
-                variant="contained"
-                onClick={handleNextClick} 
-                fullWidth 
-                size='large'
-                disabled={!selectedCharacter}
-                sx={{
-                  '&.Mui-disabled': {
-                    backgroundColor: '#BEC5D9',
-                    color: '#636A84',
-                  },
-                  textTransform: 'none'
-                }}
-              >
-                  Next
-              </Button>
-              </>)}
-          </div>
-      )
-    )
+          <Button
+            variant="contained"
+            onClick={handleNextClick} 
+            fullWidth 
+            size='large'
+            disabled={!selectedCharacter}
+            sx={{
+              '&.Mui-disabled': {
+                backgroundColor: '#BEC5D9',
+                color: '#636A84',
+              },
+              textTransform: 'none'
+            }}
+          >
+              Next
+          </Button>
+          </>)}
+      </div>
+  )
 };
 
 export default Home;

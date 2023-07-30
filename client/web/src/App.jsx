@@ -238,10 +238,7 @@ const App = () => {
                 stopRecording={stopRecording} 
                 preferredLanguage={preferredLanguage} 
                 setPreferredLanguage={setPreferredLanguage}
-                characterGroups={characterGroups}
                 selectedCharacter={selectedCharacter}
-                setSelectedCharacter={setSelectedCharacter}
-                characterConfirmed={characterConfirmed}
               />} 
             />
         </Routes>

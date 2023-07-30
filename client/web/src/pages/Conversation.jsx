@@ -9,6 +9,7 @@ import CallView from '../components/CallView';
 import TextView from '../components/TextView';
 import Characters from '../components/Characters';
 import { useNavigate } from 'react-router-dom';
+import Avatar from '@mui/material/Avatar';
 
 // TODO: user can access this page only if isConnected.current
 
@@ -37,10 +38,7 @@ const Conversation = ({
   stopRecording,
   preferredLanguage,
   setPreferredLanguage,
-  characterGroups,
   selectedCharacter,
-  setSelectedCharacter,
-  characterConfirmed
 }) => {
   const navigate = useNavigate();
 
@@ -64,13 +62,13 @@ return (
           } 
         </p>
 
-        <Characters 
-          characterGroups={characterGroups} 
-          selectedCharacter={selectedCharacter} 
-          setSelectedCharacter={setSelectedCharacter} 
-          isPlaying={isPlaying} 
-          characterConfirmed={characterConfirmed} 
-        />
+        <div className={`avatar-wrapper ${isPlaying ? "pulsating-avatar" : ""}`}>
+          <Avatar
+            alt={selectedCharacter.name}
+            src={selectedCharacter.image_url}
+            sx={{ width: 76, height: 76 }}
+          />
+        </div>
 
         <div className="main-screen" style={{ display: isCallView ? "flex" : "none" }}>
           <CallView 

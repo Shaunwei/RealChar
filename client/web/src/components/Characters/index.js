@@ -15,23 +15,22 @@ import Typography from '@mui/material/Typography';
 import './style.css';
 
 const Characters = ({ characterGroups, selectedCharacter, setSelectedCharacter, isPlaying, characterConfirmed }) => {
-    const handleCharacterSelection = (e) => {
-        setSelectedCharacter(e.currentTarget.value);
+    const handleCharacterSelection = (character) => {
+        setSelectedCharacter(character);
     };
 
     return (
         <Grid container spacing={2} sx={{ marginBottom: 5}} className="main-container">
             {characterGroups.map(character => (
-                (!characterConfirmed || character.character_id === selectedCharacter) && (
+                (!characterConfirmed || character.character_id === selectedCharacter.character_id) && (
                 <Grid item xs={6}>
                     <Button 
-                        value={character.character_id}
                         variant="outlined" 
-                        onClick={handleCharacterSelection} 
+                        onClick={() => handleCharacterSelection(character)}
                         sx={{ 
                             width: "100%", 
-                            backgroundColor: character.character_id === selectedCharacter ? "#35394A" : "#1B2134",
-                            borderColor: character.character_id === selectedCharacter ? "#A7BFFF" : "#1B2134",
+                            backgroundColor: (selectedCharacter && (character.character_id === selectedCharacter.character_id)) ? "#35394A" : "#1B2134",
+                            borderColor: (selectedCharacter && (character.character_id === selectedCharacter.character_id)) ? "#A7BFFF" : "#1B2134",
                             '&:hover': {
                                 backgroundColor: "#35394A",
                                 borderColor: "#617CC2",

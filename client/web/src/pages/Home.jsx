@@ -65,7 +65,7 @@ const Home = ({
     isMobile ? (
         <MobileWarning />
       ) : (
-        <div className="desktop-content">
+        <div className="home">
           { loading ? (<h2>Loading...</h2>) : (
             <>
               <p className="header">Choose Your Partner</p>

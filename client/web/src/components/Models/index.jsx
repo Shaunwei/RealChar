@@ -7,20 +7,57 @@
 
 import React from 'react';
 import './style.css'
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
 
 const Models = ({selectedModel, setSelectedModel}) => {
-    const models = ["gpt-3.5-turbo-16k", "gpt-4", "claude-2"];
+    const models = [
+        {
+            id: "gpt-3.5-turbo-16k",
+            name: "GPT-3.5"
+        },
+        {
+            id: "gpt-4",
+            name: "GPT-4"
+        },
+        {
+            id: "claude-2",
+            name: "Claude-2"
+        },
+    ]
 
+    const handleModelSelect = (e) => {
+        console.log(e.currentTarget.value);
+        setSelectedModel(e.currentTarget.value);
+    }
     return (
-        <div className="models-container">
-            <label className="models-label" htmlFor="models-selection">Large langauge model(LLM)</label>
-            <div id="models-selection" className="select-dropdown">
-                <select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)}>
-                    <option disabled value="">Select Model</option>
-                    {models.map((model, index) => <option key={index} value={model}>{model}</option>)}
-                </select>
-            </div>
-        </div>
+        <>
+            <label>Large langauge model(LLM)</label>
+            <Grid container spacing={2} sx={{ marginBottom: 5}}>
+                {models.map( model => (
+                    <Grid item xs={4}>
+                    <Button 
+                        value={model.id} 
+                        variant="outlined" 
+                        onClick={handleModelSelect}
+                        sx={{ 
+                            width: "100%", 
+                            backgroundColor: model.id === selectedModel ? "#35394A" : "#1B2134",
+                            borderColor: model.id === selectedModel ? "#A7BFFF" : "#1B2134",
+                            '&:hover': {
+                                backgroundColor: "#35394A",
+                                borderColor: "#617CC2",
+                            },
+                            textTransform: 'none',
+                            color: 'white'
+                        }}
+                    >
+                        {model.name}
+                    </Button>
+                    </Grid>
+                ))}
+            </Grid>
+        </>
     )
 }
 

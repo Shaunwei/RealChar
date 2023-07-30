@@ -1,0 +1,11 @@
+label {
+	margin-bottom: 20px;
+	color: #e0e0e0;
+}
+
+.search {
+	display: inline-flex;
+	background-color: #1B2134;
+	border-radius: 5px;
+	margin-bottom: 30px;
+}

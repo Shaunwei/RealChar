@@ -1,12 +1,16 @@
-.languages-container {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-}
-
 .languages-label {
 	margin-top: 40px;
 	margin-bottom: 20px;
 	color: #e0e0e0;
+}
+
+.select {
+	background-color: #1B2134;
+	color: #FFFFFF;
+	border-color: #1B2134;
+	width: 100%;
+	padding: 10px;
+	border-radius: 5px;
+	margin-top: 20px;
+	margin-bottom: 30px;
 }

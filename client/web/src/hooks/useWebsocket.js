@@ -38,7 +38,7 @@ const useWebsocket = (token, onOpen, onMessage, selectedModel, preferredLanguage
 
             var language = languageCode[preferredLanguage];
 
-            const ws_path = ws_scheme + '://' + newHost + `/ws/${clientId}?llm_model=${selectedModel}&platform=web&character_id=${selectedCharacter}&language=${language}&token=${token}`;
+            const ws_path = ws_scheme + '://' + newHost + `/ws/${clientId}?llm_model=${selectedModel}&platform=web&character_id=${selectedCharacter.character_id}&language=${language}&token=${token}`;
 
             socketRef.current = new WebSocket(ws_path);
             const socket = socketRef.current;

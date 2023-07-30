@@ -32,20 +32,19 @@ const MediaDevices = ({ selectedDevice, setSelectedDevice }) => {
 
   return (
     <div className="devices-container">
-      <label className="audio-device-label" htmlFor="audio-device-selection">Microphone</label>
-      <div className="select-dropdown">
-        <select
-            id="audio-device-selection"
-            value={selectedDevice} 
-            onChange={handleDeviceChange}
-        >
-            {devices.map((device, index) => (
-              <option key={device.deviceId} value={device.deviceId}>
-                  {device.label || `Microphone ${index + 1}`}
-              </option>
-            ))}
-        </select>
-      </div>
+      <label>Microphone</label>
+      <select
+          id="audio-device-selection"
+          value={selectedDevice} 
+          onChange={handleDeviceChange}
+          className="select"
+      >
+          {devices.map((device, index) => (
+            <option key={device.deviceId} value={device.deviceId}>
+                {device.label || `Microphone ${index + 1}`}
+            </option>
+          ))}
+      </select>
     </div>
   );
 }

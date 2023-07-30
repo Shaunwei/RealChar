@@ -5,13 +5,6 @@
   align-items: center;
 }
 
-#desktop-content {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .header {
   color: #cccccc;
   font-family: "Prompt", Helvetica;

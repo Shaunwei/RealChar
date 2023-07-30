@@ -14,13 +14,11 @@ const Languages = ({ preferredLanguage, setPreferredLanguage }) => {
 
     return (
         <div className="languages-container">
-            <label className="languages-label" htmlFor="languages-selection">Language</label>
-            <div id="languages-selection" className="select-dropdown">
-                <select value={preferredLanguage} onChange={(e) => setPreferredLanguage(e.target.value)}>
+            <label className="languages-label">Language</label>
+                <select className="select" value={preferredLanguage} onChange={(e) => setPreferredLanguage(e.target.value)}>
                     <option disabled value="">Select Language</option>
                     {languages.map((language, index) => <option key={index} value={language}>{language}</option>)}
                 </select>
-            </div>
         </div>
     )
 }

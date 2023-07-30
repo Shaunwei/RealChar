@@ -8,8 +8,8 @@
 import React from 'react';
 import './styles.css';
 
-const Button = ({ onClick, name, disabled = false }) => (
-    <button className="button" onClick={onClick} disabled={disabled}>
+const Button = ({ onClick, name }) => (
+    <button className="button" onClick={onClick}>
         {name}
     </button>
 );

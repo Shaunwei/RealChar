@@ -62,27 +62,24 @@ const Home = ({
   }
 
   return (
-    isMobile ? (
-        <MobileWarning />
-      ) : (
-        <div id="desktop-content">
-          { loading ? (<h2>Loading...</h2>) : (
-            <>
-              <p className="header">Choose Your Partner</p>
-      
-              <Characters 
-                  characterGroups={characterGroups} 
-                  selectedCharacter={selectedCharacter} 
-                  setSelectedCharacter={setSelectedCharacter} 
-                  isPlaying={isPlaying} 
-                  characterConfirmed={characterConfirmed} 
-              />
+    <div id="desktop-content">
+      {isMobile && <MobileWarning />}
+      {loading ? (<h2>Loading...</h2>) : (
+        <>
+          <p className="header">Choose Your Partner</p>
 
-              <Button onClick={handleNextClick} name="Next"  disabled={!selectedCharacter}/>
-              </>)}
-          </div>
-      )
-    )
+          <Characters
+            characterGroups={characterGroups}
+            selectedCharacter={selectedCharacter}
+            setSelectedCharacter={setSelectedCharacter}
+            isPlaying={isPlaying}
+            characterConfirmed={characterConfirmed}
+          />
+
+          <Button onClick={handleNextClick} name="Next" disabled={!selectedCharacter} />
+        </>)}
+    </div>
+  );
 };
 
 export default Home;

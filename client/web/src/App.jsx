@@ -47,6 +47,7 @@ const App = () => {
   const shouldPlayAudio = useRef(false);
   const audioQueue = useRef([]);
   const isConnected = useRef(false);
+  const isMobile = window.innerWidth <= 768; 
   
 
   useEffect(() => {
@@ -187,6 +188,7 @@ const App = () => {
         <Routes>
             <Route path="/" element={
               <Home
+                isMobile={isMobile}
                 selectedCharacter={selectedCharacter} 
                 setSelectedCharacter={setSelectedCharacter} 
                 isPlaying={isPlaying}
@@ -198,6 +200,7 @@ const App = () => {
             />
             <Route path="/settings" element={
               <Settings 
+                isMobile={isMobile}
                 preferredLanguage={preferredLanguage} 
                 setPreferredLanguage={setPreferredLanguage} 
                 selectedDevice={selectedDevice} 

@@ -7,7 +7,6 @@
 import React, {useEffect} from 'react';
 import CallView from '../components/CallView';
 import TextView from '../components/TextView';
-import Characters from '../components/Characters';
 import { useNavigate } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
 

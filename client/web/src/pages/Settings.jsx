@@ -16,7 +16,7 @@ import './styles.css';
 import CommunicationMethod from '../components/CommunicationMethod';
 import Search from '../components/Search';
 
-const Settings = ({ preferredLanguage, setPreferredLanguage, selectedDevice, setSelectedDevice, selectedModel, setSelectedModel, useSearch, setUseSearch, send, connect, setIsCallView, shouldPlayAudio}) => {
+const Settings = ({ isMobile, preferredLanguage, setPreferredLanguage, selectedDevice, setSelectedDevice, selectedModel, setSelectedModel, useSearch, setUseSearch, send, connect, setIsCallView, shouldPlayAudio}) => {
     const navigate = useNavigate();
     const [commMethod, setCommMethod] = useState("Text");
 
@@ -48,7 +48,7 @@ const Settings = ({ preferredLanguage, setPreferredLanguage, selectedDevice, set
             
             <MediaDevices selectedDevice={selectedDevice} setSelectedDevice={setSelectedDevice} />
             
-            <Models selectedModel={selectedModel} setSelectedModel={setSelectedModel} />
+            <Models isMobile={isMobile} selectedModel={selectedModel} setSelectedModel={setSelectedModel} />
 
             <Search useSearch={useSearch} setUseSearch={setUseSearch} send={send}/>
 

@@ -8,11 +8,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import {isIP} from 'is-ip';
 import { useNavigate } from 'react-router-dom';
 
-import MobileWarning from '../components/MobileWarning';
 import Characters from '../components/Characters';
 import Button from '@mui/material/Button';
 
 const Home = ({ 
+  isMobile,
   selectedCharacter, 
   setSelectedCharacter, 
   isPlaying,
@@ -22,9 +22,7 @@ const Home = ({
   characterConfirmed
 }) => {
   const navigate = useNavigate();
-  const isMobile = window.innerWidth <= 768; 
   const [loading, setLoading] = useState(true);
-  
 
   // Get characters
   useEffect(() => {
@@ -63,12 +61,12 @@ const Home = ({
 
   return (
     <div className="home">
-      {isMobile && <MobileWarning />}
       { loading ? (<h2>Loading...</h2>) : (
         <>
           <p className="header">Choose Your Partner</p>
   
           <Characters 
+              isMobile={isMobile}
               characterGroups={characterGroups} 
               selectedCharacter={selectedCharacter} 
               setSelectedCharacter={setSelectedCharacter} 

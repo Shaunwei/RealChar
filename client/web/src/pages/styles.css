@@ -11,6 +11,7 @@ h2, h4, p {
   }
 
 .settings {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   width: 50vw;
@@ -22,9 +23,10 @@ h2, h4, p {
 }
 
 .conversation-page {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;	
+  align-items: center;
 }
 
 .center {

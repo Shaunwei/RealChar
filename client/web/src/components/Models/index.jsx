@@ -12,7 +12,7 @@ import Grid from '@mui/material/Grid';
 import CustomTooltip from '../Common/CustomTooltip';
 import CheckIcon from '@mui/icons-material/Check';
 
-const Models = ({selectedModel, setSelectedModel}) => {
+const Models = ({isMobile, selectedModel, setSelectedModel}) => {
     const models = [
         {
             id: "gpt-3.5-turbo-16k",
@@ -53,7 +53,7 @@ const Models = ({selectedModel, setSelectedModel}) => {
             <label>Large language model(LLM)</label>
             <Grid container spacing={2} sx={{ marginBottom: 5}}>
                 {models.map( model => (
-                    <Grid item xs={4}>
+                    <Grid item xs={isMobile ? 12 : 4}>
                          <CustomTooltip title={<CustomTooltipContent tooltip={model.tooltip}/>} placement="top-end">
                             <Button 
                                 value={model.id} 

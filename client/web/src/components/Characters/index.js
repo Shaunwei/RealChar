@@ -6,7 +6,6 @@
  */
 
 // Characters
-// Characters
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
@@ -19,7 +18,7 @@ import DialogActions from '@mui/material/DialogActions';
 import GroupsIcon from '@mui/icons-material/Groups';
 import './style.css';
 
-const Characters = ({ characterGroups, selectedCharacter, setSelectedCharacter, isPlaying, characterConfirmed }) => {
+const Characters = ({ isMobile, characterGroups, selectedCharacter, setSelectedCharacter, isPlaying, characterConfirmed }) => {
     const [openDialog, setOpenDialog] = useState(false);
     
     const handleCharacterSelection = (character) => {
@@ -38,7 +37,7 @@ const Characters = ({ characterGroups, selectedCharacter, setSelectedCharacter, 
         <Grid container spacing={2} sx={{ marginBottom: 5}} className="main-container">
             {characterGroups.map(character => (
                 ((!characterConfirmed && character.source === "default") || (selectedCharacter && character.character_id === selectedCharacter.character_id)) && (
-                <Grid item xs={6}>
+                <Grid item xs={isMobile ? 12 : 6}>
                     <Button 
                         variant="outlined" 
                         onClick={() => handleCharacterSelection(character)}
@@ -74,7 +73,7 @@ const Characters = ({ characterGroups, selectedCharacter, setSelectedCharacter, 
                 )
             ))}
 
-            <Grid item xs={6}>
+            <Grid item xs={isMobile ? 12 : 6}>
                 <Button 
                     variant="outlined" 
                     onClick={handleOpenDialog}
@@ -122,7 +121,7 @@ const Characters = ({ characterGroups, selectedCharacter, setSelectedCharacter, 
                     <Grid container spacing={2}>
                     {characterGroups.map(character => {
                         return character.source === "community" ? (
-                            <Grid item xs={6}>
+                            <Grid item xs={isMobile ? 12 : 6}>
                             <Button 
                                 variant="outlined" 
                                 onClick={() => handleCharacterSelection(character)}

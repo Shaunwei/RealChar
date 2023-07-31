@@ -8,9 +8,7 @@ import sys
 
 @click.group()
 def cli():
-    python_version = ".".join(map(str, sys.version_info[:2]))
-    click.echo(f"Python version: {python_version}")
-    assert float(python_version) <= "3.9", "Python 3.9+ is required."
+    assert sys.version_info > (3, 10), "Python version must be newer than 3.10"    
     pass
 
 

@@ -83,9 +83,8 @@ const App = () => {
   const handleSocketOnMessage = (event) => {
     if (typeof event.data === 'string') {
       const message = event.data;
-      if (message === '[end]\n') {
+      if (message === '[end]\n' || message.match(/\[end=(\d+)\]/)) {
         setTextAreaValue(prevState => prevState + "\n\n");
-        
       } else if (message.startsWith('[+]You said: ')) {
         // [+] indicates the transcription is done. stop playing audio
         let msg = message.split("[+]You said: ");
@@ -94,7 +93,6 @@ const App = () => {
       } else if (message.startsWith('[=]')) {
         // [=] indicates the response is done
         setTextAreaValue(prevState => prevState + "\n\n");
-        
       } else if (message.startsWith('Select')) {
       } else {
         setTextAreaValue(prevState => prevState + `${event.data}`);

@@ -90,8 +90,8 @@ const App = () => {
         let msg = message.split("[+]You said: ");
         setTextAreaValue(prevState => prevState + `\nYou> ${msg[1]}\n`);
         stopAudioPlayback();
-      } else if (message.startsWith('[=]')) {
-        // [=] indicates the response is done
+      } else if (message.startsWith('[=]' || message.match(/\[=([a-zA-Z0-9]+)\]/))) {
+        // [=] or [=id] indicates the response is done
         setTextAreaValue(prevState => prevState + "\n\n");
       } else if (message.startsWith('Select')) {
       } else {

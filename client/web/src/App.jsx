@@ -198,6 +198,7 @@ const App = () => {
             />
             <Route path="/settings" element={
               <Settings 
+                selectedCharacter={selectedCharacter}
                 isMobile={isMobile}
                 preferredLanguage={preferredLanguage} 
                 setPreferredLanguage={setPreferredLanguage} 

@@ -23,8 +23,8 @@ const CommunicationMethod = ({ commMethod, setCommMethod }) => {
     return (
         <>
         <div className="title" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-            <span>Communication method</span>
-            <CustomTooltip title="You can change the communication method during your conversation." placement="top">
+            <span>Chat Mode</span>
+            <CustomTooltip title="You can change the Chat Mode during your conversation." placement="top">
                 <IconButton 
                     aria-label="info"
                     sx={{ color: 'white', marginLeft: '5px', padding: '5px' }}

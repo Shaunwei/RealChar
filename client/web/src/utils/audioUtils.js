@@ -5,6 +5,8 @@
  * created by Lynchee on 7/16/23
  */
 
+import { setupAvatarLipSync } from '../components/AvatarView';
+
 const unlockAudioContext = (audioContext) => {
     if (audioContext.state === 'suspended') {
       const unlock = function() {
@@ -23,6 +25,7 @@ const playAudio = (audioContextRef, audioPlayer, url) => {
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
       unlockAudioContext(audioContextRef.current);
+      setupAvatarLipSync(audioContextRef.current, audioPlayer.current);
     }
 
     return new Promise((resolve) => {

@@ -129,7 +129,7 @@ async def receive_message(websocket):
             break
 
         if isinstance(message, str):
-            if message == '[end]\n' or re.search(r'\[end=(\d+)\]', message):
+            if message == '[end]\n' or re.search(r'\[end=([a-zA-Z0-9]+)\]', message):
                 print('\nYou: ', end="", flush=True)
             elif message.startswith('[+]'):
                 # stop playing audio

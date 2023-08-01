@@ -137,7 +137,7 @@ struct InteractiveView: View {
             webSocket.send(message: "[!USE_SEARCH]\(preferenceSettings.useSearch)")
             webSocket.onStringReceived = { message in
                 guard !(openMic && voiceState == .listeningToUser) else { return }
-                let messageNewPattern = "\\[end=(\\d+)\\]"
+                let messageNewPattern = "\\[end=([a-zA-Z0-9]+)\\]"
                 let messageNewRegex = try! NSRegularExpression(pattern: messageNewPattern, options: [])
                 let messageNewMatches = messageNewRegex.matches(in: message, options: [], range: NSRange(location: 0, length: message.utf16.count))
 

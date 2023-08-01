@@ -83,7 +83,7 @@ const App = () => {
   const handleSocketOnMessage = (event) => {
     if (typeof event.data === 'string') {
       const message = event.data;
-      if (message === '[end]\n' || message.match(/\[end=(\d+)\]/)) {
+      if (message === '[end]\n' || message.match(/\[end=([a-zA-Z0-9]+)\]/)) {
         setTextAreaValue(prevState => prevState + "\n\n");
       } else if (message.startsWith('[+]You said: ')) {
         // [+] indicates the transcription is done. stop playing audio

@@ -9,6 +9,7 @@ import CallView from '../components/CallView';
 import TextView from '../components/TextView';
 import { useNavigate } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
+import AvatarView from '../components/AvatarView';
 
 // TODO: user can access this page only if isConnected.current
 
@@ -62,11 +63,18 @@ return (
         </p>
 
         <div className={`avatar-wrapper ${isPlaying ? "pulsating-avatar" : ""}`}>
+          {
+            selectedCharacter?.avatar_id ?
+              <AvatarView avatarId={
+                selectedCharacter?.avatar_id
+              }/> 
+            :
           <Avatar
             alt={selectedCharacter.name}
             src={selectedCharacter.image_url}
             sx={{ width: 76, height: 76 }}
           />
+          }
         </div>
 
         <div className="main-screen" style={{ display: isCallView ? "flex" : "none" }}>

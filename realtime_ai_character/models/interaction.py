@@ -23,6 +23,7 @@ class Interaction(Base):
     character_id = Column(String(100))
     tools = Column(String(100))
     language = Column(String(10))
+    message_id = Column(String(16))
 
     def save(self, db):
         db.add(self)

@@ -237,7 +237,8 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                     useSearch=use_search)
 
                 # 2. Send response to client
-                await manager.send_message(message='[end]\n',
+                message_id = str(uuid.uuid4().hex)[:16]
+                await manager.send_message(message=f'[end={message_id}]\n',
                                            websocket=websocket)
 
                 # 3. Update conversation history
@@ -255,7 +256,8 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                             action_type='text',
                             character_id=character_id,
                             tools=tools,
-                            language=language).save(db)
+                            language=language,
+                            message_id=message_id).save(db)
 
             # handle binary message(audio)
             elif 'bytes' in data:

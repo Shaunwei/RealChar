@@ -15,6 +15,7 @@ class Character:
     source: str = ''
     voice_id: str = ''
     author_name: str = ''
+    avatar_id: str = ''
 
 
 @dataclass

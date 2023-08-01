@@ -95,6 +95,10 @@ class CatalogManager(Singleton):
                 source='community',
                 author_name=yaml_content["author_name"],
             )
+
+            if "avatar_id" in yaml_content:
+                self.characters[character_name].avatar_id = yaml_content["avatar_id"]
+
             if overwrite:
                 self.load_data(character_name, directory / 'data')
                 logger.info('Loaded data for character: ' + character_name)

@@ -66,6 +66,7 @@ async def characters():
             "voice_id": character.voice_id,
             "author_name": character.author_name,
             "image_url": f'https://storage.googleapis.com/assistly/static/realchar/{character.character_id}.jpg',
+            "avatar_id": character.avatar_id,
         } for character in catalog.characters.values()
     ]
 

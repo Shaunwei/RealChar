@@ -14,6 +14,7 @@ import AvatarView from '../components/AvatarView';
 // TODO: user can access this page only if isConnected.current
 
 const Conversation = ({
+  isConnecting,
   isConnected,
   isCallView,
   isRecording,
@@ -43,6 +44,10 @@ const Conversation = ({
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!isConnecting.current) {
+      navigate('/');
+    }
+
     const handleUnload = (event) => {
       event.preventDefault();
       navigate('/');
@@ -51,7 +56,11 @@ const Conversation = ({
 
     // Clean up event listener on component unmount
     return () => window.removeEventListener("beforeunload", handleUnload);
-  }, [navigate]);
+  }, [isConnecting, navigate]);
+
+  if (!isConnecting.current) {
+    return null; 
+  }
 
 return (
     <div className='conversation-page'>

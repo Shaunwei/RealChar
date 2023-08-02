@@ -133,7 +133,7 @@ struct SettingsView: View {
 //                                        showAuth = true
 //                                    }
 
-                                AppleSignInButton(onFirebaseCredentialAndDisplayNameGenerated: authenticateUser)
+                                AppleSignInButton(/*onFirebaseCredentialAndDisplayNameGenerated: authenticateUser*/)
                                     .frame(height: 44)
                             } else {
                                 Text("Name: \(userSettings.userName ?? "Name unavailable")")
@@ -269,7 +269,7 @@ struct SettingsView: View {
 //        }
     }
 
-    private func authenticateUser(for credential: AuthCredential, displayName: String?) {
+//    private func authenticateUser(for credential: AuthCredential, displayName: String?) {
 //        Auth.auth().signIn(with: credential) { (authResult, error) in
 //            if let error = error {
 //                // TODO: Show error on auth
@@ -300,7 +300,7 @@ struct SettingsView: View {
 //                }
 //            }
 //        }
-    }
+//    }
 
     private func logout() {
 //        if Auth.auth().currentUser?.providerData.first?.providerID == "apple.com" {

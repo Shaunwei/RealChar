@@ -8,13 +8,13 @@
 import SwiftUI
 import AuthenticationServices
 import CryptoKit
-import FirebaseAuth
+// import FirebaseAuth
 
 struct AppleSignInButton: View {
     @EnvironmentObject private var userSettings: UserSettings
     @Environment(\.colorScheme) var colorScheme
 
-    var onFirebaseCredentialAndDisplayNameGenerated: (AuthCredential, String?) -> Void
+//    var onFirebaseCredentialAndDisplayNameGenerated: (AuthCredential, String?) -> Void
 
     @State private var currentNonce: String? = nil
 
@@ -111,17 +111,17 @@ extension AppleSignInButton {
     private func registerNewUser(credential: ASAuthorizationAppleIDCredential) {
         // API Call - Pass the email, user full name, user identity provided by Apple and other
         userSettings.saveAppleSignIn(userId: credential.user)
-        if let firebaseCredential = generateFirebaseCredential(for: credential) {
-            onFirebaseCredentialAndDisplayNameGenerated(firebaseCredential, displayName(from: credential.fullName))
-        }
+//        if let firebaseCredential = generateFirebaseCredential(for: credential) {
+//            onFirebaseCredentialAndDisplayNameGenerated(firebaseCredential, displayName(from: credential.fullName))
+//        }
     }
 
     private func signInExistingUser(credential: ASAuthorizationAppleIDCredential) {
         // API Call - Pass the user identity, authorizationCode and identity token
         userSettings.saveAppleSignIn(userId: credential.user)
-        if let firebaseCredential = generateFirebaseCredential(for: credential) {
-            onFirebaseCredentialAndDisplayNameGenerated(firebaseCredential, displayName(from: credential.fullName))
-        }
+//        if let firebaseCredential = generateFirebaseCredential(for: credential) {
+//            onFirebaseCredentialAndDisplayNameGenerated(firebaseCredential, displayName(from: credential.fullName))
+//        }
     }
 
     private func signinWithUserNamePassword(credential: ASPasswordCredential) {
@@ -130,30 +130,30 @@ extension AppleSignInButton {
         // TODO: Tell user username and password is not supported
     }
 
-    private func generateFirebaseCredential(for appleIDCredential: ASAuthorizationAppleIDCredential) -> AuthCredential? {
-        // Retrieve the secure nonce generated during Apple sign in
-        guard let nonce = currentNonce else {
-            fatalError("Invalid state: A login callback was received, but no login request was sent.")
-        }
-
-        // Retrieve Apple identity token
-        guard let appleIDToken = appleIDCredential.identityToken else {
-            print("Failed to fetch identity token")
-            return nil
-        }
-
-        // Convert Apple identity token to string
-        guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
-            print("Failed to decode identity token")
-            return nil
-        }
-
-        // Initialize a Firebase credential using secure nonce and Apple identity token
-        let firebaseCredential = OAuthProvider.credential(withProviderID: "apple.com",
-                                                          idToken: idTokenString,
-                                                          rawNonce: nonce)
-        return firebaseCredential
-    }
+//    private func generateFirebaseCredential(for appleIDCredential: ASAuthorizationAppleIDCredential) -> AuthCredential? {
+//        // Retrieve the secure nonce generated during Apple sign in
+//        guard let nonce = currentNonce else {
+//            fatalError("Invalid state: A login callback was received, but no login request was sent.")
+//        }
+//
+//        // Retrieve Apple identity token
+//        guard let appleIDToken = appleIDCredential.identityToken else {
+//            print("Failed to fetch identity token")
+//            return nil
+//        }
+//
+//        // Convert Apple identity token to string
+//        guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+//            print("Failed to decode identity token")
+//            return nil
+//        }
+//
+//        // Initialize a Firebase credential using secure nonce and Apple identity token
+//        let firebaseCredential = OAuthProvider.credential(withProviderID: "apple.com",
+//                                                          idToken: idTokenString,
+//                                                          rawNonce: nonce)
+//        return firebaseCredential
+//    }
 
     private func displayName(from nameComponents: PersonNameComponents?) -> String? {
         guard let nameComponents else { return nil }

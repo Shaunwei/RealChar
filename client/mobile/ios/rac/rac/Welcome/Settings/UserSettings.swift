@@ -57,26 +57,26 @@ class UserSettings: ObservableObject {
 //        }
     }
 
-    private func checkIdToken(currentUser: User, useCache: Bool = true, completion: ((Bool) -> Void)?) {
-        if useCache && isLoggedIn && Date().timeIntervalSince(lastIdTokenCheckedTime) < TimeInterval(60 * 60) {
-            completion?(true)
-            return
-        }
-        currentUser.getIDToken() { token, error in
-            self.lastIdTokenCheckedTime = Date()
-            if let error {
-                print("Fail to get ID Token from user: \(error.localizedDescription)")
-                completion?(false)
-                return
-            }
-            self.userId = currentUser.uid
-            self.userEmail = currentUser.email
-            self.userName = currentUser.displayName
-            self.userToken = token
-            self.isLoggedIn = true
-            completion?(true)
-        }
-    }
+//    private func checkIdToken(currentUser: User, useCache: Bool = true, completion: ((Bool) -> Void)?) {
+//        if useCache && isLoggedIn && Date().timeIntervalSince(lastIdTokenCheckedTime) < TimeInterval(60 * 60) {
+//            completion?(true)
+//            return
+//        }
+//        currentUser.getIDToken() { token, error in
+//            self.lastIdTokenCheckedTime = Date()
+//            if let error {
+//                print("Fail to get ID Token from user: \(error.localizedDescription)")
+//                completion?(false)
+//                return
+//            }
+//            self.userId = currentUser.uid
+//            self.userEmail = currentUser.email
+//            self.userName = currentUser.displayName
+//            self.userToken = token
+//            self.isLoggedIn = true
+//            completion?(true)
+//        }
+//    }
 
     // Function to log the user out
     func logoutUser() {

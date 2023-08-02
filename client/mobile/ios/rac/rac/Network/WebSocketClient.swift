@@ -10,8 +10,8 @@ import Combine
 import Foundation
 import SwiftUI
 
-let serverUrl: URL = URL(string: "http://127.0.0.1:8000/")!
-//let serverUrl: URL = URL(string: "https://api.realchar.ai/")!
+//let serverUrl: URL = URL(string: "http://127.0.0.1:8000/")!
+let serverUrl: URL = URL(string: "https://api.realchar.ai/")!
 
 enum WebSocketError: Error {
     case disconnected

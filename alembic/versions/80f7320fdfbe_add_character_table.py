@@ -27,6 +27,7 @@ def upgrade() -> None:
         sa.Column('voice_id', sa.String(100), nullable=True),
         sa.Column('author_id', sa.String(100), nullable=True),
         sa.Column('visibility', sa.String(100), nullable=True),
+        sa.Column('data', sa.JSON(), nullable=True),
         sa.Column('created_at', sa.DateTime(), nullable=False),
         sa.Column('updated_at', sa.DateTime(), nullable=False),
     )

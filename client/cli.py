@@ -8,6 +8,7 @@ import sys
 import random
 from threading import Thread
 import time
+import re
 
 from dotenv import load_dotenv
 
@@ -128,14 +129,14 @@ async def receive_message(websocket):
             break
 
         if isinstance(message, str):
-            if message == '[end]\n':
+            if message == '[end]\n' or re.search(r'\[end=([a-zA-Z0-9]+)\]', message):
                 print('\nYou: ', end="", flush=True)
             elif message.startswith('[+]'):
                 # stop playing audio
                 audio_player.stop_playing()
                 # indicate the transcription is done
                 print(f"\n{message}", end="\n", flush=True)
-            elif message.startswith('[=]'):
+            elif message.startswith('[=]') or re.search(r'\[=([a-zA-Z0-9]+)\]', message):
                 # indicate the response is done
                 print(f"{message}", end="\n", flush=True)
             else:

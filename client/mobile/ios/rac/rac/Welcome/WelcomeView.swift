@@ -89,6 +89,7 @@ struct WelcomeView: View {
                                 userSettings.checkUserLoggedIn(useCache: false) { _ in
                                     webSocket.connectSession(languageOption: preferenceSettings.languageOption,
                                                              llmOption: preferenceSettings.llmOption,
+                                                             useSearch: preferenceSettings.useSearch,
                                                              characterId: characterId,
                                                              userId: userSettings.userId,
                                                              token: userSettings.userToken)
@@ -126,6 +127,11 @@ struct WelcomeView: View {
                 reconnectWebSocket(characterId: characterId)
             }
         }
+        .onChange(of: preferenceSettings.useSearch) { newValue in
+            if let characterId = character?.id {
+                reconnectWebSocket(characterId: characterId)
+            }
+        }
         .onChange(of: preferenceSettings.llmOption) { newValue in
             if userSettings.isLoggedIn, let characterId = character?.id {
                 reconnectWebSocket(characterId: characterId)
@@ -147,7 +153,6 @@ struct WelcomeView: View {
         webSocketReconnectTimer?.invalidate()
         webSocketReconnectTimer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { _ in
             webSocket.status = .disconnected
-            webSocket.isInteractiveMode = false
             webSocket.closeSession()
             webSocket.onConnectionChanged = { status in
                 self.webSocketConnectionStatusObserver.update(status: webSocket.status)
@@ -155,6 +160,7 @@ struct WelcomeView: View {
             userSettings.checkUserLoggedIn() { _ in
                 webSocket.connectSession(languageOption: preferenceSettings.languageOption,
                                          llmOption: preferenceSettings.llmOption,
+                                         useSearch: preferenceSettings.useSearch,
                                          characterId: characterId,
                                          userId: userSettings.userId,
                                          token: userSettings.userToken)

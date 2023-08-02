@@ -46,7 +46,9 @@ const App = () => {
   const audioSent = useRef(false);
   const shouldPlayAudio = useRef(false);
   const audioQueue = useRef([]);
+  const isConnecting = useRef(false);
   const isConnected = useRef(false);
+  const isMobile = window.innerWidth <= 768; 
   
 
   useEffect(() => {
@@ -82,18 +84,16 @@ const App = () => {
   const handleSocketOnMessage = (event) => {
     if (typeof event.data === 'string') {
       const message = event.data;
-      if (message === '[end]\n') {
+      if (message === '[end]\n' || message.match(/\[end=([a-zA-Z0-9]+)\]/)) {
         setTextAreaValue(prevState => prevState + "\n\n");
-        
       } else if (message.startsWith('[+]You said: ')) {
         // [+] indicates the transcription is done. stop playing audio
         let msg = message.split("[+]You said: ");
         setTextAreaValue(prevState => prevState + `\nYou> ${msg[1]}\n`);
         stopAudioPlayback();
-      } else if (message.startsWith('[=]')) {
-        // [=] indicates the response is done
+      } else if (message.startsWith('[=]' || message.match(/\[=([a-zA-Z0-9]+)\]/))) {
+        // [=] or [=id] indicates the response is done
         setTextAreaValue(prevState => prevState + "\n\n");
-        
       } else if (message.startsWith('Select')) {
       } else {
         setTextAreaValue(prevState => prevState + `${event.data}`);
@@ -114,26 +114,33 @@ const App = () => {
   }
 
   // Use custom hooks
-  const { socketRef, send, connectSocket, closeSocket } = useWebsocket(token, handleSocketOnOpen,handleSocketOnMessage, selectedModel, preferredLanguage, selectedCharacter);
+  const { socketRef, send, connectSocket, closeSocket } = useWebsocket(token, handleSocketOnOpen,handleSocketOnMessage, selectedModel, preferredLanguage, useSearch, selectedCharacter);
   const { isRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder } = useMediaRecorder(isConnected, audioSent, callActive, send, closeSocket);
   const { startListening, stopListening, closeRecognition, initializeSpeechRecognition } = useSpeechRecognition(callActive, preferredLanguage, shouldPlayAudio, isConnected, audioSent, stopAudioPlayback, send, stopRecording, setTextAreaValue);
-  
+  const connectSocketWithState = () => {
+    isConnecting.current = true;
+    connectSocket();
+  }
+  const closeSocketWithState = () => {
+    isConnecting.current = false;
+    closeSocket();
+  }
   // Handle Button Clicks
   const connect = async () => {
     try {
       // requires login if user wants to use gpt4 or claude.
       if (selectedModel !== 'gpt-3.5-turbo-16k') {
         if (isLoggedIn.current) {
-          connectSocket();
+          connectSocketWithState();
         } else {
           signInWithGoogle(isLoggedIn, setToken).then(() => {
             if(isLoggedIn.current) {
-              connectSocket();
+              connectSocketWithState();
             }
           });
         }
       } else {
-        connectSocket();
+        connectSocketWithState();
       }
     } catch (error) {
       console.error('Error during sign in or connect:', error);
@@ -174,7 +181,7 @@ const App = () => {
       setPreferredLanguage("English");
 
       // close web socket connection
-      closeSocket();
+      closeSocketWithState();
       isConnected.current = false;
     }
   }
@@ -187,6 +194,7 @@ const App = () => {
         <Routes>
             <Route path="/" element={
               <Home
+                isMobile={isMobile}
                 selectedCharacter={selectedCharacter} 
                 setSelectedCharacter={setSelectedCharacter} 
                 isPlaying={isPlaying}
@@ -198,6 +206,8 @@ const App = () => {
             />
             <Route path="/settings" element={
               <Settings 
+                selectedCharacter={selectedCharacter}
+                isMobile={isMobile}
                 preferredLanguage={preferredLanguage} 
                 setPreferredLanguage={setPreferredLanguage} 
                 selectedDevice={selectedDevice} 
@@ -214,6 +224,7 @@ const App = () => {
             />
             <Route path="/conversation" element={
               <Conversation 
+                isConnecting={isConnecting}
                 isConnected={isConnected}
                 isCallView={isCallView} 
                 isRecording={isRecording} 

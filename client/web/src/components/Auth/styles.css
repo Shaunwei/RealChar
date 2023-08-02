@@ -35,11 +35,12 @@
     }
   }
 
-.signout-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.menu-paper {
+  background-color: #1E2643 !important;
 }
 
-  
+.menu-text {
+  color: white !important;
+  font-size: 14;
+}
   

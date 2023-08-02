@@ -7,13 +7,14 @@
 import React, {useEffect} from 'react';
 import CallView from '../components/CallView';
 import TextView from '../components/TextView';
-import Characters from '../components/Characters';
 import { useNavigate } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
+import AvatarView from '../components/AvatarView';
 
 // TODO: user can access this page only if isConnected.current
 
 const Conversation = ({
+  isConnecting,
   isConnected,
   isCallView,
   isRecording,
@@ -43,6 +44,10 @@ const Conversation = ({
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!isConnecting.current) {
+      navigate('/');
+    }
+
     const handleUnload = (event) => {
       event.preventDefault();
       navigate('/');
@@ -51,7 +56,11 @@ const Conversation = ({
 
     // Clean up event listener on component unmount
     return () => window.removeEventListener("beforeunload", handleUnload);
-  }, [navigate]);
+  }, [isConnecting, navigate]);
+
+  if (!isConnecting.current) {
+    return null; 
+  }
 
 return (
     <div className='conversation-page'>
@@ -63,11 +72,18 @@ return (
         </p>
 
         <div className={`avatar-wrapper ${isPlaying ? "pulsating-avatar" : ""}`}>
+          {
+            selectedCharacter?.avatar_id ?
+              <AvatarView avatarId={
+                selectedCharacter?.avatar_id
+              }/> 
+            :
           <Avatar
             alt={selectedCharacter.name}
             src={selectedCharacter.image_url}
             sx={{ width: 76, height: 76 }}
           />
+          }
         </div>
 
         <div className="main-screen" style={{ display: isCallView ? "flex" : "none" }}>

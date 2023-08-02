@@ -6,6 +6,9 @@ from fastapi.templating import Jinja2Templates
 import firebase_admin
 from firebase_admin import auth, credentials
 from firebase_admin.exceptions import FirebaseError
+from realtime_ai_character.database.connection import get_db
+from realtime_ai_character.models.interaction import Interaction
+from requests import Session
 
 
 router = APIRouter()
@@ -63,6 +66,7 @@ async def characters():
             "voice_id": character.voice_id,
             "author_name": character.author_name,
             "image_url": f'https://storage.googleapis.com/assistly/static/realchar/{character.character_id}.jpg',
+            "avatar_id": character.avatar_id,
         } for character in catalog.characters.values()
     ]
 
@@ -72,3 +76,11 @@ async def configs():
     return {
         'llms': ['gpt-4', 'gpt-3.5-turbo-16k', 'claude-2']
     }
+
+@router.get("/session_history")
+async def get_session_history(session_id: str, db: Session = Depends(get_db)):
+    # Read session history from the database.
+    interactions = db.query(Interaction).filter(Interaction.session_id == session_id).all()
+    # return interactions in json format
+    interactions_json = [interaction.to_dict() for interaction in interactions]
+    return interactions_json

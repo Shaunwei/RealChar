@@ -132,6 +132,9 @@ struct SettingsView: View {
                                     .onTapGesture {
                                         showAuth = true
                                     }
+
+                                AppleSignInButton(onFirebaseCredentialAndDisplayNameGenerated: authenticateUser)
+                                    .frame(height: 44)
                             } else {
                                 Text("Name: \(userSettings.userName ?? "Name unavailable")")
                                     .font(
@@ -288,8 +291,45 @@ struct SettingsView: View {
         }
     }
 
+    private func authenticateUser(for credential: AuthCredential, displayName: String?) {
+        Auth.auth().signIn(with: credential) { (authResult, error) in
+            if let error = error {
+                // TODO: Show error on auth
+                print(error.localizedDescription)
+            } else {
+                if let displayName {
+                    // Mak a request to set user's display name on Firebase
+                    let changeRequest = authResult?.user.createProfileChangeRequest()
+                    changeRequest?.displayName = displayName
+                    changeRequest?.commitChanges(completion: { (error) in
+                        if let error = error {
+                            // TODO: Show error
+                            print(error.localizedDescription)
+                        } else {
+                            self.userSettings.checkUserLoggedIn() { isUserLoggedIn in
+                                if !isUserLoggedIn {
+                                    // TODO: Show error on auth
+                                }
+                            }
+                        }
+                    })
+                } else {
+                    self.userSettings.checkUserLoggedIn() { isUserLoggedIn in
+                        if !isUserLoggedIn {
+                            // TODO: Show error on auth
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private func logout() {
-        GIDSignIn.sharedInstance.signOut()
+        if Auth.auth().currentUser?.providerData.first?.providerID == "apple.com" {
+            // TODO: Log out from Apple
+        } else {
+            GIDSignIn.sharedInstance.signOut()
+        }
 
         do {
             try Auth.auth().signOut()

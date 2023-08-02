@@ -22,6 +22,7 @@
 		2600B08E2A68FCA9003E8388 /* GoogleSignInButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B08D2A68FCA9003E8388 /* GoogleSignInButton.swift */; };
 		2600B0902A69DCC7003E8388 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B08F2A69DCC7003E8388 /* UserSettings.swift */; };
 		2600B0922A69F786003E8388 /* PreferenceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B0912A69F786003E8388 /* PreferenceSettings.swift */; };
+		261F66472A6A3A7C00648DE2 /* AppleSignInButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 261F66462A6A3A7C00648DE2 /* AppleSignInButton.swift */; };
 		262ACBCB2A71C10700F87797 /* Shimmer in Frameworks */ = {isa = PBXBuildFile; productRef = 262ACBCA2A71C10700F87797 /* Shimmer */; };
 		26A38B552A746EC600A79D40 /* WelcomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A38B542A746EC600A79D40 /* WelcomeViewModel.swift */; };
 		26FE4D092A5B6F0D006A1882 /* racApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FE4D082A5B6F0D006A1882 /* racApp.swift */; };
@@ -50,6 +51,8 @@
 		2600B08D2A68FCA9003E8388 /* GoogleSignInButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSignInButton.swift; sourceTree = "<group>"; };
 		2600B08F2A69DCC7003E8388 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		2600B0912A69F786003E8388 /* PreferenceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceSettings.swift; sourceTree = "<group>"; };
+		261F66462A6A3A7C00648DE2 /* AppleSignInButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleSignInButton.swift; sourceTree = "<group>"; };
+		261F66482A6A405400648DE2 /* rac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = rac.entitlements; sourceTree = "<group>"; };
 		26A38B542A746EC600A79D40 /* WelcomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewModel.swift; sourceTree = "<group>"; };
 		26FE4D052A5B6F0D006A1882 /* rac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = rac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		26FE4D082A5B6F0D006A1882 /* racApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = racApp.swift; sourceTree = "<group>"; };
@@ -98,6 +101,7 @@
 			children = (
 				2600B07D2A68D641003E8388 /* SettingsView.swift */,
 				2600B08D2A68FCA9003E8388 /* GoogleSignInButton.swift */,
+				261F66462A6A3A7C00648DE2 /* AppleSignInButton.swift */,
 				2600B08F2A69DCC7003E8388 /* UserSettings.swift */,
 				2600B0912A69F786003E8388 /* PreferenceSettings.swift */,
 			);
@@ -123,6 +127,7 @@
 		26FE4D072A5B6F0D006A1882 /* rac */ = {
 			isa = PBXGroup;
 			children = (
+				261F66482A6A405400648DE2 /* rac.entitlements */,
 				26FE4D292A5BC094006A1882 /* Info.plist */,
 				2600B07F2A68F517003E8388 /* GoogleService-Info.plist */,
 				26FE4D082A5B6F0D006A1882 /* racApp.swift */,
@@ -321,6 +326,7 @@
 				2600B0922A69F786003E8388 /* PreferenceSettings.swift in Sources */,
 				26FE4D0B2A5B6F0D006A1882 /* RootView.swift in Sources */,
 				2600B0762A60A024003E8388 /* WebSocketClient.swift in Sources */,
+				261F66472A6A3A7C00648DE2 /* AppleSignInButton.swift in Sources */,
 				2600B0732A60985F003E8388 /* SpeechRecognizer.swift in Sources */,
 				2600B08E2A68FCA9003E8388 /* GoogleSignInButton.swift in Sources */,
 				26FE4D1F2A5B704C006A1882 /* InteractiveView.swift in Sources */,
@@ -460,6 +466,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = rac/rac.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 202307151549;
 				DEVELOPMENT_ASSET_PATHS = "\"rac/Preview Content\"";
@@ -494,6 +501,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = rac/rac.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 202307151549;
 				DEVELOPMENT_ASSET_PATHS = "\"rac/Preview Content\"";

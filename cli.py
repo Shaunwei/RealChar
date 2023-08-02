@@ -3,10 +3,12 @@
 import click
 import os
 import subprocess
+import sys
 
 
 @click.group()
 def cli():
+    assert sys.version_info > (3, 10), "Python version must be newer than 3.10"    
     pass
 
 

@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Unicode
+from sqlalchemy.inspection import inspect
 import datetime
 from realtime_ai_character.database.base import Base
 
@@ -24,6 +25,15 @@ class Interaction(Base):
     tools = Column(String(100))
     language = Column(String(10))
     message_id = Column(String(16))
+
+    def to_dict(self):
+        return {
+            c.key:
+            getattr(self, c.key).isoformat() if isinstance(
+                getattr(self, c.key), datetime.datetime) else getattr(
+                    self, c.key)
+            for c in inspect(self).mapper.column_attrs
+        }
 
     def save(self, db):
         db.add(self)

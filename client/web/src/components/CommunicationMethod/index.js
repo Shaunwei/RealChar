@@ -7,6 +7,9 @@
 
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import CustomTooltip from '../Common/CustomTooltip';
 import './style.css';
 
 const CommunicationMethod = ({ commMethod, setCommMethod }) => {
@@ -17,16 +20,30 @@ const CommunicationMethod = ({ commMethod, setCommMethod }) => {
         setCommMethod(event.target.value);
     };
 
+    const isUnsupportedBrowser = window.navigator.userAgent.indexOf("Edg") !== -1 || 
+        window.navigator.userAgent.indexOf("Firefox") !== -1;;
+
     return (
         <>
-        <label>Communication method</label>
-        <Grid container spacing={2} sx={{ marginBottom: 5}}>  
+        <div className="title" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+            <span>Chat Mode</span>
+            <CustomTooltip title="You can change the Chat Mode during your conversation. Call is currently only available for Chrome and Safari Browsers." placement="top">
+                <IconButton 
+                    aria-label="info"
+                    sx={{ color: 'white', marginLeft: '5px', padding: '5px' }}
+                >
+                    <InfoOutlinedIcon fontSize="small" />
+                </IconButton>
+            </CustomTooltip>
+        </div>
+        <Grid container spacing={2} sx={{ marginBottom: 5 }}>  
             {communication.map( method => (
                 <Grid item xs={6}>
                 <Button
                     value={method} 
                     variant="outlined" 
                     onClick={handleCommMethodChange}
+                    disabled={isUnsupportedBrowser && method === 'Call'}
                     sx={{ 
                         width: "100%", 
                         backgroundColor: method === commMethod ? "#35394A" : "#1B2134",

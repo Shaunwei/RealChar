@@ -297,21 +297,29 @@ struct SettingsView: View {
                 // TODO: Show error on auth
                 print(error.localizedDescription)
             } else {
-                // Mak a request to set user's display name on Firebase
-                let changeRequest = authResult?.user.createProfileChangeRequest()
-                changeRequest?.displayName = displayName
-                changeRequest?.commitChanges(completion: { (error) in
-                    if let error = error {
-                        // TODO: Show error
-                        print(error.localizedDescription)
-                    } else {
-                        self.userSettings.checkUserLoggedIn() { isUserLoggedIn in
-                            if !isUserLoggedIn {
-                                // TODO: Show error on auth
+                if let displayName {
+                    // Mak a request to set user's display name on Firebase
+                    let changeRequest = authResult?.user.createProfileChangeRequest()
+                    changeRequest?.displayName = displayName
+                    changeRequest?.commitChanges(completion: { (error) in
+                        if let error = error {
+                            // TODO: Show error
+                            print(error.localizedDescription)
+                        } else {
+                            self.userSettings.checkUserLoggedIn() { isUserLoggedIn in
+                                if !isUserLoggedIn {
+                                    // TODO: Show error on auth
+                                }
                             }
                         }
+                    })
+                } else {
+                    self.userSettings.checkUserLoggedIn() { isUserLoggedIn in
+                        if !isUserLoggedIn {
+                            // TODO: Show error on auth
+                        }
                     }
-                })
+                }
             }
         }
     }

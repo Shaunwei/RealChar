@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, JSON
 from sqlalchemy.inspection import inspect
 import datetime
 from realtime_ai_character.database.base import Base
@@ -15,7 +15,7 @@ class Character(Base):
     voice_id = Column(String(100), nullable=True)
     author_id = Column(String(100), nullable=True)
     visibility = Column(String(100), nullable=True)
-    data = Column(String(100), nullable=True)
+    data = Column(JSON(), nullable=True)
     created_at = Column(DateTime(), nullable=False)
     updated_at = Column(DateTime(), nullable=False)
 

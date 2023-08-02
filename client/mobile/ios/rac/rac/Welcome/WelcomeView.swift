@@ -127,6 +127,11 @@ struct WelcomeView: View {
                 reconnectWebSocket(characterId: characterId)
             }
         }
+        .onChange(of: preferenceSettings.useSearch) { newValue in
+            if let characterId = character?.id {
+                reconnectWebSocket(characterId: characterId)
+            }
+        }
         .onChange(of: preferenceSettings.llmOption) { newValue in
             if userSettings.isLoggedIn, let characterId = character?.id {
                 reconnectWebSocket(characterId: characterId)

@@ -1,8 +1,8 @@
 """Add message ID column
 
-Revision ID: ea261c6173ce
-Revises: 523fdfc40626
-Create Date: 2023-07-31 22:16:58.581115
+Revision ID: 5df1c3818f70
+Revises: 80f7320fdfbe
+Create Date: 2023-08-02 14:14:19.863205
 
 """
 from alembic import op
@@ -10,15 +10,15 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'ea261c6173ce'
-down_revision = '523fdfc40626'
+revision = '5df1c3818f70'
+down_revision = '80f7320fdfbe'
 branch_labels = None
 depends_on = None
 
 
 def upgrade() -> None:
     op.add_column('interactions', sa.Column(
-        'message_id', sa.String(16), nullable=True))
+        'message_id', sa.String(64), nullable=True))
 
 
 def downgrade() -> None:

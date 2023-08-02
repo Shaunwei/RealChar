@@ -29,7 +29,7 @@ config = types.SimpleNamespace(**{
             'audioEncoding': 'MP3'
         }
     },
-    'service_account_file': 'x-micron-377920-337f8e45a6b3.json'
+    'service_account_file': os.getenv('GOOGLE_TTS_SERVICE_ACCOUNT_FILE', 'default/path.json'),
 })
 
 

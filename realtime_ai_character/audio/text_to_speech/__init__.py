@@ -9,5 +9,9 @@ def get_text_to_speech() -> TextToSpeech:
         from realtime_ai_character.audio.text_to_speech.elevenlabs import ElevenLabs
         ElevenLabs.initialize()
         return ElevenLabs.get_instance()
+    elif use == 'GOOGLE_TTS':
+        from realtime_ai_character.audio.text_to_speech.google_cloud_tts import GoogleCloudTTS
+        GoogleCloudTTS.initialize()
+        return GoogleCloudTTS.get_instance()
     else:
         raise NotImplementedError(f'Unknown text to speech engine: {use}')

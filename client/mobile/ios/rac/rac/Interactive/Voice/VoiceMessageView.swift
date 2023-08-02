@@ -269,7 +269,7 @@ struct VoiceMessageView: View {
     private func animate() {
         withAnimation(
             .linear(duration: 0.6)
-            .repeatForever()
+            .repeatForever(autoreverses: false)
         ) {
             ripple1Size = 200
             ripple2Size = 200
@@ -277,7 +277,7 @@ struct VoiceMessageView: View {
 
         withAnimation(
             .easeOut(duration: 0.6)
-            .repeatForever()
+            .repeatForever(autoreverses: false)
             .delay(0.2)
         ) {
             ripple2Size = 300
@@ -285,7 +285,7 @@ struct VoiceMessageView: View {
 
         withAnimation(
             .easeIn(duration: 0.6)
-            .repeatForever()
+            .repeatForever(autoreverses: false)
             .delay(0.4)
         ) {
             ripple1Size = 100

@@ -95,7 +95,6 @@ class AnthropicLlm(LLM):
                 {query}
 
                 Aim to keep responses super super concise and meaningful and try to express emotions.
-                Remember to prefix your reply.
                 """
 
                 query = f"""

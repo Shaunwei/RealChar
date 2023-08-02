@@ -229,16 +229,20 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                     continue
 
                 if 'summar' in msg_data.lower() and use_gmail == True:
+                    await manager.send_message(message='[thinking]\n',
+                                               websocket=websocket)
 
+                    callback = AsyncCallbackTextHandler(on_new_token,
+                                                        token_buffer)
+                    audioCallback = AsyncCallbackAudioHandler(
+                            text_to_speech, websocket, tts_event, character.voice_id)
                     # 1. Send message to LLM
                     response = await llm.achat(
                         history=build_history(conversation_history),
                         user_input=msg_data,
                         user_input_template=user_input_template,
-                        callback=AsyncCallbackTextHandler(on_new_token,
-                                                        token_buffer),
-                        audioCallback=AsyncCallbackAudioHandler(
-                            text_to_speech, websocket, tts_event, character.voice_id),
+                        callback=callback,
+                        audioCallback=audioCallback,
                         character=character,
                         useSearch=use_search,
                         useGmail=use_gmail,
@@ -246,15 +250,17 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                         subjects=catalog_manager.get_unread_subjects(),
                         quickSummarizeGmail=True)
 
+                    # 2. Send response to client
+                    await manager.send_message(message='[thinking]\n',
+                                               websocket=websocket)
+
                     # 1. Send message to LLM
                     response = await llm.achat(
                         history=build_history(conversation_history),
                         user_input=msg_data,
                         user_input_template=user_input_template,
-                        callback=AsyncCallbackTextHandler(on_new_token,
-                                                        token_buffer),
-                        audioCallback=AsyncCallbackAudioHandler(
-                            text_to_speech, websocket, tts_event, character.voice_id),
+                        callback=callback,
+                        audioCallback=audioCallback,
                         character=character,
                         useSearch=use_search,
                         useGmail=use_gmail,

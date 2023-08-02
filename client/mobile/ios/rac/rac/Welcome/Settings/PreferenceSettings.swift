@@ -63,8 +63,8 @@ class PreferenceSettings: ObservableObject {
     }
 
     func loadSettings(isUserLoggedIn: Bool) {
-        if !isUserLoggedIn {
-            self.llmOption = .gpt35
-        }
+//        if !isUserLoggedIn {
+//            self.llmOption = .gpt35
+//        }
     }
 }

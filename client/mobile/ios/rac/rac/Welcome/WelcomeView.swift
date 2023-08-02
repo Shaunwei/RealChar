@@ -170,7 +170,7 @@ struct WelcomeView: View {
     }
 
     private func simpleSuccess() {
-        guard hapticFeedback else { return }
+        guard preferenceSettings.hapticFeedback else { return }
 #if(iOS)
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)

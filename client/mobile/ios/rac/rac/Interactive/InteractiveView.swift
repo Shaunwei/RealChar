@@ -152,7 +152,17 @@ struct InteractiveView: View {
                     return
                 }
 
+                if message == "[thinking]\n" {
+                    if mode == .voice {
+                        voiceState = .characterSpeaking(characterImageUrl: character.imageUrl, thinking: true)
+                    }
+                    return
+                }
+
                 if messages.last?.role == .assistant {
+                    if mode == .voice, case .characterSpeaking(_, thinking: true) = voiceState  {
+                        voiceState = .characterSpeaking(characterImageUrl: character.imageUrl, thinking: false)
+                    }
                     if messages.last?.content != Constants.serverError {
                         messages[messages.count - 1].content += message
                     } else {
@@ -169,9 +179,9 @@ struct InteractiveView: View {
                 }
             }
             webSocket.onDataReceived = { data in
-                if mode == .voice, case .characterSpeaking = voiceState {
+//                if mode == .voice, case .characterSpeaking = voiceState {
                     audioPlayer.playAudio(data: data)
-                }
+//                }
             }
             webSocket.onErrorReceived = { _ in
                 if messages.last?.content != Constants.serverError {

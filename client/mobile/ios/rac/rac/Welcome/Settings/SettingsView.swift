@@ -6,8 +6,8 @@
 //
 
 import SwiftUI
-import GoogleSignIn
-import Firebase
+//import GoogleSignIn
+//import Firebase
 
 enum LlmOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Codable {
 
@@ -127,11 +127,11 @@ struct SettingsView: View {
                                 )
 
                             if !userSettings.isLoggedIn {
-                                GoogleSignInButton()
-                                    .frame(height: 48)
-                                    .onTapGesture {
-                                        showAuth = true
-                                    }
+//                                GoogleSignInButton()
+//                                    .frame(height: 48)
+//                                    .onTapGesture {
+//                                        showAuth = true
+//                                    }
 
                                 AppleSignInButton(onFirebaseCredentialAndDisplayNameGenerated: authenticateUser)
                                     .frame(height: 44)
@@ -177,7 +177,7 @@ struct SettingsView: View {
                             )
                             .tint(.primary)
                             .padding(.bottom, 2)
-                            .pickerStyle(.navigationLink)
+                            .pickerStyle(.segmented)
 
                             Picker("LLM Model?", selection: $preferenceSettings.llmOption) {
                                 ForEach(LlmOption.allCases) { llmOption in
@@ -193,7 +193,7 @@ struct SettingsView: View {
                             )
                             .tint(.primary)
                             .padding(.bottom, 2)
-                            .pickerStyle(.navigationLink)
+                            .pickerStyle(.segmented)
 
                             if UIDevice.current.userInterfaceIdiom == .phone {
                                 Toggle(isOn: $preferenceSettings.hapticFeedback) {
@@ -256,97 +256,66 @@ struct SettingsView: View {
     // MARK: - Private
 
     private func signIn() {
-        guard let clientID = FirebaseApp.app()?.options.clientID else { return }
-
-        let configuration = GIDConfiguration(clientID: clientID)
-
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
-        guard let rootViewController = windowScene.windows.first?.rootViewController else { return }
-
-        GIDSignIn.sharedInstance.configuration = configuration
-        GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController) { data, error  in
-            authenticateUser(for: data?.user, with: error)
-        }
-    }
-
-    private func authenticateUser(for user: GIDGoogleUser?, with error: Error?) {
-        if let error = error {
-            print(error.localizedDescription)
-            showAuth = false
-            return
-        }
-
-        guard let idToken = user?.idToken, let accessToken = user?.accessToken else {
-            print("missing user ID token or access token: \(String(describing: user))")
-            showAuth = false
-            return
-        }
-
-        let credential = GoogleAuthProvider.credential(withIDToken: idToken.tokenString,
-                                                       accessToken: accessToken.tokenString)
-
-        Auth.auth().signIn(with: credential) { data, error in
-            if let error = error {
-                // TODO: Show error on auth
-                print(error.localizedDescription)
-            } else {
-                self.userSettings.checkUserLoggedIn() { isUserLoggedIn in
-                    if !isUserLoggedIn {
-                        // TODO: Show error on auth
-                    }
-                    self.showAuth = false
-                }
-            }
-        }
+//        guard let clientID = FirebaseApp.app()?.options.clientID else { return }
+//
+//        let configuration = GIDConfiguration(clientID: clientID)
+//
+//        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
+//        guard let rootViewController = windowScene.windows.first?.rootViewController else { return }
+//
+//        GIDSignIn.sharedInstance.configuration = configuration
+//        GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController) { data, error  in
+//            authenticateUser(for: data?.user, with: error)
+//        }
     }
 
     private func authenticateUser(for credential: AuthCredential, displayName: String?) {
-        Auth.auth().signIn(with: credential) { (authResult, error) in
-            if let error = error {
-                // TODO: Show error on auth
-                print(error.localizedDescription)
-            } else {
-                if let displayName {
-                    // Mak a request to set user's display name on Firebase
-                    let changeRequest = authResult?.user.createProfileChangeRequest()
-                    changeRequest?.displayName = displayName
-                    changeRequest?.commitChanges(completion: { (error) in
-                        if let error = error {
-                            // TODO: Show error
-                            print(error.localizedDescription)
-                        } else {
-                            self.userSettings.checkUserLoggedIn() { isUserLoggedIn in
-                                if !isUserLoggedIn {
-                                    // TODO: Show error on auth
-                                }
-                            }
-                        }
-                    })
-                } else {
-                    self.userSettings.checkUserLoggedIn() { isUserLoggedIn in
-                        if !isUserLoggedIn {
-                            // TODO: Show error on auth
-                        }
-                    }
-                }
-            }
-        }
+//        Auth.auth().signIn(with: credential) { (authResult, error) in
+//            if let error = error {
+//                // TODO: Show error on auth
+//                print(error.localizedDescription)
+//            } else {
+//                if let displayName {
+//                    // Mak a request to set user's display name on Firebase
+//                    let changeRequest = authResult?.user.createProfileChangeRequest()
+//                    changeRequest?.displayName = displayName
+//                    changeRequest?.commitChanges(completion: { (error) in
+//                        if let error = error {
+//                            // TODO: Show error
+//                            print(error.localizedDescription)
+//                        } else {
+//                            self.userSettings.checkUserLoggedIn() { isUserLoggedIn in
+//                                if !isUserLoggedIn {
+//                                    // TODO: Show error on auth
+//                                }
+//                            }
+//                        }
+//                    })
+//                } else {
+//                    self.userSettings.checkUserLoggedIn() { isUserLoggedIn in
+//                        if !isUserLoggedIn {
+//                            // TODO: Show error on auth
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 
     private func logout() {
-        if Auth.auth().currentUser?.providerData.first?.providerID == "apple.com" {
-            // TODO: Log out from Apple
-        } else {
-            GIDSignIn.sharedInstance.signOut()
-        }
-
-        do {
-            try Auth.auth().signOut()
-
-            userSettings.logoutUser()
-        } catch {
-            print(error.localizedDescription)
-        }
+//        if Auth.auth().currentUser?.providerData.first?.providerID == "apple.com" {
+//            // TODO: Log out from Apple
+//        } else {
+//            GIDSignIn.sharedInstance.signOut()
+//        }
+//
+//        do {
+//            try Auth.auth().signOut()
+//
+//            userSettings.logoutUser()
+//        } catch {
+//            print(error.localizedDescription)
+//        }
     }
 
     private func openMail(emailTo: String, subject: String, body: String) {

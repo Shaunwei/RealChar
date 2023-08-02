@@ -15,9 +15,6 @@
 		2600B07B2A61EA86003E8388 /* CachedAsyncImage in Frameworks */ = {isa = PBXBuildFile; productRef = 2600B07A2A61EA86003E8388 /* CachedAsyncImage */; };
 		2600B07E2A68D641003E8388 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B07D2A68D641003E8388 /* SettingsView.swift */; };
 		2600B0802A68F517003E8388 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2600B07F2A68F517003E8388 /* GoogleService-Info.plist */; };
-		2600B0832A68F585003E8388 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 2600B0822A68F585003E8388 /* FirebaseAnalytics */; };
-		2600B0852A68F585003E8388 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 2600B0842A68F585003E8388 /* FirebaseAuth */; };
-		2600B08C2A68FC8C003E8388 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2600B08B2A68FC8C003E8388 /* GoogleSignInSwift */; };
 		2600B08E2A68FCA9003E8388 /* GoogleSignInButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B08D2A68FCA9003E8388 /* GoogleSignInButton.swift */; };
 		2600B0902A69DCC7003E8388 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B08F2A69DCC7003E8388 /* UserSettings.swift */; };
 		2600B0922A69F786003E8388 /* PreferenceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2600B0912A69F786003E8388 /* PreferenceSettings.swift */; };
@@ -76,9 +73,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				262ACBCB2A71C10700F87797 /* Shimmer in Frameworks */,
-				2600B08C2A68FC8C003E8388 /* GoogleSignInSwift in Frameworks */,
-				2600B0832A68F585003E8388 /* FirebaseAnalytics in Frameworks */,
-				2600B0852A68F585003E8388 /* FirebaseAuth in Frameworks */,
 				2600B07B2A61EA86003E8388 /* CachedAsyncImage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -250,9 +244,6 @@
 			name = rac;
 			packageProductDependencies = (
 				2600B07A2A61EA86003E8388 /* CachedAsyncImage */,
-				2600B0822A68F585003E8388 /* FirebaseAnalytics */,
-				2600B0842A68F585003E8388 /* FirebaseAuth */,
-				2600B08B2A68FC8C003E8388 /* GoogleSignInSwift */,
 				262ACBCA2A71C10700F87797 /* Shimmer */,
 			);
 			productName = rac;
@@ -597,21 +588,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2600B0792A61EA86003E8388 /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */;
 			productName = CachedAsyncImage;
-		};
-		2600B0822A68F585003E8388 /* FirebaseAnalytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2600B0812A68F585003E8388 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalytics;
-		};
-		2600B0842A68F585003E8388 /* FirebaseAuth */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2600B0812A68F585003E8388 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAuth;
-		};
-		2600B08B2A68FC8C003E8388 /* GoogleSignInSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2600B08A2A68FC8C003E8388 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
-			productName = GoogleSignInSwift;
 		};
 		262ACBCA2A71C10700F87797 /* Shimmer */ = {
 			isa = XCSwiftPackageProductDependency;

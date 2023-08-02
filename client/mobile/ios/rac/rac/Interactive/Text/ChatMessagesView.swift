@@ -109,7 +109,7 @@ struct CharacterMessage: View {
 
     var body: some View {
         Text(message)
-          .font(Font.custom("Prompt", size: 24))
+          .font(Font.custom("Prompt", size: 32))
           .foregroundColor(.white)
           .frame(maxWidth: .infinity, alignment: .topLeading)
     }
@@ -120,7 +120,7 @@ struct UserMessage: View {
 
     var body: some View {
         Text(message)
-            .font(Font.custom("Prompt", size: 24))
+            .font(Font.custom("Prompt", size: 32))
             .multilineTextAlignment(.trailing)
             .foregroundColor(.white)
             .padding(.horizontal, 20)
@@ -143,7 +143,7 @@ struct UserInputView: View {
 struct CustomTextFieldStyle: TextFieldStyle {
     func _body(configuration: TextField<Self._Label>) -> some View {
         configuration
-            .font(Font.custom("Prompt", size: 24))
+            .font(Font.custom("Prompt", size: 32))
             .multilineTextAlignment(.trailing)
             .lineLimit(...3)
             .foregroundColor(.white)

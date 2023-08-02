@@ -53,6 +53,7 @@ struct InteractiveView: View {
                     .background(Constants.realBlack)
             case .voice:
                 VoiceMessageView(openMic: openMic,
+                                 character: character,
                                  messages: $messages,
                                  state: $voiceState,
                                  speechRecognizer: SpeechRecognizer(locale: preferenceSettings.languageOption.locale),
@@ -71,7 +72,7 @@ struct InteractiveView: View {
                     simpleSuccess()
                 },
                                  onTapVoiceButton: {
-                    voiceState = voiceState.next(streamingEnded: streamingEnded)
+                    voiceState = voiceState.next(characterImageUrl: character.imageUrl, streamingEnded: streamingEnded)
                     if case .idle = voiceState {
                         audioPlayer.pauseAudio()
                     }
@@ -159,7 +160,7 @@ struct InteractiveView: View {
                     lightHapticFeedback()
                 } else {
                     if mode == .voice {
-                        voiceState = .characterSpeaking(characterImageUrl: character.imageUrl)
+                        voiceState = .characterSpeaking(characterImageUrl: character.imageUrl, thinking: false)
                     }
                     streamingEnded = false
                     messages.append(ChatMessage(id: UUID(), role: .assistant, content: message))
@@ -198,7 +199,7 @@ struct InteractiveView: View {
                 audioPlayer.pauseAudio()
             case .voice:
                 if voiceState == .idle(streamingEnded: false) {
-                    voiceState = .characterSpeaking(characterImageUrl: character.imageUrl)
+                    voiceState = .characterSpeaking(characterImageUrl: character.imageUrl, thinking: false)
                 }
             }
         }

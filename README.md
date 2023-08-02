@@ -144,7 +144,9 @@ To get your Google Cloud API credentials.json, follow these steps:
 
 ### 3. Prepare Text to Speech - ElevenLabs API Key
 <details><summary>👇click me</summary>
+
 1. Creating an ElevenLabs Account
+
 Visit [ElevenLabs](https://beta.elevenlabs.io/) to create an account. You'll need this to access the text to speech and voice cloning features.
 
 2. In your Profile Setting, you can get an API Key. Save it in a safe place.

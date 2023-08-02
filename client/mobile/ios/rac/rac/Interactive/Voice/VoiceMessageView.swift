@@ -10,15 +10,15 @@ import CachedAsyncImage
 
 enum VoiceState: Equatable {
     case idle(streamingEnded: Bool)
-    case characterSpeaking(characterImageUrl: URL?)
+    case characterSpeaking(characterImageUrl: URL?, thinking: Bool)
     case listeningToUser
 
     var displayText: String {
         switch self {
         case .idle(let streamingEnded):
             return streamingEnded ? "Talk to me" : "Receiving..."
-        case .characterSpeaking:
-            return "Talking"
+        case .characterSpeaking(_, let thinking):
+            return thinking ? "Thinking..." : "Talking"
         case .listeningToUser:
             return "Listening"
         }
@@ -26,8 +26,8 @@ enum VoiceState: Equatable {
 
     var isSpeaking: Bool {
         switch self {
-        case .characterSpeaking:
-            return true
+        case .characterSpeaking(_, let thinking):
+            return !thinking
         default:
             return false
         }
@@ -41,7 +41,7 @@ enum VoiceState: Equatable {
         switch self {
         case .idle:
             return AnyView(Image("voice"))
-        case .characterSpeaking(let characterImageUrl):
+        case .characterSpeaking(let characterImageUrl, _):
             return AnyView(CachedAsyncImage(url: characterImageUrl) { phase in
                 switch phase {
                 case .empty:
@@ -60,12 +60,12 @@ enum VoiceState: Equatable {
         }
     }
 
-    func next(streamingEnded: Bool) -> VoiceState {
+    func next(characterImageUrl: URL?, streamingEnded: Bool) -> VoiceState {
         switch self {
         case .idle(let streamingEnded):
             return streamingEnded ? .listeningToUser : self
         case .listeningToUser:
-            return .idle(streamingEnded: true)
+            return .characterSpeaking(characterImageUrl: characterImageUrl, thinking: true)
         case .characterSpeaking:
             return .idle(streamingEnded: streamingEnded)
         }
@@ -80,6 +80,7 @@ struct VoiceMessageView: View {
     }
 
     let openMic: Bool
+    let character: CharacterOption
     @Binding var messages: [ChatMessage]
     @Binding var state: VoiceState
     @StateObject var speechRecognizer: SpeechRecognizer
@@ -96,7 +97,7 @@ struct VoiceMessageView: View {
             ScrollViewReader { scrollView in
                 List {
                     switch state {
-                    case .characterSpeaking, .idle:
+                    case .characterSpeaking(_, true), .idle:
                         if let lastUserMessage = messages.last(where: { message in
                             message.role == .user
                         }) {
@@ -111,7 +112,7 @@ struct VoiceMessageView: View {
                                 .listRowBackground(Constants.realBlack)
                                 .id(1)
                         }
-                    case .listeningToUser:
+                    case .listeningToUser, .characterSpeaking(_, false):
                         if let lastCharacterMessage = messages.last(where: { message in
                             message.role == .assistant
                         }) {
@@ -243,7 +244,7 @@ struct VoiceMessageView: View {
         }
         .onChange(of: isInputUpdated) { newValue in
             if openMic && state == .listeningToUser && !newValue {
-                state = .idle(streamingEnded: true)
+                state = .characterSpeaking(characterImageUrl: character.imageUrl, thinking: true)
                 stopSpeechRecognition()
             }
         }
@@ -315,6 +316,12 @@ struct VoiceMessageView: View {
 struct VoiceMessageView_Previews: PreviewProvider {
     static var previews: some View {
         VoiceMessageView(openMic: false,
+                         character: .init(id: "god",
+                                          name: "Mythical god",
+                                          description: "Rogue",
+                                          imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!,
+                                          authorName: "",
+                                          source: "default"),
                          messages: .constant([
             ChatMessage(id: UUID(), role: .assistant, content: "Hello stranger, what’s your name?"),
             ChatMessage(id: UUID(), role: .user, content: "Hi 👋 my name is Karina"),

@@ -57,7 +57,7 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
         if not self.is_reply and token == ">":
             self.is_reply = True
         elif self.is_reply:
-            if not token in {'.', '?', '!'}:
+            if token not in {'.', '?', '!'}:
                 self.current_sentence += token
             else:
                 await self.text_to_speech.stream(
@@ -115,4 +115,8 @@ class SearchAgent:
 class LLM(ABC):
     @abstractmethod
     async def achat(self, *args, **kwargs):
+        pass
+
+    @abstractmethod
+    def get_config(self):
         pass

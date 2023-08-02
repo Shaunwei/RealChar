@@ -257,7 +257,8 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                             character_id=character_id,
                             tools=tools,
                             language=language,
-                            message_id=message_id).save(db)
+                            message_id=message_id,
+                            llm_config=llm.get_config()).save(db)
 
             # handle binary message(audio)
             elif 'bytes' in data:
@@ -299,7 +300,8 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                                 action_type='audio',
                                 character_id=character_id,
                                 tools=tools,
-                                language=language).save(db)
+                                language=language,
+                                llm_config=llm.get_config()).save(db)
 
                 # 4. Send message to LLM
                 tts_task = asyncio.create_task(

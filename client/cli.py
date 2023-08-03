@@ -5,10 +5,10 @@ import concurrent.futures
 import functools
 import io
 import sys
-import random
 from threading import Thread
 import time
 import re
+import uuid
 
 from dotenv import load_dotenv
 
@@ -168,14 +168,14 @@ def select_model():
     return llm_model
 
 
-async def start_client(client_id, url):
+async def start_client(session_id, url):
     api_key = os.getenv('AUTH_API_KEY')
     llm_model = select_model()
-    uri = f"ws://{url}/ws/{client_id}?api_key={api_key}&llm_model={llm_model}"
+    uri = f"ws://{url}/ws/{session_id}?api_key={api_key}&llm_model={llm_model}"
     async with websockets.connect(uri) as websocket:
         # send client platform info
         await websocket.send('terminal')
-        print(f"Client #{client_id} connected to server")
+        print(f"Client #{session_id} connected to server")
         welcome_message = await websocket.recv()
         print(f"{welcome_message}")
         character = input('Select character: ')
@@ -193,8 +193,8 @@ async def start_client(client_id, url):
 
 
 async def main(url):
-    client_id = random.randint(0, 1000000)
-    task = asyncio.create_task(start_client(client_id, url))
+    session_id = str(uuid.uuid4().hex)
+    task = asyncio.create_task(start_client(session_id, url))
     try:
         await task
     except KeyboardInterrupt:

@@ -28,3 +28,4 @@ sqlalchemy
 typing
 uvicorn
 websockets
+google-auth

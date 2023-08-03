@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Unicode
+from sqlalchemy import Column, Integer, String, DateTime, Unicode, JSON
 from sqlalchemy.inspection import inspect
 import datetime
 from realtime_ai_character.database.base import Base
@@ -24,6 +24,8 @@ class Interaction(Base):
     character_id = Column(String(100))
     tools = Column(String(100))
     language = Column(String(10))
+    message_id = Column(String(64))
+    llm_config = Column(JSON())
 
     def to_dict(self):
         return {

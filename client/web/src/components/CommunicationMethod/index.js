@@ -20,11 +20,14 @@ const CommunicationMethod = ({ commMethod, setCommMethod }) => {
         setCommMethod(event.target.value);
     };
 
+    const isUnsupportedBrowser = window.navigator.userAgent.indexOf("Edg") !== -1 || 
+        window.navigator.userAgent.indexOf("Firefox") !== -1;;
+
     return (
         <>
         <div className="title" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-            <span>Communication method</span>
-            <CustomTooltip title="You can change the communication method during your conversation." placement="top">
+            <span>Chat Mode</span>
+            <CustomTooltip title="You can change the Chat Mode during your conversation. Call is currently only available for Chrome and Safari Browsers." placement="top">
                 <IconButton 
                     aria-label="info"
                     sx={{ color: 'white', marginLeft: '5px', padding: '5px' }}
@@ -40,6 +43,7 @@ const CommunicationMethod = ({ commMethod, setCommMethod }) => {
                     value={method} 
                     variant="outlined" 
                     onClick={handleCommMethodChange}
+                    disabled={isUnsupportedBrowser && method === 'Call'}
                     sx={{ 
                         width: "100%", 
                         backgroundColor: method === commMethod ? "#35394A" : "#1B2134",

@@ -6,7 +6,7 @@
 
 // TODO: user can access this page only if isConnected.current and selectedCharacter
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Languages from '../components/Languages';
 import MediaDevices from '../components/MediaDevices';
 import Models from '../components/Models';
@@ -16,9 +16,15 @@ import './styles.css';
 import CommunicationMethod from '../components/CommunicationMethod';
 import Search from '../components/Search';
 
-const Settings = ({ isMobile, preferredLanguage, setPreferredLanguage, selectedDevice, setSelectedDevice, selectedModel, setSelectedModel, useSearch, setUseSearch, send, connect, setIsCallView, shouldPlayAudio}) => {
+const Settings = ({ selectedCharacter, isMobile, preferredLanguage, setPreferredLanguage, selectedDevice, setSelectedDevice, selectedModel, setSelectedModel, useSearch, setUseSearch, send, connect, setIsCallView, shouldPlayAudio}) => {
     const navigate = useNavigate();
     const [commMethod, setCommMethod] = useState("Text");
+
+    useEffect(() => {
+        if (!selectedCharacter) {
+          navigate('/');
+        }
+      }, [selectedCharacter, navigate]);
 
     const handleStartClick = async () => {
         await connect();

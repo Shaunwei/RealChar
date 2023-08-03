@@ -32,9 +32,17 @@ class OpenaiLlm(LLM):
                 temperature=0.5,
                 streaming=True
             )
+        self.config = {
+            "model": model,
+            "temperature": 0.5,
+            "streaming": True
+        }
         self.db = get_chroma()
         self.search_agent = None
         self.search_agent = SearchAgent()
+
+    def get_config(self):
+        return self.config
 
     async def achat(self,
                     history: List[BaseMessage],

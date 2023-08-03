@@ -64,6 +64,7 @@ async def websocket_endpoint(websocket: WebSocket,
                              token: str = Query(None),
                              character_id: str = Query(None),
                              platform: str = Query(None),
+                             use_search: bool = Query(default=False),
                              db: Session = Depends(get_db),
                              catalog_manager=Depends(get_catalog_manager),
                              speech_to_text=Depends(get_speech_to_text),
@@ -86,7 +87,7 @@ async def websocket_endpoint(websocket: WebSocket,
     try:
         main_task = asyncio.create_task(
             handle_receive(websocket, client_id, user_id, db, llm, catalog_manager,
-                           character_id, platform,
+                           character_id, platform, use_search,
                            speech_to_text, text_to_speech, language))
 
         await asyncio.gather(main_task)
@@ -98,7 +99,7 @@ async def websocket_endpoint(websocket: WebSocket,
 
 async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db: Session,
                          llm: LLM, catalog_manager: CatalogManager,
-                         character_id: str, platform: str,
+                         character_id: str, platform: str, use_search: bool,
                          speech_to_text: SpeechToText,
                          text_to_speech: TextToSpeech,
                          language: str):
@@ -192,7 +193,6 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                     pass
                 tts_event.clear()
 
-        use_search = False
         while True:
             data = await websocket.receive()
             if data['type'] != 'websocket.receive':
@@ -237,7 +237,8 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                     useSearch=use_search)
 
                 # 2. Send response to client
-                await manager.send_message(message='[end]\n',
+                message_id = str(uuid.uuid4().hex)[:16]
+                await manager.send_message(message=f'[end={message_id}]\n',
                                            websocket=websocket)
 
                 # 3. Update conversation history
@@ -255,7 +256,9 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                             action_type='text',
                             character_id=character_id,
                             tools=tools,
-                            language=language).save(db)
+                            language=language,
+                            message_id=message_id,
+                            llm_config=llm.get_config()).save(db)
 
             # handle binary message(audio)
             elif 'bytes' in data:
@@ -297,7 +300,8 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                                 action_type='audio',
                                 character_id=character_id,
                                 tools=tools,
-                                language=language).save(db)
+                                language=language,
+                                llm_config=llm.get_config()).save(db)
 
                 # 4. Send message to LLM
                 tts_task = asyncio.create_task(

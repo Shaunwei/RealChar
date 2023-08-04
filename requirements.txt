@@ -9,6 +9,7 @@ fastapi
 ffmpeg
 firebase-admin
 google-cloud-speech
+google-cloud-storage
 google-search-results
 httpx
 ipywidgets
@@ -20,6 +21,7 @@ pyaudio
 pydantic
 pydub
 python-dotenv
+python-multipart
 replicate
 simpleaudio
 soundfile

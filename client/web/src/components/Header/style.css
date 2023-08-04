@@ -1,5 +1,5 @@
 header {
-  margin-top: 50px;
+  margin-top: 3vh;
   margin-bottom: 20px;
   display: flex;
   justify-content: space-between;
@@ -15,4 +15,8 @@ header {
 .auth-container {
   position: absolute;
   right: 3vw;
+}
+
+#navbar{
+  background: none;
 }

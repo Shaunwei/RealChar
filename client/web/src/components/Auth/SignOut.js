@@ -14,6 +14,7 @@ import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
+import { Navbar, Dropdown } from "@nextui-org/react";
 import './styles.css';
 
 const SignOut = ({ isLoggedIn, user, handleDisconnect }) => {
@@ -40,38 +41,60 @@ const SignOut = ({ isLoggedIn, user, handleDisconnect }) => {
 
   const handleSignout = async () => {
     await signout();
+    console.log('handleSignout function called');
     setAnchorElUser(null);
   }
 
+ 
+
   return (
-    <div>
-      <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-        <Avatar alt={user.displayName} src={user.photoURL} />
-      </IconButton>
-      <Menu
-          sx={{ mt: '45px'}}
-          id="menu-appbar"
-          anchorEl={anchorElUser}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-          keepMounted
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-          open={Boolean(anchorElUser)}
-          onClose={handleCloseUserMenu}
-          classes={{paper: 'menu-paper'}} 
-        >
-          <MenuItem className='menu-text' onClick={handleSignout}>
-            <LogoutIcon />
-            <Typography textAlign="center">Log out</Typography>
-          </MenuItem>
-        </Menu>
-      </div>
+  
+    <Navbar.Content
+   
+    css={{
+      "@xs": {
+        w: "12%",
+        jc: "flex-end",
+      },
+    }}
+  >
+    <Dropdown  placement="bottom-right">
+      <Navbar.Item>
+
+        {/* This is what triggers user info dropdown */}
+        <Dropdown.Trigger>
+          <Avatar
+            bordered
+            className='usericon'
+            color="warning"
+            size="md"
+            src={user.photoURL}
+            alt={user.displayName}
+          />
+        </Dropdown.Trigger>
+      </Navbar.Item>
+      <Dropdown.Menu
+        aria-label="User menu actions"
+      >{/* This ^ is probably gonna be needed for future features,actionkey tells you what dropdown the user clicked*/}
+        <Dropdown.Item className='dropdown-item' key="profile" css={{
+  height: "$18",d: "flex"
+}}>
+       
+            Signed in as
+         
+       <br/>
+           {user.email}
+         
+        </Dropdown.Item>
+        <Dropdown.Item key="logout" className='dropdown-logout' withDivider color="warning">
+        <a onClick={signout} >Log Out</a>
+      </Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
+  </Navbar.Content>
+ 
   )
 }
 
 export default SignOut;
+

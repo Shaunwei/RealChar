@@ -66,14 +66,16 @@ const useSpeechRecognition = (callActive, preferredLanguage, shouldPlayAudio, is
 
     recognition.current.onspeechend = () => {
       if (isConnected.current) {
-        stopRecording();
-        if (confidence.current > 100 && finalTranscripts.current.length > 0) {
+        if (confidence.current > 0.8 && finalTranscripts.current.length > 0) {
           let message = finalTranscripts.current.join(' ');
           send(message);
           setTextAreaValue(prevState => prevState + `\nYou> ${message}\n`);
-          audioSent.current = true;
           shouldPlayAudio.current = true;
+          audioSent.current = true;
+        } else {
+          audioSent.current = false;
         }
+        stopRecording();
       }
       finalTranscripts.current = [];
     };

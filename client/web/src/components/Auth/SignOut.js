@@ -45,6 +45,14 @@ const SignOut = ({ isLoggedIn, user, handleDisconnect }) => {
     setAnchorElUser(null);
   }
 
+  const handleDropdownAction = async (actionKey) => {
+    if (actionKey === "logout") {
+      // when a dropdown button is pressed using its "key" ,which we set, we can tell when its pressed , so when the key "logout" is pressed we sign the user out, in the future you can use the key "profile" to navigate the user to his dashboard for example
+      await handleSignout();
+     
+    }
+  };
+
  
 
   return (
@@ -75,6 +83,8 @@ const SignOut = ({ isLoggedIn, user, handleDisconnect }) => {
       </Navbar.Item>
       <Dropdown.Menu
         aria-label="User menu actions"
+        onAction={(actionKey) => handleDropdownAction(actionKey)}
+       
       >{/* This ^ is probably gonna be needed for future features,actionkey tells you what dropdown the user clicked*/}
         <Dropdown.Item className='dropdown-item' key="profile" css={{
   height: "$18",d: "flex"
@@ -87,7 +97,7 @@ const SignOut = ({ isLoggedIn, user, handleDisconnect }) => {
          
         </Dropdown.Item>
         <Dropdown.Item key="logout" className='dropdown-logout' withDivider color="warning">
-        <a onClick={signout} >Log Out</a>
+       Log Out
       </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>

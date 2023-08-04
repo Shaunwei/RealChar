@@ -7,6 +7,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {isIP} from 'is-ip';
 import { useNavigate } from 'react-router-dom';
+import lz from 'lz-string';
 
 import Characters from '../components/Characters';
 import Button from '@mui/material/Button';
@@ -56,7 +57,8 @@ const Home = ({
 
   const handleNextClick = () => {
     setCharacterConfirmed(true);
-    navigate("/settings"); 
+    const compressedCharacter = lz.compressToEncodedURIComponent(JSON.stringify(selectedCharacter));
+    navigate("/settings?character=" + compressedCharacter);
   }
 
   return (

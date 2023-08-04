@@ -317,6 +317,7 @@ const App = () => {
                 selectedCharacter={selectedCharacter}
                 messageId={messageId}
                 token={token}
+                isTextStreaming={isTextStreaming}
                 sessionId={sessionId}
               />
             }

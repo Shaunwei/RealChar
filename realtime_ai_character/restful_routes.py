@@ -142,7 +142,6 @@ async def upload_file(file: UploadFile = File(...), user = Depends(get_current_u
 
     return {
         "filename": new_filename,
-        "bucket": 'my_bucket',
         "content-type": file.content_type
     }
 

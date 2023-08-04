@@ -263,9 +263,9 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
             elif 'bytes' in data:
                 binary_data = data['bytes']
                 # 1. Transcribe audio
-                transcript: str = speech_to_text.transcribe(
+                transcript: str = (await asyncio.to_thread(speech_to_text.transcribe, 
                     binary_data, platform=platform,
-                    prompt=character.name).strip()
+                    prompt=character.name)).strip()
 
                 # ignore audio that picks up background noise
                 if (not transcript or len(transcript) < 2):

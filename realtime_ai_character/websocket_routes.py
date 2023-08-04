@@ -54,9 +54,9 @@ async def get_current_user(token: str):
     return decoded_token['uid']
 
 
-@router.websocket("/ws/{client_id}")
+@router.websocket("/ws/{session_id}")
 async def websocket_endpoint(websocket: WebSocket,
-                             client_id: int = Path(...),
+                             session_id: str = Path(...),
                              api_key: str = Query(None),
                              llm_model: str = Query(default=os.getenv(
                                  'LLM_MODEL_USE', 'gpt-3.5-turbo-16k')),
@@ -69,9 +69,9 @@ async def websocket_endpoint(websocket: WebSocket,
                              catalog_manager=Depends(get_catalog_manager),
                              speech_to_text=Depends(get_speech_to_text),
                              text_to_speech=Depends(get_text_to_speech)):
-    # Default user_id to client_id. If auth is enabled and token is provided, use
+    # Default user_id to session_id. If auth is enabled and token is provided, use
     # the user_id from the token.
-    user_id = str(client_id)
+    user_id = str(session_id)
     if os.getenv('USE_AUTH', ''):
         # Do not allow anonymous users to use non-GPT3.5 model.
         if not token and llm_model != 'gpt-3.5-turbo-16k':
@@ -86,7 +86,7 @@ async def websocket_endpoint(websocket: WebSocket,
     await manager.connect(websocket)
     try:
         main_task = asyncio.create_task(
-            handle_receive(websocket, client_id, user_id, db, llm, catalog_manager,
+            handle_receive(websocket, session_id, user_id, db, llm, catalog_manager,
                            character_id, platform, use_search,
                            speech_to_text, text_to_speech, language))
 
@@ -97,7 +97,7 @@ async def websocket_endpoint(websocket: WebSocket,
         await manager.broadcast_message(f"User #{user_id} left the chat")
 
 
-async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db: Session,
+async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db: Session,
                          llm: LLM, catalog_manager: CatalogManager,
                          character_id: str, platform: str, use_search: bool,
                          speech_to_text: SpeechToText,
@@ -247,8 +247,7 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                 token_buffer.clear()
                 # 4. Persist interaction in the database
                 tools = "search" if use_search else ""
-                Interaction(client_id=client_id,
-                            user_id=user_id,
+                Interaction(user_id=user_id,
                             session_id=session_id,
                             client_message_unicode=msg_data,
                             server_message_unicode=response,
@@ -291,8 +290,7 @@ async def handle_receive(websocket: WebSocket, client_id: int, user_id: str, db:
                     token_buffer.clear()
                     # Persist interaction in the database
                     tools = "search" if use_search else ""
-                    Interaction(client_id=client_id,
-                                user_id=user_id,
+                    Interaction(user_id=user_id,
                                 session_id=session_id,
                                 client_message_unicode=transcript,
                                 server_message_unicode=response,

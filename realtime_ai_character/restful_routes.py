@@ -1,6 +1,7 @@
 import os
+import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, status as http_status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 import firebase_admin
@@ -8,6 +9,7 @@ from firebase_admin import auth, credentials
 from firebase_admin.exceptions import FirebaseError
 from realtime_ai_character.database.connection import get_db
 from realtime_ai_character.models.interaction import Interaction
+from realtime_ai_character.models.feedback import Feedback, FeedbackRequest
 from requests import Session
 
 
@@ -34,7 +36,7 @@ async def get_current_user(request: Request):
             decoded_token = auth.verify_id_token(token)
         except FirebaseError:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
                 detail='Invalid authentication credentials',
                 headers={'WWW-Authenticate': 'Bearer'},
             )
@@ -84,3 +86,19 @@ async def get_session_history(session_id: str, db: Session = Depends(get_db)):
     # return interactions in json format
     interactions_json = [interaction.to_dict() for interaction in interactions]
     return interactions_json
+
+@router.post("/feedback")
+async def post_feedback(feedback_request: FeedbackRequest,
+                        user: str = Depends(get_current_user),
+                        db: Session = Depends(get_db)):
+    if not user:
+        raise HTTPException(
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid authentication credentials',
+                headers={'WWW-Authenticate': 'Bearer'},
+            )
+    feedback = Feedback(**feedback_request.dict())
+    feedback.user_id = user['uid']
+    feedback.created_at = datetime.datetime.now()
+    db.add(feedback)
+    db.commit()

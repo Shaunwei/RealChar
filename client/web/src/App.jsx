@@ -254,6 +254,7 @@ const App = () => {
                 preferredLanguage={preferredLanguage} 
                 setPreferredLanguage={setPreferredLanguage}
                 selectedCharacter={selectedCharacter}
+                isTextStreaming={isTextStreaming}
               />} 
             />
         </Routes>

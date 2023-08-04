@@ -4,12 +4,13 @@
  * created by Lynchee on 7/28/23
  */
 
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import CallView from '../components/CallView';
 import TextView from '../components/TextView';
 import { useNavigate } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
 import AvatarView from '../components/AvatarView';
+import { extractEmotionFromPrompt } from '@avatechai/avatars';
 
 // TODO: user can access this page only if isConnected.current
 
@@ -40,8 +41,18 @@ const Conversation = ({
   preferredLanguage,
   setPreferredLanguage,
   selectedCharacter,
+  isTextStreaming,
 }) => {
   const navigate = useNavigate();
+
+  const message = isTextStreaming ? "" : textAreaValue;
+
+  const [emotion, setEmotion] = useState('')
+
+  useEffect(() => {
+    const emotion = extractEmotionFromPrompt(message)
+    if (emotion && emotion.length > 0) setEmotion(emotion)
+  }, [message])
 
   useEffect(() => {
     if (!isConnecting.current) {
@@ -74,9 +85,10 @@ return (
         <div className={`avatar-wrapper ${isPlaying ? "pulsating-avatar" : ""}`}>
           {
             selectedCharacter?.avatar_id ?
-              <AvatarView avatarId={
-                selectedCharacter?.avatar_id
-              }/> 
+              <AvatarView 
+                emotion={emotion}
+                avatarId={selectedCharacter?.avatar_id}
+              /> 
             :
           <Avatar
             alt={selectedCharacter.name}

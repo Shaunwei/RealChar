@@ -36,22 +36,29 @@ class CatalogManager(Singleton):
 
     def load_character(self, directory):
         with ExitStack() as stack:
-            f_system = stack.enter_context(open(directory / 'system'))
-            f_user = stack.enter_context(open(directory / 'user'))
-            system_prompt = f_system.read()
-            user_prompt = f_user.read()
+            f_yaml = stack.enter_context(open(directory / 'config.yaml'))
+            yaml_content = yaml.safe_load(f_yaml)
 
-        name = directory.stem.replace('_', ' ').title()
-        voice_id = os.environ.get(name.split(' ')[0].upper() + '_VOICE', '')
-        self.characters[name] = Character(
-            character_id=directory.stem,
-            name=name,
-            llm_system_prompt=system_prompt,
-            llm_user_prompt=user_prompt,
+        character_id = yaml_content['character_id']
+        character_name = yaml_content['character_name']
+        voice_id = yaml_content['voice_id']
+        if (os.getenv(character_id.upper() + "_VOICE_ID", "")):
+            voice_id = os.getenv(character_id.upper() + "_VOICE_ID")
+        self.characters[character_name] = Character(
+            character_id=character_id,
+            name=character_name,
+            llm_system_prompt=yaml_content["system"],
+            llm_user_prompt=yaml_content["user"],
             voice_id=voice_id,
-            source='default'
+            source='default',            
         )
-        return name
+        
+        if "avatar_id" in yaml_content:
+            self.characters[character_name].avatar_id = yaml_content["avatar_id"]
+        if "author_name" in yaml_content:
+            self.characters[character_name].author_name = yaml_content["author_name"],
+
+        return character_name
 
     def load_characters(self, overwrite):
         """

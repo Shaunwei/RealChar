@@ -11,20 +11,28 @@ import Languages from '../components/Languages';
 import MediaDevices from '../components/MediaDevices';
 import Models from '../components/Models';
 import Button from '@mui/material/Button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 import './styles.css';
 import CommunicationMethod from '../components/CommunicationMethod';
 import Search from '../components/Search';
+import lz from 'lz-string';
 
-const Settings = ({ selectedCharacter, isMobile, preferredLanguage, setPreferredLanguage, selectedDevice, setSelectedDevice, selectedModel, setSelectedModel, useSearch, setUseSearch, send, connect, setIsCallView, shouldPlayAudio}) => {
+const Settings = ({ setSelectedCharacter, isMobile, preferredLanguage, setPreferredLanguage, selectedDevice, setSelectedDevice, selectedModel, setSelectedModel, useSearch, setUseSearch, send, connect, setIsCallView, shouldPlayAudio}) => {
     const navigate = useNavigate();
     const [commMethod, setCommMethod] = useState("Text");
 
+    const { search } = useLocation();
+    const { character = "" } = queryString.parse(search); 
+  
     useEffect(() => {
+        const selectedCharacter = JSON.parse(lz.decompressFromEncodedURIComponent(character));
+        setSelectedCharacter(selectedCharacter);
+
         if (!selectedCharacter) {
           navigate('/');
         }
-      }, [selectedCharacter, navigate]);
+      }, [character, navigate]);
 
     const handleStartClick = async () => {
         await connect();

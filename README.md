@@ -261,12 +261,13 @@ And it should work out of the box.
 <br/>
 
 ## 📍 Roadmap
-- [x] Launch v0.0.1 and build a community
-- [x] Move away from Vanilla JS
-- [x] Launch mobile app (iOS TestFlight Beta link: https://testflight.apple.com/join/JA6p9sZQ)
-- [x] Add authentication for customization
-- [x] Allow selecting different LLM
-- [x] Add ability to add community characters
+- [ ] Launch v0.0.3
+- [ ] Create a new character via web UI
+- [ ] Add additional tts service
+- [ ] Better UI/UX for home page
+- [ ] Better UI/UX for conversation page
+- [ ] Support MultiOn
+- [ ] Support SocialAGI
 
 ## 🫶 Contribute to RealChar
 Please check out our [Contribution Guide](contribute.md)!

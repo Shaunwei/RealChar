@@ -39,6 +39,7 @@ const App = () => {
   const [messageInput, setMessageInput] = useState('');
   const [isCallView, setIsCallView] = useState(false);
   const [textAreaValue, setTextAreaValue] = useState('');
+  const [isTextStreaming, setIsTextStreaming] = useState(false);
   const [characterGroups, setCharacterGroups] = useState([]);
   const [characterConfirmed, setCharacterConfirmed] = useState(false);
   const audioPlayer = useRef(null);
@@ -84,8 +85,11 @@ const App = () => {
   const handleSocketOnMessage = (event) => {
     if (typeof event.data === 'string') {
       const message = event.data;
+      if (!isTextStreaming)
+        setIsTextStreaming(true)
       if (message === '[end]\n' || message.match(/\[end=([a-zA-Z0-9]+)\]/)) {
         setTextAreaValue(prevState => prevState + "\n\n");
+        setIsTextStreaming(false)
       } else if (message.startsWith('[+]You said: ')) {
         // [+] indicates the transcription is done. stop playing audio
         let msg = message.split("[+]You said: ");

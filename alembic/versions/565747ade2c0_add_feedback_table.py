@@ -1,7 +1,7 @@
 """Add feedback table
 
 Revision ID: 565747ade2c0
-Revises: 5df1c3818f70
+Revises: 0128f1234177
 Create Date: 2023-08-02 15:33:10.614494
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '565747ade2c0'
-down_revision = '5df1c3818f70'
+down_revision = '0128f1234177'
 branch_labels = None
 depends_on = None
 

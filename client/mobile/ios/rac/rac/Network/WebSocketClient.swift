@@ -90,9 +90,8 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
         lastUsedLlmOption = llmOption
         lastUsedUseSearch = useSearch
         lastUsedCharacterId = characterId
-        // TODO: Use userId once it's ready
-        let clientId = String(Int.random(in: 0...1010000000))
-        lastUsedUserId = clientId
+        let sessionId = UUID().uuidString.replacingOccurrences(of: "-", with: "")
+        lastUsedUserId = sessionId
         lastUsedToken = token
         connectWebSocket(session: session,
                          serverUrl: serverUrl,
@@ -100,7 +99,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
                          languageOption: languageOption,
                          llmOption: llmOption,
                          useSearch: useSearch,
-                         clientId: clientId,
+                         sessionId: sessionId,
                          token: token)
     }
 
@@ -111,7 +110,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
                          languageOption: lastUsedLanguageOption,
                          llmOption: lastUsedLlmOption,
                          useSearch: lastUsedUseSearch,
-                         clientId: lastUsedUserId ?? String(Int.random(in: 0...1010000000)),
+                         sessionId: lastUsedUserId ?? UUID().uuidString.replacingOccurrences(of: "-", with: ""),
                          token: lastUsedToken)
     }
 
@@ -121,7 +120,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
                                   languageOption: LanguageOption,
                                   llmOption: LlmOption,
                                   useSearch: Bool,
-                                  clientId: String,
+                                  sessionId: String,
                                   token: String?) {
         pendingStrMessages.removeAll()
         pendingData.removeAll()
@@ -129,7 +128,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
         lastConnectingDate = Date()
 
         let wsScheme = serverUrl.scheme == "https" ? "wss" : "ws"
-        let wsPath = "\(wsScheme)://\(serverUrl.host ?? "")\(serverUrl.port.flatMap { ":\($0)" } ?? "")/ws/\(clientId)?platform=mobile&use_search=\(useSearch)&language=\(languageOption.rawValue)&character_id=\(characterId)&llm_model=\(llmOption.rawValue)&token=\(token ?? "")"
+        let wsPath = "\(wsScheme)://\(serverUrl.host ?? "")\(serverUrl.port.flatMap { ":\($0)" } ?? "")/ws/\(sessionId)?platform=mobile&use_search=\(useSearch)&language=\(languageOption.rawValue)&character_id=\(characterId)&llm_model=\(llmOption.rawValue)&token=\(token ?? "")"
         print("Connecting websocket: \(wsPath)")
         webSocket = session.webSocketTask(with: URL(string: wsPath)!)
         webSocket.resume()

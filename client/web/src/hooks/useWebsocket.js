@@ -8,6 +8,7 @@
 import { useRef, useCallback } from 'react';
 import {isIP, isIPv4} from 'is-ip';
 import { languageCode } from './languageCode';
+import { v4 as uuidv4 } from 'uuid';
 
 const useWebsocket = (token, onOpen, onMessage, selectedModel, preferredLanguage, useSearch, selectedCharacter) => {
     const socketRef = useRef(null);
@@ -15,7 +16,7 @@ const useWebsocket = (token, onOpen, onMessage, selectedModel, preferredLanguage
     // initialize web socket and connect to server.
     const connectSocket = useCallback(() => {
         if (!socketRef.current) {
-            const clientId = Math.floor(Math.random() * 1010000000);
+            const sessionId = uuidv4().replace(/-/g, '');
             const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
             // Get the current host value
             var currentHost = window.location.host;
@@ -38,7 +39,7 @@ const useWebsocket = (token, onOpen, onMessage, selectedModel, preferredLanguage
 
             var language = languageCode[preferredLanguage];
 
-            const ws_path = ws_scheme + '://' + newHost + `/ws/${clientId}?llm_model=${selectedModel}&platform=web&use_search=${useSearch}&character_id=${selectedCharacter.character_id}&language=${language}&token=${token}`;
+            const ws_path = ws_scheme + '://' + newHost + `/ws/${sessionId}?llm_model=${selectedModel}&platform=web&use_search=${useSearch}&character_id=${selectedCharacter.character_id}&language=${language}&token=${token}`;
 
             socketRef.current = new WebSocket(ws_path);
             const socket = socketRef.current;

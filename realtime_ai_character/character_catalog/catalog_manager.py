@@ -41,12 +41,15 @@ class CatalogManager(Singleton):
 
         character_id = yaml_content['character_id']
         character_name = yaml_content['character_name']
+        voice_id = yaml_content['voice_id']
+        if (os.getenv(character_id.upper() + "_VOICE_ID", "")):
+            voice_id = os.getenv(character_id.upper() + "_VOICE_ID")
         self.characters[character_name] = Character(
             character_id=character_id,
             name=character_name,
             llm_system_prompt=yaml_content["system"],
             llm_user_prompt=yaml_content["user"],
-            voice_id=yaml_content["voice_id"],
+            voice_id=voice_id,
             source='default',            
         )
         

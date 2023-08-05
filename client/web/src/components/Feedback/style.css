@@ -15,9 +15,13 @@
 }
 
 .react-modal-content {
-    background-color: darkblue;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgb(50, 10, 131);
     color: white;
-    max-width: 60%;
+    max-width: 50%;
     max-height: 60%;
     width: 100%;
     padding: 20px;
@@ -25,17 +29,24 @@
     position: relative;
     z-index: 1000;
     /* This ensures the modal is above all other elements */
+    border-radius: 20px; 
 }
 
 .react-modal-content textarea {
     width: 100%;
     margin-top: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white; /* white text */
 }
 
-/* To ensure buttons are visible against the dark background */
-.react-modal-content button {
-    color: darkblue;
-    background-color: white;
+.react-modal-content select {
+        background-color: #3a4877;
+        color: #FFFFFF;
+        border-color: #1B2134;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 20px;
+        margin-bottom: 30px;
 }
 
 .react-modal-content select,

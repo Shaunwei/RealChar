@@ -9,6 +9,7 @@ import Modal from 'react-modal';
 import { isIP } from 'is-ip';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
+import Button from '../Common/Button';
 import './style.css';
 
 Modal.setAppElement('#root'); // replace '#root' with the id of the root div of your app
@@ -69,15 +70,15 @@ function Feedback({ messageId, token }) {
 
     return (
         <div>
-            <FontAwesomeIcon icon={faThumbsUp} style={{ cursor: 'pointer', color: 'blue' }} onClick={() => setModalIsOpen(true)} />
-            <FontAwesomeIcon icon={faThumbsDown} style={{ cursor: 'pointer', color: 'red' }} onClick={() => setModalIsOpen(true)} />
+            <FontAwesomeIcon icon={faThumbsUp} style={{ cursor: 'pointer', color: 'LightSkyBlue' }} onClick={() => setModalIsOpen(true)} />
+            <FontAwesomeIcon icon={faThumbsDown} style={{ cursor: 'pointer', color: 'RebeccaPurple' }} onClick={() => setModalIsOpen(true)} />
             <Modal
                 isOpen={modalIsOpen}
                 onRequestClose={() => setModalIsOpen(false)}
                 className="react-modal-content"
                 overlayClassName="react-modal-overlay"
             >
-                <h2>Feedback</h2>
+                <h3>Feedback</h3>
                 <select value={feedback} onChange={handleFeedbackChange}>
                     <option value="" disabled>Choose a rating</option>
                     <option value="great">Great</option>
@@ -86,8 +87,8 @@ function Feedback({ messageId, token }) {
                 </select>
                 <textarea value={comment} onChange={handleCommentChange} placeholder="Leave a comment (optional)" />
                 <div className="button-row">
-                    <button onClick={handleSubmit}>Submit feedback</button>
-                    <button onClick={() => setModalIsOpen(false)}>Cancel</button>
+                <Button onClick={handleSubmit} name="Submit feedback" />
+                <Button onClick={() => setModalIsOpen(false)} name="Cancel" />
                 </div>
             </Modal>
         </div>

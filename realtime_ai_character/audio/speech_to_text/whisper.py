@@ -14,7 +14,7 @@ from realtime_ai_character.utils import Singleton
 DEBUG = False
 logger = get_logger(__name__)
 config = types.SimpleNamespace(**{
-    'model': 'base',
+    'model': os.getenv("LOCAL_WHISPER_MODEL", "base"),
     'language': 'en',
     'api_key': os.getenv("OPENAI_API_KEY"),
 })

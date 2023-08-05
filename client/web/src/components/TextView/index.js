@@ -5,7 +5,7 @@
  * created by Lynchee on 7/16/23
  */
 
-import React, { useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './style.css';
 import { TbPower, TbPhoneCall, TbMicrophone, TbPlayerStopFilled, TbKeyboard } from 'react-icons/tb';
 import IconButton from '../Common/IconButton';
@@ -20,7 +20,7 @@ const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAr
     const [keyboard, SetKeyboard] = useState(true);
     const chatWindowRef = useRef(null);
     const talking = useRef(false);
-    
+
     // always show the latest chat log
     useEffect(() => {
         if (chatWindowRef.current) {
@@ -75,51 +75,51 @@ const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAr
     const handleKeyboardClick = () => {
         SetKeyboard(true);
     }
-    
+
     const handleAudioClick = () => {
         SetKeyboard(false);
     }
 
     return (
         <div className='text-screen'>
-            <textarea 
-                className="chat-window" 
-                readOnly 
+            <textarea
+                className="chat-window"
+                readOnly
                 draggable="false"
                 ref={chatWindowRef}
                 value={textAreaValue}
             ></textarea>
 
-                <Feedback messageId={messageId} token={token}/>
+            <Feedback messageId={messageId} token={token} />
 
 
             <div className='input-container'>
                 <div className="message-input-container">
                     <input
-                        className="message-input" 
-                        type="text" 
+                        className="message-input"
+                        type="text"
                         placeholder="Type your message"
-                        value={messageInput} 
+                        value={messageInput}
                         onChange={handleInputChange}
-                        onKeyDown={handleKeyDown} 
+                        onKeyDown={handleKeyDown}
                     />
                     <span className="focus-border"><i></i></span>
                 </div>
-                { !callActive.current && (
+                {!callActive.current && (
                     <div>
-                        {keyboard ? 
-                            <IconButton Icon={MdVoiceChat} className="icon-blue" onClick={handleAudioClick} /> : 
+                        {keyboard ?
+                            <IconButton Icon={MdVoiceChat} className="icon-blue" onClick={handleAudioClick} /> :
                             <IconButton Icon={TbKeyboard} className="icon-blue" onClick={handleKeyboardClick} />
                         }
                     </div>
                 )}
             </div>
 
-            { !callActive.current && !keyboard ?
-                <IconButton Icon={talking.current ? TbPlayerStopFilled : TbMicrophone} className={`${talking.current ? "recording-animation" : "icon-blue"}`} bgcolor={`${talking.current ? "red":"default"}`} onClick={handlePushTalk} /> : 
+            {!callActive.current && !keyboard ?
+                <IconButton Icon={talking.current ? TbPlayerStopFilled : TbMicrophone} className={`${talking.current ? "recording-animation" : "icon-blue"}`} bgcolor={`${talking.current ? "red" : "default"}`} onClick={handlePushTalk} /> :
                 <Button onClick={handleSendClick} name="Send Message" />
             }
-            
+
             <div className="options-container">
                 <IconButton Icon={TbPower} className="icon-red" onClick={handlePowerOffClick} />
                 <IconButton Icon={TbPhoneCall} className="icon-blue" onClick={() => setIsCallView(true)} disabled={talking.current} />

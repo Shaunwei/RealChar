@@ -53,7 +53,7 @@ const Home = ({
         setLoading(false);
         console.error(err);
       });
-  }, [])
+  }, [setCharacterGroups])
 
   const handleNextClick = () => {
     setCharacterConfirmed(true);

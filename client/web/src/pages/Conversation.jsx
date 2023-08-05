@@ -10,6 +10,7 @@ import TextView from '../components/TextView';
 import { useNavigate } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
 import AvatarView from '../components/AvatarView';
+// import Feedback from '../components/Feedback';
 
 // TODO: user can access this page only if isConnected.current
 
@@ -40,6 +41,8 @@ const Conversation = ({
   preferredLanguage,
   setPreferredLanguage,
   selectedCharacter,
+  messageId,
+  token,
 }) => {
   const navigate = useNavigate();
 
@@ -118,6 +121,8 @@ return (
             stopRecording={stopRecording}
             preferredLanguage={preferredLanguage}
             setPreferredLanguage={setPreferredLanguage}
+            messageId={messageId}
+            token={token}
           />
         </div>
       </div>

@@ -43,3 +43,14 @@ class CharacterRequest(BaseModel):
     voice_id: Optional[str] = None
     visibility: Optional[str] = None
     data: Optional[dict] = None
+
+
+class EditCharacterRequest(BaseModel):
+    id: str
+    name: Optional[str] = None
+    system_prompt: Optional[str] = None
+    user_prompt: Optional[str] = None
+    text_to_speech_use: Optional[str] = None
+    voice_id: Optional[str] = None
+    visibility: Optional[str] = None
+    data: Optional[dict] = None

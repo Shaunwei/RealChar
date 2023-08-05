@@ -14,7 +14,7 @@ from firebase_admin.exceptions import FirebaseError
 from realtime_ai_character.database.connection import get_db
 from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.feedback import Feedback, FeedbackRequest
-from realtime_ai_character.models.character import Character, CharacterRequest
+from realtime_ai_character.models.character import Character, CharacterRequest, EditCharacterRequest
 from requests import Session
 
 
@@ -163,3 +163,34 @@ async def create_character(character_request: CharacterRequest,
     character.created_at = now_time
     character.updated_at = now_time
     character.save(db)
+
+
+@router.post("/edit_character")
+async def edit_character(edit_character_request: EditCharacterRequest,
+                         user = Depends(get_current_user),
+                         db: Session = Depends(get_db)):
+    if not user:
+        raise HTTPException(
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid authentication credentials',
+                headers={'WWW-Authenticate': 'Bearer'},
+            )
+    character_id = edit_character_request.id
+    characters = db.query(Character).filter(Character.id == character_id).all()
+    if len(characters) == 0:
+        raise HTTPException(
+                status_code=http_status.HTTP_404_NOT_FOUND,
+                detail=f'Character {character_id} not found',
+            )
+
+    character = characters[0]
+    if character.author_id != user['uid']:
+        raise HTTPException(
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid authentication credentials',
+                headers={'WWW-Authenticate': 'Bearer'},
+            )
+    character = Character(**edit_character_request.dict())
+    character.updated_at = datetime.datetime.now()
+    db.merge(character)
+    db.commit()

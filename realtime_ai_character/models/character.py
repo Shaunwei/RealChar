@@ -1,13 +1,15 @@
-from sqlalchemy import Column, Integer, String, DateTime, JSON
+from sqlalchemy import Column, String, DateTime, JSON
 from sqlalchemy.inspection import inspect
 import datetime
 from realtime_ai_character.database.base import Base
+from pydantic import BaseModel
+from typing import Optional
 
 
 class Character(Base):
     __tablename__ = "characters"
 
-    id = Column(Integer, primary_key=True, index=True, nullable=False)
+    id = Column(String(), primary_key=True, index=True, nullable=False)
     name = Column(String(1024), nullable=False)
     system_prompt = Column(String(262144), nullable=True)
     user_prompt = Column(String(262144), nullable=True)
@@ -31,3 +33,13 @@ class Character(Base):
     def save(self, db):
         db.add(self)
         db.commit()
+
+
+class CharacterRequest(BaseModel):
+    name: str
+    system_prompt: Optional[str] = None
+    user_prompt: Optional[str] = None
+    text_to_speech_use: Optional[str] = None
+    voice_id: Optional[str] = None
+    visibility: Optional[str] = None
+    data: Optional[dict] = None

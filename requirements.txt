@@ -16,6 +16,7 @@ ipywidgets
 langchain>=0.0.240
 llama_index
 faster-whisper
+torch
 psycopg2-binary
 pyaudio
 pydantic

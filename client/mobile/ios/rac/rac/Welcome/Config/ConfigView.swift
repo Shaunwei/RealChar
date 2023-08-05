@@ -207,72 +207,77 @@ struct CharacterOptionView: View {
     var onRemove: (() -> Void)? = nil
 
     var body: some View {
-        HStack(alignment: .center, spacing: 12) {
-            HStack(alignment: .center, spacing: 8) {
-                ZStack {
-                    Rectangle()
-                        .foregroundColor(.clear)
-                        .frame(width: 40, height: 40)
-                        .background(Color(red: 0.76, green: 0.83, blue: 1))
-                        .cornerRadius(20)
-                    if let imageUrl = option.imageUrl {
-                        CachedAsyncImage(url: imageUrl) { phase in
-                            switch phase {
-                            case .empty:
-                                ProgressView()
-                            case .success(let image):
-                                image.resizable()
-                            default:
-                                Image(systemName: "wifi.slash")
-                            }
-                        }
-                        .scaledToFit()
-                        .frame(width: 36, height: 36)
-                        .cornerRadius(18)
-                    }
-                }
-
-                Text(option.name)
-                    .font(
-                        Font.custom("Prompt", size: 16).weight(.medium)
-                    )
-                    .lineLimit(2)
-                    .foregroundColor(colorScheme == .dark ? .white : Color(red: 0.01, green: 0.03, blue: 0.11).opacity(0.8))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-
-            if !option.authorName.isEmpty {
-                Text("by \(option.authorName)")
-                    .font(
-                        Font.custom("Prompt", size: 12).weight(.medium)
-                    )
-                    .lineLimit(2)
-                    .multilineTextAlignment(.trailing)
-                    .foregroundColor(colorScheme == .dark ? .white: Color(red: 0.4, green: 0.52, blue: 0.83))
-                    .frame(alignment: .trailing)
-            }
-
-            if showRemoveButton {
-                Button {
-                    onRemove?()
-                } label: {
-                    Image(systemName: "xmark.circle")
-                }
-                .buttonStyle(CustomButtonStyle())
-            }
-        }
-        .padding(.leading, 12)
-        .padding(.trailing, 24)
-        .padding(.vertical, 10)
-        .background(colorScheme == .dark ? (selected ? .white.opacity(0.2) : .white.opacity(0.1)) : (selected ? .white : Color(red: 0.93, green: 0.95, blue: 1)))
-        .cornerRadius(40)
-        .overlay(
-            RoundedRectangle(cornerRadius: 40)
-                .stroke((colorScheme == .dark ? Color(red: 0.65, green: 0.75, blue: 1).opacity(selected ? 1 : 0) : Color(red: 0.4, green: 0.52, blue: 0.83).opacity(selected ? 0.6 : 0)), lineWidth: 2)
-        )
-        .onTapGesture {
+        Button {
             onTap?()
+        } label: {
+            HStack(alignment: .center, spacing: 12) {
+                HStack(alignment: .center, spacing: 8) {
+                    ZStack {
+                        Rectangle()
+                            .foregroundColor(.clear)
+                            .frame(width: 40, height: 40)
+                            .background(Color(red: 0.76, green: 0.83, blue: 1), in: .circle)
+                        if let imageUrl = option.imageUrl {
+                            CachedAsyncImage(url: imageUrl) { phase in
+                                switch phase {
+                                case .empty:
+                                    ProgressView()
+                                case .success(let image):
+                                    image.resizable()
+                                default:
+                                    Image(systemName: "wifi.slash")
+                                }
+                            }
+                            .scaledToFit()
+                            .frame(width: 36, height: 36)
+                            .cornerRadius(18)
+                        }
+                    }
+                    
+                    Text(option.name)
+                        .font(
+                            Font.custom("Prompt", size: 16).weight(.medium)
+                        )
+                        .lineLimit(2)
+                        .foregroundColor(colorScheme == .dark ? .white : Color(red: 0.01, green: 0.03, blue: 0.11).opacity(0.8))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                
+                if !option.authorName.isEmpty {
+                    Text("by \(option.authorName)")
+                        .font(
+                            Font.custom("Prompt", size: 12).weight(.medium)
+                        )
+                        .lineLimit(2)
+                        .multilineTextAlignment(.trailing)
+                        .foregroundColor(colorScheme == .dark ? .white: Color(red: 0.4, green: 0.52, blue: 0.83))
+                        .frame(alignment: .trailing)
+                }
+                
+                if showRemoveButton {
+                    Button {
+                        onRemove?()
+                    } label: {
+                        Image(systemName: "xmark.circle")
+                            .padding(12)
+                            .contentShape(.hoverEffect, .circle)
+                            .hoverEffect()
+                    }
+                    .buttonStyle(CustomButtonStyle())
+                }
+            }
+            .padding(.leading, 12)
+            .padding(.trailing, 24)
+            .padding(.vertical, 10)
+            .background(colorScheme == .dark ? (selected ? .white.opacity(0.2) : .white.opacity(0.1)) : (selected ? .white : Color(red: 0.93, green: 0.95, blue: 1)))
+            .hoverEffect()
+            .cornerRadius(40)
+            .overlay(
+                RoundedRectangle(cornerRadius: 40)
+                    .stroke((colorScheme == .dark ? Color(red: 0.65, green: 0.75, blue: 1).opacity(selected ? 1 : 0) : Color(red: 0.4, green: 0.52, blue: 0.83).opacity(selected ? 0.6 : 0)), lineWidth: 2)
+            )
         }
+        .buttonStyle(.plain)
     }
 }
 

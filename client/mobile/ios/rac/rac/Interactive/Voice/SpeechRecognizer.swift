@@ -33,7 +33,7 @@ actor SpeechRecognizer: ObservableObject {
     private var request: SFSpeechAudioBufferRecognitionRequest?
     private var task: SFSpeechRecognitionTask?
     private let recognizer: SFSpeechRecognizer?
-    
+
     /**
      Initializes a new speech recognizer. If this is the first time you've used the class, it
      requests access to the speech recognizer and the microphone.
@@ -59,9 +59,9 @@ actor SpeechRecognizer: ObservableObject {
         }
     }
     
-    @MainActor func startTranscribing() {
+    @MainActor func startTranscribing(audioPlaying: Data?) {
         Task {
-            await transcribe()
+            await transcribe(audioPlaying: audioPlaying)
         }
     }
     
@@ -83,14 +83,14 @@ actor SpeechRecognizer: ObservableObject {
      Creates a `SFSpeechRecognitionTask` that transcribes speech to text until you call `stopTranscribing()`.
      The resulting transcription is continuously written to the published `transcript` property.
      */
-    private func transcribe() {
+    private func transcribe(audioPlaying: Data?) {
         guard let recognizer, recognizer.isAvailable else {
             self.transcribe(RecognizerError.recognizerIsUnavailable)
             return
         }
         
         do {
-            let (audioEngine, request) = try Self.prepareEngine()
+            let (audioEngine, request) = try Self.prepareEngine(audioPlaying: audioPlaying)
             self.audioEngine = audioEngine
             self.request = request
             self.task = recognizer.recognitionTask(with: request, resultHandler: { [weak self] result, error in
@@ -111,28 +111,65 @@ actor SpeechRecognizer: ObservableObject {
         task = nil
     }
     
-    private static func prepareEngine() throws -> (AVAudioEngine, SFSpeechAudioBufferRecognitionRequest) {
+    private static func prepareEngine(audioPlaying: Data?) throws -> (AVAudioEngine, SFSpeechAudioBufferRecognitionRequest) {
         let audioEngine = AVAudioEngine()
         
         let request = SFSpeechAudioBufferRecognitionRequest()
         request.shouldReportPartialResults = true
         
         let audioSession = AVAudioSession.sharedInstance()
-        let options: AVAudioSession.CategoryOptions = defaultToSpeaker ? [.allowBluetooth, .defaultToSpeaker, .duckOthers] : [.allowBluetooth, .duckOthers]
-        try audioSession.setCategory(.playAndRecord, mode: .default, options: options)
+        let options: AVAudioSession.CategoryOptions = defaultToSpeaker ? [.allowBluetooth, .defaultToSpeaker, .duckOthers] : [.allowBluetooth, .defaultToSpeaker, .duckOthers]
+        try audioSession.setCategory(.playAndRecord, mode: .voiceChat, options: options)
         try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
         let inputNode = audioEngine.inputNode
-        
+
         let recordingFormat = inputNode.outputFormat(forBus: 0)
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { (buffer: AVAudioPCMBuffer, when: AVAudioTime) in
             request.append(buffer)
         }
-        audioEngine.prepare()
-        try audioEngine.start()
-        
+
+        if let audioPlaying, let (audioPlayerNode, pcmBuffer) = scheduleAudioBuffer(audioData: audioPlaying, sampleRate: 44100, channels: 2) {
+            audioEngine.attach(audioPlayerNode)
+            audioEngine.connect(audioPlayerNode, to: audioEngine.outputNode, format: nil)
+
+            audioEngine.prepare()
+            try audioEngine.start()
+
+            // Schedule the buffer for playback at time nil (immediately)
+            audioPlayerNode.scheduleBuffer(pcmBuffer, at: nil, options: .interrupts) {
+                print("Finished playing")
+            }
+        } else {
+            audioEngine.prepare()
+            try audioEngine.start()
+        }
+
         return (audioEngine, request)
     }
-    
+
+    private static func scheduleAudioBuffer(audioData: Data, sampleRate: Double, channels: AVAudioChannelCount) -> (AVAudioPlayerNode, AVAudioPCMBuffer)? {
+        // Create an AVAudioFormat
+        guard let format = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: sampleRate, channels: channels, interleaved: false) else {
+            return nil
+        }
+
+        // Create an AVAudioPCMBuffer
+        guard let pcmBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(audioData.count)) else {
+            print("Error creating AVAudioPCMBuffer")
+            return nil
+        }
+
+        // Fill the AVAudioPCMBuffer with your audio data
+        let audioDataPtr = pcmBuffer.floatChannelData?[0]
+        _ = audioData.copyBytes(to: UnsafeMutableBufferPointer(start: audioDataPtr, count: audioData.count))
+
+        // Get a reference to the AVAudioPlayerNode
+        let audioPlayerNode = AVAudioPlayerNode()
+
+        return (audioPlayerNode, pcmBuffer)
+    }
+
+
     nonisolated private func recognitionHandler(audioEngine: AVAudioEngine, result: SFSpeechRecognitionResult?, error: Error?) {
         let receivedFinalResult = result?.isFinal ?? false
         let receivedError = error != nil

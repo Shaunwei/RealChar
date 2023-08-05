@@ -71,9 +71,13 @@ struct RootView: View {
                             Image("menu")
                                 .tint(.white)
                                 .padding(12)
-                                .padding(.trailing, 20)
+                                .padding(.horizontal, 20)
                         }
-
+#if os(xrOS)
+                        .buttonBorderShape(.circle)
+#else
+                        .buttonBorderShape(.roundedRectangle(radius: 30))
+#endif
                     }
                 } else {
                     ToolbarItemGroup(placement: .navigation) {
@@ -93,6 +97,15 @@ struct RootView: View {
         .onDisappear {
             webSocket.closeSession()
         }
+    }
+
+    init(webSocket: any WebSocket) {
+        self.webSocket = webSocket
+        // Register all the custom components and systems that the app uses.
+#if os(xrOS)
+        RotationComponent.registerComponent()
+        RotationSystem.registerSystem()
+#endif
     }
 }
 

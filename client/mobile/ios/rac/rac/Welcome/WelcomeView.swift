@@ -16,7 +16,8 @@ struct WelcomeView: View {
     let webSocket: any WebSocket
     @StateObject var webSocketConnectionStatusObserver = WebSocketConnectionStatusObserver(delay: .seconds(1))
     @State var invalidAttempts = 0
-    enum Tab {
+    enum Tab: String, Identifiable, CaseIterable {
+        var id: String { return self.rawValue }
         case about, config, settings
     }
     @Binding var tab: WelcomeView.Tab
@@ -31,22 +32,78 @@ struct WelcomeView: View {
 
     var body: some View {
         GeometryReader { geometry in
+#if os(xrOS)
+            TabView {
+                ForEach(WelcomeView.Tab.allCases) { tab in
+                    switch tab {
+                    case .about:
+                        AboutView()
+                            .padding(.horizontal, 48)
+                            .tabItem {
+                                Label("About", systemImage: "info.circle")
+                            }
+                    case .config:
+                        ConfigView(options: options,
+                                   hapticFeedback: preferenceSettings.hapticFeedback,
+                                   selectedOption: $character,
+                                   openMic: $openMic,
+                                   onConfirmConfig: { option in
+                            if webSocketConnectionStatusObserver.status == .connected {
+                                simpleSuccess()
+                                onConfirmConfig(option)
+                            } else {
+                                simpleError()
+                                invalidAttempts += 1
+                            }
+                        }, loadCharacters: {
+                            do {
+                                options = try await welcomeViewModel.loadCharacters()
+                            } catch {
+                                print(error)
+                            }
+                        })
+                        .padding(.horizontal, 48)
+                        .tabItem {
+                            Label("Try out", systemImage: "waveform")
+                        }
+                    case .settings:
+                        SettingsView()
+                            .padding(.horizontal, 48)
+                            .tabItem {
+                                Label("Settings", systemImage: "gear")
+                            }
+                    }
+                }
+            }
+#else
             VStack(spacing: 0) {
                 HStack(alignment: .center, spacing: 0) {
-                    TabView(text: "About", currentTab: $tab, tab: .about)
-                        .onTapGesture {
-                            tab = .about
-                        }
+                    Button {
+                        tab = .about
+                    } label: {
+                        CustomTabView(text: "About", currentTab: $tab, tab: .about)
+                            .contentShape(.hoverEffect, .rect(cornerRadius: 8))
+                            .hoverEffect()
+                    }
+                    .buttonStyle(.plain)
 
-                    TabView(text: "Try out", currentTab: $tab, tab: .config)
-                        .onTapGesture {
-                            tab = .config
-                        }
+                    Button {
+                        tab = .config
+                    } label: {
+                        CustomTabView(text: "Try out", currentTab: $tab, tab: .config)
+                            .contentShape(.hoverEffect, .rect(cornerRadius: 8))
+                            .hoverEffect()
+                    }
+                    .buttonStyle(.plain)
 
-                    TabView(text: "Settings", currentTab: $tab, tab: .settings)
-                        .onTapGesture {
-                            tab = .settings
-                        }
+                    Button {
+                        tab = .settings
+                    } label: {
+                        CustomTabView(text: "Settings", currentTab: $tab, tab: .settings)
+                            .contentShape(.hoverEffect, .rect(cornerRadius: 8))
+                            .hoverEffect()
+                    }
+                    .buttonStyle(.plain)
                 }
                 .padding(.horizontal, 32)
                 .padding(.top, 24)
@@ -108,6 +165,7 @@ struct WelcomeView: View {
                     }
                 }
             }
+#endif
         }
         .onAppear {
             webSocketConnectionStatusObserver.update(status: webSocket.status)
@@ -217,7 +275,7 @@ struct WelcomeView_Previews: PreviewProvider {
     }
 }
 
-struct TabView: View {
+struct CustomTabView: View {
     @Environment(\.colorScheme) var colorScheme
 
     let text: String

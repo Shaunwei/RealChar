@@ -83,6 +83,7 @@ struct VoiceMessageView: View {
     let character: CharacterOption
     @Binding var messages: [ChatMessage]
     @Binding var state: VoiceState
+    @Binding var audioPlaying: Data?
     @StateObject var speechRecognizer: SpeechRecognizer
 
     @State private var isInputUpdated: Bool = true
@@ -92,8 +93,54 @@ struct VoiceMessageView: View {
     let onSendUserMessage: (String) -> Void
     let onTapVoiceButton: () -> Void
 
+    struct ManipulationState: Equatable {
+        var translation: Vector3D
+        var scale: Size3D
+        var rotation: Rotation3D
+    }
+    var manipulationState: GestureState<ManipulationState> = .init(initialValue: .init(translation: .zero, scale: .one, rotation: .identity))
+
+    // Gesture combining dragging, magnification, and 3D rotation all at once.
+    var manipulationGesture: some Gesture<AffineTransform3D> {
+        DragGesture()
+            .simultaneously(with: MagnifyGesture())
+            .simultaneously(with: RotateGesture3D())
+            .map { gesture in
+                let (translation, scale, rotation) = gesture.components()
+
+                return AffineTransform3D(
+                    scale: scale,
+                    rotation: rotation,
+                    translation: translation
+                )
+            }
+    }
+
     var body: some View {
         VStack(spacing: 50) {
+#if os(xrOS)
+            Color.clear
+                .overlay {
+                    ItemView(item: .robot_test)
+                        .dragRotation(yawLimit: .degrees(45), pitchLimit: .degrees(45))
+                        .offset(y: 100)
+                        .offset(z: modelDepth)
+                }
+//                .scaleEffect(manipulationState.wrappedValue.scale)
+//                .rotation3DEffect(manipulationState.wrappedValue.rotation)
+//                .offset(x: manipulationState.wrappedValue.translation.x,
+//                        y: manipulationState.wrappedValue.translation.y
+//                )
+//                .offset(z: manipulationState.wrappedValue.translation.z)
+//            //                        .animation(.spring, value: $manipulationState)
+//                .gesture(manipulationGesture.updating(manipulationState) { value, state, _ in
+//                    state.rotation = value.rotation ?? .zero
+//                    state.translation = value.translation
+//                    state.scale = value.scale
+//                })
+//                .offset(z: modelDepth)
+#endif
+
             ScrollViewReader { scrollView in
                 List {
                     switch state {
@@ -171,8 +218,8 @@ struct VoiceMessageView: View {
                         .background(Constants.realBlue500)
                         .opacity(state.isDisabled ? 0.25 : 1.0)
                         .disabled(state.isDisabled)
+                        .hoverEffect()
                         .cornerRadius(40)
-                        .onTapGesture(perform: onTapVoiceButton)
                         .background {
                             if state.isSpeaking || state == .listeningToUser {
                                 Rectangle()
@@ -201,6 +248,11 @@ struct VoiceMessageView: View {
                             }
                         }
                 }
+#if os(xrOS)
+                .buttonBorderShape(.circle)
+#else
+                .buttonBorderShape(.roundedRectangle(radius: 40))
+#endif
 
                 Text(state.displayText)
                     .font(Font.custom("Prompt", size: 16))
@@ -218,7 +270,7 @@ struct VoiceMessageView: View {
                 switch newValue {
                 case .characterSpeaking, .listeningToUser:
                     if !oldValue.isSpeaking {
-                        startSpeechRecognition()
+                        startSpeechRecognition(audioPlaying: audioPlaying)
                     }
                 default:
                     stopSpeechRecognition()
@@ -226,10 +278,15 @@ struct VoiceMessageView: View {
             } else {
                 switch newValue {
                 case .listeningToUser:
-                    startSpeechRecognition()
+                    startSpeechRecognition(audioPlaying: audioPlaying)
                 default:
                     stopSpeechRecognition()
                 }
+            }
+        }
+        .onChange(of: audioPlaying) { newValue in
+            if let newValue, case .characterSpeaking = state, openMic {
+                startSpeechRecognition(audioPlaying: newValue)
             }
         }
         .onChange(of: speechRecognizer.transcript) { newValue in
@@ -298,8 +355,8 @@ struct VoiceMessageView: View {
         ripple2Size = 100
     }
 
-    private func startSpeechRecognition() {
-        speechRecognizer.startTranscribing()
+    private func startSpeechRecognition(audioPlaying: Data?) {
+        speechRecognizer.startTranscribing(audioPlaying: audioPlaying)
     }
 
     private func stopSpeechRecognition() {
@@ -332,11 +389,25 @@ struct VoiceMessageView_Previews: PreviewProvider {
             ChatMessage(id: UUID(), role: .assistant, content: "Well thank you, Karina! I like your nam too. Now tell me, where do you live?")
         ]),
                          state: .constant(.idle(streamingEnded: true)),
+                         audioPlaying: .constant(nil),
                          speechRecognizer: SpeechRecognizer(),
                          onUpdateUserMessage: { _ in },
                          onSendUserMessage: { _ in },
                          onTapVoiceButton: { })
         .preferredColorScheme(.dark)
         .frame(height: 400)
+    }
+}
+
+// Helper for extracting translation, magnification, and rotation.
+extension SimultaneousGesture<
+    SimultaneousGesture<DragGesture, MagnifyGesture>,
+    RotateGesture3D>.Value {
+    func components() -> (Vector3D, Size3D, Rotation3D) {
+        let translation = self.first?.first?.translation3D ?? .zero
+        let magnification = self.first?.second?.magnification ?? 1
+        let size = Size3D(width: magnification, height: magnification, depth: magnification)
+        let rotation = self.second?.rotation ?? .identity
+        return (translation, size, rotation)
     }
 }

@@ -38,6 +38,7 @@ struct CtaButton: View {
                 .if(style == .secondary, transform: { text in
                     text.border(colorScheme == .dark ? Color(red: 0.65, green: 0.75, blue: 1) : Color(red: 0.4, green: 0.52, blue: 0.83).opacity(0.6), width: 2)
                 })
+                .hoverEffect()
                 .cornerRadius(4)
         }
         .buttonStyle(CustomButtonStyle())

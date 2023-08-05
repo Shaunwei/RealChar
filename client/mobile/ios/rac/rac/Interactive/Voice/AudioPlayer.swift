@@ -11,6 +11,7 @@ import AVFoundation
 class AudioPlayer: NSObject, ObservableObject {
     private var audioPlayer: AVAudioPlayer?
     @Published var isPlaying = false
+    @Published var audioPlaying: Data? = nil
 
     private var pendingData: [Data] = []
 
@@ -25,6 +26,7 @@ class AudioPlayer: NSObject, ObservableObject {
             audioPlayer?.delegate = self
             audioPlayer?.play()
             DispatchQueue.main.async {
+//                self.audioPlaying = data
                 self.isPlaying = true
             }
         } catch {

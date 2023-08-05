@@ -15,6 +15,10 @@ enum InteractiveMode {
 
 struct InteractiveView: View {
     @EnvironmentObject private var preferenceSettings: PreferenceSettings
+    @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismissWindow) private var dismissWindow
+    @Environment(\.openImmersiveSpace) private var openImmersiveSpace
+    @Environment(\.dismissImmersiveSpace) private var dismissImmersiveSpace
 
     struct Constants {
         static let realOrange500: Color = Color(red: 0.95, green: 0.29, blue: 0.16)
@@ -56,6 +60,7 @@ struct InteractiveView: View {
                                  character: character,
                                  messages: $messages,
                                  state: $voiceState,
+                                 audioPlaying: $audioPlayer.audioPlaying,
                                  speechRecognizer: SpeechRecognizer(locale: preferenceSettings.languageOption.locale),
                                  onUpdateUserMessage: { message in
                     if messages.last?.role == .user {
@@ -86,18 +91,13 @@ struct InteractiveView: View {
                 Button {
                     onExit()
                 } label: {
-                    Image("power")
-                        .tint(.white)
+                    ModeSwitcher(imageName: "power", color: Constants.realOrange500)
                 }
-                .padding(12)
-                .frame(width: 60, height: 60, alignment: .center)
-                .background(Constants.realOrange500)
-                .cornerRadius(50)
-                .overlay(
-                  RoundedRectangle(cornerRadius: 50)
-                    .inset(by: -1)
-                    .stroke(Constants.realOrange500, lineWidth: 2)
-                )
+#if os(xrOS)
+                .buttonBorderShape(.circle)
+#else
+                .buttonBorderShape(.roundedRectangle(radius: 30))
+#endif
 
                 Button {
                     switch mode {
@@ -109,22 +109,16 @@ struct InteractiveView: View {
                 } label: {
                     switch mode {
                     case .text:
-                        Image("voice")
-                            .tint(.white)
+                        ModeSwitcher(imageName: "voice", color: Color(red: 0.74, green: 0.81, blue: 1).opacity(0.1))
                     case .voice:
-                        Image("message")
-                            .tint(.white)
+                        ModeSwitcher(imageName: "message", color: Color(red: 0.74, green: 0.81, blue: 1).opacity(0.1))
                     }
                 }
-                .padding(12)
-                .frame(width: 60, height: 60, alignment: .center)
-                .background(Color(red: 0.74, green: 0.81, blue: 1).opacity(0.1))
-                .cornerRadius(50)
-                .overlay(
-                  RoundedRectangle(cornerRadius: 50)
-                    .inset(by: -1)
-                    .stroke(Color(red: 0.74, green: 0.81, blue: 1).opacity(0), lineWidth: 2)
-                )
+#if os(xrOS)
+                .buttonBorderShape(.circle)
+#else
+                .buttonBorderShape(.roundedRectangle(radius: 30))
+#endif
             }
             .padding(.horizontal, 60)
             .padding(.top, 20)
@@ -134,6 +128,11 @@ struct InteractiveView: View {
         }
 //        .background(Constants.realBlack)
         .onAppear {
+            Task {
+//                await openImmersiveSpace(id: "playground")
+                await openImmersiveSpace(id: "full")
+            }
+//            openWindow(id: "character")
             prepareHaptics()
             webSocket.send(message: "[!USE_SEARCH]\(preferenceSettings.useSearch)")
             webSocket.send(message: "[!USE_GMAIL]\(preferenceSettings.useGmail)")
@@ -191,6 +190,10 @@ struct InteractiveView: View {
             }
         }
         .onDisappear {
+//            dismissWindow(id: "character")
+            Task {
+                await dismissImmersiveSpace()
+            }
             voiceState = .idle(streamingEnded: true)
             audioPlayer.pauseAudio()
             webSocket.onStringReceived = nil
@@ -309,5 +312,20 @@ struct InteractiveView_Previews: PreviewProvider {
                         hapticFeedback: false,
                         onExit: {},
                         messages: .constant([]))
+    }
+}
+
+struct ModeSwitcher: View {
+
+    let imageName: String
+    let color: Color
+
+    var body: some View {
+        Image(imageName)
+            .tint(.white)
+            .padding(12)
+            .frame(width: 60, height: 60, alignment: .center)
+            .background(color, in: .circle)
+            .hoverEffect()
     }
 }

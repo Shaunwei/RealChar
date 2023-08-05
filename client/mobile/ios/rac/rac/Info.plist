@@ -13,11 +13,11 @@
 			</array>
 		</dict>
 	</array>
-    <key>NSAppTransportSecurity</key>
-    <dict>
-      <key>NSAllowsArbitraryLoads</key>
-      <true/>
-    </dict>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>UIAppFonts</key>
@@ -26,5 +26,7 @@
 		<string>Prompt-Regular.ttf</string>
 		<string>Prompt-Medium.ttf</string>
 	</array>
+	<key>UIPreferredDefaultInterfaceOrientation</key>
+	<string>UlInterfaceOrientationPortrait</string>
 </dict>
 </plist>

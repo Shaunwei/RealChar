@@ -19,6 +19,7 @@ const Conversation = ({
   isCallView,
   isRecording,
   isPlaying,
+  isThinking,
   audioPlayer,
   handleStopCall,
   handleContinueCall,
@@ -66,9 +67,13 @@ return (
     <div className='conversation-page'>
         {/* we render both views but only display one. */}
         <p className="alert text-white">
-          { isConnected.current && isRecording ? 
-            (<span className="recording">Recording</span>) : null
-          } 
+          {
+            isConnected.current && isThinking && isCallView ?
+            (<span>{selectedCharacter.name} is thinking...</span>) :
+            isConnected.current && isRecording ?
+            (<span className="recording">Recording</span>) :
+            null
+          }
         </p>
 
         <div className={`avatar-wrapper ${isPlaying ? "pulsating-avatar" : ""}`}>
@@ -102,8 +107,10 @@ return (
 
         <div className="main-screen" style={{ display: isCallView ? "none" : "flex" }}>
           <TextView 
+            selectedCharacter={selectedCharacter}
             send={send} 
             isPlaying={isPlaying}
+            isThinking={isThinking}
             stopAudioPlayback={stopAudioPlayback}
             textAreaValue={textAreaValue}
             setTextAreaValue={setTextAreaValue}

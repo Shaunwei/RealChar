@@ -34,6 +34,7 @@ const App = () => {
   const [user, setUser] = useState(null);
   const isLoggedIn = useRef(false);
   const [token, setToken] = useState("");
+  const [isThinking, setIsThinking] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [messageInput, setMessageInput] = useState('');
@@ -86,6 +87,8 @@ const App = () => {
       const message = event.data;
       if (message === '[end]\n' || message.match(/\[end=([a-zA-Z0-9]+)\]/)) {
         setTextAreaValue(prevState => prevState + "\n\n");
+      } else if (message === '[thinking]\n') {
+        setIsThinking(true);
       } else if (message.startsWith('[+]You said: ')) {
         // [+] indicates the transcription is done. stop playing audio
         let msg = message.split("[+]You said: ");
@@ -96,6 +99,7 @@ const App = () => {
         setTextAreaValue(prevState => prevState + "\n\n");
       } else if (message.startsWith('Select')) {
       } else {
+        setIsThinking(false);
         setTextAreaValue(prevState => prevState + `${event.data}`);
 
         // if user interrupts the previous response, should be able to play audios of new response
@@ -229,6 +233,7 @@ const App = () => {
                 isCallView={isCallView} 
                 isRecording={isRecording} 
                 isPlaying={isPlaying} 
+                isThinking={isThinking}
                 audioPlayer={audioPlayer} 
                 handleStopCall={handleStopCall} 
                 handleContinueCall={handleContinueCall} 

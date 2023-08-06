@@ -32,6 +32,13 @@ p {
   align-items: center;
 }
 
+.shared-conversation-page {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .center {
   text-align: center;
 }

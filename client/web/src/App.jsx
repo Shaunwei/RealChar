@@ -16,6 +16,7 @@ import { signInWithGoogle } from './components/Auth/SignIn';
 // Pages
 import Settings from './pages/Settings';
 import Conversation from './pages/Conversation';
+import SharedConversation from './pages/SharedConversation';
 import Home from './pages/Home';
 
 // utils
@@ -307,6 +308,12 @@ const App = () => {
                 messageId={messageId}
                 token={token}
               />
+            }
+          />
+          <Route
+            path="/shared"
+            element={
+             <SharedConversation/>
             }
           />
         </Routes>

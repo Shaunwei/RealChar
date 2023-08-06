@@ -56,8 +56,6 @@ const SharedConversation = ({
           return;
         }
 
-        // sessionHistoryData will look like this:
-        // [{"id":162,"client_id":null,"user_id":"0F26CEA0936441F0813969145CAD47CD","session_id":"bcf1181fef5a4cc6bfbe84ec0e72821f","client_message":null,"server_message":null,"client_message_unicode":"Check the weather for San Francisco","server_message_unicode":"Elon> Ah, San Francisco, a beautiful city indeed! The weather there can be quite unpredictable at times. Could you please clarify if you would like the current weather or a forecast for San Francisco?","timestamp":"2023-08-06T01:10:46.847131","platform":"mobile","action_type":"text","character_id":"elon_musk","tools":"search","language":"en-US","message_id":"e1b0aaafae5445d8","llm_config":{"model":"gpt-3.5-turbo-16k","temperature":0.5,"streaming":true}}]
         const selectedCharacterId = sessionHistoryData[0].character_id;
         setSelectedCharacter(charactersData.find(character => character.character_id === selectedCharacterId));
 

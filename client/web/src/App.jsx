@@ -42,6 +42,7 @@ const App = () => {
   const [textAreaValue, setTextAreaValue] = useState('');
   const [characterGroups, setCharacterGroups] = useState([]);
   const [characterConfirmed, setCharacterConfirmed] = useState(false);
+  const [messageId, setMessageId] = useState('');
   const audioPlayer = useRef(null);
   const callActive = useRef(false);
   const audioSent = useRef(false);
@@ -74,7 +75,7 @@ const App = () => {
   };
 
   // Helper functions
-  const handleSocketOnOpen = async () => {
+  const handleSocketOnOpen = async event => {
     console.log('successfully connected');
     isConnected.current = true;
     await connectMicrophone(selectedDevice);
@@ -86,6 +87,11 @@ const App = () => {
       const message = event.data;
       if (message === '[end]\n' || message.match(/\[end=([a-zA-Z0-9]+)\]/)) {
         setTextAreaValue(prevState => prevState + '\n\n');
+        const messageIdMatches = message.match(/\[end=([a-zA-Z0-9]+)\]/);
+        if (messageIdMatches) {
+          const messageId = messageIdMatches[1];
+          setMessageId(messageId);
+        }
       } else if (message === '[thinking]\n') {
         setIsThinking(true);
       } else if (message.startsWith('[+]You said: ')) {
@@ -298,6 +304,8 @@ const App = () => {
                 preferredLanguage={preferredLanguage}
                 setPreferredLanguage={setPreferredLanguage}
                 selectedCharacter={selectedCharacter}
+                messageId={messageId}
+                token={token}
               />
             }
           />

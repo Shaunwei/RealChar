@@ -18,6 +18,7 @@ import IconButton from '../Common/IconButton';
 import { MdVoiceChat } from 'react-icons/md';
 import Button from '../Common/Button';
 import { useNavigate } from 'react-router-dom';
+import Feedback from '../Feedback';
 
 const TextView = ({
   selectedCharacter,
@@ -36,6 +37,8 @@ const TextView = ({
   callActive,
   startRecording,
   stopRecording,
+  messageId,
+  token,
 }) => {
   const navigate = useNavigate();
   const [keyboard, SetKeyboard] = useState(true);
@@ -131,6 +134,9 @@ const TextView = ({
         ref={chatWindowRef}
         value={textAreaValue}
       ></textarea>
+
+      <Feedback messageId={messageId} token={token} />
+
       <div className='input-container'>
         <div className='message-input-container'>
           <input

@@ -49,7 +49,7 @@ const Settings = ({
     if (!selectedCharacter) {
       navigate('/');
     }
-  }, [character, navigate]);
+  }, [setSelectedCharacter, character, navigate]);
 
   const handleStartClick = async () => {
     await connect();

@@ -17,7 +17,6 @@ import { signInWithGoogle } from './components/Auth/SignIn';
 import Settings from './pages/Settings';
 import Conversation from './pages/Conversation';
 import Home from './pages/Home';
-import Create from './pages/Create';
 
 // utils
 import auth from './utils/firebase';
@@ -297,7 +296,6 @@ const App = () => {
               />
             }
           />
-          <Route path='/create' element={<Create />} />
         </Routes>
 
         <Footer />

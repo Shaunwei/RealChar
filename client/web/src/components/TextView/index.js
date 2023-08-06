@@ -20,8 +20,10 @@ import Button from '../Common/Button';
 import { useNavigate } from 'react-router-dom';
 
 const TextView = ({
+  selectedCharacter,
   send,
   isPlaying,
+  isThinking,
   stopAudioPlayback,
   textAreaValue,
   setTextAreaValue,
@@ -46,6 +48,27 @@ const TextView = ({
       chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
     }
   }, [textAreaValue]);
+
+  useEffect(() => {
+    if (
+      isThinking &&
+      !textAreaValue.endsWith(`\n${selectedCharacter.name} is thinking...`)
+    ) {
+      setTextAreaValue(
+        prevState => prevState + `\n${selectedCharacter.name} is thinking...`
+      );
+    } else if (
+      !isThinking &&
+      textAreaValue.endsWith(`\n${selectedCharacter.name} is thinking...`)
+    ) {
+      setTextAreaValue(prevState =>
+        prevState.substring(
+          0,
+          prevState.length - `\n${selectedCharacter.name} is thinking...`.length
+        )
+      );
+    }
+  }, [isThinking, textAreaValue]);
 
   const handlePowerOffClick = () => {
     navigate('/');

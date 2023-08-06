@@ -28,6 +28,8 @@ function connectSocket() {
       if (message == '[end]\n' || message.match(/\[end=([a-zA-Z0-9]+)\]/)) {
         chatWindow.value += "\n\n";
         chatWindow.scrollTop = chatWindow.scrollHeight;
+      } else if (message == '[thinking]\n') {
+        // [thinking] indicates the response is not ready yet
       } else if (message.startsWith('[+]')) {
         // [+] indicates the transcription is done. stop playing audio
         chatWindow.value += `\nYou> ${message}\n`;

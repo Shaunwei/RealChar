@@ -199,7 +199,9 @@ const TextView = ({
         <IconButton
           Icon={TbShare2}
           disabled={isResponding}
-          onClick={() => window.open(`/shared?session_id=${sessionId}`, '_blank') }
+          onClick={() =>
+            window.open(`/shared?session_id=${sessionId}`, '_blank')
+          }
         />
       </div>
     </div>

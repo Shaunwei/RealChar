@@ -18,7 +18,7 @@ const useWebsocket = (
   preferredLanguage,
   useSearch,
   selectedCharacter,
-  setSessionId,
+  setSessionId
 ) => {
   const socketRef = useRef(null);
 
@@ -26,7 +26,7 @@ const useWebsocket = (
   const connectSocket = useCallback(() => {
     if (!socketRef.current) {
       const sessionId = uuidv4().replace(/-/g, '');
-      setSessionId(sessionId)
+      setSessionId(sessionId);
       const ws_scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
       // Get the current host value
       var currentHost = window.location.host;

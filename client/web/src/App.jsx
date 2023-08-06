@@ -138,7 +138,7 @@ const App = () => {
     preferredLanguage,
     useSearch,
     selectedCharacter,
-    setSessionId,
+    setSessionId
   );
   const {
     isRecording,
@@ -316,12 +316,7 @@ const App = () => {
               />
             }
           />
-          <Route
-            path="/shared"
-            element={
-             <SharedConversation/>
-            }
-          />
+          <Route path='/shared' element={<SharedConversation />} />
         </Routes>
 
         <Footer />

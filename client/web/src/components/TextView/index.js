@@ -13,6 +13,7 @@ import {
   TbMicrophone,
   TbPlayerStopFilled,
   TbKeyboard,
+  TbShare2,
 } from 'react-icons/tb';
 import IconButton from '../Common/IconButton';
 import { MdVoiceChat } from 'react-icons/md';
@@ -39,6 +40,7 @@ const TextView = ({
   stopRecording,
   messageId,
   token,
+  sessionId,
 }) => {
   const navigate = useNavigate();
   const [keyboard, SetKeyboard] = useState(true);
@@ -192,6 +194,11 @@ const TextView = ({
           className='icon-blue'
           onClick={() => setIsCallView(true)}
           disabled={talking.current}
+        />
+        <IconButton
+          Icon={TbShare2}
+          disabled={isPlaying}
+          onClick={() => window.open(`/shared?session_id=${sessionId}`, '_blank') }
         />
       </div>
     </div>

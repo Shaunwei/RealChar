@@ -10,7 +10,7 @@ import './style.css';
 import { useNavigate } from 'react-router-dom';
 import { TbPhoneCall } from 'react-icons/tb';
 import { MdCallEnd } from 'react-icons/md';
-import { TbMessageChatbot, TbPower } from 'react-icons/tb';
+import { TbMessageChatbot, TbPower, TbShare2 } from 'react-icons/tb';
 import IconButton from '../Common/IconButton';
 
 // utils
@@ -26,6 +26,7 @@ const CallView = ({
   setIsPlaying,
   handleDisconnect,
   setIsCallView,
+  sessionId,
 }) => {
   const navigate = useNavigate();
   const audioContextRef = useRef(null);
@@ -81,6 +82,11 @@ const CallView = ({
           Icon={TbMessageChatbot}
           className='icon-green'
           onClick={() => setIsCallView(false)}
+        />
+        <IconButton
+          Icon={TbShare2}
+          disabled={isPlaying}
+          onClick={() => window.open(`/shared?session_id=${sessionId}`, '_blank') }
         />
       </div>
     </div>

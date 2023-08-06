@@ -105,7 +105,6 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                          language: str):
     try:
         conversation_history = ConversationHistory()
-        session_id = str(uuid.uuid4().hex)
 
         # 0. Receive client platform info (web, mobile, terminal)
         if not platform:

@@ -28,6 +28,7 @@ import useMediaRecorder from './hooks/useMediaRecorder';
 import useSpeechRecognition from './hooks/useSpeechRecognition';
 
 const App = () => {
+  const [sessionId, setSessionId] = useState('');
   const [preferredLanguage, setPreferredLanguage] = useState('English');
   const [selectedDevice, setSelectedDevice] = useState('');
   const [selectedModel, setSelectedModel] = useState('gpt-3.5-turbo-16k');
@@ -133,7 +134,8 @@ const App = () => {
     selectedModel,
     preferredLanguage,
     useSearch,
-    selectedCharacter
+    selectedCharacter,
+    setSessionId,
   );
   const {
     isRecording,

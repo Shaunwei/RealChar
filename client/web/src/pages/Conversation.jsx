@@ -43,6 +43,7 @@ const Conversation = ({
   selectedCharacter,
   messageId,
   token,
+  sessionId,
 }) => {
   const navigate = useNavigate();
 
@@ -102,6 +103,7 @@ const Conversation = ({
           setIsPlaying={setIsPlaying}
           handleDisconnect={handleDisconnect}
           setIsCallView={setIsCallView}
+          sessionId={sessionId}
         />
       </div>
 
@@ -130,6 +132,7 @@ const Conversation = ({
           setPreferredLanguage={setPreferredLanguage}
           messageId={messageId}
           token={token}
+          sessionId={sessionId}
         />
       </div>
     </div>

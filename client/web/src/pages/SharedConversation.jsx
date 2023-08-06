@@ -9,7 +9,7 @@ import { isIP } from 'is-ip';
 import Avatar from '@mui/material/Avatar';
 import AvatarView from '../components/AvatarView';
 
-const SharedConversation = ({}) => {
+const SharedConversation = () => {
   const [sessionId, setSessionId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
@@ -99,9 +99,9 @@ const SharedConversation = ({}) => {
         <div className='main-screen' style={{ display: 'flex' }}>
           <div className='text-screen'>
             <textarea
-              class='chat-window'
+              className='chat-window'
               style={{ width: '50vw', height: '50vh' }}
-              readonly=''
+              readOnly=''
               draggable='false'
             >
               {history

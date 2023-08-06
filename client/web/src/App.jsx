@@ -313,6 +313,7 @@ const App = () => {
                 selectedCharacter={selectedCharacter}
                 messageId={messageId}
                 token={token}
+                sessionId={sessionId}
               />
             }
           />

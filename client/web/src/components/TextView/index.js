@@ -26,6 +26,7 @@ const TextView = ({
   send,
   isPlaying,
   isThinking,
+  isResponding,
   stopAudioPlayback,
   textAreaValue,
   setTextAreaValue,
@@ -197,7 +198,7 @@ const TextView = ({
         />
         <IconButton
           Icon={TbShare2}
-          disabled={isPlaying}
+          disabled={isResponding}
           onClick={() => window.open(`/shared?session_id=${sessionId}`, '_blank') }
         />
       </div>

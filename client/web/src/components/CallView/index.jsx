@@ -19,6 +19,7 @@ import { playAudios } from '../../utils/audioUtils';
 const CallView = ({
   isRecording,
   isPlaying,
+  isResponding,
   audioPlayer,
   handleStopCall,
   handleContinueCall,
@@ -85,7 +86,7 @@ const CallView = ({
         />
         <IconButton
           Icon={TbShare2}
-          disabled={isPlaying}
+          disabled={isResponding}
           onClick={() => window.open(`/shared?session_id=${sessionId}`, '_blank') }
         />
       </div>

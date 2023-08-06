@@ -20,6 +20,7 @@ const Conversation = ({
   isRecording,
   isPlaying,
   isThinking,
+  isResponding,
   audioPlayer,
   handleStopCall,
   handleContinueCall,
@@ -96,6 +97,7 @@ const Conversation = ({
         <CallView
           isRecording={isRecording}
           isPlaying={isPlaying}
+          isResponding={isResponding}
           audioPlayer={audioPlayer}
           handleStopCall={handleStopCall}
           handleContinueCall={handleContinueCall}
@@ -116,6 +118,7 @@ const Conversation = ({
           send={send}
           isPlaying={isPlaying}
           isThinking={isThinking}
+          isResponding={isResponding}
           stopAudioPlayback={stopAudioPlayback}
           textAreaValue={textAreaValue}
           setTextAreaValue={setTextAreaValue}

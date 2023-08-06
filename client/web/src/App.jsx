@@ -38,6 +38,7 @@ const App = () => {
   const [token, setToken] = useState('');
   const [isThinking, setIsThinking] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isResponding, setIsResponding] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [messageInput, setMessageInput] = useState('');
   const [isCallView, setIsCallView] = useState(false);
@@ -88,6 +89,7 @@ const App = () => {
     if (typeof event.data === 'string') {
       const message = event.data;
       if (message === '[end]\n' || message.match(/\[end=([a-zA-Z0-9]+)\]/)) {
+        setIsResponding(false);
         setTextAreaValue(prevState => prevState + '\n\n');
         const messageIdMatches = message.match(/\[end=([a-zA-Z0-9]+)\]/);
         if (messageIdMatches) {
@@ -108,6 +110,7 @@ const App = () => {
         setTextAreaValue(prevState => prevState + '\n\n');
       } else {
         setIsThinking(false);
+        setIsResponding(true);
         setTextAreaValue(prevState => prevState + `${event.data}`);
 
         // if user interrupts the previous response, should be able to play audios of new response
@@ -286,6 +289,7 @@ const App = () => {
                 isRecording={isRecording}
                 isPlaying={isPlaying}
                 isThinking={isThinking}
+                isResponding={isResponding}
                 audioPlayer={audioPlayer}
                 handleStopCall={handleStopCall}
                 handleContinueCall={handleContinueCall}

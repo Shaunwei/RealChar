@@ -101,7 +101,7 @@ const SharedConversation = ({
         history.length > 0
           ? (<div className="main-screen" style={{ display: "flex"}}>
             <div className="text-screen">
-                <textarea class="chat-window" style={{ width: "50vw"}} readonly="" draggable="false">
+                <textarea class="chat-window" style={{ width: "50vw", height: "50vh"}} readonly="" draggable="false">
                     {
                         history.map((message, index) => { 
                             return (

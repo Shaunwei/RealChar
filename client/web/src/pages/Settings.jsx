@@ -32,7 +32,7 @@ const Settings = ({ setSelectedCharacter, isMobile, preferredLanguage, setPrefer
         if (!selectedCharacter) {
           navigate('/');
         }
-      }, [character, navigate]);
+      }, [setSelectedCharacter, character, navigate]);
 
     const handleStartClick = async () => {
         await connect();

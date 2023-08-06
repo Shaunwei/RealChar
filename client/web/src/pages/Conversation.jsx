@@ -41,6 +41,8 @@ const Conversation = ({
   preferredLanguage,
   setPreferredLanguage,
   selectedCharacter,
+  messageId,
+  token,
 }) => {
   const navigate = useNavigate();
 
@@ -125,6 +127,8 @@ return (
             stopRecording={stopRecording}
             preferredLanguage={preferredLanguage}
             setPreferredLanguage={setPreferredLanguage}
+            messageId={messageId}
+            token={token}
           />
         </div>
       </div>

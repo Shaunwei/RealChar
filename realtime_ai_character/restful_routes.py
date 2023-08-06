@@ -35,7 +35,14 @@ async def get_current_user(request: Request):
         if 'Authorization' not in request.headers:
             # Anonymous users.
             return ""
-        token = request.headers.get('Authorization').split("Bearer ")[1]
+        tokens = request.headers.get('Authorization').split("Bearer ")
+        if not tokens or len(tokens) < 2:
+            raise HTTPException(
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid authentication credentials',
+                headers={'WWW-Authenticate': 'Bearer'},
+            )
+        token = tokens[1]
         try:
             # Verify the token against the Firebase Auth API.
             decoded_token = auth.verify_id_token(token)

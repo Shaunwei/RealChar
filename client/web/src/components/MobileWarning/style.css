@@ -1,15 +1,19 @@
 #mobile-warning {
-    color:white;
+  color: white;
 }
-  
+
 #mobile-warning p {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 @media (max-width: 768px) {
-    #mobile-warning { display: block; }
+  #mobile-warning {
+    display: block;
+  }
 }
-  
+
 @media (min-width: 769px) {
-    #mobile-warning { display: none; }
+  #mobile-warning {
+    display: none;
+  }
 }

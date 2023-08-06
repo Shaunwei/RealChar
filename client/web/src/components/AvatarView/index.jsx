@@ -22,7 +22,7 @@ const externalAvatarVoiceService = new ExternalVoiceSourceService();
 export function setupAvatarLipSync(audioContext, audioPlayer) {
   externalAvatarVoiceService.setAudioContextAndSource(
     audioContext,
-    audioPlayer,
+    audioPlayer
   );
   defaultBlendshapesService_2.enableBlendshapes(externalAvatarVoiceService);
 }

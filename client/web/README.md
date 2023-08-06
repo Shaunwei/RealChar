@@ -4,7 +4,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Available Scripts
 
-***Remember to run `npm install` to install dependencies before running other commands.***
+**_Remember to run `npm install` to install dependencies before running other commands._**
 
 In the project directory, you can run:
 
@@ -72,3 +72,9 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Contributor
+
+### `npx prettier --write .`
+
+This command will format the code use the eslint config.

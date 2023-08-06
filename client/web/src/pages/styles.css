@@ -1,13 +1,16 @@
-h2, h4, p {
-    color: white
+h1,
+h2,
+h4,
+p {
+  color: white;
 }
 
 .home {
-	flex-grow: 1;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: 50vw;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 50vw;
 }
 
 .settings {
@@ -19,7 +22,7 @@ h2, h4, p {
 }
 
 .start-btn {
-	padding: 30px;
+  padding: 30px;
 }
 
 .conversation-page {
@@ -30,17 +33,17 @@ h2, h4, p {
 }
 
 .center {
-	text-align: center;
+  text-align: center;
 }
 
 @keyframes pulse {
   0% {
-      transform: scale(1.2);
-      opacity: 0.7;
+    transform: scale(1.2);
+    opacity: 0.7;
   }
   100% {
-      transform: scale(1.5);
-      opacity: 0;
+    transform: scale(1.5);
+    opacity: 0;
   }
 }
 
@@ -50,7 +53,7 @@ h2, h4, p {
 }
 
 .pulsating-avatar::after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: 0;

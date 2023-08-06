@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import Feedback from '../Feedback';
 
 
-const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAreaValue, messageInput, setMessageInput, handleDisconnect, setIsCallView, useSearch, setUseSearch, callActive, startRecording, stopRecording, messageId, token }) => {
+const TextView = ({ selectedCharacter, send, isPlaying, isThinking, stopAudioPlayback, textAreaValue, setTextAreaValue, messageInput, setMessageInput, handleDisconnect, setIsCallView, useSearch, setUseSearch, callActive, startRecording, stopRecording, messageId, token  }) => {
     const navigate = useNavigate();
     const [keyboard, SetKeyboard] = useState(true);
     const chatWindowRef = useRef(null);
@@ -27,6 +27,14 @@ const TextView = ({ send, isPlaying, stopAudioPlayback, textAreaValue, setTextAr
             chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
         }
     }, [textAreaValue]);
+
+    useEffect(() => {
+        if (isThinking && !textAreaValue.endsWith(`\n${selectedCharacter.name} is thinking...`)) {
+            setTextAreaValue(prevState => prevState + `\n${selectedCharacter.name} is thinking...`);
+        } else if (!isThinking && textAreaValue.endsWith(`\n${selectedCharacter.name} is thinking...`)) {
+            setTextAreaValue(prevState => prevState.substring(0, prevState.length - (`\n${selectedCharacter.name} is thinking...`).length));
+        }
+    }, [isThinking, textAreaValue]);
 
     const handlePowerOffClick = () => {
         navigate('/');

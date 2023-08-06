@@ -39,17 +39,6 @@
     color: white; /* white text */
 }
 
-.react-modal-content select {
-        background-color: #3a4877;
-        color: #FFFFFF;
-        border-color: #1B2134;
-        padding: 10px;
-        border-radius: 5px;
-        margin-top: 20px;
-        margin-bottom: 30px;
-}
-
-.react-modal-content select,
 .react-modal-content textarea,
 .react-modal-content button {
     margin-top: 10px;
@@ -58,8 +47,15 @@
 
 .react-modal-content .button-row {
     display: flex;
-
     justify-content: flex-start;
     gap: 10px;
     margin-top: 10px;
+}
+
+.button_container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px; 
+    width: 100%;
+    padding-right: 5%;
 }

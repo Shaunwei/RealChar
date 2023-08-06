@@ -12,16 +12,12 @@ import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import Button from '../Common/Button';
 import './style.css';
 
-Modal.setAppElement('#root'); // replace '#root' with the id of the root div of your app
+Modal.setAppElement('#root');
 
 function Feedback({ messageId, token }) {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [feedback, setFeedback] = useState("");
     const [comment, setComment] = useState("");
-
-    const handleFeedbackChange = (e) => {
-        setFeedback(e.target.value);
-    };
 
     const handleCommentChange = (e) => {
         setComment(e.target.value);
@@ -69,26 +65,26 @@ function Feedback({ messageId, token }) {
     };
 
     return (
-        <div>
-            <FontAwesomeIcon icon={faThumbsUp} style={{ cursor: 'pointer', color: 'LightSkyBlue' }} onClick={() => setModalIsOpen(true)} />
-            <FontAwesomeIcon icon={faThumbsDown} style={{ cursor: 'pointer', color: 'RebeccaPurple' }} onClick={() => setModalIsOpen(true)} />
+        <div className="button_container">
+            <FontAwesomeIcon icon={faThumbsUp} style={{ cursor: 'pointer', stroke: 'lightgray', 'stroke-width': '20px' }} onClick={() => {
+                setModalIsOpen(true);
+                setFeedback("good");
+            }} />
+            <FontAwesomeIcon icon={faThumbsDown} style={{ cursor: 'pointer', stroke: 'lightgray', 'stroke-width': '20px' }} onClick={() => {
+                setModalIsOpen(true);
+                setFeedback("bad");
+            }} />
             <Modal
                 isOpen={modalIsOpen}
                 onRequestClose={() => setModalIsOpen(false)}
                 className="react-modal-content"
                 overlayClassName="react-modal-overlay"
             >
-                <h3>Feedback</h3>
-                <select value={feedback} onChange={handleFeedbackChange}>
-                    <option value="" disabled>Choose a rating</option>
-                    <option value="great">Great</option>
-                    <option value="okay">Okay</option>
-                    <option value="bad">Bad</option>
-                </select>
+                <h3>Provide Feedback</h3>
                 <textarea value={comment} onChange={handleCommentChange} placeholder="Leave a comment (optional)" />
                 <div className="button-row">
-                <Button onClick={handleSubmit} name="Submit feedback" />
-                <Button onClick={() => setModalIsOpen(false)} name="Cancel" />
+                    <Button onClick={handleSubmit} name="Submit" />
+                    <Button onClick={() => setModalIsOpen(false)} name="Cancel" />
                 </div>
             </Modal>
         </div>

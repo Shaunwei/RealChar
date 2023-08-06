@@ -1,6 +1,6 @@
 /**
  * src/App.jsx
- * 
+ *
  * created by Lynchee on 7/14/23
  */
 
@@ -17,6 +17,7 @@ import { signInWithGoogle } from './components/Auth/SignIn';
 import Settings from './pages/Settings';
 import Conversation from './pages/Conversation';
 import Home from './pages/Home';
+import Create from './pages/Create';
 
 // utils
 import auth from './utils/firebase';
@@ -24,16 +25,16 @@ import auth from './utils/firebase';
 // Custom hooks
 import useWebsocket from './hooks/useWebsocket';
 import useMediaRecorder from './hooks/useMediaRecorder';
-import useSpeechRecognition from './hooks/useSpeechRecognition'; 
+import useSpeechRecognition from './hooks/useSpeechRecognition';
 
 const App = () => {
-  const [preferredLanguage, setPreferredLanguage] = useState("English");
-  const [selectedDevice, setSelectedDevice] = useState("");
-  const [selectedModel, setSelectedModel] = useState("gpt-3.5-turbo-16k");
+  const [preferredLanguage, setPreferredLanguage] = useState('English');
+  const [selectedDevice, setSelectedDevice] = useState('');
+  const [selectedModel, setSelectedModel] = useState('gpt-3.5-turbo-16k');
   const [useSearch, setUseSearch] = useState(false);
   const [user, setUser] = useState(null);
   const isLoggedIn = useRef(false);
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [messageInput, setMessageInput] = useState('');
@@ -48,8 +49,7 @@ const App = () => {
   const audioQueue = useRef([]);
   const isConnecting = useRef(false);
   const isConnected = useRef(false);
-  const isMobile = window.innerWidth <= 768; 
-  
+  const isMobile = window.innerWidth <= 768;
 
   useEffect(() => {
     auth.onAuthStateChanged(async user => {
@@ -61,8 +61,8 @@ const App = () => {
       } else {
         isLoggedIn.current = false;
       }
-    })
-  }, [])
+    });
+  }, []);
 
   const stopAudioPlayback = () => {
     if (audioPlayer.current) {
@@ -71,39 +71,41 @@ const App = () => {
     }
     audioQueue.current = [];
     setIsPlaying(false);
-  }
+  };
 
   // Helper functions
-  const handleSocketOnOpen = async (event) => {
-    console.log("successfully connected");
+  const handleSocketOnOpen = async () => {
+    console.log('successfully connected');
     isConnected.current = true;
     await connectMicrophone(selectedDevice);
     initializeSpeechRecognition();
-  }
+  };
 
-  const handleSocketOnMessage = (event) => {
+  const handleSocketOnMessage = event => {
     if (typeof event.data === 'string') {
       const message = event.data;
       if (message === '[end]\n' || message.match(/\[end=([a-zA-Z0-9]+)\]/)) {
-        setTextAreaValue(prevState => prevState + "\n\n");
+        setTextAreaValue(prevState => prevState + '\n\n');
       } else if (message.startsWith('[+]You said: ')) {
         // [+] indicates the transcription is done. stop playing audio
-        let msg = message.split("[+]You said: ");
+        let msg = message.split('[+]You said: ');
         setTextAreaValue(prevState => prevState + `\nYou> ${msg[1]}\n`);
         stopAudioPlayback();
-      } else if (message.startsWith('[=]' || message.match(/\[=([a-zA-Z0-9]+)\]/))) {
+      } else if (
+        message.startsWith('[=]' || message.match(/\[=([a-zA-Z0-9]+)\]/))
+      ) {
         // [=] or [=id] indicates the response is done
-        setTextAreaValue(prevState => prevState + "\n\n");
-      } else if (message.startsWith('Select')) {
+        setTextAreaValue(prevState => prevState + '\n\n');
       } else {
         setTextAreaValue(prevState => prevState + `${event.data}`);
 
         // if user interrupts the previous response, should be able to play audios of new response
         shouldPlayAudio.current = true;
       }
-    } else {  // binary data
+    } else {
+      // binary data
       if (!shouldPlayAudio.current) {
-            console.log("should not play audio");
+        console.log('should not play audio');
         return;
       }
       audioQueue.current.push(event.data);
@@ -111,20 +113,49 @@ const App = () => {
         setIsPlaying(true); // this will trigger playAudios in CallView.
       }
     }
-  }
+  };
 
   // Use custom hooks
-  const { socketRef, send, connectSocket, closeSocket } = useWebsocket(token, handleSocketOnOpen,handleSocketOnMessage, selectedModel, preferredLanguage, useSearch, selectedCharacter);
-  const { isRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder } = useMediaRecorder(isConnected, audioSent, callActive, send, closeSocket);
-  const { startListening, stopListening, closeRecognition, initializeSpeechRecognition } = useSpeechRecognition(callActive, preferredLanguage, shouldPlayAudio, isConnected, audioSent, stopAudioPlayback, send, stopRecording, setTextAreaValue);
+  const { socketRef, send, connectSocket, closeSocket } = useWebsocket(
+    token,
+    handleSocketOnOpen,
+    handleSocketOnMessage,
+    selectedModel,
+    preferredLanguage,
+    useSearch,
+    selectedCharacter
+  );
+  const {
+    isRecording,
+    connectMicrophone,
+    startRecording,
+    stopRecording,
+    closeMediaRecorder,
+  } = useMediaRecorder(isConnected, audioSent, callActive, send, closeSocket);
+  const {
+    startListening,
+    stopListening,
+    closeRecognition,
+    initializeSpeechRecognition,
+  } = useSpeechRecognition(
+    callActive,
+    preferredLanguage,
+    shouldPlayAudio,
+    isConnected,
+    audioSent,
+    stopAudioPlayback,
+    send,
+    stopRecording,
+    setTextAreaValue
+  );
   const connectSocketWithState = () => {
     isConnecting.current = true;
     connectSocket();
-  }
+  };
   const closeSocketWithState = () => {
     isConnecting.current = false;
     closeSocket();
-  }
+  };
   // Handle Button Clicks
   const connect = async () => {
     try {
@@ -134,7 +165,7 @@ const App = () => {
           connectSocketWithState();
         } else {
           signInWithGoogle(isLoggedIn, setToken).then(() => {
-            if(isLoggedIn.current) {
+            if (isLoggedIn.current) {
               connectSocketWithState();
             }
           });
@@ -145,21 +176,21 @@ const App = () => {
     } catch (error) {
       console.error('Error during sign in or connect:', error);
     }
-  }
+  };
 
   const handleStopCall = () => {
     stopRecording();
     stopListening();
     stopAudioPlayback();
     callActive.current = false;
-  }
+  };
 
   const handleContinueCall = () => {
     startRecording();
     startListening();
     shouldPlayAudio.current = true;
     callActive.current = true;
-  }
+  };
 
   const handleDisconnect = () => {
     if (socketRef && socketRef.current) {
@@ -170,49 +201,59 @@ const App = () => {
       callActive.current = false;
       shouldPlayAudio.current = false;
       audioSent.current = false;
-      
+
       // reset everything to initial states
       setSelectedCharacter(null);
       setCharacterConfirmed(false);
       setCharacterGroups([]);
       setIsCallView(false);
-      setTextAreaValue("");
-      setSelectedModel("gpt-3.5-turbo-16k");
-      setPreferredLanguage("English");
+      setTextAreaValue('');
+      setSelectedModel('gpt-3.5-turbo-16k');
+      setPreferredLanguage('English');
 
       // close web socket connection
       closeSocketWithState();
       isConnected.current = false;
     }
-  }
+  };
 
   return (
     <Router>
-      <div className="app">
-        <Header user={user} isLoggedIn={isLoggedIn} setToken={setToken} handleDisconnect={handleDisconnect} />
+      <div className='app'>
+        <Header
+          user={user}
+          isLoggedIn={isLoggedIn}
+          setToken={setToken}
+          handleDisconnect={handleDisconnect}
+        />
 
         <Routes>
-            <Route path="/" element={
+          <Route
+            path='/'
+            element={
               <Home
                 isMobile={isMobile}
-                selectedCharacter={selectedCharacter} 
-                setSelectedCharacter={setSelectedCharacter} 
+                selectedCharacter={selectedCharacter}
+                setSelectedCharacter={setSelectedCharacter}
                 isPlaying={isPlaying}
                 characterGroups={characterGroups}
                 setCharacterGroups={setCharacterGroups}
                 setCharacterConfirmed={setCharacterConfirmed}
                 characterConfirmed={characterConfirmed}
-              />} 
-            />
-            <Route path="/settings" element={
-              <Settings 
+              />
+            }
+          />
+          <Route
+            path='/settings'
+            element={
+              <Settings
                 setSelectedCharacter={setSelectedCharacter}
                 isMobile={isMobile}
-                preferredLanguage={preferredLanguage} 
-                setPreferredLanguage={setPreferredLanguage} 
-                selectedDevice={selectedDevice} 
-                setSelectedDevice={setSelectedDevice} 
-                selectedModel={selectedModel} 
+                preferredLanguage={preferredLanguage}
+                setPreferredLanguage={setPreferredLanguage}
+                selectedDevice={selectedDevice}
+                setSelectedDevice={setSelectedDevice}
+                selectedModel={selectedModel}
                 setSelectedModel={setSelectedModel}
                 useSearch={useSearch}
                 setUseSearch={setUseSearch}
@@ -220,44 +261,49 @@ const App = () => {
                 connect={connect}
                 setIsCallView={setIsCallView}
                 shouldPlayAudio={shouldPlayAudio}
-              />} 
-            />
-            <Route path="/conversation" element={
-              <Conversation 
+              />
+            }
+          />
+          <Route
+            path='/conversation'
+            element={
+              <Conversation
                 isConnecting={isConnecting}
                 isConnected={isConnected}
-                isCallView={isCallView} 
-                isRecording={isRecording} 
-                isPlaying={isPlaying} 
-                audioPlayer={audioPlayer} 
-                handleStopCall={handleStopCall} 
-                handleContinueCall={handleContinueCall} 
-                audioQueue={audioQueue} 
-                setIsPlaying={setIsPlaying} 
-                handleDisconnect={handleDisconnect} 
-                setIsCallView={setIsCallView} 
-                send={send} 
-                stopAudioPlayback={stopAudioPlayback} 
-                textAreaValue={textAreaValue} 
-                setTextAreaValue={setTextAreaValue} 
-                messageInput={messageInput} 
-                setMessageInput={setMessageInput} 
-                useSearch={useSearch} 
-                setUseSearch={setUseSearch} 
-                callActive={callActive} 
-                startRecording={startRecording} 
-                stopRecording={stopRecording} 
-                preferredLanguage={preferredLanguage} 
+                isCallView={isCallView}
+                isRecording={isRecording}
+                isPlaying={isPlaying}
+                audioPlayer={audioPlayer}
+                handleStopCall={handleStopCall}
+                handleContinueCall={handleContinueCall}
+                audioQueue={audioQueue}
+                setIsPlaying={setIsPlaying}
+                handleDisconnect={handleDisconnect}
+                setIsCallView={setIsCallView}
+                send={send}
+                stopAudioPlayback={stopAudioPlayback}
+                textAreaValue={textAreaValue}
+                setTextAreaValue={setTextAreaValue}
+                messageInput={messageInput}
+                setMessageInput={setMessageInput}
+                useSearch={useSearch}
+                setUseSearch={setUseSearch}
+                callActive={callActive}
+                startRecording={startRecording}
+                stopRecording={stopRecording}
+                preferredLanguage={preferredLanguage}
                 setPreferredLanguage={setPreferredLanguage}
                 selectedCharacter={selectedCharacter}
-              />} 
-            />
+              />
+            }
+          />
+          <Route path='/create' element={<Create />} />
         </Routes>
 
         <Footer />
       </div>
     </Router>
   );
-}
+};
 
 export default App;

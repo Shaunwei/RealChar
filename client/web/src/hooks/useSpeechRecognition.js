@@ -1,14 +1,24 @@
 /**
  * src/hooks/useSpeechRecognition.js
  * Initialize speech recognition. Start and stop listening.
- * 
+ *
  * created by Lynchee on 7/16/23
  */
 
 import { useRef, useEffect } from 'react';
 import { languageCode } from './languageCode';
 
-const useSpeechRecognition = (callActive, preferredLanguage, shouldPlayAudio, isConnected, audioSent, stopAudioPlayback, send, stopRecording, setTextAreaValue) => {
+const useSpeechRecognition = (
+  callActive,
+  preferredLanguage,
+  shouldPlayAudio,
+  isConnected,
+  audioSent,
+  stopAudioPlayback,
+  send,
+  stopRecording,
+  setTextAreaValue
+) => {
   const recognition = useRef(null);
   const onresultTimeout = useRef(null);
   const onspeechTimeout = useRef(null);
@@ -17,7 +27,8 @@ const useSpeechRecognition = (callActive, preferredLanguage, shouldPlayAudio, is
 
   // initialize speech recognition
   const initializeSpeechRecognition = () => {
-    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    window.SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
     recognition.current = new window.SpeechRecognition();
     recognition.current.interimResults = true;
     recognition.current.maxAlternatives = 1;
@@ -32,7 +43,7 @@ const useSpeechRecognition = (callActive, preferredLanguage, shouldPlayAudio, is
       }
     };
 
-    recognition.current.onresult = (event) => {
+    recognition.current.onresult = event => {
       // Clear the timeout if a result is received
       clearTimeout(onresultTimeout.current);
       clearTimeout(onspeechTimeout.current);
@@ -58,7 +69,7 @@ const useSpeechRecognition = (callActive, preferredLanguage, shouldPlayAudio, is
         console.log(`TIMEOUT: interim transcript: {${transcript}}`);
         send(`[&]${transcript}`);
       }, 500); // 500 ms
-  
+
       onspeechTimeout.current = setTimeout(() => {
         stopListening();
       }, 2000); // 2 seconds
@@ -83,21 +94,21 @@ const useSpeechRecognition = (callActive, preferredLanguage, shouldPlayAudio, is
 
   const startListening = () => {
     if (!recognition.current) return;
-    console.log("start listening");
+    console.log('start listening');
     recognition.current.start();
-  }
+  };
 
   const stopListening = () => {
     if (!recognition.current) return;
-    console.log("stop listening");
+    console.log('stop listening');
     recognition.current.stop();
-  }
+  };
 
   const closeRecognition = () => {
     stopListening();
     recognition.current = null;
     confidence.current = 0;
-  }
+  };
 
   return {
     startListening,

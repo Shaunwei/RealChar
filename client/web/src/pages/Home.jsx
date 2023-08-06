@@ -1,26 +1,26 @@
 /**
  * src/pages/Home.jsx
- * 
+ *
  * created by Lynchee on 7/28/23
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import {isIP} from 'is-ip';
+import { isIP } from 'is-ip';
 import { useNavigate } from 'react-router-dom';
 import lz from 'lz-string';
 
 import Characters from '../components/Characters';
 import Button from '@mui/material/Button';
 
-const Home = ({ 
+const Home = ({
   isMobile,
-  selectedCharacter, 
-  setSelectedCharacter, 
+  selectedCharacter,
+  setSelectedCharacter,
   isPlaying,
   characterGroups,
   setCharacterGroups,
   setCharacterConfirmed,
-  characterConfirmed
+  characterConfirmed,
 }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -38,8 +38,8 @@ const Home = ({
     var newPort = '8000';
 
     if (!(hostname === 'localhost' || isIP(hostname))) {
-        hostname = 'api.' + hostname;
-        newPort = window.location.protocol === "https:" ? 443 : 80;
+      hostname = 'api.' + hostname;
+      newPort = window.location.protocol === 'https:' ? 443 : 80;
     }
     var newHost = hostname + ':' + newPort + '/characters';
     const url = scheme + '//' + newHost;
@@ -49,37 +49,42 @@ const Home = ({
       .then(data => {
         setCharacterGroups(data);
         setLoading(false);
-      }).catch(err => {
+      })
+      .catch(err => {
         setLoading(false);
         console.error(err);
       });
-  }, [])
+  }, []);
 
   const handleNextClick = () => {
     setCharacterConfirmed(true);
-    const compressedCharacter = lz.compressToEncodedURIComponent(JSON.stringify(selectedCharacter));
-    navigate("/settings?character=" + compressedCharacter);
-  }
+    const compressedCharacter = lz.compressToEncodedURIComponent(
+      JSON.stringify(selectedCharacter)
+    );
+    navigate('/settings?character=' + compressedCharacter);
+  };
 
   return (
-    <div className="home">
-      { loading ? (<h2>Loading...</h2>) : (
+    <div className='home'>
+      {loading ? (
+        <h2>Loading...</h2>
+      ) : (
         <>
-          <p className="header">Choose Your Partner</p>
-  
-          <Characters 
-              isMobile={isMobile}
-              characterGroups={characterGroups} 
-              selectedCharacter={selectedCharacter} 
-              setSelectedCharacter={setSelectedCharacter} 
-              isPlaying={isPlaying} 
-              characterConfirmed={characterConfirmed} 
+          <p className='header'>Choose Your Partner</p>
+
+          <Characters
+            isMobile={isMobile}
+            characterGroups={characterGroups}
+            selectedCharacter={selectedCharacter}
+            setSelectedCharacter={setSelectedCharacter}
+            isPlaying={isPlaying}
+            characterConfirmed={characterConfirmed}
           />
 
           <Button
-            variant="contained"
-            onClick={handleNextClick} 
-            fullWidth 
+            variant='contained'
+            onClick={handleNextClick}
+            fullWidth
             size='large'
             disabled={!selectedCharacter}
             sx={{
@@ -87,14 +92,15 @@ const Home = ({
                 backgroundColor: '#BEC5D9',
                 color: '#636A84',
               },
-              textTransform: 'none'
+              textTransform: 'none',
             }}
           >
-              Next
+            Next
           </Button>
-          </>)}
-      </div>
-  )
+        </>
+      )}
+    </div>
+  );
 };
 
 export default Home;

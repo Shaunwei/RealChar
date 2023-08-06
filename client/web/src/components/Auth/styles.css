@@ -1,42 +1,49 @@
 .auth-btn {
-  transition: background-color .3s, box-shadow .3s;
-  
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
+
   padding: 5px 8px;
   border: none;
   border-radius: 8px;
-  
+
   color: #757575;
   font-size: 14px;
   font-weight: 500;
-  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 
   &:hover {
-    box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.9), 0 2px 4px rgba(255, 255, 255, 0.7);
+    box-shadow:
+      0 -1px 0 rgba(255, 255, 255, 0.9),
+      0 2px 4px rgba(255, 255, 255, 0.7);
     cursor: pointer;
   }
-  
+
   &:active {
     background-color: #eeeeee;
   }
-  
+
   &:focus {
     outline: none;
-    box-shadow: 
-      0 -1px 0 rgba(0, 0, 0, .04),
-      0 2px 4px rgba(0, 0, 0, .25),
+    box-shadow:
+      0 -1px 0 rgba(0, 0, 0, 0.04),
+      0 2px 4px rgba(0, 0, 0, 0.25),
       0 0 0 3px #c8dafc;
   }
-  
+
   &:disabled {
     filter: grayscale(100%);
     background-color: #ebebeb;
-    box-shadow: 0 -1px 0 rgba(0, 0, 0, .04), 0 1px 1px rgba(0, 0, 0, .25);
+    box-shadow:
+      0 -1px 0 rgba(0, 0, 0, 0.04),
+      0 1px 1px rgba(0, 0, 0, 0.25);
     cursor: not-allowed;
   }
 }
 
 .menu-paper {
-  background-color: #1E2643 !important;
+  background-color: #1e2643 !important;
 }
 
 .menu-text {
@@ -44,11 +51,11 @@
   font-size: 14;
 }
 /* these are the navbar , if you want to change color for the nav its ".nextui-navbar-container" */
-.nextui-navbar-container{
+.nextui-navbar-container {
   background: var(--ion-color-primary) !important;
 }
 
-.nextui-navbar-container{
+.nextui-navbar-container {
   border-radius: 0;
   border-bottom-right-radius: 1rem;
   border-bottom-left-radius: 1rem;
@@ -57,21 +64,21 @@
 }
 
 .nextui-dropdown-menu {
-  background-color: #1E2643 ;
-  color: white ;
+  background-color: #1e2643;
+  color: white;
   font-size: 14;
 }
 
-.usericon:hover{
+.usericon:hover {
   cursor: pointer;
 }
-.nextui-dropdown-item-content{
+.nextui-dropdown-item-content {
   font-weight: 600;
 }
 
-
-.dropdown-item ,.dropdown-logout {
-  background-color: #1E2643 !important ;
+.dropdown-item,
+.dropdown-logout {
+  background-color: #1e2643 !important ;
 }
 
 .dropdown-item:hover {

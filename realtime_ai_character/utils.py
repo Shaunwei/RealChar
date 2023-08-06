@@ -1,5 +1,5 @@
 from dataclasses import field
-from typing import List
+from typing import List, Optional
 
 from langchain.schema import AIMessage, BaseMessage, HumanMessage, SystemMessage
 from pydantic.dataclasses import dataclass
@@ -15,10 +15,11 @@ class Character:
     source: str = ''
     voice_id: str = ''
     author_name: str = ''
-    author_id: str= ''
-    avatar_id: str = ''
+    author_id: str = ''
+    avatar_id: Optional[str] = ''
     visibility: str = ''
-    tts: str = ''
+    tts: Optional[str] = ''
+    data: Optional[dict] = None
 
 
 @dataclass

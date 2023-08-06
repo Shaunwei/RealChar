@@ -18,6 +18,7 @@ import Settings from './pages/Settings';
 import Conversation from './pages/Conversation';
 import SharedConversation from './pages/SharedConversation';
 import Home from './pages/Home';
+import CharCreate from './pages/CharCreate';
 
 // utils
 import auth from './utils/firebase';
@@ -323,6 +324,7 @@ const App = () => {
             }
           />
           <Route path='/shared' element={<SharedConversation />} />
+          <Route path='/create' element={<CharCreate token={token} />} />
         </Routes>
 
         <Footer />

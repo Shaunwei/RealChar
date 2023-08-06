@@ -70,6 +70,12 @@ async def index(request: Request, user=Depends(get_current_user)):
 
 @router.get("/characters")
 async def characters(user=Depends(get_current_user)):
+    def get_image_url(character):
+        gcs_path = 'https://storage.googleapis.com/assistly/static/realchar'
+        if character.data and 'avatar_filename' in character.data:
+            return f'{gcs_path}/user_upload/{character.author_name}/{character.data["avatar_filename"]}'
+        else:
+            return f'{gcs_path}/{character.character_id}.jpg'
     uid = user['uid'] if user else None
     from realtime_ai_character.character_catalog.catalog_manager import CatalogManager
     catalog: CatalogManager = CatalogManager.get_instance()
@@ -79,12 +85,11 @@ async def characters(user=Depends(get_current_user)):
         "source": character.source,
         "voice_id": character.voice_id,
         "author_name": character.author_name,
-        "image_url":
-        f'https://storage.googleapis.com/assistly/static/realchar/{character.character_id}.jpg',
+        "image_url": get_image_url(character),
         "avatar_id": character.avatar_id,
         "tts": character.tts,
     } for character in catalog.characters.values()
-            if character.author_id == uid or character.visibility == 'public']
+        if character.author_id == uid or character.visibility != 'private']
 
 
 @router.get("/configs")

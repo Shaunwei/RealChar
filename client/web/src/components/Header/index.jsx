@@ -14,15 +14,17 @@ import { Navbar } from '@nextui-org/react';
 
 const Header = ({ user, isLoggedIn, setToken, handleDisconnect }) => (
   <Navbar id='navbar' variant='floating'>
-    <Navbar.Brand
-      css={{
-        '@xs': {
-          w: '12%',
-        },
-      }}
-    >
-      <img src={logo} alt='Logo' />
-    </Navbar.Brand>
+    <a href='/'>
+      <Navbar.Brand
+        css={{
+          '@xs': {
+            w: '12%',
+          },
+        }}
+      >
+        <img src={logo} alt='Logo' />
+      </Navbar.Brand>
+    </a>
 
     <Navbar.Content
       id='navbar'

@@ -51,7 +51,6 @@ const SignOut = ({ isLoggedIn, user, handleDisconnect }) => {
           {/* This is what triggers user info dropdown */}
           <Dropdown.Trigger>
             <Avatar
-              bordered
               className='usericon'
               color='warning'
               size='md'

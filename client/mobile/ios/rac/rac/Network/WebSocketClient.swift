@@ -12,6 +12,8 @@ import SwiftUI
 
 //let serverUrl: URL = URL(string: "http://127.0.0.1:8000/")!
 let serverUrl: URL = URL(string: "https://api.realchar.ai/")!
+//let webUrl: URL = URL(string: "http://127.0.0.1:3000/")!
+let webUrl: URL = URL(string: "https://www.realchar.ai/")!
 
 enum WebSocketError: Error {
     case disconnected
@@ -19,11 +21,12 @@ enum WebSocketError: Error {
 
 protocol WebSocket: NSObject, ObservableObject {
     var status: WebSocketConnectionStatus { get set }
+    var lastUsedSessionId: String? { get }
     var onConnectionChanged: ((WebSocketConnectionStatus) -> Void)? { get set }
     var onStringReceived: ((String) -> Void)? { get set }
     var onDataReceived: ((Data) -> Void)? { get set }
     var onErrorReceived: ((Error) -> Void)? { get set }
-    func connectSession(languageOption: LanguageOption, llmOption: LlmOption, useSearch: Bool, characterId: String, userId: String?, token: String?)
+    func connectSession(languageOption: LanguageOption, llmOption: LlmOption, useSearch: Bool, characterId: String, token: String?)
     func reconnectSession()
     func closeSession()
     func send(message: String)
@@ -41,6 +44,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
             onConnectionChanged?(status)
         }
     }
+    var lastUsedSessionId: String? = nil
 
     private lazy var session = URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue())
 
@@ -48,7 +52,6 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
     private var lastUsedLlmOption: LlmOption = .gpt35
     private var lastUsedUseSearch: Bool = false
     private var lastUsedCharacterId: String = ""
-    private var lastUsedUserId: String? = nil
     private var lastUsedToken: String? = nil
     private var lastConnectingDate: Date? = nil
 
@@ -85,13 +88,11 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
         super.init()
     }
 
-    func connectSession(languageOption: LanguageOption, llmOption: LlmOption, useSearch: Bool, characterId: String, userId: String?, token: String?) {
+    func connectSession(languageOption: LanguageOption, llmOption: LlmOption, useSearch: Bool, characterId: String, token: String?) {
         lastUsedLanguageOption = languageOption
         lastUsedLlmOption = llmOption
         lastUsedUseSearch = useSearch
         lastUsedCharacterId = characterId
-        let sessionId = UUID().uuidString.replacingOccurrences(of: "-", with: "")
-        lastUsedUserId = sessionId
         lastUsedToken = token
         connectWebSocket(session: session,
                          serverUrl: serverUrl,
@@ -99,7 +100,6 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
                          languageOption: languageOption,
                          llmOption: llmOption,
                          useSearch: useSearch,
-                         sessionId: sessionId,
                          token: token)
     }
 
@@ -110,7 +110,6 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
                          languageOption: lastUsedLanguageOption,
                          llmOption: lastUsedLlmOption,
                          useSearch: lastUsedUseSearch,
-                         sessionId: lastUsedUserId ?? UUID().uuidString.replacingOccurrences(of: "-", with: ""),
                          token: lastUsedToken)
     }
 
@@ -120,12 +119,13 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
                                   languageOption: LanguageOption,
                                   llmOption: LlmOption,
                                   useSearch: Bool,
-                                  sessionId: String,
                                   token: String?) {
         pendingStrMessages.removeAll()
         pendingData.removeAll()
         status = .connecting
         lastConnectingDate = Date()
+        let sessionId = UUID().uuidString.replacingOccurrences(of: "-", with: "")
+        lastUsedSessionId = sessionId
 
         let wsScheme = serverUrl.scheme == "https" ? "wss" : "ws"
         let wsPath = "\(wsScheme)://\(serverUrl.host ?? "")\(serverUrl.port.flatMap { ":\($0)" } ?? "")/ws/\(sessionId)?platform=mobile&use_search=\(useSearch)&language=\(languageOption.rawValue)&character_id=\(characterId)&llm_model=\(llmOption.rawValue)&token=\(token ?? "")"
@@ -291,6 +291,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
 class MockWebSocket: NSObject, WebSocket {
 
     var status: WebSocketConnectionStatus = .disconnected
+    var lastUsedSessionId: String? = nil
 
     var onConnectionChanged: ((WebSocketConnectionStatus) -> Void)?
 
@@ -300,7 +301,7 @@ class MockWebSocket: NSObject, WebSocket {
 
     var onErrorReceived: ((Error) -> Void)?
 
-    func connectSession(languageOption: LanguageOption, llmOption: LlmOption, useSearch: Bool, characterId: String, userId: String?, token: String?) {
+    func connectSession(languageOption: LanguageOption, llmOption: LlmOption, useSearch: Bool, characterId: String, token: String?) {
     }
 
     func reconnectSession() {

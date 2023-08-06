@@ -17,7 +17,8 @@ const useWebsocket = (
   selectedModel,
   preferredLanguage,
   useSearch,
-  selectedCharacter
+  selectedCharacter,
+  setSessionId
 ) => {
   const socketRef = useRef(null);
 
@@ -25,6 +26,7 @@ const useWebsocket = (
   const connectSocket = useCallback(() => {
     if (!socketRef.current) {
       const sessionId = uuidv4().replace(/-/g, '');
+      setSessionId(sessionId);
       const ws_scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
       // Get the current host value
       var currentHost = window.location.host;
@@ -65,7 +67,7 @@ const useWebsocket = (
         console.log('Socket closed');
       };
     }
-  }, [onOpen, onMessage]);
+  }, [setSessionId, onOpen, onMessage]);
 
   // send message to server
   const send = data => {

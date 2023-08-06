@@ -91,7 +91,6 @@ struct WelcomeView: View {
                                                              llmOption: preferenceSettings.llmOption,
                                                              useSearch: preferenceSettings.useSearch,
                                                              characterId: characterId,
-                                                             userId: userSettings.userId,
                                                              token: userSettings.userToken)
                                 }
                             }
@@ -162,7 +161,6 @@ struct WelcomeView: View {
                                          llmOption: preferenceSettings.llmOption,
                                          useSearch: preferenceSettings.useSearch,
                                          characterId: characterId,
-                                         userId: userSettings.userId,
                                          token: userSettings.userToken)
                 onWebSocketReconnected()
             }

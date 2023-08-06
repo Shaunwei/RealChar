@@ -20,6 +20,7 @@ const Conversation = ({
   isRecording,
   isPlaying,
   isThinking,
+  isResponding,
   audioPlayer,
   handleStopCall,
   handleContinueCall,
@@ -43,6 +44,7 @@ const Conversation = ({
   selectedCharacter,
   messageId,
   token,
+  sessionId,
 }) => {
   const navigate = useNavigate();
 
@@ -95,6 +97,7 @@ const Conversation = ({
         <CallView
           isRecording={isRecording}
           isPlaying={isPlaying}
+          isResponding={isResponding}
           audioPlayer={audioPlayer}
           handleStopCall={handleStopCall}
           handleContinueCall={handleContinueCall}
@@ -102,6 +105,7 @@ const Conversation = ({
           setIsPlaying={setIsPlaying}
           handleDisconnect={handleDisconnect}
           setIsCallView={setIsCallView}
+          sessionId={sessionId}
         />
       </div>
 
@@ -114,6 +118,7 @@ const Conversation = ({
           send={send}
           isPlaying={isPlaying}
           isThinking={isThinking}
+          isResponding={isResponding}
           stopAudioPlayback={stopAudioPlayback}
           textAreaValue={textAreaValue}
           setTextAreaValue={setTextAreaValue}
@@ -130,6 +135,7 @@ const Conversation = ({
           setPreferredLanguage={setPreferredLanguage}
           messageId={messageId}
           token={token}
+          sessionId={sessionId}
         />
       </div>
     </div>

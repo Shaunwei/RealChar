@@ -31,7 +31,7 @@ struct InteractiveView: View {
     @Binding var messages: [ChatMessage]
     @State var mode: InteractiveMode = .voice
     @State var voiceState: VoiceState = .idle(streamingEnded: true)
-    @State var streamingEnded = true
+    @Binding var streamingEnded: Bool
     @StateObject var audioPlayer = AudioPlayer()
     @State var engine: CHHapticEngine?
 
@@ -300,6 +300,7 @@ struct InteractiveView_Previews: PreviewProvider {
                         openMic: false,
                         hapticFeedback: false,
                         onExit: {},
-                        messages: .constant([]))
+                        messages: .constant([]),
+                        streamingEnded: .constant(true))
     }
 }

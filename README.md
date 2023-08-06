@@ -216,6 +216,7 @@ ELEVEN_LABS_API_KEY=<api key>
     - (Optional) mobile client: open `client/mobile/ios/rac/rac.xcodeproj/project.pbxproj` in Xcode and run the app
 - **Step 8**. Select one character to talk to, then start talking
 
+Note if you want to remotely connect to a RealChar server, SSL set up is required to establish the audio connection. 
 
 ## (Optional) 📀 Installation via Docker
 <details><summary>👇click me</summary>

@@ -65,7 +65,7 @@ enum VoiceState: Equatable {
         case .idle(let streamingEnded):
             return streamingEnded ? .listeningToUser : self
         case .listeningToUser:
-            return .characterSpeaking(characterImageUrl: characterImageUrl, thinking: true)
+            return .idle(streamingEnded: streamingEnded)
         case .characterSpeaking:
             return .idle(streamingEnded: streamingEnded)
         }

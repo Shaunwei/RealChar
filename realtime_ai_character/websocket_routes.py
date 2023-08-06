@@ -224,7 +224,13 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                                 text_to_speech, websocket, tts_event,
                                 character.voice_id)))
                     continue
-                # 1. Send message to LLM
+
+                # 1. Send "thinking" status over websocket
+                if use_search:
+                    await manager.send_message(message=f'[thinking]\n',
+                                               websocket=websocket)
+
+                # 2. Send message to LLM
                 response = await llm.achat(
                     history=build_history(conversation_history),
                     user_input=msg_data,
@@ -236,16 +242,16 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     character=character,
                     useSearch=use_search)
 
-                # 2. Send response to client
+                # 3. Send response to client
                 message_id = str(uuid.uuid4().hex)[:16]
                 await manager.send_message(message=f'[end={message_id}]\n',
                                            websocket=websocket)
 
-                # 3. Update conversation history
+                # 4. Update conversation history
                 conversation_history.user.append(msg_data)
                 conversation_history.ai.append(response)
                 token_buffer.clear()
-                # 4. Persist interaction in the database
+                # 5. Persist interaction in the database
                 tools = "search" if use_search else ""
                 Interaction(user_id=user_id,
                             session_id=session_id,
@@ -301,7 +307,12 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                                 language=language,
                                 llm_config=llm.get_config()).save(db)
 
-                # 4. Send message to LLM
+                # 4. Send "thinking" status over websocket
+                if use_search:
+                    await manager.send_message(message=f'[thinking]\n',
+                                               websocket=websocket)
+
+                # 5. Send message to LLM
                 tts_task = asyncio.create_task(
                     llm.achat(history=build_history(conversation_history),
                               user_input=transcript,

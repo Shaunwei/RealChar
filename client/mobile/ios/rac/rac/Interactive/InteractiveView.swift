@@ -151,6 +151,13 @@ struct InteractiveView: View {
                     return
                 }
 
+                if message == "[thinking]\n" {
+                    if mode == .voice {
+                        voiceState = .characterSpeaking(characterImageUrl: character.imageUrl, thinking: true)
+                    }
+                    return
+                }
+
                 if messages.last?.role == .assistant {
                     if messages.last?.content != Constants.serverError {
                         messages[messages.count - 1].content += message

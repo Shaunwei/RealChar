@@ -5,7 +5,7 @@
  * created by Lynchee on 7/16/23
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import './style.css';
 import { useNavigate } from 'react-router-dom';
 import { TbPhoneCall } from 'react-icons/tb';
@@ -24,14 +24,16 @@ const CallView = ({
   handleStopCall,
   handleContinueCall,
   audioQueue,
+  audioContextRef,
+  audioSourceNodeRef,
   setIsPlaying,
   handleDisconnect,
   setIsCallView,
   sessionId,
   handleFirstInteractionAudio,
 }) => {
+  const { initialize, setInitialize } = useState(true);
   const navigate = useNavigate();
-  const audioContextRef = useRef(null);
 
   useEffect(() => {
     if (isPlaying) {
@@ -40,7 +42,10 @@ const CallView = ({
         audioPlayer,
         audioQueue,
         setIsPlaying,
-        handleFirstInteractionAudio
+        handleFirstInteractionAudio,
+        audioSourceNodeRef,
+        initialize,
+        setInitialize
       );
     }
   }, [isPlaying]);

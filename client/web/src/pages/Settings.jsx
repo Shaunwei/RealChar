@@ -38,6 +38,8 @@ const Settings = ({
   setQuivrApiKey,
   quivrBrainId,
   setQuivrBrainId,
+  useEchoCancellation,
+  setUseEchoCancellation,
   send,
   connect,
   setIsCallView,
@@ -87,7 +89,9 @@ const Settings = ({
         '&selectedModel=' +
         selectedModel +
         '&useSearchParam=' +
-        useSearch
+        useSearch +
+        '&useEchoCancellationParam=' +
+        useEchoCancellation
     );
   };
 
@@ -128,6 +132,8 @@ const Settings = ({
         setQuivrApiKey={setQuivrApiKey}
         quivrBrainId={quivrBrainId}
         setQuivrBrainId={setQuivrBrainId}
+        useEchoCancellation={useEchoCancellation}
+        setUseEchoCancellation={setUseEchoCancellation}
         send={send}
       />
 

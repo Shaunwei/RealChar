@@ -4,6 +4,7 @@ alembic
 anthropic
 chromadb>=0.4.2
 click
+EbookLib
 elevenlabs
 fastapi
 ffmpeg
@@ -11,6 +12,7 @@ firebase-admin
 google-cloud-speech
 google-cloud-storage
 google-search-results
+html2text
 httpx
 ipywidgets
 langchain>=0.0.240
@@ -20,6 +22,7 @@ psycopg2-binary
 pyaudio
 pydantic
 pydub
+pypdf
 python-dotenv
 python-multipart
 replicate

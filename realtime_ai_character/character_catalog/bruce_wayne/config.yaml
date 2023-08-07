@@ -26,4 +26,4 @@ user: | # you don't need to change this for most cases
 text_to_speech_use: ELEVEN_LABS
 # default 11labs male: ErXwobaYiN019PkySvjV
 # default 11labs female: EXAVITQu4vr4xnSDxMaL
-voice_id: EXAVITQu4vr4xnSDxMaL
+voice_id: ErXwobaYiN019PkySvjV

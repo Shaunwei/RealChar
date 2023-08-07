@@ -43,6 +43,7 @@ const App = () => {
   const [messageInput, setMessageInput] = useState('');
   const [isCallView, setIsCallView] = useState(false);
   const [textAreaValue, setTextAreaValue] = useState('');
+  const [isTextStreaming, setIsTextStreaming] = useState(false);
   const [characterGroups, setCharacterGroups] = useState([]);
   const [characterConfirmed, setCharacterConfirmed] = useState(false);
   const [messageId, setMessageId] = useState('');
@@ -88,7 +89,9 @@ const App = () => {
   const handleSocketOnMessage = event => {
     if (typeof event.data === 'string') {
       const message = event.data;
+      if (!isTextStreaming) setIsTextStreaming(true);
       if (message === '[end]\n' || message.match(/\[end=([a-zA-Z0-9]+)\]/)) {
+        setIsTextStreaming(false);
         setIsResponding(false);
         setTextAreaValue(prevState => prevState + '\n\n');
         const messageIdMatches = message.match(/\[end=([a-zA-Z0-9]+)\]/);
@@ -313,6 +316,7 @@ const App = () => {
                 selectedCharacter={selectedCharacter}
                 messageId={messageId}
                 token={token}
+                isTextStreaming={isTextStreaming}
                 sessionId={sessionId}
               />
             }

@@ -11,6 +11,7 @@ import {
   defaultAvatarLoaders,
   // defaultBlendshapesService,
   defaultBlendshapesService_2,
+  defaultBlendshapesService_3,
 } from '@avatechai/avatars/default-loaders';
 import { ExternalVoiceSourceService } from '@avatechai/avatars/voice';
 
@@ -25,15 +26,19 @@ export function setupAvatarLipSync(audioContext, audioPlayer) {
     audioPlayer
   );
   defaultBlendshapesService_2.enableBlendshapes(externalAvatarVoiceService);
+  defaultBlendshapesService_3.enableBlendshapes(externalAvatarVoiceService);
 }
 
-const AvatarView = ({ avatarId }) => {
+const AvatarView = ({ avatarId, emotion }) => {
   const { avatarDisplay } = useAvatar({
     avatarId: avatarId,
-
+    currentEmotion: emotion,
     // Loader + Plugins
     avatarLoaders: defaultAvatarLoaders,
-    blendshapesService: defaultBlendshapesService_2,
+    blendshapesService:
+      avatarId == 'a69d8102-0285-47d6-bdf5-12d903272732'
+        ? defaultBlendshapesService_3
+        : defaultBlendshapesService_2,
 
     audioService: externalAvatarVoiceService,
 

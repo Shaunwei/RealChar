@@ -43,8 +43,8 @@ const CommunicationMethod = ({ commMethod, setCommMethod }) => {
         </CustomTooltip>
       </div>
       <Grid container spacing={2} sx={{ marginBottom: 5 }}>
-        {communication.map(method => (
-          <Grid item xs={6}>
+        {communication.map((method, index) => (
+          <Grid item xs={6} key={index}>
             <Button
               value={method}
               variant='outlined'

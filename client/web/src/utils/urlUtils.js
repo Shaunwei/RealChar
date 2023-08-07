@@ -5,7 +5,6 @@
  * created by pycui on 08/07/23
  */
 
-// define a function getHostName
 export const getHostName = () => {
     var currentHost = window.location.host;
     var parts = currentHost.split(':');

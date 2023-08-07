@@ -38,8 +38,9 @@ const Footer = () => (
       </a>
     </div>
     <p className='copyright'>
-      Copyright © 2023 RealChar. All rights reserved. Any AI character's
-      statements are fictional and don't represent actual beliefs or opinions.
+      Copyright © 2023 RealChar. All rights reserved. Any AI character&apos;s
+      statements are fictional and don&apos;t represent actual beliefs or
+      opinions.
     </p>
   </footer>
 );

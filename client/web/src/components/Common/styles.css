@@ -1,9 +1,11 @@
 .button {
-  font-family: "Prompt", Helvetica;
+  font-family: 'Prompt', Helvetica;
   font-size: 1rem;
   border-color: #6785d3;
   color: #fff;
-  box-shadow: 0 0 10px 0 #6785d3 inset, 0 0 10px 4px #6785d3;
+  box-shadow:
+    0 0 10px 0 #6785d3 inset,
+    0 0 10px 4px #6785d3;
   transition: all 150ms ease-in-out;
   cursor: pointer;
   background-color: transparent;
@@ -13,7 +15,9 @@
 }
 
 .button:hover {
-  box-shadow: 0 0 40px 40px #6785d3 inset, 0 0 0 0 #6785d3;
+  box-shadow:
+    0 0 40px 40px #6785d3 inset,
+    0 0 0 0 #6785d3;
   outline: 0;
 }
 
@@ -28,7 +32,9 @@
   color: white;
   width: 1.3em;
   height: 1.3em;
-  transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+  transition:
+    transform 0.3s ease-in-out,
+    filter 0.3s ease-in-out;
 }
 
 .icon-button {
@@ -41,7 +47,9 @@
   height: 40px;
   width: 40px;
   cursor: pointer;
-  transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
+  transition:
+    transform 0.3s ease-in-out,
+    background-color 0.3s ease-in-out;
 }
 
 .default {
@@ -77,4 +85,9 @@
 
 .icon-button:hover .icon-instance-node-small {
   filter: brightness(2);
+}
+
+.icon-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

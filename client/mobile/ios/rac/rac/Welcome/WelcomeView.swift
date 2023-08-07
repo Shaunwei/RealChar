@@ -11,8 +11,10 @@ struct WelcomeView: View {
     @EnvironmentObject private var userSettings: UserSettings
     @EnvironmentObject private var preferenceSettings: PreferenceSettings
 
+    @StateObject var welcomeViewModel = WelcomeViewModel()
+
     let webSocket: any WebSocket
-    @StateObject var webSocketConnectionStatusObserver = WebSocketConnectionStatusObserver(delay: .seconds(0.5))
+    @StateObject var webSocketConnectionStatusObserver = WebSocketConnectionStatusObserver(delay: .seconds(1))
     @State var invalidAttempts = 0
     enum Tab {
         case about, config, settings
@@ -57,14 +59,21 @@ struct WelcomeView: View {
                 case .config:
                     ConfigView(options: options,
                                hapticFeedback: preferenceSettings.hapticFeedback,
-                               loaded: .init(get: { webSocketConnectionStatusObserver.status == .connected }, set: { _ in }),
                                selectedOption: $character,
                                openMic: $openMic,
                                onConfirmConfig: { option in
                         if webSocketConnectionStatusObserver.status == .connected {
+                            simpleSuccess()
                             onConfirmConfig(option)
                         } else {
+                            simpleError()
                             invalidAttempts += 1
+                        }
+                    }, loadCharacters: {
+                        do {
+                            options = try await welcomeViewModel.loadCharacters()
+                        } catch {
+                            print(error)
                         }
                     })
                         .padding(.horizontal, 48)
@@ -76,8 +85,14 @@ struct WelcomeView: View {
                 if webSocketConnectionStatusObserver.debouncedStatus != .connected {
                     VStack {
                         Button {
-                            if webSocketConnectionStatusObserver.status == .disconnected {
-                                webSocket.connectSession(llmOption: preferenceSettings.llmOption, userId: userSettings.userId, token: userSettings.userToken)
+                            if webSocketConnectionStatusObserver.status == .disconnected, let characterId = character?.id {
+                                userSettings.checkUserLoggedIn(useCache: false) { _ in
+                                    webSocket.connectSession(languageOption: preferenceSettings.languageOption,
+                                                             llmOption: preferenceSettings.llmOption,
+                                                             useSearch: preferenceSettings.useSearch,
+                                                             characterId: characterId,
+                                                             token: userSettings.userToken)
+                                }
                             }
                         } label: {
                             Text(webSocketConnectionStatusObserver.debouncedStatus == .disconnected ? "Failed to connect to server, tap to retry" : "Connecting to server...")
@@ -87,6 +102,7 @@ struct WelcomeView: View {
                                 .padding()
                                 .frame(width: geometry.size.width, height: 44)
                                 .background(webSocketConnectionStatusObserver.debouncedStatus == .disconnected ? .red : .orange)
+                                .padding(.top, 20)
                         }
                     }
                 }
@@ -97,42 +113,70 @@ struct WelcomeView: View {
             webSocket.onConnectionChanged = { status in
                 self.webSocketConnectionStatusObserver.update(status: status)
             }
-            webSocket.onCharacterOptionsReceived = { options in
-                self.options = options
+            Task {
+                do {
+                    options = try await welcomeViewModel.loadCharacters()
+                } catch {
+                    print(error)
+                }
             }
         }
         .onChange(of: character) { newValue in
-            if webSocketConnectionStatusObserver.status == .connected && webSocket.isInteractiveMode {
-                reconnectWebSocket()
+            if let characterId = newValue?.id {
+                reconnectWebSocket(characterId: characterId)
+            }
+        }
+        .onChange(of: preferenceSettings.useSearch) { newValue in
+            if let characterId = character?.id {
+                reconnectWebSocket(characterId: characterId)
             }
         }
         .onChange(of: preferenceSettings.llmOption) { newValue in
-            if userSettings.isLoggedIn {
-                reconnectWebSocket()
+            if userSettings.isLoggedIn, let characterId = character?.id {
+                reconnectWebSocket(characterId: characterId)
+            }
+        }
+        .onChange(of: preferenceSettings.languageOption) { newValue in
+            if let characterId = character?.id {
+                reconnectWebSocket(characterId: characterId)
             }
         }
         .onChange(of: userSettings.isLoggedIn) { newValue in
-            reconnectWebSocket()
+            if let characterId = character?.id {
+                reconnectWebSocket(characterId: characterId)
+            }
         }
     }
 
-    private func reconnectWebSocket() {
+    private func reconnectWebSocket(characterId: String) {
         webSocketReconnectTimer?.invalidate()
         webSocketReconnectTimer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { _ in
             webSocket.status = .disconnected
-            webSocket.isInteractiveMode = false
             webSocket.closeSession()
             webSocket.onConnectionChanged = { status in
                 self.webSocketConnectionStatusObserver.update(status: webSocket.status)
             }
-            webSocket.onCharacterOptionsReceived = { options in
-                self.options = options
+            userSettings.checkUserLoggedIn() { _ in
+                webSocket.connectSession(languageOption: preferenceSettings.languageOption,
+                                         llmOption: preferenceSettings.llmOption,
+                                         useSearch: preferenceSettings.useSearch,
+                                         characterId: characterId,
+                                         token: userSettings.userToken)
+                onWebSocketReconnected()
             }
-            webSocket.connectSession(llmOption: preferenceSettings.llmOption,
-                                     userId: userSettings.userId,
-                                     token: userSettings.userToken)
-            onWebSocketReconnected()
         }
+    }
+
+    private func simpleSuccess() {
+        guard preferenceSettings.hapticFeedback else { return }
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+    }
+
+    private func simpleError() {
+        guard preferenceSettings.hapticFeedback else { return }
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.error)
     }
 }
 
@@ -141,9 +185,25 @@ struct WelcomeView_Previews: PreviewProvider {
         WelcomeView(webSocket: MockWebSocket(),
                     tab: .constant(.about),
                     character: .constant(nil),
-                    options: .constant([.init(id: 0, name: "Mythical god", description: "Rogue", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!),
-                              .init(id: 1, name: "Anime hero", description: "Noble", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!),
-                              .init(id: 2, name: "Realtime AI", description: "Kind", imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!)]),
+                    options: .constant([
+                        .init(id: "god",
+                              name: "Mythical god",
+                              description: "Rogue",
+                              imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/loki.png")!,
+                              authorName: "",
+                              source: "default"),
+                        .init(id: "hero",
+                              name: "Anime hero",
+                              description: "Noble",
+                              imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/raiden.png")!,
+                              authorName: "",
+                              source: "default"),
+                        .init(id: "ai",
+                              name: "Realtime AI",
+                              description: "Kind",
+                              imageUrl: URL(string: "https://storage.googleapis.com/assistly/static/realchar/ai_helper.png")!,
+                              authorName: "",
+                              source: "default")]),
                     openMic: .constant(false),
                     onConfirmConfig: { _ in },
                     onWebSocketReconnected: { }

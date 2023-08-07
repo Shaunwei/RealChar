@@ -10,6 +10,8 @@ fastapi
 ffmpeg
 firebase-admin
 google-cloud-speech
+google-cloud-storage
+google-search-results
 html2text
 httpx
 ipywidgets
@@ -22,6 +24,7 @@ pydantic
 pydub
 pypdf
 python-dotenv
+python-multipart
 replicate
 simpleaudio
 soundfile
@@ -30,4 +33,4 @@ sqlalchemy
 typing
 uvicorn
 websockets
-firebase_admin
+google-auth

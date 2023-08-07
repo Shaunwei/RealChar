@@ -1,0 +1,39 @@
+name: Push Kubernetes Frontend Prod Deployment
+
+on:
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: docker.io/shaunly/real_char_frontend
+  K8S_DEPLOYMENT_NAME: react-deployment
+
+jobs:
+  docker-push:
+    runs-on: self-hosted
+
+    steps:
+    - name: Docker login
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+    - name: Docker push
+      run: |
+        docker pull ${{ env.IMAGE_NAME }}:latest
+        docker tag ${{ env.IMAGE_NAME }}:latest ${{ env.IMAGE_NAME }}:prod
+        docker push ${{ env.IMAGE_NAME }}:prod
+
+  k8s-deployment:
+    needs: [docker-push]
+    runs-on: self-hosted
+    steps:
+    - name: Set up Kubectl
+      uses: azure/setup-kubectl@v1
+      id: install
+
+    - name: Deploy to Kubernetes
+      run: |
+        echo "${{ secrets.KUBECONFIG }}" | base64 --decode > ./kubeconfig.yaml
+        export KUBECONFIG=./kubeconfig.yaml
+        kubectl rollout restart deployment ${{ env.K8S_DEPLOYMENT_NAME }}

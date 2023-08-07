@@ -1,7 +1,7 @@
 /**
  * src/components/MediaDevices/index.jsx
  * generate a list of media devices.
- * 
+ *
  * created by Lynchee on 7/16/23
  */
 
@@ -13,10 +13,13 @@ const MediaDevices = ({ selectedDevice, setSelectedDevice }) => {
 
   // get media devices from browser.
   useEffect(() => {
-    navigator.mediaDevices.enumerateDevices()
+    navigator.mediaDevices
+      .enumerateDevices()
       .then(devices => {
-        const audioInputDevices = devices.filter(device => device.kind === 'audioinput');
-        
+        const audioInputDevices = devices.filter(
+          device => device.kind === 'audioinput'
+        );
+
         if (audioInputDevices.length === 0) {
           console.log('No audio input devices found');
         } else {
@@ -26,28 +29,27 @@ const MediaDevices = ({ selectedDevice, setSelectedDevice }) => {
       .catch(err => console.log('An error occurred: ' + err));
   }, []);
 
-  const handleDeviceChange = (event) => {
+  const handleDeviceChange = event => {
     setSelectedDevice(event.target.value);
   };
 
   return (
-    <div className="devices-container">
-      <label className="audio-device-label" htmlFor="audio-device-selection">Select an audio input device:</label>
-      <div className="select-dropdown">
-        <select
-            id="audio-device-selection"
-            value={selectedDevice} 
-            onChange={handleDeviceChange}
-        >
-            {devices.map((device, index) => (
-              <option key={device.deviceId} value={device.deviceId}>
-                  {device.label || `Microphone ${index + 1}`}
-              </option>
-            ))}
-        </select>
-      </div>
+    <div className='devices-container'>
+      <label>Microphone</label>
+      <select
+        id='audio-device-selection'
+        value={selectedDevice}
+        onChange={handleDeviceChange}
+        className='select'
+      >
+        {devices.map((device, index) => (
+          <option key={device.deviceId} value={device.deviceId}>
+            {device.label || `Microphone ${index + 1}`}
+          </option>
+        ))}
+      </select>
     </div>
   );
-}
+};
 
 export default MediaDevices;

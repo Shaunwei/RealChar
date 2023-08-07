@@ -10,6 +10,11 @@ git clone https://github.com/<your username>/RealChar.git
 cd RealChar
 git remote add upstream https://github.com/Shaunwei/RealChar.git
 ```
+4. Install `pre-commit` and set up the `pre-commit` hooks for the repo:
+```bash
+pip install pre-commit
+pre-commit install
+```
 
 # Making Changes
 Before making changes, ensure that you're working with the most recent version of the code:

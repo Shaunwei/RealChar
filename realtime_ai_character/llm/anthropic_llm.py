@@ -1,4 +1,3 @@
-import os
 from typing import List
 
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -6,7 +5,7 @@ from langchain.chat_models import ChatAnthropic
 from langchain.schema import BaseMessage, HumanMessage
 
 from realtime_ai_character.database.chroma import get_chroma
-from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, AsyncCallbackTextHandler, LLM
+from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, AsyncCallbackTextHandler, LLM, SearchAgent
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Character
 
@@ -20,7 +19,16 @@ class AnthropicLlm(LLM):
             temperature=0.5,
             streaming=True
         )
+        self.config = {
+            "model": model,
+            "temperature": 0.5,
+            "streaming": True
+        }
         self.db = get_chroma()
+        self.search_agent = SearchAgent()
+
+    def get_config(self):
+        return self.config
 
     async def achat(self,
                     history: List[BaseMessage],
@@ -28,9 +36,13 @@ class AnthropicLlm(LLM):
                     user_input_template: str,
                     callback: AsyncCallbackTextHandler,
                     audioCallback: AsyncCallbackAudioHandler,
-                    character: Character) -> str:
+                    character: Character,
+                    useSearch: bool=False) -> str:
         # 1. Generate context
         context = self._generate_context(user_input, character)
+        # Get search result if enabled
+        if useSearch:
+            context += self.search_agent.search(user_input)
 
         # 2. Add user input to history
         history.append(HumanMessage(content=user_input_template.format(

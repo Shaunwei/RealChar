@@ -12,12 +12,12 @@ struct RootView: View {
     @EnvironmentObject private var preferenceSettings: PreferenceSettings
 
     @State var interactive = false
-    @State var welcomeTab: WelcomeView.Tab = .about
+    @State var welcomeTab: WelcomeView.Tab = .config
     @State var character: CharacterOption? = nil
     @State var options: [CharacterOption] = []
-    @State var shouldSendCharacter: Bool = true
     @State var messages: [ChatMessage] = []
     @State var openMic: Bool = false
+    @State var streamingEnded = true
 
     let webSocket: any WebSocket
 
@@ -29,15 +29,14 @@ struct RootView: View {
                                     character: character,
                                     openMic: openMic,
                                     hapticFeedback: preferenceSettings.hapticFeedback,
-                                    shouldSendCharacter: $shouldSendCharacter,
                                     onExit: {
                         welcomeTab = .about
-                        self.character = nil
                         withAnimation {
                             interactive.toggle()
                         }
                     },
-                                    messages: $messages)
+                                    messages: $messages,
+                                    streamingEnded: $streamingEnded)
                     .transition(.moveAndFade2)
                 } else {
                     WelcomeView(webSocket: webSocket,
@@ -53,7 +52,6 @@ struct RootView: View {
                     },
                                 onWebSocketReconnected: {
                         messages = []
-                        shouldSendCharacter = true
                     })
                     .transition(.moveAndFade)
                 }
@@ -65,18 +63,36 @@ struct RootView: View {
                             .preferredColorScheme(.dark)
                     }
 
-                    ToolbarItem(placement: .navigationBarTrailing) {
+                    ToolbarItem(placement: .navigationBarLeading) {
                         Button {
                             withAnimation {
+                                welcomeTab = .settings
                                 interactive.toggle()
                             }
                         } label: {
                             Image("menu")
                                 .tint(.white)
                                 .padding(12)
-                                .padding(.trailing, 20)
+                                .padding(.horizontal, 20)
                         }
+#if os(xrOS)
+                        .buttonBorderShape(.circle)
+#else
+                        .buttonBorderShape(.roundedRectangle(radius: 30))
+#endif
+                    }
 
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        ShareLink(item: webUrl.appending(path: "shared").appending(queryItems: [.init(name: "session_id", value: webSocket.lastUsedSessionId ?? "")]))
+                            .tint(.white)
+                            .padding(12)
+                            .padding(.horizontal, 20)
+                            .disabled(messages.count <= 2 || !streamingEnded)
+#if os(xrOS)
+                            .buttonBorderShape(.circle)
+#else
+                            .buttonBorderShape(.roundedRectangle(radius: 30))
+#endif
                     }
                 } else {
                     ToolbarItemGroup(placement: .navigation) {
@@ -91,9 +107,6 @@ struct RootView: View {
         .onAppear {
             userSettings.checkUserLoggedIn() { isUserLoggedIn in
                 preferenceSettings.loadSettings(isUserLoggedIn: isUserLoggedIn)
-                if !isUserLoggedIn {
-                    webSocket.connectSession(llmOption: preferenceSettings.llmOption, userId: nil, token: nil)
-                }
             }
         }
         .onDisappear {

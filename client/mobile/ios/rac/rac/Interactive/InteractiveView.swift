@@ -14,6 +14,7 @@ enum InteractiveMode {
 }
 
 struct InteractiveView: View {
+    @EnvironmentObject private var preferenceSettings: PreferenceSettings
 
     struct Constants {
         static let realOrange500: Color = Color(red: 0.95, green: 0.29, blue: 0.16)
@@ -26,12 +27,11 @@ struct InteractiveView: View {
     let character: CharacterOption
     let openMic: Bool
     let hapticFeedback: Bool
-    @Binding var shouldSendCharacter: Bool
     let onExit: () -> Void
     @Binding var messages: [ChatMessage]
     @State var mode: InteractiveMode = .voice
     @State var voiceState: VoiceState = .idle(streamingEnded: true)
-    @State var streamingEnded = true
+    @Binding var streamingEnded: Bool
     @StateObject var audioPlayer = AudioPlayer()
     @State var engine: CHHapticEngine?
 
@@ -53,8 +53,10 @@ struct InteractiveView: View {
                     .background(Constants.realBlack)
             case .voice:
                 VoiceMessageView(openMic: openMic,
+                                 character: character,
                                  messages: $messages,
                                  state: $voiceState,
+                                 speechRecognizer: SpeechRecognizer(locale: preferenceSettings.languageOption.locale),
                                  onUpdateUserMessage: { message in
                     if messages.last?.role == .user {
                         messages[messages.count - 1].content = message
@@ -70,7 +72,7 @@ struct InteractiveView: View {
                     simpleSuccess()
                 },
                                  onTapVoiceButton: {
-                    voiceState = voiceState.next(streamingEnded: streamingEnded)
+                    voiceState = voiceState.next(characterImageUrl: character.imageUrl, streamingEnded: streamingEnded)
                     if case .idle = voiceState {
                         audioPlayer.pauseAudio()
                     }
@@ -133,15 +135,26 @@ struct InteractiveView: View {
         .background(Constants.realBlack)
         .onAppear {
             prepareHaptics()
+            webSocket.send(message: "[!USE_SEARCH]\(preferenceSettings.useSearch)")
             webSocket.onStringReceived = { message in
                 guard !(openMic && voiceState == .listeningToUser) else { return }
+                let messageNewPattern = "\\[end=([a-zA-Z0-9]+)\\]"
+                let messageNewRegex = try! NSRegularExpression(pattern: messageNewPattern, options: [])
+                let messageNewMatches = messageNewRegex.matches(in: message, options: [], range: NSRange(location: 0, length: message.utf16.count))
 
-                if message == "[end]\n" {
+                if message == "[end]\n" || !messageNewMatches.isEmpty {
                     if case .idle(let streamingEnded) = voiceState, !streamingEnded {
                         voiceState = .idle(streamingEnded: true)
                     }
                     streamingEnded = true
                     simpleSuccess()
+                    return
+                }
+
+                if message == "[thinking]\n" {
+                    if mode == .voice {
+                        voiceState = .characterSpeaking(characterImageUrl: character.imageUrl, thinking: true)
+                    }
                     return
                 }
 
@@ -154,7 +167,7 @@ struct InteractiveView: View {
                     lightHapticFeedback()
                 } else {
                     if mode == .voice {
-                        voiceState = .characterSpeaking(characterImageUrl: character.imageUrl)
+                        voiceState = .characterSpeaking(characterImageUrl: character.imageUrl, thinking: false)
                     }
                     streamingEnded = false
                     messages.append(ChatMessage(id: UUID(), role: .assistant, content: message))
@@ -172,15 +185,13 @@ struct InteractiveView: View {
                     simpleError()
                 }
             }
-            webSocket.isInteractiveMode = true
-            if shouldSendCharacter {
-                shouldSendCharacter = false
-                webSocket.send(message: String(character.id))
-            }
         }
         .onDisappear {
             voiceState = .idle(streamingEnded: true)
             audioPlayer.pauseAudio()
+            webSocket.onStringReceived = nil
+            webSocket.onDataReceived = nil
+            webSocket.onErrorReceived = nil
         }
         .onChange(of: voiceState) { newValue in
             if newValue == .listeningToUser {
@@ -195,7 +206,7 @@ struct InteractiveView: View {
                 audioPlayer.pauseAudio()
             case .voice:
                 if voiceState == .idle(streamingEnded: false) {
-                    voiceState = .characterSpeaking(characterImageUrl: character.imageUrl)
+                    voiceState = .characterSpeaking(characterImageUrl: character.imageUrl, thinking: false)
                 }
             }
         }
@@ -280,11 +291,16 @@ struct InteractiveView: View {
 struct InteractiveView_Previews: PreviewProvider {
     static var previews: some View {
         InteractiveView(webSocket: MockWebSocket(),
-                        character: .init(id: 0, name: "Name", description: "Description", imageUrl: nil),
+                        character: .init(id: "id",
+                                         name: "Name",
+                                         description: "Description",
+                                         imageUrl: nil,
+                                         authorName: "",
+                                         source: "default"),
                         openMic: false,
                         hapticFeedback: false,
-                        shouldSendCharacter: .constant(true),
                         onExit: {},
-                        messages: .constant([]))
+                        messages: .constant([]),
+                        streamingEnded: .constant(true))
     }
 }

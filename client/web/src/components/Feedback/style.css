@@ -1,0 +1,61 @@
+.react-modal-overlay {
+  background-color: rgba(0, 0, 0, 0.75);
+  /* optional, provides a darker background outside the modal */
+  position: fixed;
+  /* This ensures the overlay covers the whole screen */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  /* This ensures the overlay is above all other elements */
+}
+
+.react-modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgb(50, 10, 131);
+  color: white;
+  max-width: 50%;
+  max-height: 60%;
+  width: 100%;
+  padding: 20px;
+  overflow: auto;
+  position: relative;
+  z-index: 1000;
+  /* This ensures the modal is above all other elements */
+  border-radius: 20px;
+}
+
+.react-modal-content textarea {
+  width: 100%;
+  margin-top: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white; /* white text */
+}
+
+.react-modal-content textarea,
+.react-modal-content button {
+  margin-top: 10px;
+  display: block;
+}
+
+.react-modal-content .button-row {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.button_container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  width: 100%;
+  padding-right: 5%;
+}

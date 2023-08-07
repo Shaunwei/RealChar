@@ -1,185 +1,73 @@
 /**
  * src/App.jsx
- * 
+ *
  * created by Lynchee on 7/14/23
  */
 
 import React, { useState, useRef, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 
 // Components
 import Header from './components/Header';
 import Footer from './components/Footer';
-import MobileWarning from './components/MobileWarning';
-import MediaDevices from './components/MediaDevices';
-import TextView from './components/TextView';
-import CallView from './components/CallView';
-import Button from './components/Common/Button';
-import { Characters, createCharacterGroups } from './components/Characters';
-import { sendTokenToServer, signInWithGoogle } from './components/Auth/SignIn';
-import Models from './components/Models';
+import { signInWithGoogle } from './components/Auth/SignIn';
 
-// Custom hooks
-import useWebsocket from './hooks/useWebsocket';
-import useMediaRecorder from './hooks/useMediaRecorder';
-import useSpeechRecognition from './hooks/useSpeechRecognition'; 
+// Pages
+import Settings from './pages/Settings';
+import Conversation from './pages/Conversation';
+import SharedConversation from './pages/SharedConversation';
+import Home from './pages/Home';
 
 // utils
 import auth from './utils/firebase';
 
+// Custom hooks
+import useWebsocket from './hooks/useWebsocket';
+import useMediaRecorder from './hooks/useMediaRecorder';
+import useSpeechRecognition from './hooks/useSpeechRecognition';
+
 const App = () => {
-  const isMobile = window.innerWidth <= 768; 
-  const [headerText, setHeaderText] = useState("");
-  const [selectedDevice, setSelectedDevice] = useState("");
-  const [characterConfirmed, setCharacterConfirmed] = useState(false);
-  const [isCallView, setIsCallView] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [selectedCharacter, setSelectedCharacter] = useState(null);
-  const [characterGroups, setCharacterGroups] = useState([]);
-  const [textAreaValue, setTextAreaValue] = useState('');
-  const [messageInput, setMessageInput] = useState('');
-  const [selectedModel, setSelectedModel] = useState("gpt-3.5-turbo-16k");
+  const [sessionId, setSessionId] = useState('');
+  const [preferredLanguage, setPreferredLanguage] = useState('English');
+  const [selectedDevice, setSelectedDevice] = useState('');
+  const [selectedModel, setSelectedModel] = useState('gpt-3.5-turbo-16k');
+  const [useSearch, setUseSearch] = useState(false);
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState("");
-  
-  const onresultTimeout = useRef(null);
-  const onspeechTimeout = useRef(null);
+  const isLoggedIn = useRef(false);
+  const [token, setToken] = useState('');
+  const [isThinking, setIsThinking] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isResponding, setIsResponding] = useState(false);
+  const [selectedCharacter, setSelectedCharacter] = useState(null);
+  const [messageInput, setMessageInput] = useState('');
+  const [isCallView, setIsCallView] = useState(false);
+  const [textAreaValue, setTextAreaValue] = useState('');
+  const [isTextStreaming, setIsTextStreaming] = useState(false);
+  const [characterGroups, setCharacterGroups] = useState([]);
+  const [characterConfirmed, setCharacterConfirmed] = useState(false);
+  const [messageId, setMessageId] = useState('');
   const audioPlayer = useRef(null);
   const callActive = useRef(false);
   const audioSent = useRef(false);
   const shouldPlayAudio = useRef(false);
-  const finalTranscripts = useRef([]);
   const audioQueue = useRef([]);
-  const chunks = useRef([]);
-  const confidence = useRef(0);
+  const isConnecting = useRef(false);
   const isConnected = useRef(false);
-  const isLoggedIn = useRef(false);
-
+  const isMobile = window.innerWidth <= 768;
 
   useEffect(() => {
     auth.onAuthStateChanged(async user => {
       setUser(user);
       if (user) {
         isLoggedIn.current = true;
-        let curToken = auth.currentUser.getIdToken()
+        let curToken = await auth.currentUser.getIdToken();
         setToken(curToken);
       } else {
         isLoggedIn.current = false;
       }
-    })
-  }, [])
-
-  // Helper functions
-  const handleSocketOnOpen = (event) => {
-    console.log("successfully connected");
-    isConnected.current = true;
-    connectMicrophone(selectedDevice);
-    initializeSpeechRecognition();
-    send("web"); // select web as the platform
-    setHeaderText("Select a character");
-  }
-
-  const handleSocketOnMessage = (event) => {
-    if (typeof event.data === 'string') {
-      const message = event.data;
-      if (message === '[end]\n') {
-        setTextAreaValue(prevState => prevState + "\n\n");
-        
-      } else if (message.startsWith('[+]')) {
-        // [+] indicates the transcription is done. stop playing audio
-        setTextAreaValue(prevState => prevState + `\nYou> ${message}\n`);
-        stopAudioPlayback();
-      } else if (message.startsWith('[=]')) {
-        // [=] indicates the response is done
-        setTextAreaValue(prevState => prevState + "\n\n");
-        
-      } else if (message.startsWith('Select')) {
-        setCharacterGroups(createCharacterGroups(message));
-      } else {
-        setTextAreaValue(prevState => prevState + `${event.data}`);
-
-        // if user interrupts the previous response, should be able to play audios of new response
-        shouldPlayAudio.current = true;
-      }
-    } else {  // binary data
-      if (!shouldPlayAudio.current) {
-            console.log("should not play audio");
-        return;
-      }
-      audioQueue.current.push(event.data);
-      if (audioQueue.current.length === 1) {
-        setIsPlaying(true); // this will trigger playAudios in CallView.
-      }
-    }
-  }
-
-  const handleRecorderOnDataAvailable = (event) => {
-    chunks.current.push(event.data);
-  }
-
-  const handleRecorderOnStop = () => {
-    let blob = new Blob(chunks.current, {'type' : 'audio/webm'});
-    chunks.current = [];
-
-    // TODO: debug download video
-
-    if (isConnected.current) {
-      if (!audioSent.current && callActive.current) {
-        send(blob);
-      }
-      audioSent.current = false;
-      if (callActive.current) {
-        startRecording();
-      }
-    }
-  }
-
-  const handleRecognitionOnResult = (event) => {
-    // Clear the timeout if a result is received
-    clearTimeout(onresultTimeout.current);
-    clearTimeout(onspeechTimeout.current);
-    stopAudioPlayback();
-    const result = event.results[event.results.length - 1];
-    const transcriptObj = result[0];
-    const transcript = transcriptObj.transcript;
-    const ifFinal = result.isFinal;
-    if (ifFinal) {
-      console.log(`final transcript: {${transcript}}`);
-      finalTranscripts.current.push(transcript);
-      confidence.current = transcriptObj.confidence;
-      send(`[&]${transcript}`);
-    } else {
-      console.log(`interim transcript: {${transcript}}`);
-    }
-    // Set a new timeout
-    onresultTimeout.current = setTimeout(() => {
-      if (ifFinal) {
-        return;
-      }
-      // If the timeout is reached, send the interim transcript
-      console.log(`TIMEOUT: interim transcript: {${transcript}}`);
-      send(`[&]${transcript}`);
-    }, 500); // 500 ms
-
-    onspeechTimeout.current = setTimeout(() => {
-      stopListening();
-    }, 2000); // 2 seconds
-  };
-
-  const handleRecognitionOnSpeechEnd = () => {
-    if (isConnected.current) {
-      audioSent.current = true;
-      stopRecording();
-      if (confidence.current > 0.8 && finalTranscripts.current.length > 0) {
-        let message = finalTranscripts.current.join(' ');
-        send(message);
-        setTextAreaValue(prevState => prevState + `\nYou> ${message}\n`);
-        
-        shouldPlayAudio.current = true;
-      }
-    }
-    finalTranscripts.current = [];
-  };
+    });
+  }, []);
 
   const stopAudioPlayback = () => {
     if (audioPlayer.current) {
@@ -188,80 +76,139 @@ const App = () => {
     }
     audioQueue.current = [];
     setIsPlaying(false);
-  }
+  };
+
+  // Helper functions
+  const handleSocketOnOpen = async event => {
+    console.log('successfully connected');
+    isConnected.current = true;
+    await connectMicrophone(selectedDevice);
+    initializeSpeechRecognition();
+  };
+
+  const handleSocketOnMessage = event => {
+    if (typeof event.data === 'string') {
+      const message = event.data;
+      if (!isTextStreaming) setIsTextStreaming(true);
+      if (message === '[end]\n' || message.match(/\[end=([a-zA-Z0-9]+)\]/)) {
+        setIsTextStreaming(false);
+        setIsResponding(false);
+        setTextAreaValue(prevState => prevState + '\n\n');
+        const messageIdMatches = message.match(/\[end=([a-zA-Z0-9]+)\]/);
+        if (messageIdMatches) {
+          const messageId = messageIdMatches[1];
+          setMessageId(messageId);
+        }
+      } else if (message === '[thinking]\n') {
+        setIsThinking(true);
+      } else if (message.startsWith('[+]You said: ')) {
+        // [+] indicates the transcription is done. stop playing audio
+        let msg = message.split('[+]You said: ');
+        setTextAreaValue(prevState => prevState + `\nYou> ${msg[1]}\n`);
+        stopAudioPlayback();
+      } else if (
+        message.startsWith('[=]' || message.match(/\[=([a-zA-Z0-9]+)\]/))
+      ) {
+        // [=] or [=id] indicates the response is done
+        setTextAreaValue(prevState => prevState + '\n\n');
+      } else {
+        setIsThinking(false);
+        setIsResponding(true);
+        setTextAreaValue(prevState => prevState + `${event.data}`);
+
+        // if user interrupts the previous response, should be able to play audios of new response
+        shouldPlayAudio.current = true;
+      }
+    } else {
+      // binary data
+      if (!shouldPlayAudio.current) {
+        console.log('should not play audio');
+        return;
+      }
+      audioQueue.current.push(event.data);
+      if (audioQueue.current.length === 1) {
+        setIsPlaying(true); // this will trigger playAudios in CallView.
+      }
+    }
+  };
 
   // Use custom hooks
-  const { socketRef, send, connectSocket, closeSocket } = useWebsocket(token, handleSocketOnOpen,handleSocketOnMessage, selectedModel);
-  const { isRecording, connectMicrophone, startRecording, stopRecording, closeMediaRecorder } = useMediaRecorder(handleRecorderOnDataAvailable, handleRecorderOnStop);
-  const { startListening, stopListening, closeRecognition, initializeSpeechRecognition } = useSpeechRecognition(handleRecognitionOnResult, handleRecognitionOnSpeechEnd, callActive);
-  
+  const { socketRef, send, connectSocket, closeSocket } = useWebsocket(
+    token,
+    handleSocketOnOpen,
+    handleSocketOnMessage,
+    selectedModel,
+    preferredLanguage,
+    useSearch,
+    selectedCharacter,
+    setSessionId
+  );
+  const {
+    isRecording,
+    connectMicrophone,
+    startRecording,
+    stopRecording,
+    closeMediaRecorder,
+  } = useMediaRecorder(isConnected, audioSent, callActive, send, closeSocket);
+  const {
+    startListening,
+    stopListening,
+    closeRecognition,
+    initializeSpeechRecognition,
+  } = useSpeechRecognition(
+    callActive,
+    preferredLanguage,
+    shouldPlayAudio,
+    isConnected,
+    audioSent,
+    stopAudioPlayback,
+    send,
+    stopRecording,
+    setTextAreaValue
+  );
+  const connectSocketWithState = () => {
+    isConnecting.current = true;
+    connectSocket();
+  };
+  const closeSocketWithState = () => {
+    isConnecting.current = false;
+    closeSocket();
+  };
   // Handle Button Clicks
-  const handleConnectButtonClick = async () => {
+  const connect = async () => {
     try {
       // requires login if user wants to use gpt4 or claude.
       if (selectedModel !== 'gpt-3.5-turbo-16k') {
         if (isLoggedIn.current) {
-          await sendTokenToServer(token);
-          connectSocket();
+          connectSocketWithState();
         } else {
           signInWithGoogle(isLoggedIn, setToken).then(() => {
-            if(isLoggedIn.current) {
-              connectSocket();
+            if (isLoggedIn.current) {
+              connectSocketWithState();
             }
           });
         }
       } else {
-        connectSocket();
+        connectSocketWithState();
       }
     } catch (error) {
       console.error('Error during sign in or connect:', error);
     }
-  }
-
-  const handleTalkClick = () => {
-    if (isConnected.current && selectedCharacter) {
-      // tell server which character the user selects
-      send(selectedCharacter);
-      setCharacterConfirmed(true);
-
-      // display callview
-      setIsCallView(true);
-      setHeaderText("Hi, my friend, what brings you here today?");
-
-      // start media recorder and speech recognition
-      startRecording();      
-      startListening();
-      shouldPlayAudio.current = true;
-      callActive.current = true;
-    }
-  }
-
-  const handleTextClick = () => {
-    if (isConnected.current && selectedCharacter) {
-      // tell server which character the user selects
-      send(selectedCharacter);   
-      setCharacterConfirmed(true); 
-
-      // display textview
-      setIsCallView(false);
-      setHeaderText("");
-
-      shouldPlayAudio.current = true;
-    }
-  }
+  };
 
   const handleStopCall = () => {
     stopRecording();
     stopListening();
     stopAudioPlayback();
     callActive.current = false;
-  }
+  };
 
   const handleContinueCall = () => {
     startRecording();
     startListening();
+    shouldPlayAudio.current = true;
     callActive.current = true;
-  }
+  };
 
   const handleDisconnect = () => {
     if (socketRef && socketRef.current) {
@@ -272,104 +219,115 @@ const App = () => {
       callActive.current = false;
       shouldPlayAudio.current = false;
       audioSent.current = false;
-      confidence.current = 0;
-      chunks.current = []
-      
+
       // reset everything to initial states
       setSelectedCharacter(null);
       setCharacterConfirmed(false);
+      setCharacterGroups([]);
       setIsCallView(false);
-      setHeaderText("");
-      setTextAreaValue("");
-      setSelectedModel("gpt-3.5-turbo-16k");
+      setTextAreaValue('');
+      setSelectedModel('gpt-3.5-turbo-16k');
+      setPreferredLanguage('English');
 
       // close web socket connection
-      closeSocket();
+      closeSocketWithState();
       isConnected.current = false;
     }
-  }
+  };
 
   return (
-    <div className="app">
-      <Header user={user} isLoggedIn={isLoggedIn} setToken={setToken} handleDisconnect={handleDisconnect} />
+    <Router>
+      <div className='app'>
+        <Header
+          user={user}
+          isLoggedIn={isLoggedIn}
+          setToken={setToken}
+          handleDisconnect={handleDisconnect}
+        />
 
-      { isMobile ? (
-        <MobileWarning />
-      ) : (
-        <div id="desktop-content">
-          <p className="alert text-white">
-            Please wear headphone 🎧 
-            { isConnected.current && characterConfirmed && isRecording ? 
-              (<span className="recording">Recording</span>) : null
-            } 
-          </p>
-
-          { !isConnected.current ? 
-            <MediaDevices selectedDevice={selectedDevice} setSelectedDevice={setSelectedDevice} /> : null 
-          }
-
-          { !isConnected.current ? 
-            <Models selectedModel={selectedModel} setSelectedModel={setSelectedModel} /> : null 
-          }
-
-          <p className="header">{headerText}</p>
-
-          { !isConnected.current ? 
-            <Button onClick={handleConnectButtonClick} name="Connect" /> : null
-          }
-
-          { isConnected.current && 
-            <Characters 
-              characterGroups={characterGroups} 
-              selectedCharacter={selectedCharacter} 
-              setSelectedCharacter={setSelectedCharacter} 
-              isPlaying={isPlaying} 
-              characterConfirmed={characterConfirmed} 
-            />
-          }
-
-          { isConnected.current && !characterConfirmed ? 
-            ( <div className="actions">
-              <Button onClick={handleTalkClick} name="Talk" disabled={!selectedCharacter} />
-              <Button onClick={handleTextClick} name="Text" disabled={!selectedCharacter} />
-            </div> ) : null
-          }
-
-          {/* we render both views but only display one. */}
-          <div style={{ display: isConnected.current && characterConfirmed ? "flex" : "none" }}>
-            <div className="main-screen" style={{ display: isCallView ? "flex" : "none" }}>
-              <CallView 
-                isRecording={isRecording} 
+        <Routes>
+          <Route
+            path='/'
+            element={
+              <Home
+                isMobile={isMobile}
+                selectedCharacter={selectedCharacter}
+                setSelectedCharacter={setSelectedCharacter}
                 isPlaying={isPlaying}
-                audioPlayer={audioPlayer} 
-                handleStopCall={handleStopCall} 
+                characterGroups={characterGroups}
+                setCharacterGroups={setCharacterGroups}
+                setCharacterConfirmed={setCharacterConfirmed}
+                characterConfirmed={characterConfirmed}
+              />
+            }
+          />
+          <Route
+            path='/settings'
+            element={
+              <Settings
+                setSelectedCharacter={setSelectedCharacter}
+                isMobile={isMobile}
+                preferredLanguage={preferredLanguage}
+                setPreferredLanguage={setPreferredLanguage}
+                selectedDevice={selectedDevice}
+                setSelectedDevice={setSelectedDevice}
+                selectedModel={selectedModel}
+                setSelectedModel={setSelectedModel}
+                useSearch={useSearch}
+                setUseSearch={setUseSearch}
+                send={send}
+                connect={connect}
+                setIsCallView={setIsCallView}
+                shouldPlayAudio={shouldPlayAudio}
+              />
+            }
+          />
+          <Route
+            path='/conversation'
+            element={
+              <Conversation
+                isConnecting={isConnecting}
+                isConnected={isConnected}
+                isCallView={isCallView}
+                isRecording={isRecording}
+                isPlaying={isPlaying}
+                isThinking={isThinking}
+                isResponding={isResponding}
+                audioPlayer={audioPlayer}
+                handleStopCall={handleStopCall}
                 handleContinueCall={handleContinueCall}
                 audioQueue={audioQueue}
                 setIsPlaying={setIsPlaying}
                 handleDisconnect={handleDisconnect}
                 setIsCallView={setIsCallView}
-              />
-            </div>
-
-            <div className="main-screen" style={{ display: isCallView ? "none" : "flex" }}>
-              <TextView 
-                send={send} 
-                isPlaying={isPlaying}
+                send={send}
                 stopAudioPlayback={stopAudioPlayback}
                 textAreaValue={textAreaValue}
                 setTextAreaValue={setTextAreaValue}
                 messageInput={messageInput}
                 setMessageInput={setMessageInput}
-                handleDisconnect={handleDisconnect}
-                setIsCallView={setIsCallView}
+                useSearch={useSearch}
+                setUseSearch={setUseSearch}
+                callActive={callActive}
+                startRecording={startRecording}
+                stopRecording={stopRecording}
+                preferredLanguage={preferredLanguage}
+                setPreferredLanguage={setPreferredLanguage}
+                selectedCharacter={selectedCharacter}
+                messageId={messageId}
+                token={token}
+                isTextStreaming={isTextStreaming}
+                sessionId={sessionId}
               />
-            </div>
-          </div>
-        </div>
-      )}
-      <Footer />
-    </div>
+            }
+          />
+          <Route path='/shared' element={<SharedConversation />} />
+        </Routes>
+
+        <Footer />
+      </div>
+    </Router>
   );
-}
+};
 
 export default App;

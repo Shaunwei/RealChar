@@ -1,5 +1,5 @@
 footer {
-    padding: 10px;
+  padding: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -7,10 +7,10 @@ footer {
 }
 
 .copyright {
-  color:#777;
+  color: #777;
   font-size: 15px;
 }
-  
+
 .rounded-social-buttons {
   text-align: center;
 }
@@ -35,17 +35,19 @@ footer {
   margin-bottom: 0.25rem;
 }
 
-.rounded-social-buttons .social-button:hover, .rounded-social-buttons .social-button:focus {
+.rounded-social-buttons .social-button:hover,
+.rounded-social-buttons .social-button:focus {
   -webkit-transform: rotate(360deg);
-      -ms-transform: rotate(360deg);
-          transform: rotate(360deg);
+  -ms-transform: rotate(360deg);
+  transform: rotate(360deg);
 }
 
 .rounded-social-buttons .social-button.facebook {
   background: #3b5998;
 }
 
-.rounded-social-buttons .social-button.facebook:hover, .rounded-social-buttons .social-button.facebook:focus {
+.rounded-social-buttons .social-button.facebook:hover,
+.rounded-social-buttons .social-button.facebook:focus {
   color: #3b5998;
   background: #fefefe;
   border-color: #3b5998;
@@ -55,7 +57,8 @@ footer {
   background: #bccffe1a;
 }
 
-.rounded-social-buttons .social-button.twitter:hover, .rounded-social-buttons .social-button.twitter:focus {
+.rounded-social-buttons .social-button.twitter:hover,
+.rounded-social-buttons .social-button.twitter:focus {
   color: #55acee;
   background: #fefefe;
   border-color: #55acee;
@@ -65,7 +68,8 @@ footer {
   background: #007bb5;
 }
 
-.rounded-social-buttons .social-button.linkedin:hover, .rounded-social-buttons .social-button.linkedin:focus {
+.rounded-social-buttons .social-button.linkedin:hover,
+.rounded-social-buttons .social-button.linkedin:focus {
   color: #007bb5;
   background: #fefefe;
   border-color: #007bb5;
@@ -75,7 +79,8 @@ footer {
   background: #bccffe1a;
 }
 
-.rounded-social-buttons .social-button.github:hover, .rounded-social-buttons .social-button.github:focus {
+.rounded-social-buttons .social-button.github:hover,
+.rounded-social-buttons .social-button.github:focus {
   color: #bb0000;
   background: #fefefe;
   border-color: #bb0000;
@@ -85,7 +90,8 @@ footer {
   background: #bccffe1a;
 }
 
-.rounded-social-buttons .social-button.discord:hover, .rounded-social-buttons .social-button.discord:focus {
+.rounded-social-buttons .social-button.discord:hover,
+.rounded-social-buttons .social-button.discord:focus {
   color: #125688;
   background: #fefefe;
   border-color: #125688;

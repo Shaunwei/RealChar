@@ -47,6 +47,68 @@ enum LlmOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Codable 
     }
 }
 
+enum LanguageOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Codable {
+
+    case english, spanish, french, german, italian, portuguese, polish, hindi
+
+    init?(rawValue: String) {
+        for option in LanguageOption.allCases {
+            if rawValue == option.rawValue {
+                self = option
+                return
+            }
+        }
+        return nil
+    }
+
+    var id: String { rawValue }
+    var rawValue: String {
+        switch self {
+        case .english:
+            return "en-US"
+        case .spanish:
+            return "es-ES"
+        case .french:
+            return "fr-FR"
+        case .german:
+            return "de-DE"
+        case .italian:
+            return "it-IT"
+        case .portuguese:
+            return "pt-PT"
+        case .polish:
+            return "pl-PL"
+        case .hindi:
+            return "hi-IN"
+        }
+    }
+
+    var displayName: String {
+        switch self {
+        case .english:
+            return "English"
+        case .spanish:
+            return "Spanish"
+        case .french:
+            return "French"
+        case .german:
+            return "German"
+        case .italian:
+            return "Italian"
+        case .portuguese:
+            return "Portuguese"
+        case .polish:
+            return "Polish"
+        case .hindi:
+            return "Hindi"
+        }
+    }
+
+    var locale: Locale {
+        Locale(identifier: rawValue)
+    }
+}
+
 struct SettingsView: View {
     @EnvironmentObject private var userSettings: UserSettings
     @EnvironmentObject private var preferenceSettings: PreferenceSettings
@@ -54,89 +116,113 @@ struct SettingsView: View {
     @State var showAuth: Bool = false
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 40) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("User settings")
-                        .font(
-                            Font.custom("Prompt", size: 18).weight(.medium)
-                        )
+        GeometryReader { geometry in
+            VStack(alignment: .leading, spacing: 20) {
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: 40) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("User settings")
+                                .font(
+                                    Font.custom("Prompt", size: 18).weight(.medium)
+                                )
 
-                    if !userSettings.isLoggedIn {
-                        GoogleSignInButton()
-                            .frame(height: 48)
-                            .onTapGesture {
-                                showAuth = true
+                            if !userSettings.isLoggedIn {
+                                GoogleSignInButton()
+                                    .frame(height: 48)
+                                    .onTapGesture {
+                                        showAuth = true
+                                    }
+
+                                AppleSignInButton(onFirebaseCredentialAndDisplayNameGenerated: authenticateUser)
+                                    .frame(height: 44)
+                            } else {
+                                Text("Name: \(userSettings.userName ?? "Name unavailable")")
+                                    .font(
+                                        Font.custom("Prompt", size: 16)
+                                    )
+
+                                Text("Email: \(userSettings.userEmail ?? "Email unavailable")")
+                                    .font(
+                                        Font.custom("Prompt", size: 16)
+                                    )
+
+                                Button(role: .destructive) {
+                                    logout()
+                                } label: {
+                                    Text("Log out")
+                                        .font(
+                                            Font.custom("Prompt", size: 16)
+                                        )
+                                }
                             }
-                    } else {
-                        Text("Name: \(userSettings.userName ?? "Name unavailable")")
-                            .font(
-                                Font.custom("Prompt", size: 16)
-                            )
-                            .padding(.horizontal, 2)
-
-                        Text("Email: \(userSettings.userEmail ?? "Email unavailable")")
-                            .font(
-                                Font.custom("Prompt", size: 16)
-                            )
-                            .padding(.horizontal, 2)
-
-                        Button(role: .destructive) {
-                            logout()
-                        } label: {
-                            Text("Log out")
-                                .font(
-                                    Font.custom("Prompt", size: 16)
-                                )
                         }
-                        .padding(.horizontal, 2)
-                    }
-                }
 
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("System settings")
-                        .font(
-                            Font.custom("Prompt", size: 18).weight(.medium)
-                        )
-
-                    Text("LLM Model?")
-                        .font(
-                            Font.custom("Prompt", size: 16)
-                        )
-                        .padding(.horizontal, 2)
-
-                    Picker("LLM Model", selection: $preferenceSettings.llmOption) {
-                        ForEach(LlmOption.allCases) { llmOption in
-                            Text(llmOption.displayName)
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("System settings")
                                 .font(
-                                    Font.custom("Prompt", size: 16)
+                                    Font.custom("Prompt", size: 18).weight(.medium)
                                 )
-                                .tag(llmOption)
-                        }
-                    }
-                    .pickerStyle(.segmented)
 
-                    Toggle(isOn: $preferenceSettings.hapticFeedback) {
-                        Text("Haptic feedback?")
+                            Picker("Conversation Language?", selection: $preferenceSettings.languageOption) {
+                                ForEach(LanguageOption.allCases) { languageOption in
+                                    Text(languageOption.displayName)
+                                        .font(
+                                            Font.custom("Prompt", size: 16)
+                                        )
+                                        .tag(languageOption)
+                                }
+                            }
                             .font(
                                 Font.custom("Prompt", size: 16)
                             )
+                            .tint(.primary)
+                            .padding(.bottom, 2)
+                            .pickerStyle(.navigationLink)
+
+                            Picker("LLM Model?", selection: $preferenceSettings.llmOption) {
+                                ForEach(LlmOption.allCases) { llmOption in
+                                    Text(llmOption.displayName)
+                                        .font(
+                                            Font.custom("Prompt", size: 16)
+                                        )
+                                        .tag(llmOption)
+                                }
+                            }
+                            .font(
+                                Font.custom("Prompt", size: 16)
+                            )
+                            .tint(.primary)
+                            .padding(.bottom, 2)
+                            .pickerStyle(.navigationLink)
+
+                            if UIDevice.current.userInterfaceIdiom == .phone {
+                                Toggle(isOn: $preferenceSettings.hapticFeedback) {
+                                    Text("Haptic feedback?")
+                                        .font(
+                                            Font.custom("Prompt", size: 16)
+                                        )
+                                }
+                                .tint(.accentColor)
+                                .padding(.trailing, 2)
+                            }
+
+                            Toggle(isOn: $preferenceSettings.useSearch) {
+                                Text("Enable Google search?")
+                                    .font(
+                                        Font.custom("Prompt", size: 16)
+                                    )
+                            }
+                            .tint(.accentColor)
+                            .padding(.trailing, 2)
+                        }
                     }
-                    .tint(.accentColor)
-                    .padding(.horizontal, 2)
                 }
 
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Beta feedback")
-                        .font(
-                            Font.custom("Prompt", size: 18).weight(.medium)
-                        )
-
-                    CtaButton(style: .primary, action: {
-                        openMail(emailTo: "realchar-dev@googlegroups.com", subject: "Feedback for RealChar", body: "Hi RealChar team,\n\n\n")
-                    }, text: "Leave feedback")
-                }
+                CtaButton(style: .secondary, action: {
+                    openMail(emailTo: "realchar-dev@googlegroups.com", subject: "Feedback for RealChar", body: "Hi RealChar team,\n\n\n")
+                }, text: "Leave Beta feedback")
             }
+            .padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? 0 : 20)
         }
         .onChange(of: userSettings.isLoggedIn) { newValue in
             if !newValue {
@@ -205,8 +291,45 @@ struct SettingsView: View {
         }
     }
 
+    private func authenticateUser(for credential: AuthCredential, displayName: String?) {
+        Auth.auth().signIn(with: credential) { (authResult, error) in
+            if let error = error {
+                // TODO: Show error on auth
+                print(error.localizedDescription)
+            } else {
+                if let displayName {
+                    // Mak a request to set user's display name on Firebase
+                    let changeRequest = authResult?.user.createProfileChangeRequest()
+                    changeRequest?.displayName = displayName
+                    changeRequest?.commitChanges(completion: { (error) in
+                        if let error = error {
+                            // TODO: Show error
+                            print(error.localizedDescription)
+                        } else {
+                            self.userSettings.checkUserLoggedIn() { isUserLoggedIn in
+                                if !isUserLoggedIn {
+                                    // TODO: Show error on auth
+                                }
+                            }
+                        }
+                    })
+                } else {
+                    self.userSettings.checkUserLoggedIn() { isUserLoggedIn in
+                        if !isUserLoggedIn {
+                            // TODO: Show error on auth
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private func logout() {
-        GIDSignIn.sharedInstance.signOut()
+        if Auth.auth().currentUser?.providerData.first?.providerID == "apple.com" {
+            // TODO: Log out from Apple
+        } else {
+            GIDSignIn.sharedInstance.signOut()
+        }
 
         do {
             try Auth.auth().signOut()

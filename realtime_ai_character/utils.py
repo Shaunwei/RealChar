@@ -8,9 +8,14 @@ from starlette.websockets import WebSocket, WebSocketState
 
 @dataclass
 class Character:
+    character_id: str
     name: str
     llm_system_prompt: str
     llm_user_prompt: str
+    source: str = ''
+    voice_id: str = ''
+    author_name: str = ''
+    avatar_id: str = ''
 
 
 @dataclass

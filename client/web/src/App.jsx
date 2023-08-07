@@ -89,10 +89,9 @@ const App = () => {
   const handleSocketOnMessage = event => {
     if (typeof event.data === 'string') {
       const message = event.data;
-      if (!isTextStreaming)
-        setIsTextStreaming(true)
+      if (!isTextStreaming) setIsTextStreaming(true);
       if (message === '[end]\n' || message.match(/\[end=([a-zA-Z0-9]+)\]/)) {
-        setIsTextStreaming(false)
+        setIsTextStreaming(false);
         setIsResponding(false);
         setTextAreaValue(prevState => prevState + '\n\n');
         const messageIdMatches = message.match(/\[end=([a-zA-Z0-9]+)\]/);

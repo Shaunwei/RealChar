@@ -48,11 +48,11 @@ const Characters = ({
       className='main-container'
     >
       {characterGroups.map(
-        character =>
+        (character, index) =>
           ((!characterConfirmed && character.source === 'default') ||
             (selectedCharacter &&
               character.character_id === selectedCharacter.character_id)) && (
-            <Grid item xs={isMobile ? 12 : 6}>
+            <Grid item xs={isMobile ? 12 : 6} key={index}>
               <Button
                 variant='outlined'
                 onClick={() => handleCharacterSelection(character)}

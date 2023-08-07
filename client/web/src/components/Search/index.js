@@ -43,7 +43,7 @@ const Search = ({ setUseSearch, send }) => {
           }
           label={
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              "Enable Google Search"
+              &quot;Enable Google Search&quot;
               <CustomTooltip
                 title='Enable the character to access the latest information and online events, but may lead to a slight delay in response time.'
                 placement='top'

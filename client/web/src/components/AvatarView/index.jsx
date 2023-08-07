@@ -12,7 +12,6 @@ import {
   // defaultBlendshapesService,
   defaultBlendshapesService_2,
   defaultBlendshapesService_3,
-
 } from '@avatechai/avatars/default-loaders';
 import { ExternalVoiceSourceService } from '@avatechai/avatars/voice';
 
@@ -36,7 +35,10 @@ const AvatarView = ({ avatarId, emotion }) => {
     currentEmotion: emotion,
     // Loader + Plugins
     avatarLoaders: defaultAvatarLoaders,
-    blendshapesService: avatarId == 'a69d8102-0285-47d6-bdf5-12d903272732' ? defaultBlendshapesService_3 : defaultBlendshapesService_2,
+    blendshapesService:
+      avatarId == 'a69d8102-0285-47d6-bdf5-12d903272732'
+        ? defaultBlendshapesService_3
+        : defaultBlendshapesService_2,
 
     audioService: externalAvatarVoiceService,
 

@@ -50,14 +50,14 @@ const Conversation = ({
 }) => {
   const navigate = useNavigate();
 
-  const message = isTextStreaming ? "" : textAreaValue;
+  const message = isTextStreaming ? '' : textAreaValue;
 
-  const [emotion, setEmotion] = useState('')
+  const [emotion, setEmotion] = useState('');
 
   useEffect(() => {
-    const emotion = extractEmotionFromPrompt(message)
-    if (emotion && emotion.length > 0) setEmotion(emotion)
-  }, [message])
+    const emotion = extractEmotionFromPrompt(message);
+    if (emotion && emotion.length > 0) setEmotion(emotion);
+  }, [message]);
 
   useEffect(() => {
     if (!isConnecting.current) {
@@ -91,7 +91,10 @@ const Conversation = ({
 
       <div className={`avatar-wrapper ${isPlaying ? 'pulsating-avatar' : ''}`}>
         {selectedCharacter?.avatar_id ? (
-          <AvatarView avatarId={selectedCharacter?.avatar_id} emotion={emotion} />
+          <AvatarView
+            avatarId={selectedCharacter?.avatar_id}
+            emotion={emotion}
+          />
         ) : (
           <Avatar
             alt={selectedCharacter.name}

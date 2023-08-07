@@ -35,9 +35,10 @@ const Models = ({ isMobile, selectedModel, setSelectedModel }) => {
     const parts = tooltip.split(',');
     return (
       <div>
-        {parts.map(part => (
+        {parts.map((part, index) => (
           <div
             style={{ display: 'flex', alignItems: 'center', color: '#CAC4D0' }}
+            key={index}
           >
             <CheckIcon fontSize='small' sx={{ color: '#CAC4D0' }} />
             <span style={{ marginLeft: '5px' }}>{part.trim()}</span>
@@ -54,8 +55,8 @@ const Models = ({ isMobile, selectedModel, setSelectedModel }) => {
     <>
       <label>Large language model(LLM)</label>
       <Grid container spacing={2} sx={{ marginBottom: 5 }}>
-        {models.map(model => (
-          <Grid item xs={isMobile ? 12 : 4}>
+        {models.map((model, index) => (
+          <Grid item xs={isMobile ? 12 : 4} key={index}>
             <CustomTooltip
               title={<CustomTooltipContent tooltip={model.tooltip} />}
               placement='top-end'

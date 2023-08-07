@@ -9,6 +9,7 @@ import { useRef, useCallback } from 'react';
 import { isIP, isIPv4 } from 'is-ip';
 import { languageCode } from './languageCode';
 import { v4 as uuidv4 } from 'uuid';
+import { getHostName } from '../utils/urlUtils';
 
 const useWebsocket = (
   token,
@@ -29,23 +30,8 @@ const useWebsocket = (
       setSessionId(sessionId);
       const ws_scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
       // Get the current host value
-      var currentHost = window.location.host;
-
-      // Split the host into IP and port number
-      var parts = currentHost.split(':');
-
-      // Extract the IP address and port number
-      var hostname = parts[0];
-      // Local deployment uses 8000 port by default.
-      var newPort = '8000';
-
-      if (!(hostname === 'localhost' || isIP(hostname))) {
-        hostname = 'api.' + hostname;
-        newPort = window.location.protocol === 'https:' ? 443 : 80;
-      }
-
       // Generate the new host value with the same IP but different port
-      var newHost = hostname + ':' + newPort;
+      var newHost = getHostName();
 
       var language = languageCode[preferredLanguage];
 

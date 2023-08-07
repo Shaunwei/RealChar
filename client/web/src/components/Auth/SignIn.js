@@ -7,6 +7,7 @@
 
 import React, { useState } from 'react';
 import auth from '../../utils/firebase';
+import { getHostName } from '../../utils/urlUtils';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import './styles.css';
 import { isIP } from 'is-ip';
@@ -14,18 +15,7 @@ import { isIP } from 'is-ip';
 export const sendTokenToServer = async token => {
   // Send token to server
   const scheme = window.location.protocol;
-  var currentHost = window.location.host;
-  var parts = currentHost.split(':');
-  var hostname = parts[0];
-  // Local deployment uses 8000 port by default.
-  var newPort = '8000';
-
-  if (!(hostname === 'localhost' || isIP(hostname))) {
-    hostname = 'api.' + hostname;
-    newPort = window.location.protocol === 'https:' ? 443 : 80;
-  }
-  var newHost = hostname + ':' + newPort;
-  const url = scheme + '//' + newHost;
+  const url = scheme + '//' + getHostName();
 
   try {
     const response = await fetch(url, {

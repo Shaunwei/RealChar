@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import Button from '../Common/Button';
 import './style.css';
+import { getHostName } from '../../utils/urlUtils';
 
 Modal.setAppElement('#root');
 
@@ -29,18 +30,7 @@ function Feedback({ messageId, token }) {
     console.log(feedback, comment);
     // Get host
     const scheme = window.location.protocol;
-    var currentHost = window.location.host;
-    var parts = currentHost.split(':');
-    var hostname = parts[0];
-    // Local deployment uses 8000 port by default.
-    var newPort = '8000';
-
-    if (!(hostname === 'localhost' || isIP(hostname))) {
-      hostname = 'api.' + hostname;
-      newPort = window.location.protocol === 'https:' ? 443 : 80;
-    }
-    var newHost = hostname + ':' + newPort;
-    const url = scheme + '//' + newHost + '/feedback';
+    const url = scheme + '//' + getHostName() + '/feedback';
     fetch(url, {
       method: 'POST',
       headers: {

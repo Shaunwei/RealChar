@@ -11,6 +11,7 @@ import lz from 'lz-string';
 
 import Characters from '../components/Characters';
 import Button from '@mui/material/Button';
+import { getHostName } from '../utils/urlUtils';
 
 const Home = ({
   isMobile,
@@ -31,18 +32,7 @@ const Home = ({
 
     // Get host
     const scheme = window.location.protocol;
-    var currentHost = window.location.host;
-    var parts = currentHost.split(':');
-    var hostname = parts[0];
-    // Local deployment uses 8000 port by default.
-    var newPort = '8000';
-
-    if (!(hostname === 'localhost' || isIP(hostname))) {
-      hostname = 'api.' + hostname;
-      newPort = window.location.protocol === 'https:' ? 443 : 80;
-    }
-    var newHost = hostname + ':' + newPort + '/characters';
-    const url = scheme + '//' + newHost;
+    const url = scheme + '//' + getHostName() + '/characters';
 
     fetch(url)
       .then(response => response.json())

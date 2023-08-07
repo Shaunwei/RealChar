@@ -119,14 +119,15 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
         # 1. User selected a character
         character = None
         if character_id:
-            character = catalog_manager.get_character(
-                character_id.replace('_', ' ').title())
-        character_list = [character.name for character in catalog_manager.characters.values(
-        ) if character.source != 'community']
+            character = catalog_manager.get_character(character_id)
+        character_list = [(character.name, character.character_id)
+                          for character in catalog_manager.characters.values()
+                          if character.source != 'community']
+        character_name_list, character_id_list = zip(*character_list)
         while not character:
             character_message = "\n".join([
                 f"{i+1} - {character}"
-                for i, character in enumerate(character_list)
+                for i, character in enumerate(character_name_list)
             ])
             await manager.send_message(
                 message=f"Select your character by entering the corresponding number:\n"
@@ -146,8 +147,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                         websocket=websocket)
                     continue
                 character = catalog_manager.get_character(
-                    character_list[selection - 1])
-                character_id = character.name.replace(' ', '_').lower()
+                    character_id_list[selection - 1])
+                character_id = character_id_list[selection - 1]
 
         conversation_history.system_prompt = character.llm_system_prompt
         user_input_template = character.llm_user_prompt
@@ -226,7 +227,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
 
                 # 1. Send "thinking" status over websocket
                 if use_search:
-                    await manager.send_message(message=f'[thinking]\n',
+                    await manager.send_message(message='[thinking]\n',
                                                websocket=websocket)
 
                 # 2. Send message to LLM
@@ -308,7 +309,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
 
                 # 4. Send "thinking" status over websocket
                 if use_search:
-                    await manager.send_message(message=f'[thinking]\n',
+                    await manager.send_message(message='[thinking]\n',
                                                websocket=websocket)
 
                 # 5. Send message to LLM

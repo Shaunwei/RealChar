@@ -56,9 +56,9 @@ class Whisper(Singleton, SpeechToText):
     def transcribe(self, audio_bytes, platform, prompt="", language="en-US"):
         logger.info("Transcribing audio...")
         if platform == "web":
-            audio = self._convert_webm_to_wav(audio_bytes)
+            audio = self._convert_webm_to_wav(audio_bytes, self.use == "local")
         else:
-            audio = sr.AudioData(audio_bytes, 44100, 2)
+            audio = self._convert_bytes_to_wav(audio_bytes, self.use == "local")
         if self.use == "local":
             return self._transcribe(audio, prompt)
         elif self.use == "api":
@@ -69,7 +69,7 @@ class Whisper(Singleton, SpeechToText):
         segs, _ = self.model.transcribe(
             audio, language=language, vad_filter=True, initial_prompt=prompt
         )
-        text = " ".join([seg["text"] for seg in segs])
+        text = " ".join([seg.text for seg in segs])
         return text
 
     def _transcribe_api(self, audio, prompt=""):
@@ -79,10 +79,18 @@ class Whisper(Singleton, SpeechToText):
         )
         return text
 
-    def _convert_webm_to_wav(self, webm_data):
+    def _convert_webm_to_wav(self, webm_data, local=True):
         webm_audio = AudioSegment.from_file(io.BytesIO(webm_data), format="webm")
         wav_data = io.BytesIO()
         webm_audio.export(wav_data, format="wav")
+        if local:
+            return wav_data
         with sr.AudioFile(wav_data) as source:
             audio = self.recognizer.record(source)
         return audio
+
+    def _convert_bytes_to_wav(self, audio_bytes, local=True):
+        if local:
+            audio = io.BytesIO(sr.AudioData(audio_bytes, 44100, 2).get_wav_data())
+            return audio
+        return sr.AudioData(audio_bytes, 44100, 2)

@@ -4,11 +4,13 @@ alembic
 anthropic
 chromadb>=0.4.2
 click
+EbookLib
 elevenlabs
 fastapi
 ffmpeg
 firebase-admin
 google-cloud-speech
+html2text
 httpx
 ipywidgets
 langchain>=0.0.240
@@ -18,6 +20,7 @@ psycopg2-binary
 pyaudio
 pydantic
 pydub
+pypdf
 python-dotenv
 replicate
 simpleaudio
@@ -28,6 +31,3 @@ typing
 uvicorn
 websockets
 firebase_admin
-pypdf
-EbookLib
-html2text

@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { isIP } from 'is-ip';
 import Avatar from '@mui/material/Avatar';
 import AvatarView from '../components/AvatarView';
+import { getHostName } from '../utils/urlUtils';
 
 const SharedConversation = () => {
   const [sessionId, setSessionId] = useState(null);
@@ -25,19 +26,9 @@ const SharedConversation = () => {
 
     // Get host
     const scheme = window.location.protocol;
-    var currentHost = window.location.host;
-    var parts = currentHost.split(':');
-    var hostname = parts[0];
-    // Local deployment uses 8000 port by default.
-    var newPort = '8000';
-
-    if (!(hostname === 'localhost' || isIP(hostname))) {
-      hostname = 'api.' + hostname;
-      newPort = window.location.protocol === 'https:' ? 443 : 80;
-    }
-    var newCharactersHost = hostname + ':' + newPort + '/characters';
+    var newCharactersHost = getHostName() + '/characters';
     var newSessionHistoryHost =
-      hostname + ':' + newPort + '/session_history?session_id=' + sessionId;
+      getHostName() + '/session_history?session_id=' + sessionId;
     const url = scheme + '//' + newCharactersHost;
     const sessionHistoryUrl = scheme + '//' + newSessionHistoryHost;
 

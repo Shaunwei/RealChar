@@ -8,6 +8,8 @@ from realtime_ai_character.utils import Singleton, Character
 from realtime_ai_character.database.chroma import get_chroma
 from llama_index import SimpleDirectoryReader
 from langchain.text_splitter import CharacterTextSplitter
+from realtime_ai_character.database.connection import get_db
+from realtime_ai_character.models.character import Character as CharacterModel
 
 load_dotenv()
 logger = get_logger(__name__)
@@ -17,6 +19,7 @@ class CatalogManager(Singleton):
     def __init__(self, overwrite=True):
         super().__init__()
         self.db = get_chroma()
+        self.sql_db = get_db()
         if overwrite:
             logger.info('Overwriting existing data in the chroma.')
             self.db.delete_collection()
@@ -25,6 +28,7 @@ class CatalogManager(Singleton):
         self.characters = {}
         self.load_characters_from_community(overwrite)
         self.load_characters(overwrite)
+        self.load_character_from_sql_database()
         if overwrite:
             logger.info('Persisting data in the chroma.')
             self.db.persist()
@@ -124,6 +128,21 @@ class CatalogManager(Singleton):
                 'id': d.id_,
             } for d in documents])
         self.db.add_documents(docs)
+
+
+    def load_character_from_sql_database(self):
+        character_models = self.sql_db.query(CharacterModel).all()
+        for character_model in character_models:
+            character = Character(
+                character_id=character_model.id,
+                name=character_model.name,
+                llm_system_prompt=character_model.system_prompt,
+                llm_user_prompt=character_model.user_prompt,
+                voice_id=character_model.voice_id,
+                source='community',
+            )
+            self.characters[character.name] = character
+            # TODO: load context data from storage
 
 
 def get_catalog_manager():

@@ -1,3 +1,4 @@
+import os
 from typing import List
 
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -18,7 +19,8 @@ class AnysacleLlm(LLM):
             model=model,
             temperature=0.5,
             streaming=True,
-            openai_api_base='https://api.endpoints.anyscale.com/v1'
+            openai_api_base='https://api.endpoints.anyscale.com/v1',
+            openai_api_key=os.getenv('ANYSCALE_ENDPOINT_API_KEY'),
         )
         self.config = {
             "model": model,

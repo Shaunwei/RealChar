@@ -8,5 +8,9 @@ def get_llm(model='gpt-3.5-turbo-16k') -> LLM:
     elif model.startswith('claude'):
         from realtime_ai_character.llm.anthropic_llm import AnthropicLlm
         return AnthropicLlm(model=model)
+    elif "llama" in model:
+        # Currently use Anyscale to support llama models
+        from realtime_ai_character.llm.anyscale_llm import AnysacleLlm
+        return AnysacleLlm(model=model)
     else:
         raise ValueError(f'Invalid llm model: {model}')

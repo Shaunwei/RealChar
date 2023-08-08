@@ -22,6 +22,7 @@ const Home = ({
   setCharacterGroups,
   setCharacterConfirmed,
   characterConfirmed,
+  token,
 }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -33,8 +34,16 @@ const Home = ({
     // Get host
     const scheme = window.location.protocol;
     const url = scheme + '//' + getHostName() + '/characters';
-
-    fetch(url)
+    let headers = {
+      'Content-Type': 'application/json',
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    fetch(url, {
+      method: 'GET',
+      headers: headers,
+    })
       .then(response => response.json())
       .then(data => {
         setCharacterGroups(data);
@@ -44,7 +53,7 @@ const Home = ({
         setLoading(false);
         console.error(err);
       });
-  }, [setCharacterGroups]);
+  }, [setCharacterGroups, token]);
 
   const handleNextClick = () => {
     setCharacterConfirmed(true);

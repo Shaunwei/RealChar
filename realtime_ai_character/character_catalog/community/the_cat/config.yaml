@@ -25,4 +25,5 @@ user: | # you don't need to change this for most cases
 text_to_speech_use: ELEVEN_LABS
 voice_id: gwOmVrPYgPAz9oJpfMNR
 author_name: oliviac12
+visibility: public
 

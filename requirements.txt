@@ -25,6 +25,7 @@ pydub
 pypdf
 python-dotenv
 python-multipart
+readerwriterlock
 replicate
 simpleaudio
 soundfile

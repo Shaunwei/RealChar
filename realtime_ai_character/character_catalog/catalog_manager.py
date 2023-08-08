@@ -9,6 +9,7 @@ from realtime_ai_character.utils import Singleton, Character
 from realtime_ai_character.database.chroma import get_chroma
 from llama_index import SimpleDirectoryReader
 from langchain.text_splitter import CharacterTextSplitter
+from readerwriterlock import rwlock
 from realtime_ai_character.database.connection import get_db
 from realtime_ai_character.models.character import Character as CharacterModel
 
@@ -22,6 +23,7 @@ class CatalogManager(Singleton):
         self.db = get_chroma()
         self.sql_db = next(get_db())
         self.sql_load_interval = 60
+        self.sql_load_lock = rwlock.RWLockFair()
 
         if overwrite:
             logger.info('Overwriting existing data in the chroma.')
@@ -46,7 +48,8 @@ class CatalogManager(Singleton):
         self.load_character_from_sql_database()
 
     def get_character(self, name) -> Character:
-        return self.characters.get(name)
+        with self.sql_load_lock.gen_rlock():
+            return self.characters.get(name)
 
     def load_character(self, directory):
         with ExitStack() as stack:
@@ -142,17 +145,18 @@ class CatalogManager(Singleton):
 
     def load_character_from_sql_database(self):
         character_models = self.sql_db.query(CharacterModel).all()
-        for character_model in character_models:
-            character = Character(
-                character_id=character_model.id,
-                name=character_model.name,
-                llm_system_prompt=character_model.system_prompt,
-                llm_user_prompt=character_model.user_prompt,
-                voice_id=character_model.voice_id,
-                source='community',
-            )
-            self.characters[character_model.id] = character
-            # TODO: load context data from storage
+        with self.sql_load_lock.gen_wlock():
+            for character_model in character_models:
+                character = Character(
+                    character_id=character_model.id,
+                    name=character_model.name,
+                    llm_system_prompt=character_model.system_prompt,
+                    llm_user_prompt=character_model.user_prompt,
+                    voice_id=character_model.voice_id,
+                    source='community',
+                )
+                self.characters[character_model.id] = character
+                # TODO: load context data from storage
         logger.info(
             f'Loaded {len(character_models)} characters from sql database')
 

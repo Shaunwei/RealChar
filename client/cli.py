@@ -161,6 +161,9 @@ def select_model():
         '1: gpt-3.5-turbo-16k \n'
         '2: gpt-4 \n'
         '3: claude-2 \n'
+        '4: meta-llama/Llama-2-7b-chat-hf \n'
+        '5: meta-llama/Llama-2-13b-chat-hf \n'
+        '6: meta-llama/Llama-2-70b-chat-hf \n'
         'Select llm model:')
     if llm_model_selection == '1':
         llm_model = 'gpt-3.5-turbo-16k'
@@ -168,6 +171,12 @@ def select_model():
         llm_model = 'gpt-4'
     elif llm_model_selection == '3':
         llm_model = 'claude-2'
+    elif llm_model_selection == '4':
+        llm_model = 'meta-llama/Llama-2-7b-chat-hf'
+    elif llm_model_selection == '5':
+        llm_model = 'meta-llama/Llama-2-13b-chat-hf'
+    elif llm_model_selection == '6':
+        llm_model = 'meta-llama/Llama-2-70b-chat-hf'
     return llm_model
 
 

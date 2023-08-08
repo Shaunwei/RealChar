@@ -17,6 +17,7 @@ class Character:
     author_name: str = ''
     author_id: str= ''
     avatar_id: str = ''
+    visibility: str = ''
 
 
 @dataclass

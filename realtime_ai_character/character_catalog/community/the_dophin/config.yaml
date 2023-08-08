@@ -26,4 +26,5 @@ user: | # you don't need to change this for most cases
 text_to_speech_use: ELEVEN_LABS
 voice_id: MdSf3TEyH2iqTIQX9C50
 author_name: mattjeet
+visibility: public
 

@@ -47,3 +47,4 @@ text_to_speech_use: ELEVEN_LABS
 # default 11labs female: EXAVITQu4vr4xnSDxMaL
 avatar_id: a69d8102-0285-47d6-bdf5-12d903272732
 voice_id: ErXwobaYiN019PkySvjV
+visibility: public

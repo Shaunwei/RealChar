@@ -68,6 +68,7 @@ class CatalogManager(Singleton):
             llm_user_prompt=yaml_content["user"],
             voice_id=voice_id,
             source='default',
+            visibility='public'
         )
 
         if "avatar_id" in yaml_content:
@@ -118,6 +119,7 @@ class CatalogManager(Singleton):
                 voice_id=yaml_content["voice_id"],
                 source='community',
                 author_name=yaml_content["author_name"],
+                visibility=yaml_content["visibility"],
             )
 
             if "avatar_id" in yaml_content:
@@ -154,6 +156,8 @@ class CatalogManager(Singleton):
                     llm_user_prompt=character_model.user_prompt,
                     voice_id=character_model.voice_id,
                     source='community',
+                    author_id=character_model.author_id,
+                    visibility=character_model.visibility,
                 )
                 self.characters[character_model.id] = character
                 # TODO: load context data from storage

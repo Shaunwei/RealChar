@@ -1,4 +1,5 @@
 import os
+import threading
 import yaml
 from dotenv import load_dotenv
 from pathlib import Path
@@ -20,6 +21,8 @@ class CatalogManager(Singleton):
         super().__init__()
         self.db = get_chroma()
         self.sql_db = next(get_db())
+        self.sql_load_interval = 60
+
         if overwrite:
             logger.info('Overwriting existing data in the chroma.')
             self.db.delete_collection()
@@ -34,6 +37,13 @@ class CatalogManager(Singleton):
             self.db.persist()
         logger.info(
             f"Total document load: {self.db._client.get_collection('llm').count()}")
+        self.load_sql_db_lopp()
+
+    def load_sql_db_lopp(self):
+        self.load_sql_db_thread = threading.Timer(self.sql_load_interval, self.load_sql_db_lopp)
+        self.load_sql_db_thread.daemon = True
+        self.load_sql_db_thread.start()
+        self.load_character_from_sql_database()
 
     def get_character(self, name) -> Character:
         return self.characters.get(name)
@@ -54,9 +64,9 @@ class CatalogManager(Singleton):
             llm_system_prompt=yaml_content["system"],
             llm_user_prompt=yaml_content["user"],
             voice_id=voice_id,
-            source='default',            
+            source='default',
         )
-        
+
         if "avatar_id" in yaml_content:
             self.characters[character_id].avatar_id = yaml_content["avatar_id"]
         if "author_name" in yaml_content:
@@ -143,6 +153,8 @@ class CatalogManager(Singleton):
             )
             self.characters[character_model.id] = character
             # TODO: load context data from storage
+        logger.info(
+            f'Loaded {len(character_models)} characters from sql database')
 
 
 def get_catalog_manager():

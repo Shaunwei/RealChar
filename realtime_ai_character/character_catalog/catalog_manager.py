@@ -68,6 +68,7 @@ class CatalogManager(Singleton):
             llm_user_prompt=yaml_content["user"],
             voice_id=voice_id,
             source='default',
+            visibility='public'
         )
 
         if "avatar_id" in yaml_content:
@@ -118,6 +119,7 @@ class CatalogManager(Singleton):
                 voice_id=yaml_content["voice_id"],
                 source='community',
                 author_name=yaml_content["author_name"],
+                visibility=yaml_content["visibility"],
             )
 
             if "avatar_id" in yaml_content:

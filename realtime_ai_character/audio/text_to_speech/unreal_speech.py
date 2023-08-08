@@ -24,31 +24,6 @@ config = types.SimpleNamespace(**{
     }
 })
 
-# https://lab.api.unrealspeech.com/stream?speaker_index=0&text=
-
-
-async def get_audio_from_unreal_speech(text="To grow rapidly, you need to make something you can sell to a big market. That's the difference between Google and a barbershop. A barbershop doesn't scale."):
-    url = "https://lab.api.unrealspeech.com/stream"
-    params = {
-        "text": text,
-        "speaker_index": 5
-    }
-
-    # start_time = time.time()
-    response = await requests.get(url, params=params, stream=True)
-
-    # if response.status_code == 200:
-    for chunk in response.iter_content(chunk_size=1024):
-        print(chunk)
-        # process the 1024-byte 'chunk'
-    #         print(chunk)
-    #         print("Received chunk of audio", time.time() - start_time)
-    #     # you can write chunk to a file, or process it here as needed
-    # else:
-    #     print("Error occurred. Status code:", response.status_code)
-
-    # print(f"\nTime taken: {(time.time() - start_time):.2f} seconds")
-
 
 class UnrealSpeech(Singleton, TextToSpeech):
     def __init__(self):

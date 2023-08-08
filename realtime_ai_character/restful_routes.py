@@ -16,7 +16,9 @@ from realtime_ai_character.database.connection import get_db
 from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.feedback import Feedback, FeedbackRequest
 from realtime_ai_character.models.character import Character, CharacterRequest, EditCharacterRequest
+from realtime_ai_character.models.memory import Memory, UpdateMemoryRequest
 from requests import Session
+import requests
 
 
 router = APIRouter()
@@ -253,3 +255,54 @@ async def generate_audio(text: str, tts: str = None, user = Depends(get_current_
         "filename": new_filename,
         "content-type": "audio/mpeg"
     }
+
+
+@router.post("/memory")
+async def memory(update_memory_request: UpdateMemoryRequest,
+                 user = Depends(get_current_user),
+                 db: Session = Depends(get_db)):
+    if not user:
+        raise HTTPException(
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid authentication credentials',
+                headers={'WWW-Authenticate': 'Bearer'},
+        )
+
+    api_key = update_memory_request.quivr_api_key
+
+    if not update_memory_request.quivr_brain_id or update_memory_request.quivr_brain_id == "":
+        # Get default brain ID if not provided
+        url = "https://api.quivr.app/brains/default/"
+        headers = {"Authorization": f"Bearer {api_key}"}
+
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+        except requests.exceptions.HTTPError:
+            raise HTTPException(status_code=400, detail="Invalid API key")
+
+        brain_id = response.json()["id"]
+        brain_name = response.json()["name"]
+    else:
+        brain_id = update_memory_request.quivr_brain_id
+
+    # Verify API key and brain ID
+    url = f"https://api.quivr.app/brains/{brain_id}/"
+    headers = {"Authorization": f"Bearer {api_key}"}
+
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+
+        brain_name = response.json()["name"]
+    except requests.exceptions.HTTPError:
+        raise HTTPException(status_code=400, detail="Invalid API key or brain ID")
+
+    # Save to database
+    memory = Memory(user_id=user['uid'],
+                    quivr_api_key=api_key,
+                    quivr_brain_id=brain_id)
+
+    memory.save(db)
+
+    return {"success": True, "brain_id": brain_id, "brain_name": brain_name}

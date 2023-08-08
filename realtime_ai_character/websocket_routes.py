@@ -65,11 +65,10 @@ async def websocket_endpoint(websocket: WebSocket,
                              character_id: str = Query(None),
                              platform: str = Query(None),
                              use_search: bool = Query(default=False),
-                             tts: str = Query(None),
                              db: Session = Depends(get_db),
                              catalog_manager=Depends(get_catalog_manager),
                              speech_to_text=Depends(get_speech_to_text),
-                             text_to_speech=Depends(get_text_to_speech)):
+                             default_text_to_speech=Depends(get_text_to_speech)):
     # Default user_id to session_id. If auth is enabled and token is provided, use
     # the user_id from the token.
     user_id = str(session_id)
@@ -85,13 +84,11 @@ async def websocket_endpoint(websocket: WebSocket,
             return
     llm = get_llm(model=llm_model)
     await manager.connect(websocket)
-    if tts:
-        text_to_speech = get_text_to_speech(tts)
     try:
         main_task = asyncio.create_task(
             handle_receive(websocket, session_id, user_id, db, llm, catalog_manager,
                            character_id, platform, use_search,
-                           speech_to_text, text_to_speech, language))
+                           speech_to_text, default_text_to_speech, language))
 
         await asyncio.gather(main_task)
 
@@ -104,7 +101,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                          llm: LLM, catalog_manager: CatalogManager,
                          character_id: str, platform: str, use_search: bool,
                          speech_to_text: SpeechToText,
-                         text_to_speech: TextToSpeech,
+                         default_text_to_speech: TextToSpeech,
                          language: str):
     try:
         conversation_history = ConversationHistory()
@@ -152,6 +149,11 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 character = catalog_manager.get_character(
                     character_id_list[selection - 1])
                 character_id = character_id_list[selection - 1]
+
+        if character.tts:
+            text_to_speech = get_text_to_speech(character.tts)
+        else:
+            text_to_speech = default_text_to_speech
 
         conversation_history.system_prompt = character.llm_system_prompt
         user_input_template = character.llm_user_prompt

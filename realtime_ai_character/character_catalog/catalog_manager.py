@@ -21,7 +21,7 @@ class CatalogManager(Singleton):
         super().__init__()
         self.db = get_chroma()
         self.sql_db = next(get_db())
-        self.sql_load_interval = 10
+        self.sql_load_interval = 60
 
         if overwrite:
             logger.info('Overwriting existing data in the chroma.')

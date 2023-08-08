@@ -154,6 +154,7 @@ class CatalogManager(Singleton):
                     llm_user_prompt=character_model.user_prompt,
                     voice_id=character_model.voice_id,
                     source='community',
+                    author_id=character_model.author_id,
                 )
                 self.characters[character_model.id] = character
                 # TODO: load context data from storage

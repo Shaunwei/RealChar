@@ -158,6 +158,7 @@ class CatalogManager(Singleton):
                     source='community',
                     author_id=character_model.author_id,
                     visibility=character_model.visibility,
+                    tts=character_model.tts,
                 )
                 self.characters[character_model.id] = character
                 # TODO: load context data from storage

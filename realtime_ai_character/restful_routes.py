@@ -82,6 +82,7 @@ async def characters(user=Depends(get_current_user)):
         "image_url":
         f'https://storage.googleapis.com/assistly/static/realchar/{character.character_id}.jpg',
         "avatar_id": character.avatar_id,
+        "tts": character.tts,
     } for character in catalog.characters.values()
             if character.author_id == uid or character.visibility == 'public']
 

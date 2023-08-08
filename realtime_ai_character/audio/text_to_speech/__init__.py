@@ -3,15 +3,16 @@ import os
 from realtime_ai_character.audio.text_to_speech.base import TextToSpeech
 
 
-def get_text_to_speech() -> TextToSpeech:
-    use = os.getenv('TEXT_TO_SPEECH_USE', 'ELEVEN_LABS')
-    if use == 'ELEVEN_LABS':
+def get_text_to_speech(tts: str = None) -> TextToSpeech:
+    if not tts:
+        tts = os.getenv('TEXT_TO_SPEECH_USE', 'ELEVEN_LABS')
+    if tts == 'ELEVEN_LABS':
         from realtime_ai_character.audio.text_to_speech.elevenlabs import ElevenLabs
         ElevenLabs.initialize()
         return ElevenLabs.get_instance()
-    elif use == 'GOOGLE_TTS':
+    elif tts == 'GOOGLE_TTS':
         from realtime_ai_character.audio.text_to_speech.google_cloud_tts import GoogleCloudTTS
         GoogleCloudTTS.initialize()
         return GoogleCloudTTS.get_instance()
     else:
-        raise NotImplementedError(f'Unknown text to speech engine: {use}')
+        raise NotImplementedError(f'Unknown text to speech engine: {tts}')

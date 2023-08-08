@@ -20,6 +20,7 @@ class Character(Base):
     data = Column(JSON(), nullable=True)
     created_at = Column(DateTime(), nullable=False)
     updated_at = Column(DateTime(), nullable=False)
+    tts = Column(String(64), nullable=True)
 
     def to_dict(self):
         return {

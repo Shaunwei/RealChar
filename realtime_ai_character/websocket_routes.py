@@ -65,6 +65,7 @@ async def websocket_endpoint(websocket: WebSocket,
                              character_id: str = Query(None),
                              platform: str = Query(None),
                              use_search: bool = Query(default=False),
+                             tts: str = Query(None),
                              db: Session = Depends(get_db),
                              catalog_manager=Depends(get_catalog_manager),
                              speech_to_text=Depends(get_speech_to_text),
@@ -84,6 +85,8 @@ async def websocket_endpoint(websocket: WebSocket,
             return
     llm = get_llm(model=llm_model)
     await manager.connect(websocket)
+    if tts:
+        text_to_speech = get_text_to_speech(tts)
     try:
         main_task = asyncio.create_task(
             handle_receive(websocket, session_id, user_id, db, llm, catalog_manager,

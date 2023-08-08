@@ -89,7 +89,7 @@ async def characters(user=Depends(get_current_user)):
 @router.get("/configs")
 async def configs():
     return {
-        'llms': ['gpt-4', 'gpt-3.5-turbo-16k', 'claude-2']
+        'llms': ['gpt-4', 'gpt-3.5-turbo-16k', 'claude-2', 'meta-llama/Llama-2-70b-chat-hf'],
     }
 
 @router.get("/session_history")

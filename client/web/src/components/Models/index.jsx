@@ -29,6 +29,11 @@ const Models = ({ isMobile, selectedModel, setSelectedModel }) => {
       name: 'Claude-2',
       tooltip: 'Slower model, longer context window for long conversation',
     },
+    {
+      id: 'meta-llama/Llama-2-70b-chat-hf',
+      name: 'Llama-2-70b',
+      tooltip: 'Open source model, good for most conversation',
+    },
   ];
 
   const CustomTooltipContent = ({ tooltip }) => {
@@ -56,7 +61,7 @@ const Models = ({ isMobile, selectedModel, setSelectedModel }) => {
       <label>Large language model(LLM)</label>
       <Grid container spacing={2} sx={{ marginBottom: 5 }}>
         {models.map((model, index) => (
-          <Grid item xs={isMobile ? 12 : 4} key={index}>
+          <Grid item xs={isMobile ? 12 : 3} key={index}>
             <CustomTooltip
               title={<CustomTooltipContent tooltip={model.tooltip} />}
               placement='top-end'

@@ -11,7 +11,7 @@ import Firebase
 
 enum LlmOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Codable {
 
-    case gpt35, gpt4, claude
+    case gpt35, gpt4, claude, llama
 
     init?(rawValue: String) {
         for option in LlmOption.allCases {
@@ -32,6 +32,8 @@ enum LlmOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Codable 
             return "gpt-4"
         case .claude:
             return "claude-2"
+        case .llama:
+            return "meta-llama/Llama-2-70b-chat-hf"
         }
     }
 
@@ -43,6 +45,8 @@ enum LlmOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Codable 
             return "gpt-4"
         case .claude:
             return "claude-2"
+        case .llama:
+            return "LLaMA-2-70b"
         }
     }
 }

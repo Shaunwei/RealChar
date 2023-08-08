@@ -14,5 +14,9 @@ def get_text_to_speech(tts: str = None) -> TextToSpeech:
         from realtime_ai_character.audio.text_to_speech.google_cloud_tts import GoogleCloudTTS
         GoogleCloudTTS.initialize()
         return GoogleCloudTTS.get_instance()
+    elif use == 'UNREAL_SPEECH':
+        from realtime_ai_character.audio.text_to_speech.unreal_speech import UnrealSpeech
+        UnrealSpeech.initialize()
+        return UnrealSpeech.get_instance()
     else:
         raise NotImplementedError(f'Unknown text to speech engine: {tts}')

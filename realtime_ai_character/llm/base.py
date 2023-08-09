@@ -134,10 +134,10 @@ class QuivrAgent:
             url = f"https://api.quivr.app/chat/{chat_id}/question?brain_id={brainId}"
             headers = {"Authorization": f"Bearer {apiKey}"}
             data = {
-                "model": "gpt-3.5-turbo-0613",
+                "model": "gpt-3.5-turbo-16k",
                 "temperature": 0.5,
                 "question": query,
-                "max_tokens": 256,
+                "max_tokens": 512,
             }
 
             response = requests.post(url, headers=headers, json=data)

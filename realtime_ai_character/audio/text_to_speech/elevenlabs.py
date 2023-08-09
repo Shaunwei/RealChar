@@ -38,7 +38,8 @@ class ElevenLabs(Singleton, TextToSpeech):
         if DEBUG:
             return
         if voice_id == "":
-            logger.info(f"voice_id is not found in .env file, using ElevenLabs default voice")
+            logger.info(
+                f"voice_id is not found in .env file, using ElevenLabs default voice")
             voice_id = "21m00Tcm4TlvDq8ikWAM"
         headers = config.headers
         if language != 'en-US':
@@ -53,7 +54,8 @@ class ElevenLabs(Singleton, TextToSpeech):
         async with httpx.AsyncClient() as client:
             response = await client.post(url, json=data, headers=headers)
             if response.status_code != 200:
-                logger.error(f"ElevenLabs returns response {response.status_code}")
+                logger.error(
+                    f"ElevenLabs returns response {response.status_code}")
             async for chunk in response.aiter_bytes():
                 await asyncio.sleep(0.1)
                 if tts_event.is_set():

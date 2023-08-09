@@ -33,7 +33,8 @@ app.mount("/static", StaticFiles(directory=os.path.join(
 
 
 # initializations
-CatalogManager.initialize(overwrite=True)
+overwrite_chroma = os.getenv("OVERWRITE_CHROMA", 'True').lower() in ('true', '1')
+CatalogManager.initialize(overwrite=overwrite_chroma)
 ConnectionManager.initialize()
 get_text_to_speech()
 get_speech_to_text()

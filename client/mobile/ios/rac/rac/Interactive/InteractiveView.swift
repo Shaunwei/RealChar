@@ -59,7 +59,11 @@ struct InteractiveView: View {
                                  speechRecognizer: SpeechRecognizer(locale: preferenceSettings.languageOption.locale),
                                  onUpdateUserMessage: { message in
                     if messages.last?.role == .user {
-                        messages[messages.count - 1].content = message
+                        if !message.isEmpty {
+                            messages[messages.count - 1].content = message
+                        } else {
+                            messages.remove(at: messages.count - 1)
+                        }
                     } else {
                         if openMic {
                             voiceState = .listeningToUser

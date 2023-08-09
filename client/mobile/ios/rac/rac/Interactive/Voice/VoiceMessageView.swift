@@ -123,7 +123,13 @@ struct VoiceMessageView: View {
                         }
 
                         if messages.last?.role == .user, let lastUserMessage = messages.last {
-                            UserMessage(message: lastUserMessage.content)
+                            UserMessage(message: lastUserMessage.content,
+                                        onCancel: {
+                                onUpdateUserMessage("")
+                                speechRecognizer.transcript = ""
+                                speechRecognizer.stopTranscribing()
+                                speechRecognizer.startTranscribing()
+                            })
                                 .listRowSeparator(.hidden)
                                 .listRowBackground(Constants.realBlack)
                                 .id(0)

@@ -54,7 +54,8 @@ class ElevenLabs(Singleton, TextToSpeech):
         async with httpx.AsyncClient() as client:
             response = await client.post(url, json=data, headers=headers)
             if response.status_code != 200:
-                logger.error(f"ElevenLabs returns response {response.status_code}")
+                logger.error(
+                    f"ElevenLabs returns response {response.status_code}")
             async for chunk in response.aiter_bytes():
                 await asyncio.sleep(0.1)
                 if tts_event.is_set():

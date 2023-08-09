@@ -19,6 +19,7 @@ from realtime_ai_character.llm import (AsyncCallbackAudioHandler,
                                        AsyncCallbackTextHandler, get_llm, LLM)
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.models.interaction import Interaction
+from realtime_ai_character.models.memory import Memory
 from realtime_ai_character.utils import (ConversationHistory, build_history,
                                          get_connection_manager)
 
@@ -65,6 +66,7 @@ async def websocket_endpoint(websocket: WebSocket,
                              character_id: str = Query(None),
                              platform: str = Query(None),
                              use_search: bool = Query(default=False),
+                             use_quivr: bool = Query(default=False),
                              db: Session = Depends(get_db),
                              catalog_manager=Depends(get_catalog_manager),
                              speech_to_text=Depends(get_speech_to_text),
@@ -87,7 +89,7 @@ async def websocket_endpoint(websocket: WebSocket,
     try:
         main_task = asyncio.create_task(
             handle_receive(websocket, session_id, user_id, db, llm, catalog_manager,
-                           character_id, platform, use_search,
+                           character_id, platform, use_search, use_quivr,
                            speech_to_text, default_text_to_speech, language))
 
         await asyncio.gather(main_task)
@@ -99,7 +101,7 @@ async def websocket_endpoint(websocket: WebSocket,
 
 async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db: Session,
                          llm: LLM, catalog_manager: CatalogManager,
-                         character_id: str, platform: str, use_search: bool,
+                         character_id: str, platform: str, use_search: bool, use_quivr: bool,
                          speech_to_text: SpeechToText,
                          default_text_to_speech: TextToSpeech,
                          language: str):
@@ -231,11 +233,13 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     continue
 
                 # 1. Send "thinking" status over websocket
-                if use_search:
+                if use_search or use_quivr:
                     await manager.send_message(message='[thinking]\n',
                                                websocket=websocket)
 
                 # 2. Send message to LLM
+                if use_quivr:
+                    memory = db.query(Memory).filter(Memory.user_id == user_id).first()
                 response = await llm.achat(
                     history=build_history(conversation_history),
                     user_input=msg_data,
@@ -245,7 +249,10 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     audioCallback=AsyncCallbackAudioHandler(
                         text_to_speech, websocket, tts_event, character.voice_id),
                     character=character,
-                    useSearch=use_search)
+                    useSearch=use_search,
+                    useQuivr=use_quivr,
+                    quivrApiKey=memory.quivr_api_key if memory else None,
+                    quivrBrainId=memory.quivr_brain_id if memory else None)
 
                 # 3. Send response to client
                 message_id = str(uuid.uuid4().hex)[:16]
@@ -257,7 +264,11 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 conversation_history.ai.append(response)
                 token_buffer.clear()
                 # 5. Persist interaction in the database
-                tools = "search" if use_search else ""
+                tools = []
+                if use_search:
+                    tools.append('search')
+                if use_quivr:
+                    tools.append('quivr')
                 Interaction(user_id=user_id,
                             session_id=session_id,
                             client_message_unicode=msg_data,
@@ -265,7 +276,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                             platform=platform,
                             action_type='text',
                             character_id=character_id,
-                            tools=tools,
+                            tools=','.join(tools),
                             language=language,
                             message_id=message_id,
                             llm_config=llm.get_config()).save(db)
@@ -300,7 +311,10 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     conversation_history.ai.append(response)
                     token_buffer.clear()
                     # Persist interaction in the database
-                    tools = "search" if use_search else ""
+                    if use_search:
+                        tools.append('search')
+                    if use_quivr:
+                        tools.append('quivr')
                     Interaction(user_id=user_id,
                                 session_id=session_id,
                                 client_message_unicode=transcript,
@@ -308,16 +322,18 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                                 platform=platform,
                                 action_type='audio',
                                 character_id=character_id,
-                                tools=tools,
+                                tools=','.join(tools),
                                 language=language,
                                 llm_config=llm.get_config()).save(db)
 
                 # 4. Send "thinking" status over websocket
-                if use_search:
+                if use_search or use_quivr:
                     await manager.send_message(message='[thinking]\n',
                                                websocket=websocket)
 
                 # 5. Send message to LLM
+                if use_quivr:
+                    memory = db.query(Memory).filter(Memory.user_id == user_id).first()
                 tts_task = asyncio.create_task(
                     llm.achat(history=build_history(conversation_history),
                               user_input=transcript,
@@ -329,7 +345,10 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                                   text_to_speech, websocket, tts_event,
                                   character.voice_id),
                               character=character,
-                              useSearch=use_search))
+                              useSearch=use_search,
+                              useQuivr=use_quivr,
+                              quivrApiKey=memory.quivr_api_key if memory else None,
+                              quivrBrainId=memory.quivr_brain_id if memory else None))
 
     except WebSocketDisconnect:
         logger.info(f"User #{user_id} closed the connection")

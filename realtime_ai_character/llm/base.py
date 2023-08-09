@@ -1,5 +1,6 @@
 import os
 from abc import ABC, abstractmethod
+import requests
 
 from langchain.callbacks.base import AsyncCallbackHandler
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -110,6 +111,51 @@ class SearchAgent:
                 return '\n' + search_context
             except Exception as e:
                 logger.error(f'Error when searching: {e}')
+        return ''
+
+class QuivrAgent:
+
+    def __init__(self):
+        pass
+
+    def question(self, query: str, apiKey: str, brainId: str) -> str:
+        try:
+            # 1. Create new chat
+            url = "https://api.quivr.app/chat"
+            headers = {"Authorization": f"Bearer {apiKey}"}
+            data = {"name": "Chat from RealChar"}
+
+            response = requests.post(url, headers=headers, json=data)
+            response.raise_for_status()
+
+            chat_id = response.json()["chat_id"]
+
+            # 2. Ask question
+            url = f"https://api.quivr.app/chat/{chat_id}/question?brain_id={brainId}"
+            headers = {"Authorization": f"Bearer {apiKey}"}
+            data = {
+                "model": "gpt-3.5-turbo-0613",
+                "temperature": 0.5,
+                "question": query,
+                "max_tokens": 256,
+            }
+
+            response = requests.post(url, headers=headers, json=data)
+            response.raise_for_status()
+            quivr_result = response.json()["assistant"]
+
+            quivr_context = '\n'.join([
+                '---',
+                'Second brain result:',
+                '---',
+                'Question: ' + query,
+                'Query Result: ' + quivr_result,
+            ])
+            logger.info(f'Quvir query result: {quivr_context}')
+            # Append to context
+            return '\n' + quivr_context
+        except Exception as e:
+            logger.error(f'Error when querying quivr: {e}')
         return ''
 
 class LLM(ABC):

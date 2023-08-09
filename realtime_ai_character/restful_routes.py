@@ -220,13 +220,13 @@ async def generate_audio(text: str, tts: str = None, user = Depends(get_current_
                 headers={'WWW-Authenticate': 'Bearer'},
             )
     try:
-        tts = get_text_to_speech(tts)
+        tts_service = get_text_to_speech(tts)
     except NotImplementedError:
         raise HTTPException(
                 status_code=http_status.HTTP_400_BAD_REQUEST,
                 detail='Text to speech engine not found',
             )
-    audio_bytes = await tts.generate_audio(text)
+    audio_bytes = await tts_service.generate_audio(text)
     # save audio to a file on GCS
     storage_client = storage.Client()
     bucket_name = os.environ.get('GCP_STORAGE_BUCKET_NAME')
@@ -238,10 +238,11 @@ async def generate_audio(text: str, tts: str = None, user = Depends(get_current_
     bucket = storage_client.bucket(bucket_name)
 
     # Create a new filename with a timestamp and a random uuid to avoid duplicate filenames
+    file_extension = '.webm' if tts == 'UNREAL_SPEECH' else '.mp3'
     new_filename = (
         f"user_upload/{user['uid']}/"
         f"{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}-"
-        f"{uuid.uuid4()}.mp3"
+        f"{uuid.uuid4()}{file_extension}"
     )
 
     blob = bucket.blob(new_filename)

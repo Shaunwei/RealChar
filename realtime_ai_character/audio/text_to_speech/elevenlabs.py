@@ -76,6 +76,7 @@ class ElevenLabs(Singleton, TextToSpeech):
             "text": text,
             **config.data,
         }
+        # Change to non-streaming endpoint
         url = config.url.format(voice_id=voice_id).replace('/stream', '')
         async with httpx.AsyncClient() as client:
             response = await client.post(url, json=data, headers=headers)

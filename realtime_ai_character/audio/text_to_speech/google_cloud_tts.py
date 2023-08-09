@@ -22,7 +22,7 @@ config = types.SimpleNamespace(**{
         'voice': {
             'languageCode': 'en-US',
             'name': 'en-US-Studio-M',
-            'ssmlGender': 'NEUTRAL'
+            'ssmlGender': 'MALE'
         },
         'audioConfig': {
             'audioEncoding': 'MP3'

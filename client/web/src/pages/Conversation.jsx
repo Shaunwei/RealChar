@@ -49,7 +49,7 @@ const Conversation = ({
   setSelectedCharacter,
   setSelectedModel,
   setSelectedDevice,
-  connect,
+  connectSocketWithState,
 }) => {
   const navigate = useNavigate();
   const { search } = useLocation();
@@ -86,10 +86,10 @@ const Conversation = ({
       navigate('/');
     }
     // console.log("reached here")
-    const selectedCharacter = JSON.parse(
+    const paramSelectedCharacter = JSON.parse(
       lz.decompressFromEncodedURIComponent(character)
     );
-    setSelectedCharacter(selectedCharacter);
+    setSelectedCharacter(paramSelectedCharacter);
     console.log('updated selected character');
     setSelectedModel(selectedModel);
 
@@ -100,21 +100,25 @@ const Conversation = ({
     setPreferredLanguage(preferredLanguage);
 
     setUseSearch(useSearch);
-
     console.log(
-      selectedCharacter,
+      paramSelectedCharacter,
       selectedModel,
       selectedDevice,
       isCallView,
       preferredLanguage,
       useSearch
     );
+  }, []);
+
+  useEffect(() => {
+    console.log('connecting socket');
     if (!isConnecting.current) {
       const tryConnect = async () => {
         try {
           console.log('trying to connect');
-          await connect();
-          console.log('connected');
+            // requires login if user wants to use gpt4 or claude.
+          connectSocketWithState();
+          console.log('after connectSocketWithState');
         } catch (error) {
           console.error('Failed fetching data:', error);
         }
@@ -130,9 +134,9 @@ const Conversation = ({
 
     // Clean up event listener on component unmount
     return () => window.removeEventListener('beforeunload', handleUnload);
-  }, []);
+  }, [connectSocketWithState, selectedCharacter]);
 
-  if (!isConnecting.current) {
+  if (!isConnected.current) {
     return null;
   }
 

@@ -30,11 +30,14 @@ const useWebsocket = (
   //   }, [selectedCharacter]);
 
   // initialize web socket and connect to server.
-  const connectSocket = () => {
+  const connectSocket = useCallback(() => {
     if (!socketRef.current) {
       console.log('connecting to socket');
       console.log('socketRef.current', socketRef.current);
       console.log('character', selectedCharacter);
+      if (!selectedCharacter) {
+        return;
+      }
       const sessionId = uuidv4().replace(/-/g, '');
       setSessionId(sessionId);
       const ws_scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
@@ -63,20 +66,29 @@ const useWebsocket = (
         console.log('Socket closed');
       };
     }
-  };
+  }, [
+    token,
+    onOpen,
+    onMessage,
+    selectedModel,
+    preferredLanguage,
+    useSearch,
+    selectedCharacter,
+    setSessionId]
+    );
 
   // send message to server
-  const send = data => {
+  const send = useCallback(data => {
     console.log('message sent to server');
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
       socketRef.current.send(data);
     }
-  };
+  }, [socketRef]);
 
-  const closeSocket = () => {
+  const closeSocket = useCallback(() => {
     socketRef.current.close();
     socketRef.current = null;
-  };
+  }, [socketRef]);
 
   return { socketRef, send, connectSocket, closeSocket };
 };

@@ -33,13 +33,13 @@ class ElevenLabs(Singleton, TextToSpeech):
         super().__init__()
         logger.info("Initializing [ElevenLabs Text To Speech] voices...")
 
-    async def stream(self, text, websocket, tts_event: asyncio.Event, voice_id="21m00Tcm4TlvDq8ikWAM",
+    async def stream(self, text, websocket, tts_event: asyncio.Event, 
+                     voice_id="21m00Tcm4TlvDq8ikWAM",
                      first_sentence=False, language='en-US') -> None:
         if DEBUG:
             return
         if voice_id == "":
-            logger.info(
-                f"voice_id is not found in .env file, using ElevenLabs default voice")
+            logger.info("voice_id is not found in .env file, using ElevenLabs default voice")
             voice_id = "21m00Tcm4TlvDq8ikWAM"
         headers = config.headers
         if language != 'en-US':
@@ -62,3 +62,25 @@ class ElevenLabs(Singleton, TextToSpeech):
                     # stop streaming audio
                     break
                 await websocket.send_bytes(chunk)
+
+    async def generate_audio(self, text, voice_id = "", language='en-US') -> bytes:
+        if DEBUG:
+            return
+        if voice_id == "":
+            logger.info("voice_id is not found in .env file, using ElevenLabs default voice")
+            voice_id = "21m00Tcm4TlvDq8ikWAM"
+        headers = config.headers
+        if language != 'en-US':
+            config.data["model_id"] = 'eleven_multilingual_v1'
+        data = {
+            "text": text,
+            **config.data,
+        }
+        # Change to non-streaming endpoint
+        url = config.url.format(voice_id=voice_id).replace('/stream', '')
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, json=data, headers=headers)
+            if response.status_code != 200:
+                logger.error(f"ElevenLabs returns response {response.status_code}")
+            # Get audio/mpeg from the response and return it
+            return response.content

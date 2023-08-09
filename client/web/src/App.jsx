@@ -323,6 +323,33 @@ const App = () => {
             }
           />
           <Route path='/shared' element={<SharedConversation />} />
+                isRecording={isRecording} 
+                isPlaying={isPlaying} 
+                audioPlayer={audioPlayer} 
+                handleStopCall={handleStopCall} 
+                handleContinueCall={handleContinueCall} 
+                audioQueue={audioQueue} 
+                setIsPlaying={setIsPlaying} 
+                handleDisconnect={handleDisconnect} 
+                setIsCallView={setIsCallView} 
+                send={send} 
+                stopAudioPlayback={stopAudioPlayback} 
+                textAreaValue={textAreaValue} 
+                setTextAreaValue={setTextAreaValue} 
+                messageInput={messageInput} 
+                setMessageInput={setMessageInput} 
+                setUseSearch={setUseSearch} 
+                callActive={callActive} 
+                startRecording={startRecording} 
+                stopRecording={stopRecording} 
+                setPreferredLanguage={setPreferredLanguage}
+                selectedCharacter={selectedCharacter}
+                setSelectedCharacter={setSelectedCharacter}
+                setSelectedModel={setSelectedModel}
+                setSelectedDevice={setSelectedDevice}
+                connect={connect}
+              />} 
+            />
         </Routes>
 
         <Footer />

@@ -106,12 +106,63 @@ struct ChatMessagesView_Previews: PreviewProvider {
 
 struct CharacterMessage: View {
     let message: String
+    @State var isShowingCommentSheet = false
+    @State var thumbsUp = false
+    @State var feedback: String = ""
 
     var body: some View {
         Text(message)
           .font(Font.custom("Prompt", size: 20))
           .foregroundColor(.white)
           .frame(maxWidth: .infinity, alignment: .topLeading)
+          .contextMenu {
+              Button {
+                  // Handle thumbs up action
+                  print("Thumbs up")
+                  thumbsUp = true
+                  isShowingCommentSheet = true
+              } label: {
+                  Label("It's great!", systemImage: "hand.thumbsup")
+              }
+
+              Button {
+                  // Handle thumbs down action
+                  print("Thumbs down")
+                  thumbsUp = false
+                  isShowingCommentSheet = true
+              } label: {
+                  Label("Something's wrong", systemImage: "hand.thumbsdown")
+              }
+
+              Button {
+                  // Handle copy to clipboard action
+                  print("Copy to clipboard")
+                  UIPasteboard.general.string = "This text"
+              } label: {
+                  Label("Copy to Clipboard", systemImage: "doc.on.doc")
+              }
+          }
+          .alert(thumbsUp
+                 ? "Thank you! Share more feedback?"
+                 : "Sorry to hear that! Share more feedback?",
+                 isPresented: $isShowingCommentSheet) {
+              // Comment sheet
+              VStack {
+                  TextField("(Optional) Feedback", text: $feedback)
+                      .foregroundColor(.primary)
+
+                  Button("Cancel") {
+                      isShowingCommentSheet = false
+                  }
+
+                  Button("Submit") {
+                      // Handle submit action along with comment
+                      print("Submitted with comment: \(feedback)")
+                      isShowingCommentSheet = false
+                  }
+              }
+              .padding()
+          }
     }
 }
 

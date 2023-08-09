@@ -2,7 +2,6 @@ import asyncio
 import os
 import types
 import httpx
-import json
 import base64
 from google.oauth2 import service_account
 import google.auth.transport.requests
@@ -22,7 +21,7 @@ config = types.SimpleNamespace(**{
     'data': {
         'voice': {
             'languageCode': 'en-US',
-            'name': 'en-US-Standard-C',
+            'name': 'en-US-Studio-M',
             'ssmlGender': 'NEUTRAL'
         },
         'audioConfig': {
@@ -59,7 +58,7 @@ class GoogleCloudTTS(Singleton, TextToSpeech):
         if DEBUG:
             return
         if voice_id == "":
-            logger.info(f"voice_id is not found in .env file, using Google default voice")
+            logger.info("voice_id is not found in .env file, using Google default voice")
             voice_id = "en-US-Standard-C"
         headers = config.headers
         # For customized voices
@@ -81,5 +80,6 @@ class GoogleCloudTTS(Singleton, TextToSpeech):
                 logger.error(f"Google Cloud TTS returns response {response.status_code}")
             else:
                 audio_content = response.content
-                audio_content = base64.b64decode(audio_content)  # Decode the base64-encoded audio content
+                # Decode the base64-encoded audio content
+                audio_content = base64.b64decode(audio_content)
                 await websocket.send_bytes(audio_content)

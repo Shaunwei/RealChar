@@ -11,6 +11,7 @@ from fastapi.templating import Jinja2Templates
 import firebase_admin
 from firebase_admin import auth, credentials
 from firebase_admin.exceptions import FirebaseError
+from realtime_ai_character.audio.text_to_speech import get_text_to_speech
 from realtime_ai_character.database.connection import get_db
 from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.feedback import Feedback, FeedbackRequest
@@ -203,3 +204,51 @@ async def edit_character(edit_character_request: EditCharacterRequest,
     character.updated_at = datetime.datetime.now()
     db.merge(character)
     db.commit()
+
+
+@router.post("/generate_audio")
+async def generate_audio(text: str, tts: str = None, user = Depends(get_current_user)):
+    if not str:
+        raise HTTPException(
+                status_code=http_status.HTTP_400_BAD_REQUEST,
+                detail='Text is empty',
+            )
+    if not user:
+        raise HTTPException(
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid authentication credentials',
+                headers={'WWW-Authenticate': 'Bearer'},
+            )
+    try:
+        tts = get_text_to_speech(tts)
+    except NotImplementedError:
+        raise HTTPException(
+                status_code=http_status.HTTP_400_BAD_REQUEST,
+                detail='Text to speech engine not found',
+            )
+    audio_bytes = await tts.generate_audio(text)
+    # save audio to a file on GCS
+    storage_client = storage.Client()
+    bucket_name = os.environ.get('GCP_STORAGE_BUCKET_NAME')
+    if not bucket_name:
+        raise HTTPException(
+                status_code=http_status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail='GCP_STORAGE_BUCKET_NAME is not set',
+            )
+    bucket = storage_client.bucket(bucket_name)
+
+    # Create a new filename with a timestamp and a random uuid to avoid duplicate filenames
+    new_filename = (
+        f"user_upload/{user['uid']}/"
+        f"{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}-"
+        f"{uuid.uuid4()}.mp3"
+    )
+
+    blob = bucket.blob(new_filename)
+
+    await asyncio.to_thread(blob.upload_from_string, audio_bytes)
+
+    return {
+        "filename": new_filename,
+        "content-type": "audio/mpeg"
+    }

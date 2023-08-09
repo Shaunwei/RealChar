@@ -89,7 +89,7 @@ async def characters(user=Depends(get_current_user)):
         "avatar_id": character.avatar_id,
         "tts": character.tts,
     } for character in catalog.characters.values()
-        if character.author_id == uid or character.visibility != 'private']
+            if character.author_id == uid or character.visibility == 'public']
 
 
 @router.get("/configs")

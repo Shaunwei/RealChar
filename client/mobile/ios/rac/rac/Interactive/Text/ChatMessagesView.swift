@@ -117,17 +117,33 @@ struct CharacterMessage: View {
 
 struct UserMessage: View {
     let message: String
+    var onCancel: (() -> Void)? = nil
 
     var body: some View {
-        Text(message)
-            .font(Font.custom("Prompt", size: 20))
-            .multilineTextAlignment(.trailing)
-            .foregroundColor(.white)
-            .padding(.horizontal, 20)
-            .padding(.vertical, 11)
-            .background(Color(red: 0.4, green: 0.52, blue: 0.83).opacity(0.25))
-            .roundedCorner(20, corners: [.bottomLeft, .topLeft, .topRight])
-            .frame(maxWidth: .infinity, alignment: .topTrailing)
+        HStack(spacing: 8) {
+            Text(message)
+                .font(Font.custom("Prompt", size: 20))
+                .multilineTextAlignment(.trailing)
+                .foregroundColor(.white)
+                .padding(.vertical, 11)
+                .padding(.leading, 20)
+                .if(onCancel == nil) { view in
+                    view.padding(.trailing, 20)
+                }
+
+            if let onCancel {
+                Button {
+                    onCancel()
+                } label: {
+                    Image(systemName: "xmark.circle")
+                        .padding(12)
+                }
+                .buttonStyle(CustomButtonStyle())
+            }
+        }
+        .background(Color(red: 0.4, green: 0.52, blue: 0.83).opacity(0.25))
+        .roundedCorner(20, corners: [.bottomLeft, .topLeft, .topRight])
+        .frame(maxWidth: .infinity, alignment: .topTrailing)
     }
 }
 

@@ -66,8 +66,33 @@ const Settings = ({
       // TODO(UI): Hide loading animation
     }, 500);
 
-    console.log("/conversation?isCallView=" + (commMethod === "Call") + "&character=" + character + "&preferredLanguage=" + preferredLanguage + "&selectedDevice=" + selectedDevice + "&selectedModel=" + selectedModel + "&useSearch=" + useSearch);
-    navigate("/conversation?isCallViewVal=" + (commMethod === "Call") + "&character=" + character + "&preferredLanguage=" + preferredLanguage + "&selectedDevice=default" + "&selectedModel=" + selectedModel + "&isCallViewVal=" + useSearch);
+    console.log(
+      '/conversation?isCallView=' +
+        (commMethod === 'Call') +
+        '&character=' +
+        character +
+        '&preferredLanguage=' +
+        preferredLanguage +
+        '&selectedDevice=' +
+        selectedDevice +
+        '&selectedModel=' +
+        selectedModel +
+        '&useSearch=' +
+        useSearch
+    );
+    navigate(
+      '/conversation?isCallViewVal=' +
+        (commMethod === 'Call') +
+        '&character=' +
+        character +
+        '&preferredLanguage=' +
+        preferredLanguage +
+        '&selectedDevice=default' +
+        '&selectedModel=' +
+        selectedModel +
+        '&isCallViewVal=' +
+        useSearch
+    );
   };
 
   return (

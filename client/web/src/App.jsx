@@ -166,17 +166,17 @@ const App = () => {
     stopRecording,
     setTextAreaValue
   );
+
   const connectSocketWithState = useCallback(() => {
     isConnecting.current = true;
-    console.log('In connectSocketWithState: before connectSocket');
     connectSocket();
-    console.log('In connectSocketWithState: after connectSocket');
     isConnecting.current = false;
   }, [isConnecting, connectSocket]);
+
   const closeSocketWithState = () => {
-    isConnecting.current = false;
     closeSocket();
   };
+
   // Handle Button Clicks
   const connect = async () => {
     try {
@@ -321,7 +321,7 @@ const App = () => {
                 setSelectedCharacter={setSelectedCharacter}
                 setSelectedModel={setSelectedModel}
                 setSelectedDevice={setSelectedDevice}
-                connectSocketWithState={connectSocketWithState}
+                connect={connect}
                 messageId={messageId}
                 token={token}
                 isTextStreaming={isTextStreaming}

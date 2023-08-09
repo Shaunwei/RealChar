@@ -49,7 +49,7 @@ const Conversation = ({
   setSelectedCharacter,
   setSelectedModel,
   setSelectedDevice,
-  connectSocketWithState,
+  connect,
 }) => {
   const navigate = useNavigate();
   const { search } = useLocation();
@@ -116,8 +116,8 @@ const Conversation = ({
       const tryConnect = async () => {
         try {
           console.log('trying to connect');
-            // requires login if user wants to use gpt4 or claude.
-          connectSocketWithState();
+          // requires login if user wants to use gpt4 or claude.
+          connect();
           console.log('after connectSocketWithState');
         } catch (error) {
           console.error('Failed fetching data:', error);
@@ -134,7 +134,7 @@ const Conversation = ({
 
     // Clean up event listener on component unmount
     return () => window.removeEventListener('beforeunload', handleUnload);
-  }, [connectSocketWithState, selectedCharacter]);
+  }, [connect]);
 
   if (!isConnected.current) {
     return null;

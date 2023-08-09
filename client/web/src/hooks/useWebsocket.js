@@ -41,17 +41,43 @@ const useWebsocket = (
         newHost +
         `/ws/${sessionId}?llm_model=${selectedModel}&platform=web&use_search=${useSearch}&character_id=${selectedCharacter.character_id}&language=${language}&token=${token}`;
 
-      socketRef.current = new WebSocket(ws_path);
-      const socket = socketRef.current;
-      socket.binaryType = 'arraybuffer';
-      socket.onopen = onOpen;
-      socket.onmessage = onMessage;
-      socket.onerror = error => {
-        console.log(`WebSocket Error: ${error}`);
-      };
-      socket.onclose = event => {
-        console.log('Socket closed');
-      };
+        if (!(hostname === 'localhost' || isIP(hostname))) {
+            hostname = 'api.' + hostname;
+            newPort = window.location.protocol === "https:" ? 443 : 80;
+        }
+
+        // Generate the new host value with the same IP but different port
+        var newHost = hostname + ':' + newPort;
+
+        var language = languageCode[preferredLanguage];
+        console.log("character: ", selectedCharacter);
+        const ws_path = ws_scheme + '://' + newHost + `/ws/${sessionId}?llm_model=${selectedModel}&platform=web&use_search=${useSearch}&character_id=${selectedCharacter.character_id}&language=${language}&token=${token}`;
+
+        socketRef.current = new WebSocket(ws_path);
+        const socket = socketRef.current;
+        socket.binaryType = 'arraybuffer';
+        socket.onopen = onOpen;
+        socket.onmessage = onMessage;
+        socket.onerror = (error) => {
+            console.log(`WebSocket Error: ${error}`); 
+        };
+        socket.onclose = (event) => {
+            console.log("Socket closed"); 
+        };
+      }
+    }, [onOpen, onMessage, selectedCharacter]);
+
+    // send message to server
+    const send = (data) => {
+        console.log("message sent to server");
+        if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+            socketRef.current.send(data);
+        }
+    };
+
+    const closeSocket = () => {
+        socketRef.current.close();
+        socketRef.current = null;
     }
   }, [setSessionId, onOpen, onMessage]);
 

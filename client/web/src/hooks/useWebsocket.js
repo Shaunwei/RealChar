@@ -5,7 +5,7 @@
  * created by Lynchee on 7/16/23
  */
 
-import { useRef, useCallback } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import { isIP, isIPv4 } from 'is-ip';
 import { languageCode } from './languageCode';
 import { v4 as uuidv4 } from 'uuid';
@@ -22,10 +22,19 @@ const useWebsocket = (
   setSessionId
 ) => {
   const socketRef = useRef(null);
+  //   const selectedCharacterRef = useRef(selectedCharacter);
+
+  //   useEffect(() => {
+  //     console.log('Effect is running, updating ref:', selectedCharacter);
+  //     selectedCharacterRef.current = selectedCharacter;
+  //   }, [selectedCharacter]);
 
   // initialize web socket and connect to server.
-  const connectSocket = useCallback(() => {
+  const connectSocket = () => {
     if (!socketRef.current) {
+      console.log('connecting to socket');
+      console.log('socketRef.current', socketRef.current);
+      console.log('character', selectedCharacter);
       const sessionId = uuidv4().replace(/-/g, '');
       setSessionId(sessionId);
       const ws_scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
@@ -40,46 +49,21 @@ const useWebsocket = (
         '://' +
         newHost +
         `/ws/${sessionId}?llm_model=${selectedModel}&platform=web&use_search=${useSearch}&character_id=${selectedCharacter.character_id}&language=${language}&token=${token}`;
-
-        if (!(hostname === 'localhost' || isIP(hostname))) {
-            hostname = 'api.' + hostname;
-            newPort = window.location.protocol === "https:" ? 443 : 80;
-        }
-
-        // Generate the new host value with the same IP but different port
-        var newHost = hostname + ':' + newPort;
-
-        var language = languageCode[preferredLanguage];
-        console.log("character: ", selectedCharacter);
-        const ws_path = ws_scheme + '://' + newHost + `/ws/${sessionId}?llm_model=${selectedModel}&platform=web&use_search=${useSearch}&character_id=${selectedCharacter.character_id}&language=${language}&token=${token}`;
-
-        socketRef.current = new WebSocket(ws_path);
-        const socket = socketRef.current;
-        socket.binaryType = 'arraybuffer';
-        socket.onopen = onOpen;
-        socket.onmessage = onMessage;
-        socket.onerror = (error) => {
-            console.log(`WebSocket Error: ${error}`); 
-        };
-        socket.onclose = (event) => {
-            console.log("Socket closed"); 
-        };
-      }
-    }, [onOpen, onMessage, selectedCharacter]);
-
-    // send message to server
-    const send = (data) => {
-        console.log("message sent to server");
-        if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-            socketRef.current.send(data);
-        }
-    };
-
-    const closeSocket = () => {
-        socketRef.current.close();
-        socketRef.current = null;
+      console.log('before ws connection:', ws_path);
+      socketRef.current = new WebSocket(ws_path);
+      console.log('after ws connection:');
+      const socket = socketRef.current;
+      socket.binaryType = 'arraybuffer';
+      socket.onopen = onOpen;
+      socket.onmessage = onMessage;
+      socket.onerror = error => {
+        console.log(`WebSocket Error: ${error}`);
+      };
+      socket.onclose = event => {
+        console.log('Socket closed');
+      };
     }
-  }, [setSessionId, onOpen, onMessage]);
+  };
 
   // send message to server
   const send = data => {

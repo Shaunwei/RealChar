@@ -53,9 +53,16 @@ const Conversation = ({
 }) => {
   const navigate = useNavigate();
   const { search } = useLocation();
-  const { character = "", selectedModel = "", selectedDevice = "", isCallViewVal = "", preferredLanguage = "", useSearchVal = "" } = queryString.parse(search); 
-  const isCallView = isCallViewVal === "true";
-  const useSearch = useSearchVal === "true";
+  const {
+    character = '',
+    selectedModel = '',
+    selectedDevice = '',
+    isCallViewVal = '',
+    preferredLanguage = '',
+    useSearchVal = '',
+  } = queryString.parse(search);
+  const isCallView = isCallViewVal === 'true';
+  const useSearch = useSearchVal === 'true';
 
   const message = isTextStreaming ? '' : textAreaValue;
 
@@ -68,13 +75,22 @@ const Conversation = ({
 
   useEffect(() => {
     // console.log("conversation page")
-    if (character === "" || selectedModel === "" || selectedDevice === "" || isCallView === "" || preferredLanguage === "" || useSearch === "") {
+    if (
+      character === '' ||
+      selectedModel === '' ||
+      selectedDevice === '' ||
+      isCallView === '' ||
+      preferredLanguage === '' ||
+      useSearch === ''
+    ) {
       navigate('/');
     }
     // console.log("reached here")
-    const selectedCharacter = JSON.parse(lz.decompressFromEncodedURIComponent(character));
+    const selectedCharacter = JSON.parse(
+      lz.decompressFromEncodedURIComponent(character)
+    );
     setSelectedCharacter(selectedCharacter);
-
+    console.log('updated selected character');
     setSelectedModel(selectedModel);
 
     setSelectedDevice(selectedDevice);
@@ -85,13 +101,20 @@ const Conversation = ({
 
     setUseSearch(useSearch);
 
-    console.log(selectedCharacter, selectedModel, selectedDevice, isCallView, preferredLanguage, useSearch);
+    console.log(
+      selectedCharacter,
+      selectedModel,
+      selectedDevice,
+      isCallView,
+      preferredLanguage,
+      useSearch
+    );
     if (!isConnecting.current) {
       const tryConnect = async () => {
         try {
-          console.log("trying to connect");
+          console.log('trying to connect');
           await connect();
-          console.log("connected");
+          console.log('connected');
         } catch (error) {
           console.error('Failed fetching data:', error);
         }
@@ -106,8 +129,8 @@ const Conversation = ({
     window.addEventListener('beforeunload', handleUnload);
 
     // Clean up event listener on component unmount
-    return () => window.removeEventListener("beforeunload", handleUnload);
-  }, [isConnecting, isConnected]);
+    return () => window.removeEventListener('beforeunload', handleUnload);
+  }, []);
 
   if (!isConnecting.current) {
     return null;

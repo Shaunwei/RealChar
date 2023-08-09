@@ -1,8 +1,8 @@
 """Add memory table
 
-Revision ID: 670c73f6bddf
-Revises: 565747ade2c0
-Create Date: 2023-08-07 21:10:22.291167
+Revision ID: ed4f07e2e353
+Revises: 8b16bd92d2a1
+Create Date: 2023-08-08 21:40:45.626833
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '670c73f6bddf'
-down_revision = '565747ade2c0'
+revision = 'ed4f07e2e353'
+down_revision = '8b16bd92d2a1'
 branch_labels = None
 depends_on = None
 

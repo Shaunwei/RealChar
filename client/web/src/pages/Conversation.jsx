@@ -107,6 +107,7 @@ const Conversation = ({
           // requires login if user wants to use gpt4 or claude.
           connect();
         } catch (error) {
+          console.error(error);
         }
       };
       tryConnect();

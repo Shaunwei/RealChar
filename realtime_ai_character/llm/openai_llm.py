@@ -9,7 +9,8 @@ else:
 from langchain.schema import BaseMessage, HumanMessage
 
 from realtime_ai_character.database.chroma import get_chroma
-from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, AsyncCallbackTextHandler, LLM, SearchAgent
+from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, \
+    AsyncCallbackTextHandler, LLM, QuivrAgent, SearchAgent
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Character
 
@@ -38,8 +39,8 @@ class OpenaiLlm(LLM):
             "streaming": True
         }
         self.db = get_chroma()
-        self.search_agent = None
         self.search_agent = SearchAgent()
+        self.quivr_agent = QuivrAgent()
 
     def get_config(self):
         return self.config
@@ -51,12 +52,17 @@ class OpenaiLlm(LLM):
                     callback: AsyncCallbackTextHandler,
                     audioCallback: AsyncCallbackAudioHandler,
                     character: Character,
-                    useSearch: bool=False) -> str:
+                    useSearch: bool=False,
+                    useQuivr: bool=False,
+                    quivrApiKey: str=None,
+                    quivrBrainId: str=None) -> str:
         # 1. Generate context
         context = self._generate_context(user_input, character)
         # Get search result if enabled
         if useSearch:
             context += self.search_agent.search(user_input)
+        if useQuivr and quivrApiKey is not None and quivrBrainId is not None:
+            context += self.quivr_agent.question(user_input, quivrApiKey, quivrBrainId)
 
         # 2. Add user input to history
         history.append(HumanMessage(content=user_input_template.format(

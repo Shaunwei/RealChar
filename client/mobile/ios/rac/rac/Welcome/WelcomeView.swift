@@ -90,6 +90,7 @@ struct WelcomeView: View {
                                     webSocket.connectSession(languageOption: preferenceSettings.languageOption,
                                                              llmOption: preferenceSettings.llmOption,
                                                              useSearch: preferenceSettings.useSearch,
+                                                             useQuivr: preferenceSettings.quivrMeta.brainName != "",
                                                              characterId: characterId,
                                                              token: userSettings.userToken)
                                 }
@@ -131,6 +132,11 @@ struct WelcomeView: View {
                 reconnectWebSocket(characterId: characterId)
             }
         }
+        .onChange(of: preferenceSettings.quivrMeta.brainName) { newValue in
+            if let characterId = character?.id {
+                reconnectWebSocket(characterId: characterId)
+            }
+        }
         .onChange(of: preferenceSettings.llmOption) { newValue in
             if userSettings.isLoggedIn, let characterId = character?.id {
                 reconnectWebSocket(characterId: characterId)
@@ -160,6 +166,7 @@ struct WelcomeView: View {
                 webSocket.connectSession(languageOption: preferenceSettings.languageOption,
                                          llmOption: preferenceSettings.llmOption,
                                          useSearch: preferenceSettings.useSearch,
+                                         useQuivr: preferenceSettings.quivrMeta.brainName != "",
                                          characterId: characterId,
                                          token: userSettings.userToken)
                 onWebSocketReconnected()

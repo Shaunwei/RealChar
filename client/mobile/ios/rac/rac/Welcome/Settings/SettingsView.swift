@@ -113,11 +113,25 @@ enum LanguageOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Cod
     }
 }
 
+struct MemoryRequest: Codable {
+    let quivrApiKey: String
+    let quivrBrainId: String
+}
+
+struct MemoryResponse: Codable {
+    let brainId: String
+    let brainName: String
+}
+
 struct SettingsView: View {
     @EnvironmentObject private var userSettings: UserSettings
     @EnvironmentObject private var preferenceSettings: PreferenceSettings
 
     @State var showAuth: Bool = false
+    @State var showQuivrAlert: Bool = false
+    @State var quivrApiKey: String = ""
+    @State var quivrBrainId: String = ""
+    @State var isRegisteringMemory = false
 
     var body: some View {
         GeometryReader { geometry in
@@ -218,6 +232,26 @@ struct SettingsView: View {
                             }
                             .tint(.accentColor)
                             .padding(.trailing, 2)
+
+                            Toggle(isOn: Binding(get: {
+                                preferenceSettings.quivrMeta.apiKey != "" && preferenceSettings.quivrMeta.brainName != "" || isRegisteringMemory
+                            }, set: { newValue, _ in
+                                if newValue && !userSettings.isLoggedIn {
+                                    showAuth = true
+                                } else if newValue && userSettings.isLoggedIn {
+                                    showQuivrAlert = true
+                                } else {
+                                    preferenceSettings.quivrMeta = .init(apiKey: "", brainId: "", brainName: "")
+                                }
+                            }) ) {
+                                Text("Enable Second Brain?")
+                                    .font(
+                                        Font.custom("Prompt", size: 16)
+                                    )
+                            }
+                            .tint(.accentColor)
+                            .padding(.trailing, 2)
+                            .disabled(isRegisteringMemory)
                         }
                     }
                 }
@@ -238,14 +272,64 @@ struct SettingsView: View {
                 showAuth = true
             }
         }
+        .onChange(of: preferenceSettings.quivrMeta) { newValue in
+            if newValue.apiKey != "" && !userSettings.isLoggedIn {
+                showAuth = true
+            } else if newValue.apiKey != "" && newValue.brainName == "" {
+                // Has not gotten the brain name yet
+                Task {
+                    guard let userToken = userSettings.userToken else {
+                        preferenceSettings.quivrMeta = .init(apiKey: "", brainId: "", brainName: "")
+                        return
+                    }
+                    isRegisteringMemory = true
+                    let url = serverUrl.appending(path: "memory")
+                    var request = URLRequest(url: url)
+                    do {
+                        request.httpMethod = "POST"
+                        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                        request.setValue("Bearer \(userToken)", forHTTPHeaderField: "Authorization")
+                        let encoder = JSONEncoder()
+                        encoder.keyEncodingStrategy = .convertToSnakeCase
+                        let memoryRequest = try encoder.encode(MemoryRequest(quivrApiKey: newValue.apiKey, quivrBrainId: newValue.brainId))
+                        request.httpBody = memoryRequest
+                        let (data, _) = try await URLSession.shared.data(for: request)
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        let memoryResponse = try decoder.decode(MemoryResponse.self, from: data)
+                        preferenceSettings.quivrMeta = .init(apiKey: newValue.apiKey, brainId: memoryResponse.brainId, brainName: memoryResponse.brainName)
+                        isRegisteringMemory = false
+                    } catch {
+                        print(error)
+                        preferenceSettings.quivrMeta = .init(apiKey: "", brainId: "", brainName: "")
+                        isRegisteringMemory = false
+                    }
+                }
+            }
+        }
         .onChange(of: showAuth) { newValue in
             if newValue {
                 signIn()
             }
             if !newValue && !userSettings.isLoggedIn {
                 preferenceSettings.llmOption = .gpt35
+                preferenceSettings.quivrMeta = .init(apiKey: "", brainId: "", brainName: "")
             }
         }
+        .alert("Enable Second Brain w/ Quivr", isPresented: $showQuivrAlert, presenting: preferenceSettings.quivrMeta, actions: { _ in
+            VStack {
+                TextField("Enter your Quivr API Key", text: $quivrApiKey)
+                TextField("(Optional) Quivr Brain ID", text: $quivrBrainId)
+                Button {
+                    if quivrApiKey != "" {
+                        preferenceSettings.quivrMeta = .init(apiKey: quivrApiKey, brainId: quivrBrainId, brainName: "")
+                        showQuivrAlert = false
+                    }
+                } label: {
+                    Text("Confirm")
+                }
+            }
+        })
     }
 
     // MARK: - Private

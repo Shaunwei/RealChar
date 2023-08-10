@@ -8,6 +8,12 @@
 import SwiftUI
 import Combine
 
+struct QuivrMeta: Equatable {
+    let apiKey: String
+    let brainId: String
+    let brainName: String
+}
+
 class PreferenceSettings: ObservableObject {
 
     struct Constants {
@@ -16,6 +22,9 @@ class PreferenceSettings: ObservableObject {
         static let llmOptionKey = "largeLanguageModel"
         static let languageOption = "languageOption"
         static let includedCommunityCharacterIds = "includedCommunityCharacterIds"
+        static let quivrApiKey = "quivrApiKey"
+        static let quivrBrainId = "quivrBrainId"
+        static let quivrBrainName = "quivrBrainName"
     }
 
     @Published var hapticFeedback: Bool = UserDefaults.standard.bool(forKey: Constants.hapticFeedbackKey) {
@@ -53,6 +62,19 @@ class PreferenceSettings: ObservableObject {
             print("Saved included community character IDs: \(includedCommunityCharacterIds)")
         }
     }
+    @Published var quivrMeta: QuivrMeta =
+        .init(apiKey: UserDefaults.standard.string(forKey: Constants.quivrApiKey) ?? "",
+              brainId: UserDefaults.standard.string(forKey: Constants.quivrBrainId) ?? "",
+              brainName: UserDefaults.standard.string(forKey: Constants.quivrBrainName) ?? "") {
+            didSet {
+                guard quivrMeta != oldValue else { return }
+                UserDefaults.standard.set(quivrMeta.apiKey, forKey: Constants.quivrApiKey)
+                UserDefaults.standard.set(quivrMeta.brainId, forKey: Constants.quivrBrainId)
+                UserDefaults.standard.set(quivrMeta.brainName, forKey: Constants.quivrBrainName)
+                print("Saved quivr metadata: \(quivrMeta)")
+
+            }
+        }
 
     func loadSettings(isUserLoggedIn: Bool) {
         if !isUserLoggedIn {

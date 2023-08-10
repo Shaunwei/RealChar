@@ -9,6 +9,7 @@ async function uploadfile(file, accessToken) {
   const response = await fetch(url, {
     method: 'POST',
     headers: {
+      'Content-Type': 'multipart/form-data',
       Authorization: `Bearer ${accessToken}`,
     },
     body: formData,

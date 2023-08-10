@@ -165,13 +165,13 @@ ELEVEN_LABS_API_KEY=<api key>
 2. Run the text embedding service docker image generated with BentoML:
 
   ```bash
-  docker run --rm -p 3000:3000 ghcr.io/bentoml/sentence-embedding-bento:0.1.0
+  docker run --rm -p 3001:3001 ghcr.io/bentoml/sentence-embedding-bento:latest --port 3001
   ```
 
 3. Set the Text Embedding Endpoint in your .env file:
 
   ```
-  BENTOML_EMBEDDING_ENDPOINT=http://localhost:3000
+  BENTOML_EMBEDDING_ENDPOINT=http://localhost:3001
   ```
 
 For cloud deployment options and customizing your own embeddding model, check out the source repo [here](https://github.com/bentoml/sentence-embedding-bento)

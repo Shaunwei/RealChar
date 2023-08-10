@@ -219,6 +219,9 @@ const CharCreate = ({ token }) => {
       <Button variant='contained' color='primary' onClick={handleSubmit}>
         Submit
       </Button>
+      <div>
+        <p>It may take 30 seconds for the new character to be available.</p>
+      </div>
     </div>
   );
 };

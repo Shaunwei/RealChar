@@ -191,7 +191,7 @@ const CharCreate = ({ token }) => {
       </RadioGroup>
       <h2 style={{ alignSelf: 'flex-start' }}>
         Visibility
-        <Tooltip title='If set to public, the character will be available for public use after review.'>
+        <Tooltip title='If set to public, the character will be visible to everyone after review.'>
           <IconButton>
             <InfoIcon color='primary' />
           </IconButton>

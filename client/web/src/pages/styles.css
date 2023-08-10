@@ -80,7 +80,7 @@ p {
   gap: 10px;
   align-self: stretch;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.1);
   color: white;
   font-size: large;
 }

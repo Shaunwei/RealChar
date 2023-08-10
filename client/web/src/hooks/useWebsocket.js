@@ -22,10 +22,12 @@ const useWebsocket = (
   setSessionId
 ) => {
   const socketRef = useRef(null);
-
   // initialize web socket and connect to server.
   const connectSocket = useCallback(() => {
     if (!socketRef.current) {
+      if (!selectedCharacter) {
+        return;
+      }
       const sessionId = uuidv4().replace(/-/g, '');
       setSessionId(sessionId);
       const ws_scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
@@ -40,7 +42,6 @@ const useWebsocket = (
         '://' +
         newHost +
         `/ws/${sessionId}?llm_model=${selectedModel}&platform=web&use_search=${useSearch}&character_id=${selectedCharacter.character_id}&language=${language}&token=${token}`;
-
       socketRef.current = new WebSocket(ws_path);
       const socket = socketRef.current;
       socket.binaryType = 'arraybuffer';
@@ -53,20 +54,35 @@ const useWebsocket = (
         console.log('Socket closed');
       };
     }
-  }, [setSessionId, onOpen, onMessage]);
+  }, [
+    token,
+    onOpen,
+    onMessage,
+    selectedModel,
+    preferredLanguage,
+    useSearch,
+    selectedCharacter,
+    setSessionId,
+  ]);
 
   // send message to server
-  const send = data => {
-    console.log('message sent to server');
-    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-      socketRef.current.send(data);
-    }
-  };
+  const send = useCallback(
+    data => {
+      console.log('message sent to server');
+      if (
+        socketRef.current &&
+        socketRef.current.readyState === WebSocket.OPEN
+      ) {
+        socketRef.current.send(data);
+      }
+    },
+    [socketRef]
+  );
 
-  const closeSocket = () => {
+  const closeSocket = useCallback(() => {
     socketRef.current.close();
     socketRef.current = null;
-  };
+  }, [socketRef]);
 
   return { socketRef, send, connectSocket, closeSocket };
 };

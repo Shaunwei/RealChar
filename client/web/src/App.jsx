@@ -4,7 +4,7 @@
  * created by Lynchee on 7/14/23
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 
@@ -166,14 +166,17 @@ const App = () => {
     stopRecording,
     setTextAreaValue
   );
-  const connectSocketWithState = () => {
+
+  const connectSocketWithState = useCallback(() => {
     isConnecting.current = true;
     connectSocket();
-  };
-  const closeSocketWithState = () => {
     isConnecting.current = false;
+  }, [isConnecting, connectSocket]);
+
+  const closeSocketWithState = () => {
     closeSocket();
   };
+
   // Handle Button Clicks
   const connect = async () => {
     try {
@@ -315,6 +318,10 @@ const App = () => {
                 preferredLanguage={preferredLanguage}
                 setPreferredLanguage={setPreferredLanguage}
                 selectedCharacter={selectedCharacter}
+                setSelectedCharacter={setSelectedCharacter}
+                setSelectedModel={setSelectedModel}
+                setSelectedDevice={setSelectedDevice}
+                connect={connect}
                 messageId={messageId}
                 token={token}
                 isTextStreaming={isTextStreaming}

@@ -66,7 +66,20 @@ const Settings = ({
       // TODO(UI): Hide loading animation
     }, 500);
 
-    navigate('/conversation');
+    navigate(
+      '/conversation?isCallViewParam=' +
+        (commMethod === 'Call') +
+        '&character=' +
+        character +
+        '&preferredLanguage=' +
+        preferredLanguage +
+        '&selectedDevice=' +
+        (selectedDevice || 'default') +
+        '&selectedModel=' +
+        selectedModel +
+        '&useSearchParam=' +
+        useSearch
+    );
   };
 
   return (

@@ -7,17 +7,18 @@
 import React, { useEffect, useState } from 'react';
 import CallView from '../components/CallView';
 import TextView from '../components/TextView';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 import Avatar from '@mui/material/Avatar';
 import AvatarView from '../components/AvatarView';
 import { extractEmotionFromPrompt } from '@avatechai/avatars';
+import lz from 'lz-string';
 
 // TODO: user can access this page only if isConnected.current
 
 const Conversation = ({
   isConnecting,
   isConnected,
-  isCallView,
   isRecording,
   isPlaying,
   isThinking,
@@ -35,20 +36,33 @@ const Conversation = ({
   setTextAreaValue,
   messageInput,
   setMessageInput,
-  useSearch,
   setUseSearch,
   callActive,
   startRecording,
   stopRecording,
-  preferredLanguage,
   setPreferredLanguage,
   selectedCharacter,
   messageId,
   token,
   isTextStreaming,
   sessionId,
+  setSelectedCharacter,
+  setSelectedModel,
+  setSelectedDevice,
+  connect,
 }) => {
   const navigate = useNavigate();
+  const { search } = useLocation();
+  const {
+    character = '',
+    selectedModel = '',
+    selectedDevice = '',
+    isCallViewParam = '',
+    preferredLanguage = '',
+    useSearchParam = '',
+  } = queryString.parse(search);
+  const isCallView = isCallViewParam === 'true';
+  const useSearch = useSearchParam === 'true';
 
   const message = isTextStreaming ? '' : textAreaValue;
 
@@ -60,8 +74,42 @@ const Conversation = ({
   }, [message]);
 
   useEffect(() => {
-    if (!isConnecting.current) {
+    if (
+      character === '' ||
+      selectedModel === '' ||
+      selectedDevice === '' ||
+      isCallView === '' ||
+      preferredLanguage === '' ||
+      useSearch === ''
+    ) {
       navigate('/');
+    }
+    const paramSelectedCharacter = JSON.parse(
+      lz.decompressFromEncodedURIComponent(character)
+    );
+    setSelectedCharacter(paramSelectedCharacter);
+
+    setSelectedModel(selectedModel);
+
+    setSelectedDevice(selectedDevice);
+
+    setIsCallView(isCallView);
+
+    setPreferredLanguage(preferredLanguage);
+
+    setUseSearch(useSearch);
+  }, []);
+
+  useEffect(() => {
+    if (!isConnecting.current) {
+      const tryConnect = async () => {
+        try {
+          // requires login if user wants to use gpt4 or claude.
+          connect();
+        } catch (error) {
+        }
+      };
+      tryConnect();
     }
 
     const handleUnload = event => {
@@ -72,9 +120,9 @@ const Conversation = ({
 
     // Clean up event listener on component unmount
     return () => window.removeEventListener('beforeunload', handleUnload);
-  }, [isConnecting, navigate]);
+  }, [connect]);
 
-  if (!isConnecting.current) {
+  if (!isConnected.current) {
     return null;
   }
 

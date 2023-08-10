@@ -58,7 +58,7 @@ Context
   {query}
 `;
 
-const CharCreate = token => {
+const CharCreate = ({ token }) => {
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState();

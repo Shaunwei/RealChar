@@ -74,16 +74,22 @@ const useWebsocket = (
     preferredLanguage,
     useSearch,
     selectedCharacter,
-    setSessionId]
-    );
+    setSessionId,
+  ]);
 
   // send message to server
-  const send = useCallback(data => {
-    console.log('message sent to server');
-    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-      socketRef.current.send(data);
-    }
-  }, [socketRef]);
+  const send = useCallback(
+    data => {
+      console.log('message sent to server');
+      if (
+        socketRef.current &&
+        socketRef.current.readyState === WebSocket.OPEN
+      ) {
+        socketRef.current.send(data);
+      }
+    },
+    [socketRef]
+  );
 
   const closeSocket = useCallback(() => {
     socketRef.current.close();

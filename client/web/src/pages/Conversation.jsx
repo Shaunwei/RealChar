@@ -57,12 +57,12 @@ const Conversation = ({
     character = '',
     selectedModel = '',
     selectedDevice = '',
-    isCallViewVal = '',
+    isCallViewParam = '',
     preferredLanguage = '',
-    useSearchVal = '',
+    useSearchParam = '',
   } = queryString.parse(search);
-  const isCallView = isCallViewVal === 'true';
-  const useSearch = useSearchVal === 'true';
+  const isCallView = isCallViewParam === 'true';
+  const useSearch = useSearchParam === 'true';
 
   const message = isTextStreaming ? '' : textAreaValue;
 
@@ -74,7 +74,6 @@ const Conversation = ({
   }, [message]);
 
   useEffect(() => {
-    // console.log("conversation page")
     if (
       character === '' ||
       selectedModel === '' ||
@@ -85,12 +84,11 @@ const Conversation = ({
     ) {
       navigate('/');
     }
-    // console.log("reached here")
     const paramSelectedCharacter = JSON.parse(
       lz.decompressFromEncodedURIComponent(character)
     );
     setSelectedCharacter(paramSelectedCharacter);
-    console.log('updated selected character');
+
     setSelectedModel(selectedModel);
 
     setSelectedDevice(selectedDevice);
@@ -100,27 +98,15 @@ const Conversation = ({
     setPreferredLanguage(preferredLanguage);
 
     setUseSearch(useSearch);
-    console.log(
-      paramSelectedCharacter,
-      selectedModel,
-      selectedDevice,
-      isCallView,
-      preferredLanguage,
-      useSearch
-    );
   }, []);
 
   useEffect(() => {
-    console.log('connecting socket');
     if (!isConnecting.current) {
       const tryConnect = async () => {
         try {
-          console.log('trying to connect');
           // requires login if user wants to use gpt4 or claude.
           connect();
-          console.log('after connectSocketWithState');
         } catch (error) {
-          console.error('Failed fetching data:', error);
         }
       };
       tryConnect();

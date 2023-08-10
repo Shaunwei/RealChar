@@ -117,39 +117,36 @@ struct CharacterMessage: View {
           .frame(maxWidth: .infinity, alignment: .topLeading)
           .contextMenu {
               Button {
-                  // Handle thumbs up action
-                  print("Thumbs up")
                   thumbsUp = true
                   isShowingCommentSheet = true
               } label: {
-                  Label("It's great!", systemImage: "hand.thumbsup")
+                  Label("Great response!", systemImage: "hand.thumbsup")
               }
 
               Button {
-                  // Handle thumbs down action
-                  print("Thumbs down")
                   thumbsUp = false
                   isShowingCommentSheet = true
               } label: {
                   Label("Something's wrong", systemImage: "hand.thumbsdown")
               }
 
+              Divider()
+
               Button {
-                  // Handle copy to clipboard action
-                  print("Copy to clipboard")
-                  UIPasteboard.general.string = "This text"
+                  UIPasteboard.general.string = message
               } label: {
                   Label("Copy to Clipboard", systemImage: "doc.on.doc")
               }
           }
           .alert(thumbsUp
-                 ? "Thank you! Share more feedback?"
-                 : "Sorry to hear that! Share more feedback?",
+                 ? "Thanks for the feedback! Share more comments?"
+                 : "Sorry to hear that! Share more comments?",
                  isPresented: $isShowingCommentSheet) {
               // Comment sheet
               VStack {
-                  TextField("(Optional) Feedback", text: $feedback)
-                      .foregroundColor(.primary)
+                  TextField("(Optional) Comments", text: $feedback)
+                      .tint(.black)
+                      .foregroundColor(.black)
 
                   Button("Cancel") {
                       isShowingCommentSheet = false
@@ -157,7 +154,8 @@ struct CharacterMessage: View {
 
                   Button("Submit") {
                       // Handle submit action along with comment
-                      print("Submitted with comment: \(feedback)")
+                      print("Submitted with comment: \(thumbsUp) \(feedback)")
+                      feedback = ""
                       isShowingCommentSheet = false
                   }
               }

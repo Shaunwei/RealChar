@@ -96,44 +96,35 @@ struct VoiceMessageView: View {
         VStack(spacing: 50) {
             ScrollViewReader { scrollView in
                 List {
-                    switch state {
-                    case .characterSpeaking(_, true), .idle:
-                        if let lastUserMessage = messages.last(where: { message in
-                            message.role == .user
-                        }) {
-                            UserMessage(message: lastUserMessage.content)
-                                .listRowSeparator(.hidden)
-                                .listRowBackground(Constants.realBlack)
-                                .id(0)
-                        }
-                        if messages.last?.role == .assistant, let lastCharacterMessage = messages.last {
-                            CharacterMessage(message: lastCharacterMessage.content)
-                                .listRowSeparator(.hidden)
-                                .listRowBackground(Constants.realBlack)
-                                .id(1)
-                        }
-                    case .listeningToUser, .characterSpeaking(_, false):
-                        if let lastCharacterMessage = messages.last(where: { message in
-                            message.role == .assistant
-                        }) {
-                            CharacterMessage(message: lastCharacterMessage.content)
-                                .listRowSeparator(.hidden)
-                                .listRowBackground(Constants.realBlack)
-                                .id(1)
-                        }
+                    if state.showPreviousUserMessage, let lastUserMessage = messages.last(where: { message in
+                        message.role == .user
+                    }) {
+                        UserMessage(message: lastUserMessage.content)
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Constants.realBlack)
+                            .id(0)
+                    }
 
-                        if messages.last?.role == .user, let lastUserMessage = messages.last {
-                            UserMessage(message: lastUserMessage.content,
-                                        onCancel: {
-                                onUpdateUserMessage("")
-                                speechRecognizer.transcript = ""
-                                speechRecognizer.stopTranscribing()
-                                speechRecognizer.startTranscribing()
-                            })
-                                .listRowSeparator(.hidden)
-                                .listRowBackground(Constants.realBlack)
-                                .id(0)
-                        }
+                    if state.showCharacterMessageIfLast && messages.last?.role == .assistant || state.showPreviousCharacterMessage , let lastCharacterMessage = messages.last(where: { message in
+                        message.role == .assistant
+                    }) {
+                        CharacterMessage(message: lastCharacterMessage.content)
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Constants.realBlack)
+                            .id(1)
+                    }
+
+                    if state.showUserMessageIfLast && messages.last?.role == .user, let lastUserMessage = messages.last {
+                        UserMessage(message: lastUserMessage.content,
+                                    onCancel: {
+                            onUpdateUserMessage("")
+                            speechRecognizer.transcript = ""
+                            speechRecognizer.stopTranscribing()
+                            speechRecognizer.startTranscribing()
+                        })
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Constants.realBlack)
+                        .id(0)
                     }
                 }
                 .scrollIndicators(.hidden)
@@ -344,5 +335,43 @@ struct VoiceMessageView_Previews: PreviewProvider {
                          onTapVoiceButton: { })
         .preferredColorScheme(.dark)
         .frame(height: 400)
+    }
+}
+
+private extension VoiceState {
+    var showPreviousUserMessage: Bool {
+        switch self {
+        case .characterSpeaking(_, true), .idle:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var showCharacterMessageIfLast: Bool {
+        switch self {
+        case .characterSpeaking(_, true), .idle:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var showPreviousCharacterMessage: Bool {
+        switch self {
+        case .listeningToUser, .characterSpeaking(_, false):
+            return true
+        default:
+            return false
+        }
+    }
+
+    var showUserMessageIfLast: Bool {
+        switch self {
+        case .listeningToUser, .characterSpeaking(_, false):
+            return true
+        default:
+            return false
+        }
     }
 }

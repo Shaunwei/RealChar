@@ -25,7 +25,7 @@ class CatalogManager(Singleton):
         super().__init__()
         self.db = get_chroma()
         self.sql_db = next(get_db())
-        self.sql_load_interval = 60
+        self.sql_load_interval = 30
         self.sql_load_lock = rwlock.RWLockFair()
 
         if overwrite:

@@ -72,3 +72,15 @@ p {
   opacity: 0;
   z-index: -1;
 }
+
+.text-area {
+  display: flex;
+  padding: 16px 20px;
+  align-items: flex-start;
+  gap: 10px;
+  align-self: stretch;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: large;
+}

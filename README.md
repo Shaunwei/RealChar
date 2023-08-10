@@ -60,7 +60,7 @@ __Demo settings: Web, GPT4, ElevenLabs with voice clone, Chroma, Google Speech t
 
 - ✅**Web**: [React JS](https://react.dev/), [Vanilla JS](http://vanilla-js.com/), [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
 - ✅**Mobile**: [Swift](https://developer.apple.com/swift/), [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
-- ✅**Backend**: [FastAPI](https://fastapi.tiangolo.com/), [SQLite](https://www.sqlite.org/index.html), [Docker](https://www.docker.com/)
+- ✅**Backend**: [FastAPI](https://fastapi.tiangolo.com/), [SQLite](https://www.sqlite.org/index.html), [Docker](https://www.docker.com/), [BentoML](https://bentoml.com/)
 - ✅**Data Ingestion**: [LlamaIndex](https://www.llamaindex.ai/), [Chroma](https://www.trychroma.com/)
 - ✅**LLM Orchestration**: [LangChain](https://langchain.com/), [Chroma](https://www.trychroma.com/)
 - ✅**LLM**: [OpenAI GPT3.5/4](https://platform.openai.com/docs/api-reference/chat), [Anthropic Claude 2](https://docs.anthropic.com/claude/docs/getting-started-with-claude)
@@ -155,6 +155,26 @@ Visit [ElevenLabs](https://beta.elevenlabs.io/) to create an account. You'll nee
 ```
 ELEVEN_LABS_API_KEY=<api key>
 ```
+</details>
+
+### 4. (Optional) Prepare self-hosted embedding service - BentoML Deployment Endpoint
+<details><summary>👇click me</summary>
+
+1. Install [Docker](https://docs.docker.com/engine/install/)
+
+2. Run the text embedding service docker image generated with BentoML:
+
+  ```bash
+  docker run --rm -p 3000:3000 ghcr.io/bentoml/sentence-embedding-bento:0.1.0
+  ```
+
+3. Set the Text Embedding Endpoint in your .env file:
+
+  ```
+  BENTOML_EMBEDDING_ENDPOINT=http://localhost:3000
+  ```
+
+For cloud deployment options and customizing your own embeddding model, check out the source repo [here](https://github.com/bentoml/sentence-embedding-bento)
 </details>
 
 ## 💿 Installation via Python

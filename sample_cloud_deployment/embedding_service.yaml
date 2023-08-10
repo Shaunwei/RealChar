@@ -1,0 +1,41 @@
+# For advanced BentoML deployment on kubernetes, see:
+#   https://www.kubeflow.org/docs/external-add-ons/serving/bentoml/
+#   https://github.com/bentoml/yatai
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bentoml-embedding-deployment
+  labels:
+    app: bentoml-text-embedding
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bentoml-text-embedding
+  template:
+    metadata:
+      labels:
+        app: bentoml-text-embedding
+    spec:
+      containers:
+      - name: bentoml-text-embedding
+        image: ghcr.io/bentoml/sentence-embedding-bento:0.1.0 
+        ports:
+        - containerPort: 3000
+        env:
+        - name: BENTOML_CONFIG_OPTIONS
+          value: "api_server.metrics.namespace=realchar,api_server.traffic.timeout=10"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bentoml-embedding-service
+spec:
+  type: ClusterIP
+  selector:
+    app: bentoml-text-embedding
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+

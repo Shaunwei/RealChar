@@ -41,7 +41,8 @@ class AnysacleLlm(LLM):
                     callback: AsyncCallbackTextHandler,
                     audioCallback: AsyncCallbackAudioHandler,
                     character: Character,
-                    useSearch: bool=False) -> str:
+                    useSearch: bool = False,
+                    *args, **kwargs) -> str:
         # 1. Generate context
         context = self._generate_context(user_input, character)
         # Get search result if enabled

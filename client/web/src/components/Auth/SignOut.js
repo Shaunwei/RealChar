@@ -10,9 +10,11 @@ import auth from '../../utils/firebase';
 import { signOut } from 'firebase/auth';
 import Avatar from '@mui/material/Avatar';
 import { Navbar, Dropdown } from '@nextui-org/react';
+import { useNavigate } from 'react-router-dom';
 import './styles.css';
 
 const SignOut = ({ isLoggedIn, user, handleDisconnect }) => {
+  const navigate = useNavigate();
   const signout = async () => {
     signOut(auth)
       .then(() => {
@@ -34,6 +36,8 @@ const SignOut = ({ isLoggedIn, user, handleDisconnect }) => {
     if (actionKey === 'logout') {
       // when a dropdown button is pressed using its "key" ,which we set, we can tell when its pressed , so when the key "logout" is pressed we sign the user out, in the future you can use the key "profile" to navigate the user to his dashboard for example
       await handleSignout();
+    } else if (actionKey === 'create') {
+      navigate('/create');
     }
   };
 
@@ -75,6 +79,9 @@ const SignOut = ({ isLoggedIn, user, handleDisconnect }) => {
             Signed in as
             <br />
             {user.email}
+          </Dropdown.Item>
+          <Dropdown.Item key='create' className='dropdown-item' withDivider>
+            Create a character
           </Dropdown.Item>
           <Dropdown.Item
             key='logout'

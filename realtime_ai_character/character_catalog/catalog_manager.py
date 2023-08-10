@@ -1,14 +1,17 @@
 import os
 import threading
 import yaml
-from dotenv import load_dotenv
 from pathlib import Path
 from contextlib import ExitStack
+
+from dotenv import load_dotenv
+from firebase_admin import auth
+from llama_index import SimpleDirectoryReader
+from langchain.text_splitter import CharacterTextSplitter
+
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Singleton, Character
 from realtime_ai_character.database.chroma import get_chroma
-from llama_index import SimpleDirectoryReader
-from langchain.text_splitter import CharacterTextSplitter
 from readerwriterlock import rwlock
 from realtime_ai_character.database.connection import get_db
 from realtime_ai_character.models.character import Character as CharacterModel
@@ -159,8 +162,10 @@ class CatalogManager(Singleton):
                     voice_id=character_model.voice_id,
                     source='community',
                     author_id=character_model.author_id,
+                    author_name=auth.get_user(character_model.author_id).display_name,
                     visibility=character_model.visibility,
                     tts=character_model.tts,
+                    data=character_model.data,
                 )
                 self.characters[character_model.id] = character
                 # TODO: load context data from storage

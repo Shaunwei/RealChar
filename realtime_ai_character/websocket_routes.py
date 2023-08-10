@@ -240,6 +240,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 # 2. Send message to LLM
                 if use_quivr:
                     memory = db.query(Memory).filter(Memory.user_id == user_id).first()
+                else:
+                    memory = None
                 response = await llm.achat(
                     history=build_history(conversation_history),
                     user_input=msg_data,
@@ -334,6 +336,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 # 5. Send message to LLM
                 if use_quivr:
                     memory = db.query(Memory).filter(Memory.user_id == user_id).first()
+                else:
+                    memory = None
                 tts_task = asyncio.create_task(
                     llm.achat(history=build_history(conversation_history),
                               user_input=transcript,

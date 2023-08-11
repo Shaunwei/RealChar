@@ -41,4 +41,27 @@ async function createCharacter(characterRequest, accessToken) {
   }
 }
 
-export { uploadfile, createCharacter };
+async function deleteCharacter(character_id, accessToken) {
+  const url = scheme + '//' + getHostName() + '/delete_character';
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({
+      character_id: character_id,
+    }),
+  });
+
+  if (response.ok) {
+    const jsonResponse = await response.json();
+    return jsonResponse;
+  } else {
+    const errorDetails = await response.json();
+    console.error('Server responded with:', errorDetails);
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+}
+
+export { uploadfile, createCharacter, deleteCharacter };

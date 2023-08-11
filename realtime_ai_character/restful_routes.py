@@ -15,7 +15,7 @@ from realtime_ai_character.audio.text_to_speech import get_text_to_speech
 from realtime_ai_character.database.connection import get_db
 from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.feedback import Feedback, FeedbackRequest
-from realtime_ai_character.models.character import Character, CharacterRequest, EditCharacterRequest
+from realtime_ai_character.models.character import Character, CharacterRequest, EditCharacterRequest, DeleteCharacterRequest
 from realtime_ai_character.models.memory import Memory, UpdateMemoryRequest
 from requests import Session
 import requests
@@ -214,7 +214,7 @@ async def edit_character(edit_character_request: EditCharacterRequest,
 
 
 @router.post("/delete_character")
-async def delete_character(character_id: str, 
+async def delete_character(delete_character_request: DeleteCharacterRequest,
                            user = Depends(get_current_user), 
                            db: Session = Depends(get_db)):
     if not user:
@@ -223,6 +223,7 @@ async def delete_character(character_id: str,
                 detail='Invalid authentication credentials',
                 headers={'WWW-Authenticate': 'Bearer'},
             )
+    character_id = delete_character_request.character_id
     characters = db.query(Character).filter(Character.id == character_id).all()
     if len(characters) == 0:
         raise HTTPException(

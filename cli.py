@@ -72,7 +72,7 @@ def image_exists(name):
 @click.command(help="Run BentoML text embedding service locally via Docker at localhost:3000")
 def run_embedding_service():
     click.secho("Launching BentoML SentenceEmbedding Service...", fg='green')
-    subprocess.run(["docker", "run", "--rm", "-p", "3000:3000", "ghcr.io/bentoml/sentence-embedding-bento:0.1.0"])
+    subprocess.run(["docker", "run", "--rm", "-p", "3001:3001", "ghcr.io/bentoml/sentence-embedding-bento:latest"])
 
 
 cli.add_command(docker_build)

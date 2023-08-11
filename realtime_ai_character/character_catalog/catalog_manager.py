@@ -154,6 +154,9 @@ class CatalogManager(Singleton):
         character_models = self.sql_db.query(CharacterModel).all()
         with self.sql_load_lock.gen_wlock():
             for character_model in character_models:
+                author_name = auth.get_user(
+                    character_model.author_id).display_name if os.getenv(
+                        'USE_AUTH', '') else "anonymous author"
                 character = Character(
                     character_id=character_model.id,
                     name=character_model.name,
@@ -162,7 +165,7 @@ class CatalogManager(Singleton):
                     voice_id=character_model.voice_id,
                     source='community',
                     author_id=character_model.author_id,
-                    author_name=auth.get_user(character_model.author_id).display_name,
+                    author_name=author_name,
                     visibility=character_model.visibility,
                     tts=character_model.tts,
                     data=character_model.data,

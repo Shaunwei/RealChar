@@ -39,7 +39,7 @@ const CharDelete = ({ token, characterGroups }) => {
       navigate('/');
     } catch (error) {
       console.error(error);
-      alert('Error deleting character');
+      alert('Error deleting character. You may only delete characters that you created.');
     }
   };
 

@@ -336,7 +336,11 @@ const App = () => {
           <Route
             path='/delete'
             element={
-              <CharDelete token={token} characterGroups={characterGroups} />
+              <CharDelete
+                token={token}
+                isMobile={isMobile}
+                characterGroups={characterGroups}
+              />
             }
           />
         </Routes>

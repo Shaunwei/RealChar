@@ -10,7 +10,7 @@ import { deleteCharacter } from '../utils/apiUtils';
 import { useNavigate } from 'react-router-dom';
 import Characters from '../components/Characters';
 
-const CharDelete = ({ token, characterGroups }) => {
+const CharDelete = ({ token, isMobile, characterGroups }) => {
   const navigate = useNavigate();
 
   const [selectedCharacter, setSelectedCharacter] = useState(null);
@@ -49,7 +49,7 @@ const CharDelete = ({ token, characterGroups }) => {
     <div className='home'>
       <h1>Delete your character</h1>
       <Characters
-        isMobile={true}
+        isMobile={isMobile}
         characterGroups={characterGroups}
         isPlaying={false}
         characterConfirmed={false}

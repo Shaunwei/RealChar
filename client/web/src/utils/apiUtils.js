@@ -58,8 +58,6 @@ async function deleteCharacter(character_id, accessToken) {
     const jsonResponse = await response.json();
     return jsonResponse;
   } else {
-    const errorDetails = await response.json();
-    console.error('Server responded with:', errorDetails);
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 }

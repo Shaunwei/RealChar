@@ -13,6 +13,7 @@ class Character:
     llm_system_prompt: str
     llm_user_prompt: str
     source: str = ''
+    location: str = ''
     voice_id: str = ''
     author_name: str = ''
     author_id: str = ''

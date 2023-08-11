@@ -213,6 +213,34 @@ async def edit_character(edit_character_request: EditCharacterRequest,
     db.commit()
 
 
+@router.post("/delete_character")
+async def delete_character(character_id: str, 
+                           user = Depends(get_current_user), 
+                           db: Session = Depends(get_db)):
+    if not user:
+        raise HTTPException(
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid authentication credentials',
+                headers={'WWW-Authenticate': 'Bearer'},
+            )
+    characters = db.query(Character).filter(Character.id == character_id).all()
+    if len(characters) == 0:
+        raise HTTPException(
+                status_code=http_status.HTTP_404_NOT_FOUND,
+                detail=f'Character {character_id} not found',
+            )
+
+    character = characters[0]
+    if character.author_id != user['uid']:
+        raise HTTPException(
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid authentication credentials',
+                headers={'WWW-Authenticate': 'Bearer'},
+            )
+    db.delete(character)
+    db.commit()
+
+
 @router.post("/generate_audio")
 async def generate_audio(text: str, tts: str = None, user = Depends(get_current_user)):
     if not str:

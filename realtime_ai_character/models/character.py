@@ -55,3 +55,7 @@ class EditCharacterRequest(BaseModel):
     voice_id: Optional[str] = None
     visibility: Optional[str] = None
     data: Optional[dict] = None
+
+
+class DeleteCharacterRequest(BaseModel):
+    character_id: str

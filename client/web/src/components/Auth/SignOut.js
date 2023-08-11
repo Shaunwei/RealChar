@@ -38,6 +38,8 @@ const SignOut = ({ isLoggedIn, user, handleDisconnect }) => {
       await handleSignout();
     } else if (actionKey === 'create') {
       navigate('/create');
+    } else if (actionKey === 'delete') {
+      navigate('/delete');
     }
   };
 
@@ -82,6 +84,9 @@ const SignOut = ({ isLoggedIn, user, handleDisconnect }) => {
           </Dropdown.Item>
           <Dropdown.Item key='create' className='dropdown-item' withDivider>
             Create a character
+          </Dropdown.Item>
+          <Dropdown.Item key='delete' className='dropdown-item' withDivider>
+            Delete a character
           </Dropdown.Item>
           <Dropdown.Item
             key='logout'

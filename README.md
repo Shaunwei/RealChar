@@ -245,9 +245,17 @@ Note if you want to remotely connect to a RealChar server, SSL set up is require
 
 <br/>
 
-## 🆕! LangSmith integration
+## 🆕! Anyscale and LangSmith integration
 <details><summary>👇click me</summary>
 
+### Anyscale
+You can now use [Anyscale Endpoint](https://app.endpoints.anyscale.com/landing) to serve Llama-2 models in your RealChar easily! Simply register an account with Anyscale Endpoint. Once you get the API key, set this environment variable in your `.env` file:
+```
+ANYSCALE_ENDPOINT_API_KEY=<your API Key>
+```
+By default, we show the largest servable Llama-2 model (70B) in the Web UI. You can change the model name (`meta-llama/Llama-2-70b-chat-hf`) to other models, e.g. 13b or 7b versions.
+
+### LangSmith
 If you have access to LangSmith, you can edit these environment variables to enable:
 ```
 LANGCHAIN_TRACING_V2=false # default off

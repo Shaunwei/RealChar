@@ -71,6 +71,7 @@ class CatalogManager(Singleton):
             llm_user_prompt=yaml_content["user"],
             voice_id=voice_id,
             source='default',
+            location='repo',
             visibility='public',
             tts=yaml_content["text_to_speech_use"]
         )
@@ -122,6 +123,7 @@ class CatalogManager(Singleton):
                 llm_user_prompt=yaml_content["user"],
                 voice_id=yaml_content["voice_id"],
                 source='community',
+                localtion='repo',
                 author_name=yaml_content["author_name"],
                 visibility=yaml_content["visibility"],
                 tts=yaml_content["text_to_speech_use"]
@@ -153,6 +155,10 @@ class CatalogManager(Singleton):
     def load_character_from_sql_database(self):
         character_models = self.sql_db.query(CharacterModel).all()
         with self.sql_load_lock.gen_wlock():
+            # delete all characters with location == 'database'
+            for character_id in self.characters:
+                if self.characters[character_id].location == 'database':
+                    self.characters.pop(character_id)
             for character_model in character_models:
                 author_name = auth.get_user(
                     character_model.author_id).display_name if os.getenv(
@@ -164,6 +170,7 @@ class CatalogManager(Singleton):
                     llm_user_prompt=character_model.user_prompt,
                     voice_id=character_model.voice_id,
                     source='community',
+                    localtion='database',
                     author_id=character_model.author_id,
                     author_name=author_name,
                     visibility=character_model.visibility,

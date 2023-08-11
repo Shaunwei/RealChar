@@ -14,8 +14,10 @@ if embedding_endpoint:
     # Use self-hosted embedding model via BentoML API endpoint
     from bentoml.client import Client
     client = Client.from_url(embedding_endpoint)
-    def embedding_func(docs: list[str]) -> list[float]:
-        return client.encode(docs).tolist()
+	class BentoEmbeddings:
+		def embed_documents(self, texts: list[str], chunk_size: int | None = 0) -> list[list[float]]:
+			return client.encode(docs).tolist()
+	embedding_func = BentoEmbeddings()
 else:
     embedding_func = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
     if os.getenv('OPENAI_API_TYPE') == 'azure':

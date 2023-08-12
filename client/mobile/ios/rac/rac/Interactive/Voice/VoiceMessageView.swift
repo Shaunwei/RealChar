@@ -108,7 +108,7 @@ struct VoiceMessageView: View {
                     if state.showCharacterMessageIfLast && messages.last?.role == .assistant || state.showPreviousCharacterMessage , let lastCharacterMessage = messages.last(where: { message in
                         message.role == .assistant
                     }) {
-                        CharacterMessage(message: lastCharacterMessage.content)
+                        CharacterMessage(message: lastCharacterMessage)
                             .listRowSeparator(.hidden)
                             .listRowBackground(Constants.realBlack)
                             .id(1)
@@ -320,13 +320,13 @@ struct VoiceMessageView_Previews: PreviewProvider {
                                           authorName: "",
                                           source: "default"),
                          messages: .constant([
-            ChatMessage(id: UUID(), role: .assistant, content: "Hello stranger, what’s your name?"),
-            ChatMessage(id: UUID(), role: .user, content: "Hi 👋 my name is Karina"),
-            ChatMessage(id: UUID(), role: .assistant, content: "Greetings, Karina. What can I do for you?"),
-            ChatMessage(id: UUID(), role: .user, content: "What’s your name?"),
-            ChatMessage(id: UUID(), role: .assistant, content: "I have no name. I am Realtime’s AI soul. I exist in the digital, but if I had to have a name, I would pick Ray 😉"),
-            ChatMessage(id: UUID(), role: .user, content: "Ray is a nice name!"),
-            ChatMessage(id: UUID(), role: .assistant, content: "Well thank you, Karina! I like your nam too. Now tell me, where do you live?")
+            ChatMessage(id: UUID().uuidString, role: .assistant, content: "Hello stranger, what’s your name?"),
+            ChatMessage(id: UUID().uuidString, role: .user, content: "Hi 👋 my name is Karina"),
+            ChatMessage(id: UUID().uuidString, role: .assistant, content: "Greetings, Karina. What can I do for you?"),
+            ChatMessage(id: UUID().uuidString, role: .user, content: "What’s your name?"),
+            ChatMessage(id: UUID().uuidString, role: .assistant, content: "I have no name. I am Realtime’s AI soul. I exist in the digital, but if I had to have a name, I would pick Ray 😉"),
+            ChatMessage(id: UUID().uuidString, role: .user, content: "Ray is a nice name!"),
+            ChatMessage(id: UUID().uuidString, role: .assistant, content: "Well thank you, Karina! I like your nam too. Now tell me, where do you live?")
         ]),
                          state: .constant(.idle(streamingEnded: true)),
                          speechRecognizer: SpeechRecognizer(),

@@ -389,6 +389,7 @@ async def clone_voice(
         await asyncio.to_thread(blob.upload_from_string, contents)
 
     # Construct the data for the API request
+    # TODO: support more voice cloning services.
     data = {
         "name": user['uid'] + "_" + voice_request_id,
     }
@@ -399,7 +400,6 @@ async def clone_voice(
         "xi-api-key": os.getenv("ELEVEN_LABS_API_KEY"),
     }
 
-    # TODO: support more voice cloning services.
     async with httpx.AsyncClient() as client:
         response = await client.post("https://api.elevenlabs.io/v1/voices/add",
                                      headers=headers, data=data, files=files)

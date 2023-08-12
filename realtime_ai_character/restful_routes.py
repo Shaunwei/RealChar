@@ -2,9 +2,10 @@ import os
 import datetime
 import uuid
 import asyncio
+import httpx
 
 from fastapi import APIRouter, Depends, HTTPException, Request, \
-    status as http_status, UploadFile, File
+    status as http_status, UploadFile, File, Form
 from google.cloud import storage
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -15,7 +16,8 @@ from realtime_ai_character.audio.text_to_speech import get_text_to_speech
 from realtime_ai_character.database.connection import get_db
 from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.feedback import Feedback, FeedbackRequest
-from realtime_ai_character.models.character import Character, CharacterRequest, EditCharacterRequest, DeleteCharacterRequest
+from realtime_ai_character.models.character import Character, CharacterRequest, \
+    EditCharacterRequest, DeleteCharacterRequest
 from realtime_ai_character.models.memory import Memory, UpdateMemoryRequest
 from requests import Session
 import requests
@@ -29,6 +31,8 @@ templates = Jinja2Templates(directory=os.path.join(
 if os.getenv('USE_AUTH', ''):
     cred = credentials.Certificate(os.environ.get('FIREBASE_CONFIG_PATH'))
     firebase_admin.initialize_app(cred)
+
+MAX_FILE_UPLOADS = 5
 
 
 async def get_current_user(request: Request):
@@ -340,3 +344,67 @@ async def memory(update_memory_request: UpdateMemoryRequest,
     memory.save(db)
 
     return {"success": True, "brain_id": brain_id, "brain_name": brain_name}
+
+
+@router.post("/clone_voice")
+async def clone_voice(
+    files: list[UploadFile] = Form(...),
+    user = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid authentication credentials',
+                headers={'WWW-Authenticate': 'Bearer'},
+        )
+    if len(files) > MAX_FILE_UPLOADS:
+        raise HTTPException(
+                status_code=http_status.HTTP_400_BAD_REQUEST,
+                detail=f'Number of files exceeds the limit ({MAX_FILE_UPLOADS})',
+            )
+
+    storage_client = storage.Client()
+    bucket_name = os.environ.get('GCP_STORAGE_BUCKET_NAME')
+    if not bucket_name:
+        raise HTTPException(
+                status_code=http_status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail='GCP_STORAGE_BUCKET_NAME is not set',
+            )
+
+    bucket = storage_client.bucket(bucket_name)
+    voice_request_id = str(uuid.uuid4().hex)
+
+    for file in files:
+        # Create a new filename with a timestamp and a random uuid to avoid duplicate filenames
+        file_extension = os.path.splitext(file.filename)[1]
+        new_filename = (
+            f"user_upload/{user['uid']}/{voice_request_id}/"
+            f"{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}-"
+            f"{uuid.uuid4()}{file_extension}"
+        )
+
+        blob = bucket.blob(new_filename)
+
+        contents = await file.read()
+
+        await asyncio.to_thread(blob.upload_from_string, contents)
+
+    # Construct the data for the API request
+    data = {
+        "name": user['uid'] + "_" + voice_request_id,
+    }
+
+    files = [("files", (file.filename, file.file)) for file in files]
+
+    headers = {
+        "xi-api-key": os.getenv("ELEVEN_LABS_API_KEY"),
+    }
+
+    # TODO: support more voice cloning services.
+    async with httpx.AsyncClient() as client:
+        response = await client.post("https://api.elevenlabs.io/v1/voices/add",
+                                     headers=headers, data=data, files=files)
+
+    if response.status_code != 200:
+        raise HTTPException(status_code=response.status_code, detail=response.text)
+
+    return response.json()

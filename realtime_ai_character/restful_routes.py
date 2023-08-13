@@ -2,6 +2,7 @@ import os
 import datetime
 import uuid
 import asyncio
+import httpx
 
 from fastapi import APIRouter, Depends, HTTPException, Request, \
     status as http_status, UploadFile, File
@@ -18,7 +19,6 @@ from realtime_ai_character.models.feedback import Feedback, FeedbackRequest
 from realtime_ai_character.models.character import Character, CharacterRequest, EditCharacterRequest, DeleteCharacterRequest
 from realtime_ai_character.models.memory import Memory, UpdateMemoryRequest
 from requests import Session
-import requests
 
 
 router = APIRouter()
@@ -309,11 +309,15 @@ async def memory(update_memory_request: UpdateMemoryRequest,
         url = "https://api.quivr.app/brains/default/"
         headers = {"Authorization": f"Bearer {api_key}"}
 
-        try:
-            response = requests.get(url, headers=headers)
-            response.raise_for_status()
-        except requests.exceptions.HTTPError:
-            raise HTTPException(status_code=400, detail="Invalid API key")
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.get(url, headers=headers)
+                response.raise_for_status()
+            except httpx.HTTPStatusError as exc:
+                detail = f"Quivr returns an error status code: {exc.response.status_code}"
+                raise HTTPException(status_code=exc.response.status_code, detail=detail)
+            except httpx.RequestError:
+                raise HTTPException(status_code=500, detail="Failed to get data from Quivr.")
 
         brain_id = response.json()["id"]
         brain_name = response.json()["name"]
@@ -324,13 +328,17 @@ async def memory(update_memory_request: UpdateMemoryRequest,
     url = f"https://api.quivr.app/brains/{brain_id}/"
     headers = {"Authorization": f"Bearer {api_key}"}
 
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(url, headers=headers)
+            response.raise_for_status()
 
-        brain_name = response.json()["name"]
-    except requests.exceptions.HTTPError:
-        raise HTTPException(status_code=400, detail="Invalid API key or brain ID")
+            brain_name = response.json()["name"]
+        except httpx.HTTPStatusError as exc:
+            detail = f"Quivr returns an error status code: {exc.response.status_code}"
+            raise HTTPException(status_code=exc.response.status_code, detail=detail)
+        except httpx.RequestError:
+            raise HTTPException(status_code=500, detail="Failed to get data from Quivr.")
 
     # Save to database
     memory = Memory(user_id=user['uid'],

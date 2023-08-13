@@ -63,6 +63,10 @@ const Home = ({
     navigate('/settings?character=' + compressedCharacter);
   };
 
+  const handleCreateCharacter = () => {
+    navigate('/create');
+  };
+
   return (
     <div className='home'>
       {loading ? (
@@ -79,6 +83,14 @@ const Home = ({
             isPlaying={isPlaying}
             characterConfirmed={characterConfirmed}
           />
+          <Button
+            variant='contained'
+            color='primary'
+            onClick={handleCreateCharacter}
+            sx={{ marginBottom: '20px' }}
+          >
+            Create Your Character
+          </Button>
 
           <Button
             variant='contained'

@@ -12,7 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CustomTooltip from '../Common/CustomTooltip';
 
-const Search = ({ setUseSearch, send }) => {
+const AdvancedOptions = ({ setUseSearch, send }) => {
   const handleSearchChange = event => {
     send('[!USE_SEARCH]' + event.target.checked.toString());
     setUseSearch(event.target.checked);

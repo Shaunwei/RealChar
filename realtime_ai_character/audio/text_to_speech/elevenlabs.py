@@ -9,6 +9,9 @@ from realtime_ai_character.audio.text_to_speech.base import TextToSpeech
 
 logger = get_logger(__name__)
 DEBUG = False
+ELEVEN_LABS_MULTILINGUAL_MODEL = 'eleven_multilingual_v2' if os.getenv(
+    "ELEVEN_LABS_USE_V2",
+    'false').lower() in ('true', '1') else 'eleven_multilingual_v1'
 
 config = types.SimpleNamespace(**{
     'chunk_size': 1024,
@@ -71,8 +74,7 @@ class ElevenLabs(Singleton, TextToSpeech):
             voice_id = "21m00Tcm4TlvDq8ikWAM"
         headers = config.headers
         if language != 'en-US':
-            config.data["model_id"] = 'eleven_multilingual_v2' if os.getenv(
-                'ELEVEN_LABS_USE_V2') else 'eleven_multilingual_v1'
+            config.data["model_id"] = ELEVEN_LABS_MULTILINGUAL_MODEL
         data = {
             "text": text,
             **config.data,

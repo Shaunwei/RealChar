@@ -53,7 +53,7 @@ enum LlmOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Codable 
 
 enum LanguageOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Codable {
 
-    case english, spanish, french, german, italian, portuguese, polish, hindi
+    case english, spanish, french, german, italian, portuguese, polish, hindi, chinese
 
     init?(rawValue: String) {
         for option in LanguageOption.allCases {
@@ -84,6 +84,8 @@ enum LanguageOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Cod
             return "pl-PL"
         case .hindi:
             return "hi-IN"
+        case .chinese:
+            return "zh-CN"
         }
     }
 
@@ -105,6 +107,8 @@ enum LanguageOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Cod
             return "Polish"
         case .hindi:
             return "Hindi"
+        case .chinese:
+            return "Chinese"
         }
     }
 

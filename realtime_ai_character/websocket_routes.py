@@ -38,6 +38,7 @@ GREETING_TXT_MAP = {
     "pt-PT": "Olá meu amigo, o que te traz aqui hoje?",
     "hi-IN": "नमस्ते मेरे दोस्त, आज आपको यहां क्या लाया है?",
     "pl-PL": "Cześć mój przyjacielu, co cię tu dziś przynosi?",
+    "zh-CN": "嗨，我的朋友，今天你为什么来这里？",
 }
 
 

@@ -17,8 +17,10 @@ from realtime_ai_character.database.connection import get_db
 from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.feedback import Feedback, FeedbackRequest
 from realtime_ai_character.models.character import Character, CharacterRequest, \
-    EditCharacterRequest, DeleteCharacterRequest
+    EditCharacterRequest, DeleteCharacterRequest, GeneratePromptRequest
 from realtime_ai_character.models.quivr_info import QuivrInfo, UpdateQuivrInfoRequest
+from realtime_ai_character.models.memory import Memory, UpdateMemoryRequest
+from realtime_ai_character.llm.system_prompt_generator import generate_system_prompt
 from requests import Session
 
 
@@ -248,7 +250,7 @@ async def delete_character(delete_character_request: DeleteCharacterRequest,
 
 @router.post("/generate_audio")
 async def generate_audio(text: str, tts: str = None, user = Depends(get_current_user)):
-    if not str:
+    if not isinstance(text, str) or text == '':
         raise HTTPException(
                 status_code=http_status.HTTP_400_BAD_REQUEST,
                 detail='Text is empty',
@@ -417,3 +419,24 @@ async def clone_voice(
         raise HTTPException(status_code=response.status_code, detail=response.text)
 
     return response.json()
+
+
+@router.post("/system_prompt")
+async def system_prompt(request: GeneratePromptRequest, user = Depends(get_current_user)):
+    """Generate System Prompt according to name and background."""
+    name = request.name
+    background = request.background
+    if not isinstance(name, str) or name == '':
+        raise HTTPException(
+                status_code=http_status.HTTP_400_BAD_REQUEST,
+                detail='Name is empty',
+            )
+    if not user:
+        raise HTTPException(
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid authentication credentials',
+                headers={'WWW-Authenticate': 'Bearer'},
+            )
+    return {
+        'system_prompt': generate_system_prompt(name, background)
+    }

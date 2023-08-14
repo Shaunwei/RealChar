@@ -59,3 +59,7 @@ class EditCharacterRequest(BaseModel):
 
 class DeleteCharacterRequest(BaseModel):
     character_id: str
+
+class GeneratePromptRequest(BaseModel):
+    name: str
+    background: Optional[str] = None

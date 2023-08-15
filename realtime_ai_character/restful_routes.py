@@ -18,7 +18,7 @@ from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.feedback import Feedback, FeedbackRequest
 from realtime_ai_character.models.character import Character, CharacterRequest, \
     EditCharacterRequest, DeleteCharacterRequest
-from realtime_ai_character.models.memory import Memory, UpdateMemoryRequest
+from realtime_ai_character.models.quivr_info import QuivrInfo, UpdateQuivrInfoRequest
 from requests import Session
 
 
@@ -295,10 +295,10 @@ async def generate_audio(text: str, tts: str = None, user = Depends(get_current_
     }
 
 
-@router.post("/memory")
-async def memory(update_memory_request: UpdateMemoryRequest,
-                 user = Depends(get_current_user),
-                 db: Session = Depends(get_db)):
+@router.post("/quivr_info")
+async def quivr_info(update_quivr_info_request: UpdateQuivrInfoRequest,
+                     user = Depends(get_current_user),
+                     db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(
                 status_code=http_status.HTTP_401_UNAUTHORIZED,
@@ -306,9 +306,10 @@ async def memory(update_memory_request: UpdateMemoryRequest,
                 headers={'WWW-Authenticate': 'Bearer'},
         )
 
-    api_key = update_memory_request.quivr_api_key
+    api_key = update_quivr_info_request.quivr_api_key
 
-    if not update_memory_request.quivr_brain_id or update_memory_request.quivr_brain_id == "":
+    if not update_quivr_info_request.quivr_brain_id or \
+        update_quivr_info_request.quivr_brain_id == "":
         # Get default brain ID if not provided
         url = "https://api.quivr.app/brains/default/"
         headers = {"Authorization": f"Bearer {api_key}"}
@@ -326,7 +327,7 @@ async def memory(update_memory_request: UpdateMemoryRequest,
         brain_id = response.json()["id"]
         brain_name = response.json()["name"]
     else:
-        brain_id = update_memory_request.quivr_brain_id
+        brain_id = update_quivr_info_request.quivr_brain_id
 
     # Verify API key and brain ID
     url = f"https://api.quivr.app/brains/{brain_id}/"
@@ -345,11 +346,11 @@ async def memory(update_memory_request: UpdateMemoryRequest,
             raise HTTPException(status_code=500, detail="Failed to get data from Quivr.")
 
     # Save to database
-    memory = Memory(user_id=user['uid'],
-                    quivr_api_key=api_key,
-                    quivr_brain_id=brain_id)
+    quivr_info = QuivrInfo(user_id=user['uid'],
+                           quivr_api_key=api_key,
+                           quivr_brain_id=brain_id)
 
-    memory.save(db)
+    quivr_info.save(db)
 
     return {"success": True, "brain_id": brain_id, "brain_name": brain_name}
 

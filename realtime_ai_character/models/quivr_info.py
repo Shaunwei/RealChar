@@ -4,8 +4,8 @@ from pydantic import BaseModel
 from typing import Optional
 
 
-class Memory(Base):
-    __tablename__ = "memories"
+class QuivrInfo(Base):
+    __tablename__ = "quivr_info"
 
     id = Column(Integer, primary_key=True)
     user_id = Column(String(50))
@@ -16,6 +16,6 @@ class Memory(Base):
         db.add(self)
         db.commit()
 
-class UpdateMemoryRequest(BaseModel):
+class UpdateQuivrInfoRequest(BaseModel):
     quivr_api_key: Optional[str] = None
     quivr_brain_id: Optional[str] = None

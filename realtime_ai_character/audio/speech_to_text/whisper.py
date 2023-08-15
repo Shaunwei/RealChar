@@ -32,6 +32,8 @@ WHISPER_LANGUAGE_CODE_MAPPING = {
     "hi-IN": "hi",
     "pl-PL": "pl",
     'zh-CN': 'zh',
+    'jp-JP': 'jp',
+    'ko-KR': 'ko',
 }
 
 

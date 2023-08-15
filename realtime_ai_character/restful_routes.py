@@ -296,6 +296,23 @@ async def generate_audio(text: str, tts: str = None, user = Depends(get_current_
     }
 
 
+@router.get("/quivr_info")
+async def quivr_info(user = Depends(get_current_user),
+                     db: Session = Depends(get_db)):
+    if not user:
+        raise HTTPException(
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid authentication credentials',
+                headers={'WWW-Authenticate': 'Bearer'},
+        )
+
+    quivr_info = db.query(QuivrInfo).filter(QuivrInfo.user_id == user['uid']).first()
+
+    if not quivr_info:
+        return {"success": False}
+
+    return {"success": True, "api_key": quivr_info.quivr_api_key, "brain_id": quivr_info.quivr_brain_id}
+
 @router.post("/quivr_info")
 async def quivr_info(update_quivr_info_request: UpdateQuivrInfoRequest,
                      user = Depends(get_current_user),

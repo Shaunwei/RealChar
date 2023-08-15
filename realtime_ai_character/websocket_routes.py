@@ -19,7 +19,7 @@ from realtime_ai_character.llm import (AsyncCallbackAudioHandler,
                                        AsyncCallbackTextHandler, get_llm, LLM)
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.models.interaction import Interaction
-from realtime_ai_character.models.memory import Memory
+from realtime_ai_character.models.quivr_info import QuivrInfo
 from realtime_ai_character.utils import (ConversationHistory, build_history,
                                          get_connection_manager)
 
@@ -240,9 +240,9 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
 
                 # 2. Send message to LLM
                 if use_quivr:
-                    memory = db.query(Memory).filter(Memory.user_id == user_id).first()
+                    quivr_info = db.query(QuivrInfo).filter(QuivrInfo.user_id == user_id).first()
                 else:
-                    memory = None
+                    quivr_info = None
                 response = await llm.achat(
                     history=build_history(conversation_history),
                     user_input=msg_data,
@@ -254,8 +254,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     character=character,
                     useSearch=use_search,
                     useQuivr=use_quivr,
-                    quivrApiKey=memory.quivr_api_key if memory else None,
-                    quivrBrainId=memory.quivr_brain_id if memory else None)
+                    quivrApiKey=quivr_info.quivr_api_key if quivr_info else None,
+                    quivrBrainId=quivr_info.quivr_brain_id if quivr_info else None)
 
                 # 3. Send response to client
                 message_id = str(uuid.uuid4().hex)[:16]
@@ -336,9 +336,9 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
 
                 # 5. Send message to LLM
                 if use_quivr:
-                    memory = db.query(Memory).filter(Memory.user_id == user_id).first()
+                    quivr_info = db.query(QuivrInfo).filter(QuivrInfo.user_id == user_id).first()
                 else:
-                    memory = None
+                    quivr_info = None
                 tts_task = asyncio.create_task(
                     llm.achat(history=build_history(conversation_history),
                               user_input=transcript,
@@ -352,8 +352,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                               character=character,
                               useSearch=use_search,
                               useQuivr=use_quivr,
-                              quivrApiKey=memory.quivr_api_key if memory else None,
-                              quivrBrainId=memory.quivr_brain_id if memory else None))
+                              quivrApiKey=quivr_info.quivr_api_key if quivr_info else None,
+                              quivrBrainId=quivr_info.quivr_brain_id if quivr_info else None))
 
     except WebSocketDisconnect:
         logger.info(f"User #{user_id} closed the connection")

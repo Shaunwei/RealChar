@@ -117,12 +117,12 @@ enum LanguageOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Cod
     }
 }
 
-struct MemoryRequest: Codable {
+struct QuivrInfoRequest: Codable {
     let quivrApiKey: String
     let quivrBrainId: String
 }
 
-struct MemoryResponse: Codable {
+struct QuivrInfoResponse: Codable {
     let brainId: String
     let brainName: String
 }
@@ -295,13 +295,13 @@ struct SettingsView: View {
                         request.setValue("Bearer \(userToken)", forHTTPHeaderField: "Authorization")
                         let encoder = JSONEncoder()
                         encoder.keyEncodingStrategy = .convertToSnakeCase
-                        let memoryRequest = try encoder.encode(MemoryRequest(quivrApiKey: newValue.apiKey, quivrBrainId: newValue.brainId))
-                        request.httpBody = memoryRequest
+                        let quivrInfoRequest = try encoder.encode(QuivrInfoRequest(quivrApiKey: newValue.apiKey, quivrBrainId: newValue.brainId))
+                        request.httpBody = quivrInfoRequest
                         let (data, _) = try await URLSession.shared.data(for: request)
                         let decoder = JSONDecoder()
                         decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        let memoryResponse = try decoder.decode(MemoryResponse.self, from: data)
-                        preferenceSettings.quivrMeta = .init(apiKey: newValue.apiKey, brainId: memoryResponse.brainId, brainName: memoryResponse.brainName)
+                        let quivrInfoResponse = try decoder.decode(QuivrInfoResponse.self, from: data)
+                        preferenceSettings.quivrMeta = .init(apiKey: newValue.apiKey, brainId: quivrInfoResponse.brainId, brainName: quivrInfoResponse.brainName)
                         isRegisteringMemory = false
                     } catch {
                         print(error)

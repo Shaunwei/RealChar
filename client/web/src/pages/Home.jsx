@@ -67,7 +67,7 @@ const Home = ({
   };
 
   const handleCreateCharacter = () => {
-    if (!isLoggedIn) {
+    if (!isLoggedIn.current) {
       signInWithGoogle(isLoggedIn, setToken).then(() => {
         if (isLoggedIn.current) {
           navigate('/create');

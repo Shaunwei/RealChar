@@ -264,6 +264,8 @@ const App = () => {
                 setCharacterConfirmed={setCharacterConfirmed}
                 characterConfirmed={characterConfirmed}
                 token={token}
+                setToken={setToken}
+                isLoggedIn={isLoggedIn}
               />
             }
           />

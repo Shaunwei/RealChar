@@ -287,7 +287,7 @@ struct SettingsView: View {
                         return
                     }
                     isRegisteringMemory = true
-                    let url = serverUrl.appending(path: "memory")
+                    let url = serverUrl.appending(path: "quivr_info")
                     var request = URLRequest(url: url)
                     do {
                         request.httpMethod = "POST"

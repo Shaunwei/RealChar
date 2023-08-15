@@ -19,7 +19,6 @@ from realtime_ai_character.models.feedback import Feedback, FeedbackRequest
 from realtime_ai_character.models.character import Character, CharacterRequest, \
     EditCharacterRequest, DeleteCharacterRequest, GeneratePromptRequest
 from realtime_ai_character.models.quivr_info import QuivrInfo, UpdateQuivrInfoRequest
-from realtime_ai_character.models.memory import Memory, UpdateMemoryRequest
 from realtime_ai_character.llm.system_prompt_generator import generate_system_prompt
 from requests import Session
 

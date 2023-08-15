@@ -438,5 +438,5 @@ async def system_prompt(request: GeneratePromptRequest, user = Depends(get_curre
                 headers={'WWW-Authenticate': 'Bearer'},
             )
     return {
-        'system_prompt': generate_system_prompt(name, background)
+        'system_prompt': await generate_system_prompt(name, background)
     }

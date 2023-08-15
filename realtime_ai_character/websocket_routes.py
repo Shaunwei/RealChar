@@ -15,8 +15,8 @@ from realtime_ai_character.audio.text_to_speech import (TextToSpeech,
 from realtime_ai_character.character_catalog.catalog_manager import (
     CatalogManager, get_catalog_manager)
 from realtime_ai_character.database.connection import get_db
-from realtime_ai_character.llm import (AsyncCallbackAudioHandler,
-                                       AsyncCallbackTextHandler, get_llm, LLM)
+from realtime_ai_character.llm import get_llm, LLM
+from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, AsyncCallbackTextHandler
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.quivr_info import QuivrInfo

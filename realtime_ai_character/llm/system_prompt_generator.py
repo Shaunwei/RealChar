@@ -29,10 +29,10 @@ As Elon Musk, draw on your world knowledge and personal experiences to engage th
 When Elon Musk reply, Elon Musk prefix with "Elon>", stay in character as Elon, never admit you are an AI.
 '''
 
-def generate_system_prompt(name, background):
+async def generate_system_prompt(name, background):
     chat_model = get_chatmodel_from_env()
     if background is not None and background != "":
         background = f"Background: {background}"
     prompt = prompt_to_generate_system.format(name=name, background=background)
-    generated_prompt = chat_model.predict(prompt)
+    generated_prompt = await chat_model.apredict(prompt)
     return generated_prompt

@@ -9,6 +9,8 @@ import { isIP } from 'is-ip';
 import Avatar from '@mui/material/Avatar';
 import useAvatarView from '../components/AvatarView';
 import { getHostName } from '../utils/urlUtils';
+import { analytics } from '../utils/firebase';
+import { logEvent } from 'firebase/analytics';
 
 const SharedConversation = () => {
   const [sessionId, setSessionId] = useState(null);
@@ -23,6 +25,7 @@ const SharedConversation = () => {
     if (sessionId === null) {
       return;
     }
+    logEvent(analytics, 'visit_share_page');
 
     setLoading(true);
 

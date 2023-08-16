@@ -5,7 +5,7 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 if os.getenv('OPENAI_API_TYPE') == 'azure':
     from langchain.chat_models import AzureChatOpenAI
 else:
-    from langchain.chat_models import ChatOpenAI
+    from langchain.chat_models import ChatLiteLLM
 from langchain.schema import BaseMessage, HumanMessage
 
 from realtime_ai_character.database.chroma import get_chroma
@@ -28,7 +28,7 @@ class OpenaiLlm(LLM):
                 streaming=True
             )
         else:
-            self.chat_open_ai = ChatOpenAI(
+            self.chat_open_ai = ChatLiteLLM(
                 model=model,
                 temperature=0.5,
                 streaming=True

@@ -42,6 +42,7 @@ class AnysacleLlm(LLM):
                     audioCallback: AsyncCallbackAudioHandler,
                     character: Character,
                     useSearch: bool = False,
+                    metadata: dict = None,
                     *args, **kwargs) -> str:
         # 1. Generate context
         context = self._generate_context(user_input, character)
@@ -55,7 +56,8 @@ class AnysacleLlm(LLM):
 
         # 3. Generate response
         response = await self.chat_open_ai.agenerate(
-            [history], callbacks=[callback, audioCallback, StreamingStdOutCallbackHandler()])
+            [history], callbacks=[callback, audioCallback, StreamingStdOutCallbackHandler()],
+            metadata=metadata)
         logger.info(f'Response: {response}')
         return response.generations[0][0].text
 

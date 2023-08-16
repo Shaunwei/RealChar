@@ -245,6 +245,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     quivr_info = db.query(QuivrInfo).filter(QuivrInfo.user_id == user_id).first()
                 else:
                     quivr_info = None
+                message_id = str(uuid.uuid4().hex)[:16]
                 response = await llm.achat(
                     history=build_history(conversation_history),
                     user_input=msg_data,
@@ -257,10 +258,10 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     useSearch=use_search,
                     useQuivr=use_quivr,
                     quivrApiKey=quivr_info.quivr_api_key if quivr_info else None,
-                    quivrBrainId=quivr_info.quivr_brain_id if quivr_info else None)
+                    quivrBrainId=quivr_info.quivr_brain_id if quivr_info else None,
+                    metadata={"message_id": message_id})
 
                 # 3. Send response to client
-                message_id = str(uuid.uuid4().hex)[:16]
                 await manager.send_message(message=f'[end={message_id}]\n',
                                            websocket=websocket)
 

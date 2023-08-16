@@ -1,6 +1,6 @@
 /**
- * src/components/Search/index.jsx
- * Enable google search
+ * src/components/AdvancedOptions/index.jsx
+ * Enable various advanced options like google search or quivr second brain
  *
  * created by Lynchee on 7/30/23
  */

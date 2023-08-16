@@ -155,6 +155,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     character_id_list[selection - 1])
                 character_id = character_id_list[selection - 1]
 
+        print(character)
         if character.tts:
             text_to_speech = get_text_to_speech(character.tts)
         else:

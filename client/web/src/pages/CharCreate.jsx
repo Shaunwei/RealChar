@@ -48,7 +48,7 @@ const CharCreate = ({ token }) => {
     name: '',
     system_prompt: '',
     user_prompt: user_prompt,
-    text_to_speech_use: 'ELEVEN_LABS', // Do not allow user to choose for now.
+    tts: 'ELEVEN_LABS',
     voice_id: 'EXAVITQu4vr4xnSDxMaL', // Male: ErXwobaYiN019PkySvjV Female:EXAVITQu4vr4xnSDxMaL
     visibility: 'private',
   });
@@ -85,6 +85,7 @@ const CharCreate = ({ token }) => {
   };
 
   const handleChange = event => {
+    console.log(event.target.name, event.target.value);
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
 
@@ -255,8 +256,8 @@ const CharCreate = ({ token }) => {
       <h2 style={{ alignSelf: 'flex-start' }}>Text-to-Speech Service</h2>
       <RadioGroup
         row
-        name='text_to_speech_use'
-        value={formData.text_to_speech_use}
+        name='tts'
+        value={formData.tts}
         onChange={handleChange}
         style={{ alignSelf: 'flex-start' }}
       >
@@ -285,16 +286,24 @@ const CharCreate = ({ token }) => {
         style={{ alignSelf: 'flex-start' }}
       >
         <FormControlLabel
-          value='EXAVITQu4vr4xnSDxMaL'
+          value={
+            formData.tts === 'ELEVEN_LABS'
+              ? 'EXAVITQu4vr4xnSDxMaL'
+              : 'en-US-Studio-O'
+          }
           control={<Radio color='primary' />}
           label='Female'
-          disabled={formData.text_to_speech_use !== 'ELEVEN_LABS'}
+          disabled={formData.tts === 'UNREAL_SPEECH'}
         />
         <FormControlLabel
-          value='ErXwobaYiN019PkySvjV'
+          value={
+            formData.tts === 'ELEVEN_LABS'
+              ? 'ErXwobaYiN019PkySvjV'
+              : 'en-US-Studio-M'
+          }
           control={<Radio color='primary' />}
           label='Male'
-          disabled={formData.text_to_speech_use !== 'ELEVEN_LABS'}
+          disabled={formData.tts === 'UNREAL_SPEECH'}
         />
       </RadioGroup>
       <h2 style={{ alignSelf: 'flex-start' }}>

@@ -22,6 +22,8 @@ import {
   generateSystemPrompt,
 } from '../utils/apiUtils';
 import { useNavigate } from 'react-router-dom';
+import { analytics } from '../utils/firebase';
+import { logEvent } from 'firebase/analytics';
 
 const user_prompt = `
 Context
@@ -157,6 +159,8 @@ const CharCreate = ({ token }) => {
       console.error(error);
       alert('Error creating character');
     }
+
+    logEvent(analytics, 'create_character');
   };
 
   return (

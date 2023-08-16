@@ -1,0 +1,22 @@
+label {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  color: #e0e0e0;
+}
+
+.advanced-options {
+  display: inline-flex;
+  background-color: #1b2134;
+  border-radius: 5px;
+  margin-bottom: 30px;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.quivr-text-input {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+}

@@ -35,6 +35,9 @@ const App = () => {
   const [selectedDevice, setSelectedDevice] = useState('');
   const [selectedModel, setSelectedModel] = useState('gpt-3.5-turbo-16k');
   const [useSearch, setUseSearch] = useState(false);
+  const [useQuivr, setUseQuivr] = useState(false);
+  const [quivrApiKey, setQuivrApiKey] = useState('');
+  const [quivrBrainId, setQuivrBrainId] = useState('');
   const [user, setUser] = useState(null);
   const isLoggedIn = useRef(false);
   const [token, setToken] = useState('');
@@ -142,6 +145,7 @@ const App = () => {
     selectedModel,
     preferredLanguage,
     useSearch,
+    useQuivr,
     selectedCharacter,
     setSessionId
   );
@@ -281,8 +285,17 @@ const App = () => {
                 setSelectedDevice={setSelectedDevice}
                 selectedModel={selectedModel}
                 setSelectedModel={setSelectedModel}
+                isLoggedIn={isLoggedIn}
+                token={token}
+                setToken={setToken}
                 useSearch={useSearch}
                 setUseSearch={setUseSearch}
+                useQuivr={useQuivr}
+                setUseQuivr={setUseQuivr}
+                quivrApiKey={quivrApiKey}
+                setQuivrApiKey={setQuivrApiKey}
+                quivrBrainId={quivrBrainId}
+                setQuivrBrainId={setQuivrBrainId}
                 send={send}
                 connect={connect}
                 setIsCallView={setIsCallView}

@@ -137,7 +137,8 @@ class QuivrAgent:
                 "model": "gpt-3.5-turbo-16k",
                 "temperature": 0.5,
                 "question": query,
-                "max_tokens": 512,
+                "max_tokens": 256,
+                "brain_id": brainId,
             }
 
             response = requests.post(url, headers=headers, json=data)

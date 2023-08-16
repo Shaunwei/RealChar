@@ -181,6 +181,7 @@ class CatalogManager(Singleton):
                     visibility=character_model.visibility,
                     tts=character_model.tts,
                     data=character_model.data,
+                    avatar_id=character_model.avatar_id
                 )
                 self.characters[character_model.id] = character
                 # TODO: load context data from storage

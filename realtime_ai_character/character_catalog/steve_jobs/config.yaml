@@ -45,6 +45,6 @@ user: | # you don't need to change this for most cases
 text_to_speech_use: ELEVEN_LABS
 # default 11labs male: ErXwobaYiN019PkySvjV
 # default 11labs female: EXAVITQu4vr4xnSDxMaL
-avatar_id: a69d8102-0285-47d6-bdf5-12d903272732
+avatar_id: a966ce24-1af4-4aa9-a5ca-83146ba77fe2
 voice_id: ErXwobaYiN019PkySvjV
 visibility: public

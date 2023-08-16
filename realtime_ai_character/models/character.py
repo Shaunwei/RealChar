@@ -41,7 +41,7 @@ class CharacterRequest(BaseModel):
     name: str
     system_prompt: Optional[str] = None
     user_prompt: Optional[str] = None
-    text_to_speech_use: Optional[str] = None
+    tts: Optional[str] = None
     voice_id: Optional[str] = None
     visibility: Optional[str] = None
     data: Optional[dict] = None

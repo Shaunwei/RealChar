@@ -53,16 +53,13 @@ class GoogleCloudTTS(Singleton, TextToSpeech):
         # Set the Authorization header with the access token
         config.headers['Authorization'] = f'Bearer {self.access_token}'
 
-    async def stream(self, text, websocket, tts_event: asyncio.Event, voice_id="en-US-Standard-C",
+    async def stream(self, text, websocket, tts_event: asyncio.Event, voice_id="",
                      first_sentence=False, language='en-US') -> None:
         if DEBUG:
             return
-        if voice_id == "":
-            logger.info("voice_id is not found in .env file, using Google default voice")
-            voice_id = "en-US-Standard-C"
         headers = config.headers
         # For customized voices
-        
+
         # if language != 'en-US':
         #     config.data["voice"]["languageCode"] = language
         #     config.data["voice"]["name"] = voice_id
@@ -72,6 +69,11 @@ class GoogleCloudTTS(Singleton, TextToSpeech):
             },
             **config.data,
         }
+        if voice_id:
+            logger.info("Override voice_id")
+            data["voice"]["name"] = voice_id
+            if voice_id == "en-US-Studio-O":
+                data["voice"]["ssmlGender"] = 'FEMALE'
         url = config.url
         async with httpx.AsyncClient() as client:
             response = await client.post(url, json=data, headers=headers)
@@ -85,16 +87,12 @@ class GoogleCloudTTS(Singleton, TextToSpeech):
                 await websocket.send_bytes(audio_content)
 
 
-    async def generate_audio(self, text, voice_id = "en-US-Standard-C", language='en-US') -> bytes:
-        if voice_id == "":
-            logger.info("voice_id is not found in .env file, using Google default voice")
-            voice_id = "en-US-Standard-C"
+    async def generate_audio(self, text, voice_id = "", language='en-US') -> bytes:
         headers = config.headers
         # For customized voices
-        
+
         # if language != 'en-US':
         #     config.data["voice"]["languageCode"] = language
-        #     config.data["voice"]["name"] = voice_id
         data = {
             "input": {
                 "text": text
@@ -102,6 +100,11 @@ class GoogleCloudTTS(Singleton, TextToSpeech):
             **config.data,
         }
         url = config.url
+        if voice_id:
+            logger.info("Override voice_id")
+            data["voice"]["name"] = voice_id
+            if voice_id == "en-US-Studio-O":
+                data["voice"]["ssmlGender"] = 'FEMALE'
         async with httpx.AsyncClient() as client:
             response = await client.post(url, json=data, headers=headers)
             if response.status_code != 200:

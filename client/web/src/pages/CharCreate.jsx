@@ -249,6 +249,30 @@ const CharCreate = ({ token }) => {
         onChange={handleChange}
         className='text-area'
       />
+      <h2 style={{ alignSelf: 'flex-start' }}>Text-to-Speech Service</h2>
+      <RadioGroup
+        row
+        name='text_to_speech_use'
+        value={formData.text_to_speech_use}
+        onChange={handleChange}
+        style={{ alignSelf: 'flex-start' }}
+      >
+        <FormControlLabel
+          value='ELEVEN_LABS'
+          control={<Radio color='primary' />}
+          label='Eleven Labs'
+        />
+        <FormControlLabel
+          value='GOOGLE_TTS'
+          control={<Radio color='primary' />}
+          label='Google TTS'
+        />
+        <FormControlLabel
+          value='UNREAL_SPEECH'
+          control={<Radio color='primary' />}
+          label='Unreal Speech'
+        />
+      </RadioGroup>
 
       <h2 style={{ alignSelf: 'flex-start' }}>Avatar Id</h2>
       <TextareaAutosize
@@ -293,11 +317,13 @@ const CharCreate = ({ token }) => {
           value='EXAVITQu4vr4xnSDxMaL'
           control={<Radio color='primary' />}
           label='Female'
+          disabled={formData.text_to_speech_use !== 'ELEVEN_LABS'}
         />
         <FormControlLabel
           value='ErXwobaYiN019PkySvjV'
           control={<Radio color='primary' />}
           label='Male'
+          disabled={formData.text_to_speech_use !== 'ELEVEN_LABS'}
         />
       </RadioGroup>
       <h2 style={{ alignSelf: 'flex-start' }}>

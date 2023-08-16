@@ -248,7 +248,7 @@ const CharCreate = ({ token }) => {
         onChange={handleChange}
         className='text-area'
       />
-      <h2 style={{ alignSelf: 'flex-start' }}>Text-to-speech Service</h2>
+      <h2 style={{ alignSelf: 'flex-start' }}>Text-to-Speech Service</h2>
       <RadioGroup
         row
         name='text_to_speech_use'

@@ -15,7 +15,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import './styles.css';
 import CommunicationMethod from '../components/CommunicationMethod';
-import Search from '../components/Search';
+import AdvancedOptions from '../components/AdvancedOptions';
 import lz from 'lz-string';
 
 const Settings = ({
@@ -27,8 +27,17 @@ const Settings = ({
   setSelectedDevice,
   selectedModel,
   setSelectedModel,
+  isLoggedIn,
+  token,
+  setToken,
   useSearch,
   setUseSearch,
+  useQuivr,
+  setUseQuivr,
+  quivrApiKey,
+  setQuivrApiKey,
+  quivrBrainId,
+  setQuivrBrainId,
   send,
   connect,
   setIsCallView,
@@ -107,7 +116,20 @@ const Settings = ({
         setSelectedModel={setSelectedModel}
       />
 
-      <Search useSearch={useSearch} setUseSearch={setUseSearch} send={send} />
+      <AdvancedOptions
+        isLoggedIn={isLoggedIn}
+        token={token}
+        setToken={setToken}
+        useSearch={useSearch}
+        setUseSearch={setUseSearch}
+        useQuivr={useQuivr}
+        setUseQuivr={setUseQuivr}
+        quivrApiKey={quivrApiKey}
+        setQuivrApiKey={setQuivrApiKey}
+        quivrBrainId={quivrBrainId}
+        setQuivrBrainId={setQuivrBrainId}
+        send={send}
+      />
 
       <Button
         variant='contained'

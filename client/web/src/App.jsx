@@ -145,6 +145,7 @@ const App = () => {
     selectedModel,
     preferredLanguage,
     useSearch,
+    useQuivr,
     selectedCharacter,
     setSessionId
   );

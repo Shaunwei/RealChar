@@ -2,7 +2,6 @@ import { getHostName } from '../utils/urlUtils';
 
 const scheme = window.location.protocol;
 const fileUrlMap = new Map();
-const voiceFileUrlMap = new Map();
 
 async function uploadfile(file, accessToken) {
   if (fileUrlMap.has(file)) {

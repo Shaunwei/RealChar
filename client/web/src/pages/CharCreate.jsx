@@ -100,7 +100,7 @@ const CharCreate = ({ token }) => {
       'audio/wav',
       'audio/mpeg',
       'audio/mp3',
-      'audio/mp4',
+      'audio/x-m4a',
     ];
 
     for (let i = 0; i < selectedVoiceFilesArray.length; i++) {

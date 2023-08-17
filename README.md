@@ -272,7 +272,7 @@ And it should work out of the box.
 <br/>
 
 ## 📍 Roadmap
-- [ ] Launch v0.0.3
+- [x] Launch v0.0.3
 - [ ] Create a new character via web UI
 - [ ] Add additional tts service
 - [ ] Better UI/UX for home page

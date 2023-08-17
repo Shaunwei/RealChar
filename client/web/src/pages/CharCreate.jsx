@@ -273,7 +273,7 @@ const CharCreate = ({ token }) => {
         />
         <label htmlFor='select-files'>
           <Button variant='contained' component='span'>
-            Choose File
+            Choose File to Upload (optional)
           </Button>
         </label>
         <p style={{ color: 'red' }}>{warningMsg}</p>
@@ -287,7 +287,7 @@ const CharCreate = ({ token }) => {
         </ul>
       </div>
       <h2 style={{ alignSelf: 'flex-start' }}>
-        System Prompt &nbsp;
+        System Prompt (required)&nbsp;
         <Button variant='contained' component='span' onClick={autoGenerate}>
           Auto Generate
         </Button>
@@ -300,6 +300,10 @@ const CharCreate = ({ token }) => {
         onChange={handleChange}
         className='text-area'
       />
+      <p>
+        You can either auto-generate the prompt based on character name and
+        background (it may take ~1 minute), or write the prompt yourself.
+      </p>
 
       <h2 style={{ alignSelf: 'flex-start' }}>User Prompt</h2>
       <TextareaAutosize

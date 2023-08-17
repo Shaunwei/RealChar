@@ -317,6 +317,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     conversation_history.ai.append(response)
                     token_buffer.clear()
                     # Persist interaction in the database
+                    tools = []
                     if use_search:
                         tools.append('search')
                     if use_quivr:

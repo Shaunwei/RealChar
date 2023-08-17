@@ -1,6 +1,4 @@
 import asyncio
-import os
-import types
 import edge_tts
 from edge_tts import VoicesManager
 
@@ -10,25 +8,6 @@ from realtime_ai_character.audio.text_to_speech.base import TextToSpeech
 
 logger = get_logger(__name__)
 DEBUG = False
-
-config = types.SimpleNamespace(**{
-    'url': 'https://texttospeech.googleapis.com/v1/text:synthesize',
-    'headers': {
-        'Content-Type': 'application/json',
-    },
-    'data': {
-        'voice': {
-            'languageCode': 'en-US',
-            'name': 'en-US-Studio-M',
-            'ssmlGender': 'MALE'
-        },
-        'audioConfig': {
-            'audioEncoding': 'MP3'
-        }
-    },
-    'service_account_file': os.getenv('GOOGLE_APPLICATION_CREDENTIALS', 'default/path.json'),
-})
-
 
 class EdgeTTS(Singleton, TextToSpeech):
     def __init__(self):
@@ -44,8 +23,9 @@ class EdgeTTS(Singleton, TextToSpeech):
         communicate = edge_tts.Communicate(text, voice["Name"])
         messages = []
         async for message in communicate.stream():
-            # Send the file websocket
             if message["type"] == "audio":
+                # Choose to accmulate the audio data because
+                # the stream packets are broken when playback.
                 messages.extend(message["data"])
         await websocket.send_bytes(bytes(messages))
 
@@ -56,7 +36,6 @@ class EdgeTTS(Singleton, TextToSpeech):
         communicate = edge_tts.Communicate(text, voice["Name"])
         messages = []
         async for message in communicate.stream():
-            # Send the file websocket
             if message["type"] == "audio":
                 messages.extend(message["data"])
         return bytes(messages)

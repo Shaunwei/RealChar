@@ -33,6 +33,8 @@ Try our site at [RealChar.ai](https://realchar.ai/)
 
 (We are also beta-testing our iOS mobile app📱! Sign up [here](https://testflight.apple.com/join/JA6p9sZQ))
 
+Not sure how to pronounce RealChar? Listen to this 👉 [audip](https://github.com/Shaunwei/RealChar/assets/6148473/45d4773c-eb4f-41e5-a162-f9513d650b76)
+
 ### Demo 1 - with AI Elon about cage fight!
 
 https://github.com/Shaunwei/RealChar/assets/5101573/5de0b023-6cf3-4947-84cb-596f429d109e
@@ -270,7 +272,7 @@ And it should work out of the box.
 <br/>
 
 ## 📍 Roadmap
-- [ ] Launch v0.0.3
+- [x] Launch v0.0.3
 - [ ] Create a new character via web UI
 - [ ] Add additional tts service
 - [ ] Better UI/UX for home page

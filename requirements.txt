@@ -5,6 +5,7 @@ anthropic
 chromadb>=0.4.2
 click
 EbookLib
+edge-tts
 elevenlabs
 fastapi
 ffmpeg

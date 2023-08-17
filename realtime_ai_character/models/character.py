@@ -21,6 +21,7 @@ class Character(Base):
     created_at = Column(DateTime(), nullable=False)
     updated_at = Column(DateTime(), nullable=False)
     tts = Column(String(64), nullable=True)
+    avatar_id = Column(String(100), nullable=True)
 
     def to_dict(self):
         return {
@@ -40,10 +41,11 @@ class CharacterRequest(BaseModel):
     name: str
     system_prompt: Optional[str] = None
     user_prompt: Optional[str] = None
-    text_to_speech_use: Optional[str] = None
+    tts: Optional[str] = None
     voice_id: Optional[str] = None
     visibility: Optional[str] = None
     data: Optional[dict] = None
+    avatar_id: Optional[str] = None
 
 
 class EditCharacterRequest(BaseModel):
@@ -55,6 +57,7 @@ class EditCharacterRequest(BaseModel):
     voice_id: Optional[str] = None
     visibility: Optional[str] = None
     data: Optional[dict] = None
+    avatar_id: Optional[str] = None
 
 
 class DeleteCharacterRequest(BaseModel):

@@ -28,13 +28,20 @@ const CallView = ({
   handleDisconnect,
   setIsCallView,
   sessionId,
+  handleFirstInteractionAudio,
 }) => {
   const navigate = useNavigate();
   const audioContextRef = useRef(null);
 
   useEffect(() => {
     if (isPlaying) {
-      playAudios(audioContextRef, audioPlayer, audioQueue, setIsPlaying);
+      playAudios(
+        audioContextRef,
+        audioPlayer,
+        audioQueue,
+        setIsPlaying,
+        handleFirstInteractionAudio
+      );
     }
   }, [isPlaying]);
 

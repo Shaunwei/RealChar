@@ -17,7 +17,7 @@ class Character:
     voice_id: str = ''
     author_name: str = ''
     author_id: str = ''
-    avatar_id: str = ''
+    avatar_id: Optional[str] = ''
     visibility: str = ''
     tts: Optional[str] = ''
     data: Optional[dict] = None

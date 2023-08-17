@@ -21,12 +21,18 @@ const unlockAudioContext = audioContext => {
 };
 
 // play a single audio chunk
-const playAudio = (audioContextRef, audioPlayer, url) => {
+const playAudio = (
+  audioContextRef,
+  audioPlayer,
+  url,
+  handleFirstInteractionAudio
+) => {
   if (!audioContextRef.current) {
     audioContextRef.current = new (window.AudioContext ||
       window.webkitAudioContext)();
     unlockAudioContext(audioContextRef.current);
     setupAvatarLipSync(audioContextRef.current, audioPlayer.current);
+    handleFirstInteractionAudio(); // For the first interaction, we need to play a sound to unlock blend shapes
   }
 
   return new Promise(resolve => {
@@ -55,13 +61,19 @@ export const playAudios = async (
   audioContextRef,
   audioPlayer,
   audioQueue,
-  setIsPlaying
+  setIsPlaying,
+  handleFirstInteractionAudio
 ) => {
   while (audioQueue.current.length > 0) {
     let data = audioQueue.current[0];
     let blob = new Blob([data], { type: 'audio/mp3' });
     let audioUrl = URL.createObjectURL(blob);
-    await playAudio(audioContextRef, audioPlayer, audioUrl);
+    await playAudio(
+      audioContextRef,
+      audioPlayer,
+      audioUrl,
+      handleFirstInteractionAudio
+    );
     audioQueue.current.shift();
   }
 

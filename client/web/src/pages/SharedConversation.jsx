@@ -7,7 +7,7 @@
 import React, { useEffect, useState } from 'react';
 import { isIP } from 'is-ip';
 import Avatar from '@mui/material/Avatar';
-import AvatarView from '../components/AvatarView';
+import useAvatarView from '../components/AvatarView';
 import { getHostName } from '../utils/urlUtils';
 import { analytics } from '../utils/firebase';
 import { logEvent } from 'firebase/analytics';
@@ -17,6 +17,8 @@ const SharedConversation = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [history, setHistory] = useState([]);
+
+  const { avatarDisplay } = useAvatarView(selectedCharacter?.avatar_id);
 
   // Get characters
   useEffect(() => {
@@ -78,7 +80,7 @@ const SharedConversation = () => {
         selectedCharacter !== null && (
           <div className={'avatar-wrapper'}>
             {selectedCharacter?.avatar_id ? (
-              <AvatarView avatarId={selectedCharacter?.avatar_id} />
+              <>{avatarDisplay}</>
             ) : (
               <Avatar
                 alt={selectedCharacter.name}

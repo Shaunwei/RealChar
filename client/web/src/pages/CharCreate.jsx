@@ -276,6 +276,11 @@ const CharCreate = ({ token }) => {
           control={<Radio color='primary' />}
           label='Unreal Speech'
         />
+        <FormControlLabel
+          value='EDGE_TTS'
+          control={<Radio color='primary' />}
+          label='Edge TTS'
+        />
       </RadioGroup>
 
       <h2 style={{ alignSelf: 'flex-start' }}>Avatar Id</h2>
@@ -325,7 +330,9 @@ const CharCreate = ({ token }) => {
           }
           control={<Radio color='primary' />}
           label='Female'
-          disabled={formData.tts === 'UNREAL_SPEECH'}
+          disabled={
+            formData.tts === 'UNREAL_SPEECH' || formData.tts == 'EDGE_TTS'
+          }
         />
         <FormControlLabel
           value={
@@ -335,7 +342,9 @@ const CharCreate = ({ token }) => {
           }
           control={<Radio color='primary' />}
           label='Male'
-          disabled={formData.tts === 'UNREAL_SPEECH'}
+          disabled={
+            formData.tts === 'UNREAL_SPEECH' || formData.tts == 'EDGE_TTS'
+          }
         />
       </RadioGroup>
       <h2 style={{ alignSelf: 'flex-start' }}>

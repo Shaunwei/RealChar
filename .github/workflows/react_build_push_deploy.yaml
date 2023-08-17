@@ -28,6 +28,7 @@ jobs:
         file: ./client/web/Dockerfile
         push: true
         tags: shaunly/real_char_frontend:latest
+        build-args: REACT_APP_BUILD_NUMBER=${{ github.ref }}
 
     - name: Deploy to Kubernetes
       if: ${{ contains(github.ref, 'deploy') }}

@@ -58,7 +58,8 @@ const CharCreate = ({ token }) => {
   const [voiceFiles, setVoiceFiles] = useState([]);
   const [warningMsg, setWarningMsg] = useState('');
   const [useCloneVoice, setUseCloneVoice] = useState(false);
-  const [voiceUploadWarningMsg, setVoiceUploadWarningMsg] = useState('');
+  const [voiceCloneWarningMsg, setVoiceCloneWarningMsg] = useState('');
+  const [voiceCloneStatusMsg, setVoiceCloneStatusMsg] = useState('');
 
   const [background, setBackground] = useState('');
 
@@ -104,20 +105,21 @@ const CharCreate = ({ token }) => {
 
     for (let i = 0; i < selectedVoiceFilesArray.length; i++) {
       if (!fileTypesAllowed.includes(selectedVoiceFilesArray[i].type)) {
-        setVoiceUploadWarningMsg('Only .wav, .mp3, .m4a files are allowed');
+        setVoiceCloneWarningMsg('Only .wav, .mp3, .m4a files are allowed');
         return;
       }
       if (selectedVoiceFilesArray[i].size > 5000000) {
-        setVoiceUploadWarningMsg('File size should be less than 5MB');
+        setVoiceCloneWarningMsg('File size should be less than 5MB');
         return;
       }
     }
 
     if (files.length + selectedVoiceFilesArray.length > 5) {
-      setVoiceUploadWarningMsg('Max 5 files are allowed');
+      setVoiceCloneWarningMsg('Max 5 files are allowed');
       return;
     }
     setVoiceFiles(prevFiles => [...prevFiles, ...selectedVoiceFilesArray]);
+    setVoiceCloneStatusMsg('Voice file(s) selected');
   };
 
   const handleChange = event => {
@@ -164,10 +166,12 @@ const CharCreate = ({ token }) => {
       alert('Please select a voice file');
       return;
     }
+    setVoiceCloneStatusMsg('Cloning voice...');
+
     const voice_id = (await cloneVoice(voiceFiles, token))['voice_id'];
 
     setFormData({ ...formData, voice_id: voice_id });
-    setVoiceUploadWarningMsg('Voice clone succeeded!');
+    setVoiceCloneStatusMsg('Voice clone succeeded! Voice ID: ' + voice_id);
   };
 
   const handleSubmit = async event => {
@@ -306,35 +310,6 @@ const CharCreate = ({ token }) => {
         onChange={handleChange}
         className='text-area'
       />
-      <h2 style={{ alignSelf: 'flex-start' }}>Text-to-Speech Service</h2>
-      <RadioGroup
-        row
-        name='tts'
-        value={formData.tts}
-        onChange={handleChange}
-        style={{ alignSelf: 'flex-start' }}
-      >
-        <FormControlLabel
-          value='ELEVEN_LABS'
-          control={<Radio color='primary' />}
-          label='Eleven Labs'
-        />
-        <FormControlLabel
-          value='GOOGLE_TTS'
-          control={<Radio color='primary' />}
-          label='Google TTS'
-        />
-        <FormControlLabel
-          value='UNREAL_SPEECH'
-          control={<Radio color='primary' />}
-          label='Unreal Speech'
-        />
-        <FormControlLabel
-          value='EDGE_TTS'
-          control={<Radio color='primary' />}
-          label='Edge TTS'
-        />
-      </RadioGroup>
 
       <h2 style={{ alignSelf: 'flex-start' }}>Avatar Id</h2>
       <TextareaAutosize
@@ -366,6 +341,36 @@ const CharCreate = ({ token }) => {
           Labs - labs.avatech.ai
         </span>
       </p>
+
+      <h2 style={{ alignSelf: 'flex-start' }}>Text-to-Speech Service</h2>
+      <RadioGroup
+        row
+        name='tts'
+        value={formData.tts}
+        onChange={handleChange}
+        style={{ alignSelf: 'flex-start' }}
+      >
+        <FormControlLabel
+          value='ELEVEN_LABS'
+          control={<Radio color='primary' />}
+          label='Eleven Labs'
+        />
+        <FormControlLabel
+          value='GOOGLE_TTS'
+          control={<Radio color='primary' />}
+          label='Google TTS'
+        />
+        <FormControlLabel
+          value='UNREAL_SPEECH'
+          control={<Radio color='primary' />}
+          label='Unreal Speech'
+        />
+        <FormControlLabel
+          value='EDGE_TTS'
+          control={<Radio color='primary' />}
+          label='Edge TTS'
+        />
+      </RadioGroup>
 
       <h2 style={{ alignSelf: 'flex-start' }}>Voice</h2>
       <RadioGroup
@@ -403,12 +408,12 @@ const CharCreate = ({ token }) => {
           value='placeholder'
           control={<Radio color='primary' />}
           label='Clone a new voice'
-          disabled={formData.text_to_speech_use !== 'ELEVEN_LABS'}
+          disabled={formData.tts !== 'ELEVEN_LABS'}
         />
       </RadioGroup>
 
       {useCloneVoice && (
-        <div>
+        <div className='home'>
           <input
             type='file'
             multiple
@@ -416,7 +421,8 @@ const CharCreate = ({ token }) => {
             onChange={handleVoiceFileSelect}
             id='select-voice-files'
           />
-          <p style={{ color: 'red' }}>{voiceUploadWarningMsg}</p>
+          <p style={{ color: 'red' }}>{voiceCloneWarningMsg}</p>
+          <p style={{ color: 'green' }}>{voiceCloneStatusMsg}</p>
           <label htmlFor='select-voice-files'>
             <Button
               variant='contained'

@@ -20,6 +20,7 @@ import {
   uploadfile,
   createCharacter,
   generateSystemPrompt,
+  cloneVoice,
 } from '../utils/apiUtils';
 import { useNavigate } from 'react-router-dom';
 import { analytics } from '../utils/firebase';
@@ -54,7 +55,12 @@ const CharCreate = ({ token }) => {
     visibility: 'private',
   });
   const [files, setFiles] = useState([]);
+  const [voiceFiles, setVoiceFiles] = useState([]);
   const [warningMsg, setWarningMsg] = useState('');
+  const [useCloneVoice, setUseCloneVoice] = useState(false);
+  const [voiceCloneWarningMsg, setVoiceCloneWarningMsg] = useState('');
+  const [voiceCloneStatusMsg, setVoiceCloneStatusMsg] = useState('');
+
   const [background, setBackground] = useState('');
 
   const handleFileSelect = event => {
@@ -85,7 +91,45 @@ const CharCreate = ({ token }) => {
     setFiles(prevFiles => prevFiles.filter(file => file.name !== filename));
   };
 
+  const handleVoiceFileSelect = event => {
+    setWarningMsg('');
+    const selectedVoiceFiles = event.target.files;
+    const selectedVoiceFilesArray = Array.from(selectedVoiceFiles);
+
+    const fileTypesAllowed = [
+      'audio/wav',
+      'audio/mpeg',
+      'audio/mp3',
+      'audio/x-m4a',
+    ];
+
+    for (let i = 0; i < selectedVoiceFilesArray.length; i++) {
+      if (!fileTypesAllowed.includes(selectedVoiceFilesArray[i].type)) {
+        setVoiceCloneWarningMsg('Only .wav, .mp3, .m4a files are allowed');
+        return;
+      }
+      if (selectedVoiceFilesArray[i].size > 5000000) {
+        setVoiceCloneWarningMsg('File size should be less than 5MB');
+        return;
+      }
+    }
+
+    if (files.length + selectedVoiceFilesArray.length > 5) {
+      setVoiceCloneWarningMsg('Max 5 files are allowed');
+      return;
+    }
+    setVoiceFiles(prevFiles => [...prevFiles, ...selectedVoiceFilesArray]);
+    setVoiceCloneStatusMsg('Voice file(s) selected');
+  };
+
   const handleChange = event => {
+    if (event.target.name === 'voice_id') {
+      if (event.target.value === 'placeholder') {
+        setUseCloneVoice(true);
+      } else {
+        setUseCloneVoice(false);
+      }
+    }
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
 
@@ -115,6 +159,19 @@ const CharCreate = ({ token }) => {
       alert('Error generating system prompt');
       setFormData({ ...formData, system_prompt: pre_prompt });
     }
+  };
+
+  const cloneNewVoice = async () => {
+    if (voiceFiles.length === 0) {
+      alert('Please select a voice file');
+      return;
+    }
+    setVoiceCloneStatusMsg('Cloning voice...');
+
+    const voice_id = (await cloneVoice(voiceFiles, token))['voice_id'];
+
+    setFormData({ ...formData, voice_id: voice_id });
+    setVoiceCloneStatusMsg('Voice clone succeeded! Voice ID: ' + voice_id);
   };
 
   const handleSubmit = async event => {
@@ -253,35 +310,6 @@ const CharCreate = ({ token }) => {
         onChange={handleChange}
         className='text-area'
       />
-      <h2 style={{ alignSelf: 'flex-start' }}>Text-to-Speech Service</h2>
-      <RadioGroup
-        row
-        name='tts'
-        value={formData.tts}
-        onChange={handleChange}
-        style={{ alignSelf: 'flex-start' }}
-      >
-        <FormControlLabel
-          value='ELEVEN_LABS'
-          control={<Radio color='primary' />}
-          label='Eleven Labs'
-        />
-        <FormControlLabel
-          value='GOOGLE_TTS'
-          control={<Radio color='primary' />}
-          label='Google TTS'
-        />
-        <FormControlLabel
-          value='UNREAL_SPEECH'
-          control={<Radio color='primary' />}
-          label='Unreal Speech'
-        />
-        <FormControlLabel
-          value='EDGE_TTS'
-          control={<Radio color='primary' />}
-          label='Edge TTS'
-        />
-      </RadioGroup>
 
       <h2 style={{ alignSelf: 'flex-start' }}>Avatar Id</h2>
       <TextareaAutosize
@@ -313,6 +341,36 @@ const CharCreate = ({ token }) => {
           Labs - labs.avatech.ai
         </span>
       </p>
+
+      <h2 style={{ alignSelf: 'flex-start' }}>Text-to-Speech Service</h2>
+      <RadioGroup
+        row
+        name='tts'
+        value={formData.tts}
+        onChange={handleChange}
+        style={{ alignSelf: 'flex-start' }}
+      >
+        <FormControlLabel
+          value='ELEVEN_LABS'
+          control={<Radio color='primary' />}
+          label='Eleven Labs'
+        />
+        <FormControlLabel
+          value='GOOGLE_TTS'
+          control={<Radio color='primary' />}
+          label='Google TTS'
+        />
+        <FormControlLabel
+          value='UNREAL_SPEECH'
+          control={<Radio color='primary' />}
+          label='Unreal Speech'
+        />
+        <FormControlLabel
+          value='EDGE_TTS'
+          control={<Radio color='primary' />}
+          label='Edge TTS'
+        />
+      </RadioGroup>
 
       <h2 style={{ alignSelf: 'flex-start' }}>Voice</h2>
       <RadioGroup
@@ -346,7 +404,45 @@ const CharCreate = ({ token }) => {
             formData.tts === 'UNREAL_SPEECH' || formData.tts == 'EDGE_TTS'
           }
         />
+        <FormControlLabel
+          value='placeholder'
+          control={<Radio color='primary' />}
+          label='Clone a new voice'
+          disabled={formData.tts !== 'ELEVEN_LABS'}
+        />
       </RadioGroup>
+
+      {useCloneVoice && (
+        <div className='home'>
+          <input
+            type='file'
+            multiple
+            style={{ display: 'none' }}
+            onChange={handleVoiceFileSelect}
+            id='select-voice-files'
+          />
+          <p style={{ color: 'red' }}>{voiceCloneWarningMsg}</p>
+          <p style={{ color: 'green' }}>{voiceCloneStatusMsg}</p>
+          <label htmlFor='select-voice-files'>
+            <Button
+              variant='contained'
+              component='span'
+              disabled={!useCloneVoice}
+            >
+              Choose File
+            </Button>
+          </label>
+          <Button
+            variant='contained'
+            component='span'
+            onClick={cloneNewVoice}
+            disabled={!useCloneVoice}
+          >
+            Clone Voice
+          </Button>
+        </div>
+      )}
+
       <h2 style={{ alignSelf: 'flex-start' }}>
         Visibility
         <Tooltip title='If set to public, the character will be visible to everyone after review.'>

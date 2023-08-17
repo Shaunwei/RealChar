@@ -9,7 +9,7 @@
 if [[ -n $CI_PULL_REQUEST_NUMBER && $CI_XCODEBUILD_ACTION = 'archive' ]];
 then
     echo "Setting Fruta Beta App Icon"
-    APP_ICON_PATH=$CI_WORKSPACE/Assets/Assets.xcassets/AppIcon.appiconset
+    APP_ICON_PATH=$CI_WORKSPACE/rac/Assets/Assets.xcassets/AppIcon.appiconset
 
     # Remove existing App Icon
     rm -rf $APP_ICON_PATH

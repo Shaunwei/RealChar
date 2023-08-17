@@ -32,7 +32,7 @@ const playAudio = (
       window.webkitAudioContext)();
     unlockAudioContext(audioContextRef.current);
     setupAvatarLipSync(audioContextRef.current, audioPlayer.current);
-    handleFirstInteractionAudio();
+    handleFirstInteractionAudio(); // For the first interaction, we need to play a sound to unlock blend shapes
   }
 
   return new Promise(resolve => {

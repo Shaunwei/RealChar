@@ -7,12 +7,7 @@
  */
 
 import { useAvatar } from '@avatechai/avatars/react';
-import {
-  defaultAvatarLoaders,
-  // defaultBlendshapesService,
-  defaultBlendshapesService_2,
-  defaultBlendshapesService_3,
-} from '@avatechai/avatars/default-loaders';
+import { defaultAvatarLoaders } from '@avatechai/avatars/default-loaders';
 import { ExternalVoiceSourceService } from '@avatechai/avatars/voice';
 
 const externalAvatarVoiceService = new ExternalVoiceSourceService();
@@ -25,8 +20,6 @@ export function setupAvatarLipSync(audioContext, audioPlayer) {
     audioContext,
     audioPlayer
   );
-  // defaultBlendshapesService_2.enableBlendshapes(externalAvatarVoiceService);
-  // defaultBlendshapesService_3.enableBlendshapes(externalAvatarVoiceService);
 }
 
 const useAvatarView = (avatarId, emotion) => {

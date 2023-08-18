@@ -1,6 +1,7 @@
 import os
 from abc import ABC, abstractmethod
 import requests
+import multion
 
 from langchain.callbacks.base import AsyncCallbackHandler
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -158,6 +159,16 @@ class QuivrAgent:
         except Exception as e:
             logger.error(f'Error when querying quivr: {e}')
         return ''
+
+class MultiOnAgent:
+    def __init__(self):
+        multion.login()
+    
+    def action(self, query: str) -> str:
+        multion.new_session({"input": query})
+        return ("This query has been handled by a MutliOn agent successfully. "
+                "The result has been delivered to the user. Do not try to fulfill "
+                "this request further.")
 
 class LLM(ABC):
     @abstractmethod

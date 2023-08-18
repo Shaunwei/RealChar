@@ -20,6 +20,7 @@ import SharedConversation from './pages/SharedConversation';
 import Home from './pages/Home';
 import CharCreate from './pages/CharCreate';
 import CharDelete from './pages/CharDelete';
+import Privacy from './pages/Privacy';
 
 // utils
 import auth from './utils/firebase';
@@ -411,6 +412,7 @@ const App = () => {
               />
             }
           />
+          <Route path='/privacy' element={<Privacy />} />
         </Routes>
 
         <Footer />

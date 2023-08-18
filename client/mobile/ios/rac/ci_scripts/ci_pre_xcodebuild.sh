@@ -12,12 +12,21 @@ then
     echo "CI_PULL_REQUEST_NUMBER is $CI_PULL_REQUEST_NUMBER"
     echo "CI_WORKSPACE is $CI_WORKSPACE"
 
-    BETA_ICON_PATH=$CI_WORKSPACE/client/mobile/ios/rac/ci_scripts/AppIcon-Beta.appiconset
-    APP_ICON_PATH=$CI_WORKSPACE/client/mobile/ios/rac/rac/Assets/Assets.xcassets/AppIcon.appiconset
+    PROJECT_PATH=$CI_WORKSPACE/client/mobile/ios/rac
+
+    BETA_ICON_PATH=$PROJECT_PATH/ci_scripts/AppIcon-Beta.appiconset
+    APP_ICON_PATH=$PROJECT_PATH/rac/Assets/Assets.xcassets/AppIcon.appiconset
 
     # Remove existing App Icon
     rm -rf $APP_ICON_PATH
 
     # Replace with Fruta Beta App Icon
     mv $BETA_ICON_PATH $APP_ICON_PATH
+
+    ls $PROJECT_PATH/rac/Info.plist
+
+    plutil -replace RCServerUrl -string $SERVER_URL $PROJECT_PATH/rac/Info.plist
+    plutil -replace RCWebUrl -string $WEB_URL $PROJECT_PATH/rac/Info.plist
+
+    plutil -p $PROJECT_PATH/rac/Info.plist
 fi

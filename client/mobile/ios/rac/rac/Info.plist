@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>RCWebUrl</key>
+	<string>https://realchar.ai/</string>
+	<key>RCServerUrl</key>
+	<string>https://api.realchar.ai/</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

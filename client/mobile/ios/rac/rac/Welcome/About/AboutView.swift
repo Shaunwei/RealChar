@@ -47,6 +47,10 @@ struct AboutView: View {
                                 Font.custom("Prompt", size: 16).weight(.semibold)
                             )
                             .foregroundColor(Color(red: 0.4, green: 0.52, blue: 0.83))
+                            // TODO: Add for debugging
+                            .onTapGesture {
+                                UIApplication.shared.open(webUrl)
+                            }
                     }
                 }
 

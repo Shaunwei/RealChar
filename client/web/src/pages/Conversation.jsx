@@ -27,6 +27,8 @@ const Conversation = ({
   handleStopCall,
   handleContinueCall,
   audioQueue,
+  audioContextRef,
+  audioSourceNodeRef,
   setIsPlaying,
   handleDisconnect,
   setIsCallView,
@@ -37,6 +39,7 @@ const Conversation = ({
   messageInput,
   setMessageInput,
   setUseSearch,
+  setUseEchoCancellation,
   callActive,
   startRecording,
   stopRecording,
@@ -60,9 +63,11 @@ const Conversation = ({
     isCallViewParam = '',
     preferredLanguage = '',
     useSearchParam = '',
+    useEchoCancellationParam = '',
   } = queryString.parse(search);
   const isCallView = isCallViewParam === 'true';
   const useSearch = useSearchParam === 'true';
+  const useEchoCancellation = useEchoCancellationParam === 'true';
 
   const message = isTextStreaming ? '' : textAreaValue;
   const [emotion, setEmotion] = useState('');
@@ -84,7 +89,8 @@ const Conversation = ({
       selectedDevice === '' ||
       isCallView === '' ||
       preferredLanguage === '' ||
-      useSearch === ''
+      useSearch === '' ||
+      useEchoCancellation === ''
     ) {
       navigate('/');
     }
@@ -102,6 +108,8 @@ const Conversation = ({
     setPreferredLanguage(preferredLanguage);
 
     setUseSearch(useSearch);
+
+    setUseEchoCancellation(useEchoCancellation);
   }, []);
 
   useEffect(() => {
@@ -166,6 +174,8 @@ const Conversation = ({
           handleStopCall={handleStopCall}
           handleContinueCall={handleContinueCall}
           audioQueue={audioQueue}
+          audioContextRef={audioContextRef}
+          audioSourceNodeRef={audioSourceNodeRef}
           setIsPlaying={setIsPlaying}
           handleDisconnect={handleDisconnect}
           setIsCallView={setIsCallView}

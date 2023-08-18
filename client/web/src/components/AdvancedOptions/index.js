@@ -58,6 +58,8 @@ const AdvancedOptions = ({
   setQuivrApiKey,
   quivrBrainId,
   setQuivrBrainId,
+  useEchoCancellation,
+  setUseEchoCancellation,
 }) => {
   const [openQuivrDialog, setOpenQuivrDialog] = useState(false);
 
@@ -172,6 +174,10 @@ const AdvancedOptions = ({
     ]
   );
 
+  const handleEchoCanellationChange = event => {
+    setUseEchoCancellation(event.target.checked);
+  };
+
   return (
     <>
       <label>Advanced Options</label>
@@ -185,6 +191,16 @@ const AdvancedOptions = ({
           handleChange={handleSearchChange}
           handleTooltipClick={() => {}}
         />
+        <OptionSwitch
+          checked={useEchoCancellation}
+          name={'Open Speakers'}
+          tooltip={
+            'Enable VAD + WebRTC based echo cancellation, suitable for speakers, but may lead to a slight delay in response time or mistranscription.'
+          }
+          handleChange={handleEchoCanellationChange}
+          handleTooltipClick={() => {}}
+        />
+
         <OptionSwitch
           checked={useQuivr}
           name={'Enable Quivr Second Brain'}

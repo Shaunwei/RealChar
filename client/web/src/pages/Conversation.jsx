@@ -49,6 +49,7 @@ const Conversation = ({
   setSelectedCharacter,
   setSelectedModel,
   setSelectedDevice,
+  setUseMultiOn,
   connect,
 }) => {
   const navigate = useNavigate();
@@ -60,9 +61,11 @@ const Conversation = ({
     isCallViewParam = '',
     preferredLanguage = '',
     useSearchParam = '',
+    useMultiOnParam = '',
   } = queryString.parse(search);
   const isCallView = isCallViewParam === 'true';
   const useSearch = useSearchParam === 'true';
+  const useMultiOn = useMultiOnParam === 'true';
 
   const message = isTextStreaming ? '' : textAreaValue;
 
@@ -98,6 +101,8 @@ const Conversation = ({
     setPreferredLanguage(preferredLanguage);
 
     setUseSearch(useSearch);
+
+    setUseMultiOn(useMultiOn);
   }, []);
 
   useEffect(() => {

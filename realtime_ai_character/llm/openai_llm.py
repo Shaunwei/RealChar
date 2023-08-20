@@ -69,8 +69,10 @@ class OpenaiLlm(LLM):
             context += self.quivr_agent.question(
                 user_input, quivrApiKey, quivrBrainId)
         if useMultiOn:
-            multion_output = self.multion_agent.action(user_input)
-            context += multion_output
+            if (user_input.lower().startswith("multi_on") or 
+                user_input.lower().startswith("multion")):
+                response = await self.multion_agent.action(user_input)
+                context += response
 
         # 2. Add user input to history
         history.append(HumanMessage(content=user_input_template.format(

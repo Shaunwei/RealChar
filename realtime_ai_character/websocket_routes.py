@@ -70,6 +70,7 @@ async def websocket_endpoint(websocket: WebSocket,
                              platform: str = Query(None),
                              use_search: bool = Query(default=False),
                              use_quivr: bool = Query(default=False),
+                             use_multion: bool = Query(default=False),
                              db: Session = Depends(get_db),
                              catalog_manager=Depends(get_catalog_manager),
                              speech_to_text=Depends(get_speech_to_text),
@@ -92,7 +93,7 @@ async def websocket_endpoint(websocket: WebSocket,
     try:
         main_task = asyncio.create_task(
             handle_receive(websocket, session_id, user_id, db, llm, catalog_manager,
-                           character_id, platform, use_search, use_quivr,
+                           character_id, platform, use_search, use_quivr, use_multion,
                            speech_to_text, default_text_to_speech, language))
 
         await asyncio.gather(main_task)
@@ -105,7 +106,7 @@ async def websocket_endpoint(websocket: WebSocket,
 async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db: Session,
                          llm: LLM, catalog_manager: CatalogManager,
                          character_id: str, platform: str, use_search: bool, use_quivr: bool,
-                         speech_to_text: SpeechToText,
+                         use_multion: bool, speech_to_text: SpeechToText,
                          default_text_to_speech: TextToSpeech,
                          language: str):
     try:
@@ -322,6 +323,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                         tools.append('search')
                     if use_quivr:
                         tools.append('quivr')
+                    if use_multion:
+                        tools.append('multion')
                     Interaction(user_id=user_id,
                                 session_id=session_id,
                                 client_message_unicode=transcript,
@@ -354,8 +357,9 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                                   text_to_speech, websocket, tts_event,
                                   character.voice_id),
                               character=character,
-                              useSearch=use_search,
-                              useQuivr=use_quivr,
+                              use_search=use_search,
+                              use_quivr=use_quivr,
+                              use_multion=use_multion,
                               quivrApiKey=quivr_info.quivr_api_key if quivr_info else None,
                               quivrBrainId=quivr_info.quivr_brain_id if quivr_info else None))
 

@@ -38,6 +38,8 @@ const Settings = ({
   setQuivrApiKey,
   quivrBrainId,
   setQuivrBrainId,
+  useMultiOn,
+  setUseMultiOn,
   send,
   connect,
   setIsCallView,
@@ -87,7 +89,9 @@ const Settings = ({
         '&selectedModel=' +
         selectedModel +
         '&useSearchParam=' +
-        useSearch
+        useSearch +
+        '&useMultiOnParam=' +
+        useMultiOn
     );
   };
 
@@ -128,6 +132,8 @@ const Settings = ({
         setQuivrApiKey={setQuivrApiKey}
         quivrBrainId={quivrBrainId}
         setQuivrBrainId={setQuivrBrainId}
+        useMultiOn={useMultiOn}
+        setUseMultiOn={setUseMultiOn}
         send={send}
       />
 

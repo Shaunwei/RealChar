@@ -40,6 +40,8 @@ const Settings = ({
   setQuivrBrainId,
   useMultiOn,
   setUseMultiOn,
+  useEchoCancellation,
+  setUseEchoCancellation,
   send,
   connect,
   setIsCallView,
@@ -91,7 +93,9 @@ const Settings = ({
         '&useSearchParam=' +
         useSearch +
         '&useMultiOnParam=' +
-        useMultiOn
+        useMultiOn +
+        '&useEchoCancellationParam=' +
+        useEchoCancellation
     );
   };
 
@@ -134,6 +138,8 @@ const Settings = ({
         setQuivrBrainId={setQuivrBrainId}
         useMultiOn={useMultiOn}
         setUseMultiOn={setUseMultiOn}
+        useEchoCancellation={useEchoCancellation}
+        setUseEchoCancellation={setUseEchoCancellation}
         send={send}
       />
 

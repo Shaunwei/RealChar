@@ -56,8 +56,8 @@ struct CharacterMessage: View {
               // Comment sheet
               VStack {
                   TextField("(Optional) Comments", text: $comment)
-                      .tint(.black)
-                      .foregroundColor(.black)
+                      .tint(.gray)
+                      .foregroundColor(.gray)
 
                   Button("Cancel") {
                       isShowingCommentSheet = false

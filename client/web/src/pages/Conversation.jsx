@@ -10,7 +10,7 @@ import TextView from '../components/TextView';
 import { useNavigate, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import Avatar from '@mui/material/Avatar';
-import AvatarView from '../components/AvatarView';
+import useAvatarView from '../components/AvatarView';
 import { extractEmotionFromPrompt } from '@avatechai/avatars';
 import lz from 'lz-string';
 
@@ -27,6 +27,8 @@ const Conversation = ({
   handleStopCall,
   handleContinueCall,
   audioQueue,
+  audioContextRef,
+  audioSourceNodeRef,
   setIsPlaying,
   handleDisconnect,
   setIsCallView,
@@ -37,6 +39,7 @@ const Conversation = ({
   messageInput,
   setMessageInput,
   setUseSearch,
+  setUseEchoCancellation,
   callActive,
   startRecording,
   stopRecording,
@@ -61,15 +64,20 @@ const Conversation = ({
     isCallViewParam = '',
     preferredLanguage = '',
     useSearchParam = '',
+    useEchoCancellationParam = '',
     useMultiOnParam = '',
   } = queryString.parse(search);
   const isCallView = isCallViewParam === 'true';
   const useSearch = useSearchParam === 'true';
+  const useEchoCancellation = useEchoCancellationParam === 'true';
   const useMultiOn = useMultiOnParam === 'true';
-
   const message = isTextStreaming ? '' : textAreaValue;
-
   const [emotion, setEmotion] = useState('');
+
+  const { avatarDisplay, handleFirstInteractionAudio } = useAvatarView(
+    selectedCharacter?.avatar_id,
+    emotion
+  );
 
   useEffect(() => {
     const emotion = extractEmotionFromPrompt(message);
@@ -83,7 +91,8 @@ const Conversation = ({
       selectedDevice === '' ||
       isCallView === '' ||
       preferredLanguage === '' ||
-      useSearch === ''
+      useSearch === '' ||
+      useEchoCancellation === ''
     ) {
       navigate('/');
     }
@@ -101,6 +110,8 @@ const Conversation = ({
     setPreferredLanguage(preferredLanguage);
 
     setUseSearch(useSearch);
+
+    setUseEchoCancellation(useEchoCancellation);
 
     setUseMultiOn(useMultiOn);
   }, []);
@@ -145,10 +156,7 @@ const Conversation = ({
 
       <div className={`avatar-wrapper ${isPlaying ? 'pulsating-avatar' : ''}`}>
         {selectedCharacter?.avatar_id ? (
-          <AvatarView
-            avatarId={selectedCharacter?.avatar_id}
-            emotion={emotion}
-          />
+          <>{avatarDisplay}</>
         ) : (
           <Avatar
             alt={selectedCharacter.name}
@@ -170,10 +178,13 @@ const Conversation = ({
           handleStopCall={handleStopCall}
           handleContinueCall={handleContinueCall}
           audioQueue={audioQueue}
+          audioContextRef={audioContextRef}
+          audioSourceNodeRef={audioSourceNodeRef}
           setIsPlaying={setIsPlaying}
           handleDisconnect={handleDisconnect}
           setIsCallView={setIsCallView}
           sessionId={sessionId}
+          handleFirstInteractionAudio={handleFirstInteractionAudio}
         />
       </div>
 

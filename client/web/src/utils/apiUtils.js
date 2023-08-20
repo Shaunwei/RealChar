@@ -90,4 +90,39 @@ async function generateSystemPrompt(name, background, accessToken) {
   }
 }
 
-export { uploadfile, createCharacter, deleteCharacter, generateSystemPrompt };
+async function cloneVoice(files, accessToken) {
+  // Check if all files are uploaded
+  for (const file of files) {
+    if (!fileUrlMap.has(file)) {
+      uploadfile(file, accessToken);
+    }
+  }
+
+  const url = scheme + '//' + getHostName() + '/clone_voice';
+  const formData = new FormData();
+  for (const file of files) {
+    formData.append('files', file);
+  }
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: formData,
+  });
+
+  if (response.ok) {
+    const jsonResponse = await response.json();
+    return jsonResponse;
+  } else {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+}
+
+export {
+  uploadfile,
+  createCharacter,
+  deleteCharacter,
+  generateSystemPrompt,
+  cloneVoice,
+};

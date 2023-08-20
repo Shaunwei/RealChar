@@ -206,7 +206,6 @@ const AdvancedOptions = ({
           handleChange={handleEchoCanellationChange}
           handleTooltipClick={() => {}}
         />
-
         <OptionSwitch
           checked={useQuivr}
           name={'Enable Quivr Second Brain'}
@@ -304,15 +303,17 @@ const AdvancedOptions = ({
             </Button>
           </DialogActions>
         </Dialog>
-        <OptionSwitch
-          checked={useMultiOn}
-          name={'Enable MultiOn Agent'}
-          tooltip={
-            'Enable the MultiOn agent to assist the character in taking actions.'
-          }
-          handleChange={handleMultiOnChange}
-          handleTooltipClick={() => {}}
-        />
+        {process.env.REACT_APP_ENABLE_MULTION && (
+          <OptionSwitch
+            checked={useMultiOn}
+            name={'Enable MultiOn Agent'}
+            tooltip={
+              'Enable the MultiOn agent to assist the character in taking actions.'
+            }
+            handleChange={handleMultiOnChange}
+            handleTooltipClick={() => {}}
+          />
+        )}
       </div>
     </>
   );

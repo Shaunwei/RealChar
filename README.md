@@ -162,7 +162,7 @@ ELEVEN_LABS_API_KEY=<api key>
 ## 💿 Installation via Python
 - **Step 1**. Clone the repo
    ```sh
-   git clone https://github.com/Shaunwei/RealChar.git && cd RealChar
+   git clone https://github.com/T-Plus-Plus/TemoRealChar && cd TemoRealChar
     ```
 - **Step 2**. Install requirements
     - Install [portaudio](https://people.csail.mit.edu/hubert/pyaudio/) and [ffmpeg](https://ffmpeg.org/download.html) for audio
@@ -176,10 +176,17 @@ ELEVEN_LABS_API_KEY=<api key>
     sudo apt update
     sudo apt install portaudio19-dev
     sudo apt install ffmpeg
+
+    sudo apt install python3-pip
+    sudo apt install alembic
+    sudo apt install sqlite3
+    sudo apt install uvicorn
     ```
     - Then install all python requirements
     ```sh
     pip install -r requirements.txt
+    pip install uvicorn
+
     ```
 - **Step 3**. Create an empty [sqlite](https://www.sqlite.org/index.html) database if you have not done so before
     ```sh

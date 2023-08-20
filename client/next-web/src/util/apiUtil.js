@@ -1,4 +1,5 @@
 export async function getDefaultCharacters() {
+  // TODO: use real hostname
   const res = await fetch('http://127.0.0.1:8000/characters');
   if (!res.ok) {
     // This will activate the closest `error.js` Error Boundary

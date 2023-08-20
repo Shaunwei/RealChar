@@ -4,7 +4,7 @@ import { Link } from '@nextui-org/link';
 
 export default function Footer() {
   return (
-    <footer>
+    <footer className="pt-10">
       <div className="flex justify-center py-4">
         <Link
           className="basis-14 flex justify-center mr-5"

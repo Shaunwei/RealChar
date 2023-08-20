@@ -1,8 +1,14 @@
 import './globals.css';
-import { Inter } from 'next/font/google';
+import { Prompt } from 'next/font/google';
 import { Providers } from './providers';
+import Header from './header';
+import Footer from './footer';
 
-const inter = Inter({ subsets: ['latin'] })
+const prompt = Prompt({ 
+  weight: ['300', '400', '500'],
+  style: ['normal', 'italic'],
+  subsets: ['latin'],
+})
 
 export const metadata = {
   title: 'Real Char.',
@@ -12,9 +18,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className="dark">
-      <body className={inter.className}>
+      <body className={prompt.className}>
         <Providers>
-          {children}
+          <Header />
+          <main>{children}</main>
+          <Footer />
         </Providers>
       </body>
     </html>

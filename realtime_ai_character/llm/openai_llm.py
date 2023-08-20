@@ -10,7 +10,7 @@ from langchain.schema import BaseMessage, HumanMessage
 
 from realtime_ai_character.database.chroma import get_chroma
 from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, \
-    AsyncCallbackTextHandler, LLM, QuivrAgent, SearchAgent
+    AsyncCallbackTextHandler, LLM, QuivrAgent, SearchAgent, MultiOnAgent
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Character
 
@@ -41,6 +41,7 @@ class OpenaiLlm(LLM):
         self.db = get_chroma()
         self.search_agent = SearchAgent()
         self.quivr_agent = QuivrAgent()
+        self.multion_agent = MultiOnAgent()
 
     def get_config(self):
         return self.config
@@ -54,6 +55,7 @@ class OpenaiLlm(LLM):
                     character: Character,
                     useSearch: bool = False,
                     useQuivr: bool = False,
+                    useMultiOn: bool = False,
                     quivrApiKey: str = None,
                     quivrBrainId: str = None,
                     metadata: dict = None,
@@ -66,6 +68,11 @@ class OpenaiLlm(LLM):
         if useQuivr and quivrApiKey is not None and quivrBrainId is not None:
             context += self.quivr_agent.question(
                 user_input, quivrApiKey, quivrBrainId)
+        if useMultiOn:
+            if (user_input.lower().startswith("multi_on") or 
+                user_input.lower().startswith("multion")):
+                response = await self.multion_agent.action(user_input)
+                context += response
 
         # 2. Add user input to history
         history.append(HumanMessage(content=user_input_template.format(

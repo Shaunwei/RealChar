@@ -42,6 +42,7 @@ const App = () => {
   const [useQuivr, setUseQuivr] = useState(false);
   const [quivrApiKey, setQuivrApiKey] = useState('');
   const [quivrBrainId, setQuivrBrainId] = useState('');
+  const [useMultiOn, setUseMultiOn] = useState(false);
   const [useEchoCancellation, setUseEchoCancellation] = useState(false);
   const [user, setUser] = useState(null);
   const isLoggedIn = useRef(false);
@@ -161,6 +162,7 @@ const App = () => {
     preferredLanguage,
     useSearch,
     useQuivr,
+    useMultiOn,
     selectedCharacter,
     setSessionId
   );
@@ -346,6 +348,8 @@ const App = () => {
                 setQuivrApiKey={setQuivrApiKey}
                 quivrBrainId={quivrBrainId}
                 setQuivrBrainId={setQuivrBrainId}
+                useMultiOn={useMultiOn}
+                setUseMultiOn={setUseMultiOn}
                 useEchoCancellation={useEchoCancellation}
                 setUseEchoCancellation={setUseEchoCancellation}
                 send={send}
@@ -393,6 +397,7 @@ const App = () => {
                 setSelectedCharacter={setSelectedCharacter}
                 setSelectedModel={setSelectedModel}
                 setSelectedDevice={setSelectedDevice}
+                setUseMultiOn={setUseMultiOn}
                 connect={connect}
                 messageId={messageId}
                 token={token}

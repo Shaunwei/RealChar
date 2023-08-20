@@ -58,6 +58,8 @@ const AdvancedOptions = ({
   setQuivrApiKey,
   quivrBrainId,
   setQuivrBrainId,
+  useMultiOn,
+  setUseMultiOn,
   useEchoCancellation,
   setUseEchoCancellation,
 }) => {
@@ -66,6 +68,10 @@ const AdvancedOptions = ({
   const handleSearchChange = event => {
     send('[!USE_SEARCH]' + event.target.checked.toString());
     setUseSearch(event.target.checked);
+  };
+
+  const handleMultiOnChange = event => {
+    setUseMultiOn(event.target.checked);
   };
 
   const updateQuivr = useCallback(async () => {
@@ -200,7 +206,6 @@ const AdvancedOptions = ({
           handleChange={handleEchoCanellationChange}
           handleTooltipClick={() => {}}
         />
-
         <OptionSwitch
           checked={useQuivr}
           name={'Enable Quivr Second Brain'}
@@ -298,6 +303,17 @@ const AdvancedOptions = ({
             </Button>
           </DialogActions>
         </Dialog>
+        {process.env.REACT_APP_ENABLE_MULTION && (
+          <OptionSwitch
+            checked={useMultiOn}
+            name={'Enable MultiOn Agent'}
+            tooltip={
+              'Enable the MultiOn agent to assist the character in taking actions.'
+            }
+            handleChange={handleMultiOnChange}
+            handleTooltipClick={() => {}}
+          />
+        )}
       </div>
     </>
   );

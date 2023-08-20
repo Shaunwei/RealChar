@@ -19,7 +19,7 @@ const useWebsocket = (
   preferredLanguage,
   useSearch,
   useQuivr,
-  useMultion,
+  useMultiOn,
   selectedCharacter,
   setSessionId
 ) => {
@@ -43,7 +43,7 @@ const useWebsocket = (
         ws_scheme +
         '://' +
         newHost +
-        `/ws/${sessionId}?llm_model=${selectedModel}&platform=web&use_search=${useSearch}&use_quivr=${useQuivr}&use_multion=${useMultion}&character_id=${selectedCharacter.character_id}&language=${language}&token=${token}`;
+        `/ws/${sessionId}?llm_model=${selectedModel}&platform=web&use_search=${useSearch}&use_quivr=${useQuivr}&use_multion=${useMultiOn}&character_id=${selectedCharacter.character_id}&language=${language}&token=${token}`;
       socketRef.current = new WebSocket(ws_path);
       const socket = socketRef.current;
       socket.binaryType = 'arraybuffer';

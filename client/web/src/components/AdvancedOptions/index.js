@@ -58,8 +58,8 @@ const AdvancedOptions = ({
   setQuivrApiKey,
   quivrBrainId,
   setQuivrBrainId,
-  useMultion,
-  setUseMultion,
+  useMultiOn,
+  setUseMultiOn,
 }) => {
   const [openQuivrDialog, setOpenQuivrDialog] = useState(false);
 
@@ -69,7 +69,7 @@ const AdvancedOptions = ({
   };
 
   const handleMultiOnChange = event => {
-    setUseMultion(event.target.checked);
+    setUseMultiOn(event.target.checked);
   };
 
   const updateQuivr = useCallback(async () => {
@@ -289,7 +289,7 @@ const AdvancedOptions = ({
           </DialogActions>
         </Dialog>
         <OptionSwitch
-          checked={useMultion}
+          checked={useMultiOn}
           name={'Enable MultiOn Agent'}
           tooltip={
             'Enable the MultiOn agent to assist the character in taking actions.'

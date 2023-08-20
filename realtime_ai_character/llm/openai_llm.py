@@ -55,7 +55,7 @@ class OpenaiLlm(LLM):
                     character: Character,
                     useSearch: bool = False,
                     useQuivr: bool = False,
-                    useMultiOn: bool = True,
+                    useMultiOn: bool = False,
                     quivrApiKey: str = None,
                     quivrBrainId: str = None,
                     metadata: dict = None,

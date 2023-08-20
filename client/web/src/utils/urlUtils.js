@@ -11,7 +11,7 @@ export const getHostName = () => {
   var parts = currentHost.split(':');
   var hostname = parts[0];
   // Local deployment uses 8000 port by default.
-  var newPort = '8001';
+  var newPort = '8000';
 
   if (!(hostname === 'localhost' || isIP(hostname))) {
     // Remove www. from hostname

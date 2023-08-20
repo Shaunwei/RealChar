@@ -357,9 +357,9 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                                   text_to_speech, websocket, tts_event,
                                   character.voice_id),
                               character=character,
-                              use_search=use_search,
-                              use_quivr=use_quivr,
-                              use_multion=use_multion,
+                              useSearch=use_search,
+                              useQuivr=use_quivr,
+                              useMultiOn=use_multion,
                               quivrApiKey=quivr_info.quivr_api_key if quivr_info else None,
                               quivrBrainId=quivr_info.quivr_brain_id if quivr_info else None))
 

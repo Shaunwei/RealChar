@@ -8,13 +8,15 @@ import sys
 
 @click.group()
 def cli():
-    assert sys.version_info > (3, 10), "Python version must be newer than 3.10"    
+    assert sys.version_info > (3, 10), "Python version must be newer than 3.10"
     pass
 
 
 @click.command()
-@click.option('--name', default="realtime-ai-character", help='The name to give to your Docker image.')
-@click.option('--rebuild', is_flag=True, help='Flag to indicate whether to rebuild the Docker image.')
+@click.option('--name', default="realtime-ai-character",
+              help='The name to give to your Docker image.')
+@click.option('--rebuild', is_flag=True,
+              help='Flag to indicate whether to rebuild the Docker image.')
 def docker_build(name, rebuild):
     if rebuild or not image_exists(name):
         click.secho(f"Building Docker image: {name}...", fg='green')
@@ -23,12 +25,15 @@ def docker_build(name, rebuild):
         subprocess.run(["docker", "build", "-t", name, "."])
     else:
         click.secho(
-            f"Docker image: {name} already exists. Skipping build. To rebuild, use --rebuild option", fg='yellow')
+            f"Docker image: {name} already exists. Skipping build. " + \
+            "To rebuild, use --rebuild option", fg='yellow')
 
 
 @click.command()
-@click.option('--name', default="realtime-ai-character", help='The name of the Docker image to run.')
-@click.option('--db-file', default=None, help='Path to the database file to mount inside the container.')
+@click.option('--name', default="realtime-ai-character", 
+              help='The name of the Docker image to run.')
+@click.option('--db-file', default=None, 
+              help='Path to the database file to mount inside the container.')
 def docker_run(name, db_file):
     click.secho(f"Running Docker image: {name}...", fg='green')
     if not os.path.isfile('.env'):
@@ -46,7 +51,8 @@ def docker_run(name, db_file):
 
 
 @click.command()
-@click.option('--name', default="realtime-ai-character", help='The name of the Docker image to delete.')
+@click.option('--name', default="realtime-ai-character", 
+              help='The name of the Docker image to delete.')
 def docker_delete(name):
     if image_exists(name):
         click.secho(f"Deleting Docker image: {name}...", fg='green')
@@ -60,7 +66,19 @@ def docker_delete(name):
 def run_uvicorn(args):
     click.secho("Running uvicorn server...", fg='green')
     subprocess.run(["uvicorn", "realtime_ai_character.main:app",
-                   "--ws-ping-interval", "60", "--ws-ping-timeout", "60", "--timeout-keep-alive", "60"] + list(args))
+                   "--ws-ping-interval", "60", 
+                   "--ws-ping-timeout", "60", 
+                   "--timeout-keep-alive", "60"] + list(args))
+
+
+@click.command()
+def web_build():
+    # Build the web app to be served by FastAPI
+    click.secho("Building web app...", fg='green')
+    subprocess.run(["npm", "install"], cwd="client/web")
+    click.secho("Web app dependencies installed.", fg='green')
+    subprocess.run(["npm", "run", "build"], cwd="client/web")
+    click.secho("Web app built.", fg='green')
 
 
 def image_exists(name):
@@ -73,6 +91,7 @@ cli.add_command(docker_build)
 cli.add_command(docker_run)
 cli.add_command(docker_delete)
 cli.add_command(run_uvicorn)
+cli.add_command(web_build)
 
 
 if __name__ == '__main__':

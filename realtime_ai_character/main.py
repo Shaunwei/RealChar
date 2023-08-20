@@ -2,9 +2,10 @@ import os
 import warnings
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, RedirectResponse
 
 from realtime_ai_character.audio.speech_to_text import get_speech_to_text
 from realtime_ai_character.audio.text_to_speech import get_text_to_speech
@@ -28,9 +29,28 @@ app.add_middleware(
 
 app.include_router(restful_router)
 app.include_router(websocket_router)
-app.mount("/static", StaticFiles(directory=os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), 'static')), name="static")
 
+web_build_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
+                              '..', 'client', 'web', 'build')
+
+if os.path.exists(web_build_path):
+    app.mount("/static/", 
+              StaticFiles(directory=os.path.join(web_build_path, 'static')), 
+              name="static")
+
+    @app.get("/", response_class=FileResponse)
+    async def read_index():
+        return FileResponse(os.path.join(web_build_path, 'index.html'))
+                            
+    @app.get("/{catchall:path}", response_class=FileResponse)
+    def read_static(request: Request):
+        path = request.path_params["catchall"]
+        file = os.path.join(web_build_path, path)
+
+        if os.path.exists(file):
+            return FileResponse(file)
+
+        return RedirectResponse("/")
 
 # initializations
 overwrite_chroma = os.getenv("OVERWRITE_CHROMA", 'True').lower() in ('true', '1')

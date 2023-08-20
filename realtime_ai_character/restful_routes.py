@@ -7,8 +7,6 @@ import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request, \
     status as http_status, UploadFile, File, Form
 from google.cloud import storage
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
 import firebase_admin
 from firebase_admin import auth, credentials
 from firebase_admin.exceptions import FirebaseError
@@ -24,9 +22,6 @@ from requests import Session
 
 
 router = APIRouter()
-
-templates = Jinja2Templates(directory=os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), 'static'))
 
 if os.getenv('USE_AUTH', ''):
     cred = credentials.Certificate(os.environ.get('FIREBASE_CONFIG_PATH'))
@@ -68,11 +63,6 @@ async def get_current_user(request: Request):
 @router.get("/status")
 async def status():
     return {"status": "ok", "message": "RealChar is running smoothly!"}
-
-
-@router.get("/", response_class=HTMLResponse)
-async def index(request: Request, user=Depends(get_current_user)):
-    return templates.TemplateResponse("index.html", {"request": request})
 
 
 @router.get("/characters")
@@ -311,10 +301,11 @@ async def quivr_info(user = Depends(get_current_user),
     if not quivr_info:
         return {"success": False}
 
-    return {"success": True, "api_key": quivr_info.quivr_api_key, "brain_id": quivr_info.quivr_brain_id}
+    return {"success": True, "api_key": quivr_info.quivr_api_key, 
+            "brain_id": quivr_info.quivr_brain_id}
 
 @router.post("/quivr_info")
-async def quivr_info(update_quivr_info_request: UpdateQuivrInfoRequest,
+async def quivr_info_update(update_quivr_info_request: UpdateQuivrInfoRequest,
                      user = Depends(get_current_user),
                      db: Session = Depends(get_db)):
     if not user:

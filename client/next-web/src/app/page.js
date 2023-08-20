@@ -8,7 +8,9 @@ import { getDefaultCharacters } from '../util/apiUtil';
 
 export default async function Page() {
   const characterGroup = await getDefaultCharacters();
-  //console.log(characterGroup);
+
+  const tabClassName = 'w-48 font-medium text-lg justify-center rounded-xl py-4 text-foreground';
+
   return (
       <>
         <h1 className="text-center font-light text-3xl pt-10">Real-time communication with your AI character assistant</h1>
@@ -16,13 +18,13 @@ export default async function Page() {
           <Link
             isBlock
             href="/"
-            className="w-48 font-medium text-lg bg-tab justify-center rounded-xl py-4 text-foreground">
+            className={`${tabClassName} bg-tab`}>
             Explore
           </Link>
           <Link
             isBlock
             href="/"
-            className="w-48 font-medium text-lg bg-transparent justify-center rounded-xl py-4 text-foreground">
+            className={`${tabClassName} bg-transparent`}>
             My Characters
           </Link>
         </div>

@@ -19,6 +19,7 @@ module.exports = {
     colors: {
       transparent: 'transparent',
       current: 'currentColor',
+      'header': 'rgba(167, 191, 255, 0.05)',
       'tab': 'rgba(167, 191, 255, 0.2)',
     }
   },

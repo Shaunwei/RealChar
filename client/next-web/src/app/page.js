@@ -4,7 +4,7 @@ import { Avatar } from '@nextui-org/avatar';
 import Image from 'next/image';
 import audioImg from '../assets/svgs/audio.svg';
 
-import { getDefaultCharacters } from '../util/apiUtil';
+import { getDefaultCharacters } from '../util/apiSsr';
 
 export default async function Page() {
   const characterGroup = await getDefaultCharacters();
@@ -24,7 +24,7 @@ export default async function Page() {
           <Link
             isBlock
             href="/"
-            className={`${tabClassName} bg-transparent`}>
+            className={`${tabClassName} bg-transparent pointer-events-none`}>
             My Characters
           </Link>
         </div>

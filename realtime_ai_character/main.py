@@ -51,6 +51,14 @@ if os.path.exists(web_build_path):
             return FileResponse(file)
 
         return RedirectResponse("/")
+else:
+    # If the web app is not built, prompt the user to build it
+    static_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+    app.mount("/static/", StaticFiles(directory=static_path), name="static")
+
+    @app.get("/", response_class=FileResponse)
+    async def read_index():
+        return FileResponse(os.path.join(static_path, '404.html'))
 
 # initializations
 overwrite_chroma = os.getenv("OVERWRITE_CHROMA", 'True').lower() in ('true', '1')

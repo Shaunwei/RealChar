@@ -260,6 +260,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     useQuivr=use_quivr,
                     quivrApiKey=quivr_info.quivr_api_key if quivr_info else None,
                     quivrBrainId=quivr_info.quivr_brain_id if quivr_info else None,
+                    useMultiOn=use_multion,
                     metadata={"message_id": message_id})
 
                 # 3. Send response to client
@@ -276,6 +277,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     tools.append('search')
                 if use_quivr:
                     tools.append('quivr')
+                if use_multion:
+                    tools.append('multion')
                 Interaction(user_id=user_id,
                             session_id=session_id,
                             client_message_unicode=msg_data,

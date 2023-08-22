@@ -15,8 +15,6 @@ import { useAuthContext } from '@/context/AuthContext';
 export default function Header() {
   const { user } = useAuthContext();
 
-  console.log(user);
-
   return (
     <Navbar className="h-20 bg-header">
       <NavbarBrand>

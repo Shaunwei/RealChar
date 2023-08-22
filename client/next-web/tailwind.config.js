@@ -20,7 +20,13 @@ module.exports = {
       transparent: 'transparent',
       current: 'currentColor',
       'header': 'rgba(167, 191, 255, 0.05)',
-      'tab': 'rgba(167, 191, 255, 0.2)',
+      'tab': 'rgba(167, 191, 255, 0.1)',
+      'real-black': {
+        DEFAULT: '#02081D',
+      },
+      'real-silver': {
+        500: '#636A84',
+      },
     }
   },
   darkMode: 'class',

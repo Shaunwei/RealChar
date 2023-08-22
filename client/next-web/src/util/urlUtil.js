@@ -2,7 +2,7 @@ import { isIP } from 'is-ip';
 
 export function getApiServerUrl(url) {
   const urlRegex = /^(https?:)\/\/([^:/]+)(:\d+)?/;
-  const match = url.match(urlRegex);
+  const match = url?.match(urlRegex);
   if (!match) {
     return '';
   }

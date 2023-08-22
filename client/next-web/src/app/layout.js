@@ -1,8 +1,8 @@
 import './globals.css';
 import { Prompt } from 'next/font/google';
 import { Providers } from './providers';
-import Header from './_components/header';
-import Footer from './_components/footer';
+import Header from './_components/Header';
+import Footer from './_components/Footer';
 
 const prompt = Prompt({ 
   weight: ['300', '400', '500'],

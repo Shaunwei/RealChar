@@ -1,11 +1,15 @@
 'use client'
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@nextui-org/navbar';
-import { Button } from '@nextui-org/button';
+import {
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem 
+} from '@nextui-org/navbar';
 import Image from 'next/image';
 import logo from '@/assets/svgs/logo.svg';
-import { useState } from 'react';
-import signIn from '@/firebase/auth/signin';
-import signout from '@/firebase/auth/signout';
+import SignIn from './SignIn';
+import UserDropdown from './UserDropdown';
+
 import { useAuthContext } from '@/context/AuthContext';
 
 export default function Header() {
@@ -13,26 +17,6 @@ export default function Header() {
 
   console.log(user);
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  async function handleSignIn() {
-    const { result, error } = await signIn();
-    if (error) {
-      console.log(error);
-      return;
-    }
-    console.log(result);
-    setIsLoggedIn(true);
-  }
-  async function handleSignOut() {
-    const { result, error } = await signout();
-    if (error) {
-      console.log(error);
-      return;
-    }
-    console.log(result);
-    setIsLoggedIn(false);
-  }
   return (
     <Navbar className="h-20 bg-header">
       <NavbarBrand>
@@ -44,10 +28,10 @@ export default function Header() {
       </NavbarBrand>
       <NavbarContent justify="end">
         <NavbarItem>
-          {!isLoggedIn ? (
-            <Button onClick={handleSignIn}>Sign in</Button>
+          {user==null ? (
+            <SignIn />
           ) : (
-            <Button onClick={handleSignOut}>Sign out</Button>
+            <UserDropdown user={user}/>
           )
           }
         </NavbarItem>

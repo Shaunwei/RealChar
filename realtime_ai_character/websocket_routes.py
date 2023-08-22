@@ -64,11 +64,9 @@ class SessionAuthResult:
     is_authenticated_user: bool
 
 
-async def check_session_auth(session_id: str, user_id: str, db: Session) -> (bool, bool):
+async def check_session_auth(session_id: str, user_id: str, db: Session) -> SessionAuthResult:
     """
     Helper function to check if the session is authenticated.
-    If the session is pre-existing, return True as the first tuple value.
-    If the session is pre-existing and the user_id matches, return True as the second tuple value.
     """
     if not os.getenv('USE_AUTH', ''):
         return SessionAuthResult(
@@ -95,7 +93,7 @@ async def check_session_auth(session_id: str, user_id: str, db: Session) -> (boo
             is_authenticated_user=True,
         )
     return SessionAuthResult(
-            is_existing_session=False,
+            is_existing_session=True,
             is_authenticated_user=False,
     )
 

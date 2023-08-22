@@ -187,6 +187,7 @@ const App = () => {
     audioSent,
     stopAudioPlayback,
     send,
+    startRecording,
     stopRecording,
     setTextAreaValue
   );
@@ -260,6 +261,7 @@ const App = () => {
       setIsRecording(true);
       enableHark();
     } else {
+      setIsRecording(true);
       startRecording();
       startListening();
     }

@@ -13,14 +13,15 @@ footer {
 
 .rounded-social-buttons {
   text-align: center;
+  display: flex;
 }
 
 .rounded-social-buttons .social-button {
-  display: inline-block;
   position: relative;
   cursor: pointer;
   width: 3.125rem;
-  height: 3.125rem;
+  justify-content: center;
+  display: flex;
   border: 0.125rem solid transparent;
   padding: 0;
   text-decoration: none;
@@ -34,6 +35,7 @@ footer {
   margin-right: 0.25rem;
   margin-bottom: 0.25rem;
 }
+
 
 .rounded-social-buttons .social-button:hover,
 .rounded-social-buttons .social-button:focus {

@@ -35,6 +35,7 @@ const playAudio = (
     handleFirstInteractionAudio(); // For the first interaction, we need to play a sound to unlock blend shapes
     setInitialize(false);
   }
+  handleFirstInteractionAudio();
 
   return new Promise(resolve => {
     audioPlayer.current.muted = true; // Start muted
@@ -75,6 +76,7 @@ export const playAudios = async (
     const bs = audioContextRef.current.createBufferSource();
     bs.buffer = audioBuffer;
     bs.connect(audioSourceNodeRef.current);
+    setupAvatarLipSync(audioContextRef.current, bs);
     await playAudio(
       audioContextRef,
       audioPlayer,

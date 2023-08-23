@@ -1,5 +1,19 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## Setting firebase environment
+
+Create a `.env` file in the `next-web` root directory and add your Firebase configuration files. It should look like this:
+
+```bash
+NEXT_PUBLIC_FIREBASE_API_KEY=api-key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=auth-domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=project-id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=storage-bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=sender-id
+NEXT_PUBLIC_FIREBASE_APP_ID=app-id
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=analytic-id
+```
+
 ## Getting Started
 
 First, run the development server:

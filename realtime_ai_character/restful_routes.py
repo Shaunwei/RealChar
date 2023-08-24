@@ -478,4 +478,8 @@ def get_recent_conversations(user = Depends(get_current_user), db: Session = Dep
     )
 
     # Format the results to the desired output
-    return [{"session_id": r[0], "client_message_unicode": r[1]} for r in results]
+    return [{
+        "session_id": r[0],
+        "client_message_unicode": r[1],
+        "timestamp": r[2]
+    } for r in results]

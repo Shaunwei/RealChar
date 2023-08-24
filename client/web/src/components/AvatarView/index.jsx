@@ -12,14 +12,15 @@ import { ExternalVoiceSourceService } from '@avatechai/avatars/voice';
 
 const externalAvatarVoiceService = new ExternalVoiceSourceService();
 
+export function setAnalyser(audioContext) {
+  externalAvatarVoiceService.setAnalyser(audioContext);
+}
+
 /**
  * Helper function to setup the avatar lip sync
  */
 export function setupAvatarLipSync(audioContext, audioPlayer) {
-  externalAvatarVoiceService.setAudioContextAndSource(
-    audioContext,
-    audioPlayer
-  );
+  externalAvatarVoiceService.setAudioSourceNode(audioContext, audioPlayer);
 }
 
 const useAvatarView = (avatarId, emotion) => {
@@ -29,9 +30,7 @@ const useAvatarView = (avatarId, emotion) => {
     // Loader + Plugins
     avatarLoaders: defaultAvatarLoaders,
     audioService: externalAvatarVoiceService,
-
     // Style Props
-    scale: 4,
     style: {
       width: '400px',
       height: '400px',

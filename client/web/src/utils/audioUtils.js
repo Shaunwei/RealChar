@@ -32,10 +32,9 @@ const playAudio = (
   if (initialize) {
     unlockAudioContext(audioContextRef.current);
     setupAvatarLipSync(audioContextRef.current, audioPlayer.current);
-    handleFirstInteractionAudio(); // For the first interaction, we need to play a sound to unlock blend shapes
     setInitialize(false);
   }
-  handleFirstInteractionAudio();
+  handleFirstInteractionAudio(); // For the first interaction, we need to play a sound to unlock blend shapes
 
   return new Promise(resolve => {
     audioPlayer.current.muted = true; // Start muted

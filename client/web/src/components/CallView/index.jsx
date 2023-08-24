@@ -36,7 +36,7 @@ const CallView = ({
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isPlaying) {
+    if (isPlaying && audioContextRef.current) {
       playAudios(
         audioContextRef,
         audioPlayer,

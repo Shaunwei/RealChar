@@ -19,6 +19,7 @@ from realtime_ai_character.models.character import Character, CharacterRequest, 
 from realtime_ai_character.models.quivr_info import QuivrInfo, UpdateQuivrInfoRequest
 from realtime_ai_character.llm.system_prompt_generator import generate_system_prompt
 from requests import Session
+from sqlalchemy import func
 
 
 router = APIRouter()
@@ -447,3 +448,38 @@ async def system_prompt(request: GeneratePromptRequest, user = Depends(get_curre
     return {
         'system_prompt': await generate_system_prompt(name, background)
     }
+
+
+@router.get("/conversations", response_model=list[dict])
+def get_recent_conversations(user = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not user:
+        raise HTTPException(
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid authentication credentials',
+                headers={'WWW-Authenticate': 'Bearer'},
+            )
+    user_id = user['uid']
+    stmt = (
+        db.query(
+            Interaction.session_id,
+            Interaction.client_message_unicode,
+            Interaction.timestamp,
+            func.row_number().over(
+                partition_by=Interaction.session_id,
+                order_by=Interaction.timestamp.desc()).label("rn")).filter(
+                    Interaction.user_id == user_id).subquery()
+    )
+
+    results = (
+        db.query(stmt.c.session_id, stmt.c.client_message_unicode)
+        .filter(stmt.c.rn == 1)
+        .order_by(stmt.c.timestamp.desc())
+        .all()
+    )
+
+    # Format the results to the desired output
+    return [{
+        "session_id": r[0],
+        "client_message_unicode": r[1],
+        "timestamp": r[2]
+    } for r in results]

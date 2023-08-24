@@ -3,6 +3,8 @@ import { VscGithub } from 'react-icons/vsc';
 import { FaDiscord, FaTwitter } from 'react-icons/fa';
 import { Link } from '@nextui-org/link';
 import { useAuthContext } from '@/context/AuthContext';
+import image from '@/assets/images/bgimage.png';
+import Image from 'next/image';
 
 export default function Ctabox() {
   const { user } = useAuthContext();
@@ -53,9 +55,10 @@ export default function Ctabox() {
           </>)}
         </div>
         <div className="relative mt-16 h-80 lg:mt-8">
-          <img
+        <Image
+            priority
             className="absolute left-0 top-0 w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10"
-            src="https://i.ibb.co/pRdZpnb/bgimage.png"
+            src={image}
             alt="App screenshot"
             width={1824}
             height={1080}

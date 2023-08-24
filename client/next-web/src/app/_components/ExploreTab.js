@@ -14,7 +14,7 @@ export default function ExploreTab({ characters, display }) {
         characters.map(character => (
           <Card
             key={character.character_id}
-            isFooterBlurred
+            
             className="basis-48 p-2.5 bg-blue-500">
                <Avatar
                 radius="sm"

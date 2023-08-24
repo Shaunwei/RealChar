@@ -28,13 +28,16 @@ export default function MyTab({ display }) {
         characters?.map(character => (
           <Card
             key={character.character_id}
-            className="basis-48 px-2.5 pt-2.5">
-            <CardBody className="px-0 pt-0 pb-4">
-              <Avatar
+           
+            className="basis-48 p-2.5 bg-blue-500">
+               <Avatar
                 radius="sm"
                 src={character.image_url}
                 className="w-44 h-44"
               />
+            <CardFooter  className="p-0 flex
+    flex-col">
+             
               <p className="name text-base text-center mt-2 font-medium">{character.name}</p>
               <p className="intro text-xs text-center mt-2 font-light">"I am burdened with glorious purpose."</p>
               <div className="flex justify-center mt-4">
@@ -44,8 +47,6 @@ export default function MyTab({ display }) {
                   alt=""
                 />
               </div>
-            </CardBody>
-            <CardFooter className="justify-center border-t-1 border-real-silver-500/20">
               <Link
                 href="/" 
                 className="text-xs leading-5 text-real-silver-500">
@@ -53,6 +54,7 @@ export default function MyTab({ display }) {
               </Link>
             </CardFooter>
           </Card>
+        
         ))
       }
     </section>

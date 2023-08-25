@@ -15,12 +15,13 @@ git checkout -b private_main private/main
 4. Develop
 
 a. Contribute code to private repo only
-(Make sure you are at private_main already, e.g. `git checkout private`)
+(Make sure you are at private_main already, e.g. `git checkout private`, or `gcop` alias)
 ```
 git checkout -b <your name repo>
 git add & commit
-git push private <your remote branch>
+git push private
 ```
+(or use gpp alias)
 
 b. Bring public repo to private repo
 ```

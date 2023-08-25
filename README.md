@@ -1,3 +1,39 @@
+# Private repo setup:
+
+1. Set up remote
+```
+git remote add private git@github.com:Shaunwei/realchar-private.git 
+```
+2. Fetch private repo
+```
+git fetch private main
+```
+3. Pull private repo locally to a `private_main` branch
+```
+git checkout -b private_main private/main
+```
+4. Develop
+a. Contribute code to private repo only
+(Make sure you are at private_main already, e.g. `git checkout private`)
+```
+git checkout -b <your name repo>
+git add & commit
+git push private <your remote branch>
+```
+
+b. Bring public repo to private repo
+```
+git merge origin main
+git push <a merge branch>
+```
+
+5. Aliases to help development
+Add these aliases to your .bash_aliases or .zshrc (if using zsh)
+```
+alias gcop='git checkout private_main'
+alias gpp='git push private'
+```
+
 # <img src="https://storage.googleapis.com/assistly/static/realchar/realchar.svg" height="24px" style="padding-top:4px"/>RealChar. - Your Realtime AI Character
 <br/>
 <div align="center">

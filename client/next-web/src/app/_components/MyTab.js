@@ -30,7 +30,7 @@ export default function MyTab({ display }) {
             key={character.character_id}
            
             className="basis-48 p-2.5 bg-blue-500">
-               <Avatar
+              <Avatar
                 radius="sm"
                 src={character.image_url}
                 className="w-44 h-44"

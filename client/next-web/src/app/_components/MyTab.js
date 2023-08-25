@@ -35,8 +35,7 @@ export default function MyTab({ display }) {
                 src={character.image_url}
                 className="w-44 h-44"
               />
-            <CardFooter  className="p-0 flex
-    flex-col">
+            <CardFooter  className="p-0 flex flex-col">
              
               <p className="name text-base text-center mt-2 font-medium">{character.name}</p>
               <p className="intro text-xs text-center mt-2 font-light">"I am burdened with glorious purpose."</p>

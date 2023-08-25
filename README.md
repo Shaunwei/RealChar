@@ -13,6 +13,7 @@ git fetch private main
 git checkout -b private_main private/main
 ```
 4. Develop
+
 a. Contribute code to private repo only
 (Make sure you are at private_main already, e.g. `git checkout private`)
 ```

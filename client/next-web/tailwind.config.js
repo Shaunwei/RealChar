@@ -20,7 +20,11 @@ module.exports = {
       transparent: 'transparent',
       current: 'currentColor',
       'header': 'rgba(167, 191, 255, 0.05)',
-      'tab': 'rgba(167, 191, 255, 0.1)',
+      'tab': 'rgba(167, 191, 255, 0.2)',
+      'button': 'rgba(188, 207, 254, 0.1)',
+      'divider': 'rgba(99, 106, 132, 0.3)',
+      'dropdown': '#1e2643',
+      'dropdownHover': 'rgba(103, 133, 211, 0.3)',
       'real-black': {
         DEFAULT: '#02081D',
       },

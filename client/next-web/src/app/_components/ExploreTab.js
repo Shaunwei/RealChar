@@ -6,11 +6,13 @@ import { Avatar } from '@nextui-org/avatar';
 import Image from 'next/image';
 import audioSvg from '@/assets/svgs/audio.svg';
 
-export default function ExploreTab({ characters, display }) {
+export default function ExploreTab({ characters, isDisplay }) {
+  const display = isDisplay ? 'flex' : 'hidden';
+  
   return (
     <section className={`flex flex-row flex-wrap justify-center mt-10 gap-5 ${display}`}>
       {
-        characters.map(character => (
+        characters?.map(character => (
           <Card
             key={character.character_id}
             className="basis-48 p-2.5">

@@ -1,7 +1,7 @@
 'use client'
-import { Button } from '@nextui-org/react';
 import ExploreTab from './ExploreTab';
 import MyTab from './MyTab';
+import TabButton from '@/components/TabButton';
 
 import { useAuthContext } from '@/context/AuthContext';
 import { useState } from 'react';
@@ -9,55 +9,42 @@ import { useState } from 'react';
 export default function Tabs({ defaultCharacters }) {
   const { user } = useAuthContext();
   const [ tabNow, setTabNow ] = useState('explore');
-  let exploreButtonClass = '';
-  let myCharacterButtonClass = '';
-  let exploreTabDisplay = '';
-  let myTabDisplay = '';
-  
-  switch(tabNow) {
-    case 'explore':
-      exploreButtonClass = 'bg-tab';
-      myCharacterButtonClass = 'bg-transparent';
-      exploreTabDisplay = 'flex';
-      myTabDisplay = 'hidden';
-      break;
-    case 'myCharacter':
-      exploreButtonClass = 'bg-transparent';
-      myCharacterButtonClass = 'bg-tab';
-      exploreTabDisplay = 'hidden';
-      myTabDisplay = 'flex';
-      break;
-  }
 
-  if (user == null) {
-    exploreButtonClass = 'bg-tab';
-    myCharacterButtonClass = 'bg-transparent';
-    exploreTabDisplay = 'flex';
-    myTabDisplay = 'hidden';
+  let exploreTabDisplay = true;
+  let myTabDisplay = false;
+
+  if (user == null || tabNow === 'explore') {
+    exploreTabDisplay = true;
+    myTabDisplay = false;
+  } else {
+    exploreTabDisplay = false;
+    myTabDisplay = true;
   }
 
   return (
     <>
-      <div className="flex justify-center mt-10 gap-5">
-        <Button
-          isBlock
-          href="/"
-          className={`w-48 h-14 font-medium text-lg justify-center rounded-xl py-4 text-foreground ${exploreButtonClass}`}
-          onClick={() => setTabNow('explore')}>
-          Explore
-        </Button>
-        <Button
-          isBlock
-          isDisabled={user==null}
-          href="/"
-          className={`w-48 h-14 font-medium text-lg justify-center rounded-xl py-4 text-foreground ${myCharacterButtonClass}`}
-          onClick={() => setTabNow('myCharacter')}>
-          My Characters
-        </Button>
+      <div className="grid grid-cols-3 mt-10">
+        <div className="col-start-2 grid grid-cols-2 gap-5">
+          <TabButton
+            isSelected={exploreTabDisplay}
+            handlePress={() => setTabNow('explore')}
+          >
+            Explore
+          </TabButton>
+          <TabButton
+            isSelected={myTabDisplay}
+            isDisabled={user==null}
+            handlePress={() => setTabNow('myCharacter')}
+          >
+            My Characters
+          </TabButton>
+        </div>
       </div>
-      <ExploreTab characters={defaultCharacters} display={exploreTabDisplay}/>
+      <ExploreTab 
+        characters={defaultCharacters} 
+        isDisplay={exploreTabDisplay}/>
       {user != null && (
-        <MyTab display={myTabDisplay} />
+        <MyTab isDisplay={myTabDisplay} />
       )}
     </>
   );

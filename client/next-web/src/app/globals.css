@@ -20,3 +20,7 @@ body {
   color: #fff;
   background: #02081d;
 }
+
+main {
+  padding: 40px 60px;
+}

@@ -7,7 +7,7 @@ export default async function Page() {
 
   return (
       <>
-        <h1 className="text-center font-light text-3xl pt-10">Real-time communication with your AI character assistant</h1>
+        <h1 className="text-center font-light text-3xl">Real-time communication with your AI character assistant</h1>
         <Tabs defaultCharacters={characterGroup} />
       </>
   )

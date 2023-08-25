@@ -11,9 +11,10 @@ import Link from 'next/link';
 
 import { useMyCharacters } from '@/util/apiClient';
 
-export default function MyTab({ display }) {
+export default function MyTab({ isDisplay }) {
   const { characters } = useMyCharacters();
-
+  const display = isDisplay ? 'flex' : 'hidden';
+  
   return (
     <section className={`flex flex-row flex-wrap justify-center mt-10 gap-5 ${display}`}>
       <Card className="basis-48">

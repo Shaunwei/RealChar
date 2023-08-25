@@ -14,6 +14,15 @@ NEXT_PUBLIC_FIREBASE_APP_ID=app-id
 NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=analytic-id
 ```
 
+## Setting API host
+
+Open `.env` file created above, add your api host in the file. It should look like this
+
+```bash
+# for example http://127.0.0.1:8000
+API_HOST=your-api-host
+```
+
 ## Getting Started
 
 First, run the development server:

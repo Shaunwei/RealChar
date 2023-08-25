@@ -6,11 +6,15 @@ package ai.realchar.app.ui.fragment
 
 import ai.realchar.app.R
 import ai.realchar.app.ui.compose.AboutPage
+import ai.realchar.app.ui.compose.ChatPage
+import ai.realchar.app.ui.compose.ROUTE_CHAT
 import ai.realchar.app.ui.compose.SettingsPage
 import ai.realchar.app.ui.compose.TryOutPage
 import ai.realchar.app.ui.compose.modifier.coloredUnderline
+import ai.realchar.app.ui.compose.widgets.VectorImage
 import ai.realchar.app.ui.theme.RealCharTheme
 import ai.realchar.app.ui.theme.assets
+import ai.realchar.app.ui.vm.CharactersModel
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -39,22 +43,23 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.viewpager2.widget.ViewPager2
-import kotlinx.coroutines.launch
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+
+const val ROUTE_MAIN = "home"
 
 class MainFragment : Fragment() {
     override fun onCreateView(
@@ -64,30 +69,51 @@ class MainFragment : Fragment() {
     ) = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            Main()
+            val navController = rememberNavController()
+            val charactersModel: CharactersModel = viewModel()
+            NavHost(navController = navController, startDestination = ROUTE_MAIN) {
+                composable(ROUTE_MAIN) {
+                    Main(charactersModel, navController)
+                }
+
+                composable("$ROUTE_CHAT/{char_id}", arguments = listOf(
+                    navArgument("char_id") {
+                        type = NavType.StringType
+                    }
+                )) { backStackEntry ->
+                    var charId = backStackEntry.arguments?.getString("char_id")
+                    val character = charactersModel.characters.value?.firstOrNull {
+                        it.id == charId
+                    } ?: throw IllegalArgumentException()
+                    ChatPage(character, navController)
+                }
+            }
+
         }
 
+
     }
-
-
 }
 
 @Composable
-fun Main() {
+fun Main(
+    charactersModel: CharactersModel = viewModel(),
+    navController: NavHostController = rememberNavController(),
+) {
+
     RealCharTheme {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            Image(
-                painter = rememberVectorPainter(image = ImageVector.vectorResource(id = MaterialTheme.assets.logo)),
-                contentDescription = null,
+            VectorImage(
                 modifier = Modifier
                     .padding(top = 60.dp, start = 32.dp, bottom = 30.dp)
-                    .height(32.dp)
+                    .height(32.dp),
+                resId = MaterialTheme.assets.logo
             )
-            TabArea()
+            TabArea(charactersModel = charactersModel, navController)
         }
     }
 }
@@ -100,7 +126,10 @@ private enum class Tab(val resId: Int) {
 }
 
 @Composable
-private fun TabArea() {
+private fun TabArea(
+    charactersModel: CharactersModel = viewModel(),
+    navController: NavHostController = rememberNavController(),
+) {
     var currentTab by remember { mutableStateOf(Tab.ABOUT) }
     Column(
         modifier = Modifier
@@ -124,7 +153,7 @@ private fun TabArea() {
 
         when (currentTab) {
             Tab.ABOUT -> AboutPage()
-            Tab.TRY_OUT -> TryOutPage()
+            Tab.TRY_OUT -> TryOutPage(viewModel = charactersModel, navController = navController)
             else -> SettingsPage()
         }
     }
@@ -134,7 +163,8 @@ private fun TabArea() {
 private fun TabTitle(tab: Tab, currentTab: Tab, onClick: () -> Unit) {
     Text(
         text = stringResource(id = tab.resId),
-        modifier = Modifier.padding(end = 16.dp)
+        modifier = Modifier
+            .padding(end = 16.dp)
             .wrapContentWidth()
             .wrapContentHeight()
             .padding(vertical = 8.dp)

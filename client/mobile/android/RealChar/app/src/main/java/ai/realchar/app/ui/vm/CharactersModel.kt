@@ -34,7 +34,11 @@ class CharactersModel : ViewModel() {
         disposable = API.getCharacters().subscribeOn(Schedulers.io()).doOnError {
             _isLoading.postValue(LoadingState.FAILED)
         }.subscribe {
-            _character.postValue(it)
+            /**
+             * fixme: remove this when the server returns id.
+             */
+            val resp = it?.mapIndexed{idx, v -> v.copy(id = "god${if (idx == 0) "" else idx}") }
+            _character.postValue(resp)
             _isLoading.postValue(LoadingState.SUCCEEDED)
         }
     }

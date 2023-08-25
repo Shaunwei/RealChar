@@ -4,24 +4,26 @@
 
 package ai.realchar.app.model
 
+import androidx.annotation.Keep
+import java.io.Serializable
 import java.net.URL
 
+@Keep
 data class Character(
-    val id: String,
-    val name: String,
-    val description: String?,
-    val imageUrl: URL?,
-    val authorName: String,
-    val source: String
-) {
+    val id: String? = null,
+    val name: String? = null,
+    val description: String? = null,
+    val imageUrl: String? = null,
+    val authorName: String? = null,
+    val source: String? = null
+): Serializable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
         other as Character
 
-        /** fixme: server does not return id.......  */
-        if (name != other.name) return false
+        if (id != other.id) return false
 
         return true
     }

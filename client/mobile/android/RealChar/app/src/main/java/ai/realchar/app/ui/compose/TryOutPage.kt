@@ -14,12 +14,14 @@ import ai.realchar.app.ui.vm.CharactersModel
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,15 +37,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun ColumnScope.TryOutPage(
-    viewModel: CharactersModel = viewModel()
+    viewModel: CharactersModel = viewModel(),
+    navController: NavHostController = rememberNavController(),
 ) {
     val state by viewModel.loadingState.observeAsState(initial = CharactersModel.LoadingState.LOADING)
     val characters by viewModel.characters.observeAsState(null)
@@ -52,46 +58,34 @@ fun ColumnScope.TryOutPage(
         mutableStateOf<Character?>(null)
     }
     SectionHeader(resId = R.string.choose_your_partner)
-    ConstraintLayout(
+
+    ListArea(
         modifier = Modifier
+            .padding(bottom = 8.dp)
             .fillMaxWidth()
-            .weight(1f)
-    ) {
-        val (list, cta) = createRefs()
-        ListArea(
-            modifier = Modifier.constrainAs(list) {
-                width = Dimension.matchParent
-                height = Dimension.fillToConstraints
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                top.linkTo(parent.top)
-                bottom.linkTo(cta.top, 8.dp)
-            },
-            selected = selectedCharacter,
-            characters = characters,
-            loadingState = state
-        )
-        Row(
-            modifier = Modifier
-                .background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(size = 4.dp)
-                )
-                .constrainAs(cta) {
-                    width = Dimension.matchParent
-                    height = Dimension.value(52.dp)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom, margin = 10.dp)
-                },
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(id = R.string.start),
-                style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.inversePrimary)
+            .weight(1.0f),
+        selected = selectedCharacter,
+        characters = characters,
+        loadingState = state
+    )
+    Row(
+        modifier = Modifier
+            .background(
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(size = 4.dp)
             )
-        }
+            .fillMaxWidth()
+            .height(52.dp)
+            .clickable {
+                navController.navigate("$ROUTE_CHAT/${selectedCharacter.value?.id}")
+            },
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(id = R.string.start),
+            style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.inversePrimary)
+        )
     }
 
 }
@@ -135,7 +129,7 @@ fun CharacterOption(selected: MutableState<Character?>, item: Character) {
             /** fixme default img */
             url = item.imageUrl ?: "https://cdn-icons-png.flaticon.com/128/10928/10928937.png"
         )
-        Text(text = item.name, style = MaterialTheme.typography.bodyMedium)
+        Text(text = item.name ?: "", style = MaterialTheme.typography.bodyMedium)
     }
 
 }

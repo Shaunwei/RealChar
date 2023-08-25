@@ -11,6 +11,7 @@ import ai.realchar.app.model.LoginUser
 import ai.realchar.app.model.User
 import ai.realchar.app.ui.compose.widgets.RoundedButton
 import ai.realchar.app.ui.compose.widgets.SectionHeader
+import ai.realchar.app.ui.compose.widgets.VectorImage
 import ai.realchar.app.ui.compose.widgets.borderStyle
 import ai.realchar.app.ui.vm.GlobalVM
 import androidx.compose.foundation.Image
@@ -39,9 +40,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,33 +51,30 @@ import androidx.constraintlayout.compose.Dimension
 
 @Composable
 fun SettingsPage() {
-    ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-        val (scrollable, cta) = createRefs()
-        ScrollableContent(modifier = Modifier.constrainAs(scrollable) {
-            start.linkTo(parent.start)
-            end.linkTo(parent.end)
-            top.linkTo(parent.top)
-            bottom.linkTo(cta.top, 8.dp)
-        })
+    Column {
+        ScrollableContent(modifier = Modifier
+            .padding(bottom = 8.dp)
+            .fillMaxWidth()
+            .weight(1.0f))
 
-        Row(modifier = Modifier
-            .border(
-                width = 2.dp,
-                color = Color(0xFFA7BFFF),
-                shape = RoundedCornerShape(size = 4.dp)
-            )
-            .constrainAs(cta) {
-                width = Dimension.matchParent
-                height = Dimension.value(52.dp)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                bottom.linkTo(parent.bottom, margin = 10.dp)
-            },
+        Row(
+            modifier = Modifier
+                .padding(bottom = 10.dp)
+                .border(
+                    width = 2.dp,
+                    color = Color(0xFFA7BFFF),
+                    shape = RoundedCornerShape(size = 4.dp)
+                )
+                .fillMaxWidth()
+                .height(52.dp),
             horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically) {
-            Text(text = stringResource(id = R.string.leave_feedback), style = MaterialTheme.typography.bodyMedium)
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(id = R.string.leave_feedback),
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
-
     }
 }
 
@@ -189,10 +185,9 @@ fun LoginEntries() {
                 GlobalVM.loginResult("ddddddd", User(name = "Edward", email = "ffff@ddd.com"))
             }
     ) {
-        Image(
+        VectorImage(
             modifier = Modifier.size(24.dp),
-            imageVector = ImageVector.vectorResource(R.drawable.ic_google),
-            contentDescription = null
+            resId = R.drawable.ic_google
         )
         Text(
             text = "Google", style = TextStyle(
@@ -211,8 +206,7 @@ fun RowScope.ModelSelection(current: ILlmOption?, option: ILlmOption) {
     RoundedButton(modifier = Modifier
         .weight(1f)
         .borderStyle(current, option)
-        .height(46.dp)
-        ,
+        .height(46.dp),
         onClick = {
             GlobalVM.updateModel(option)
         }) {

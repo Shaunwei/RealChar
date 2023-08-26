@@ -10,7 +10,7 @@ services:
   web:
     build: ./client/web/
     ports:
-      - "3000:3000"
+      - "80:80"
     depends_on:
       - backend
     env_file:

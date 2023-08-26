@@ -15,13 +15,13 @@ git checkout -b private_main private/main
 4. Develop
 
 a. Contribute code to private repo only
-(Make sure you are at private_main already, e.g. `git checkout private`, or `gcop` alias)
+(Make sure you are at private_main already, e.g. `git checkout private_main`, or `gcop` alias)
 ```
 git checkout -b <your name repo>
 git add & commit
 git push private
 ```
-(or use gpp alias)
+(or use `gpp` alias)
 
 b. Bring public repo to private repo
 ```
@@ -30,7 +30,7 @@ git push <a merge branch>
 ```
 
 5. Aliases to help development
-Add these aliases to your .bash_aliases or .zshrc (if using zsh)
+Add these aliases to your `.bash_aliases` or `.zshrc` (if using zsh)
 ```
 alias gcop='git checkout private_main'
 alias gpp='git push private'

@@ -32,5 +32,5 @@ async def generate_memory(interactions: list[Interaction]):
         conversation_text += f'User: {interaction.client_message_unicode}\n'
         conversation_text += f'AI: {interaction.server_message_unicode}\n'
     conversation_history.append(HumanMessage(content=conversation_text))
-    generated_memory = await chat_model.agenerate(conversation_history)
+    generated_memory = await chat_model.agenerate([conversation_history])
     return generated_memory

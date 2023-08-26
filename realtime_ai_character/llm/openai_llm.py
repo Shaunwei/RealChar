@@ -18,13 +18,13 @@ logger = get_logger(__name__)
 
 
 class OpenaiLlm(LLM):
-    def __init__(self, model):
+    def __init__(self, model, temperature=0.5):
         if os.getenv('OPENAI_API_TYPE') == 'azure':
             self.chat_open_ai = AzureChatOpenAI(
                 deployment_name=os.getenv(
                     'OPENAI_API_MODEL_DEPLOYMENT_NAME', 'gpt-35-turbo'),
                 model=model,
-                temperature=0.5,
+                temperature=temperature,
                 streaming=True
             )
         else:

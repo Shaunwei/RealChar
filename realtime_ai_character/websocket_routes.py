@@ -15,6 +15,7 @@ from realtime_ai_character.audio.text_to_speech import (TextToSpeech,
                                                         get_text_to_speech)
 from realtime_ai_character.character_catalog.catalog_manager import (
     CatalogManager, get_catalog_manager)
+from realtime_ai_character.memory.memory_manager import (MemoryManager, get_memory_manager)
 from realtime_ai_character.database.connection import get_db
 from realtime_ai_character.llm import get_llm, LLM
 from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, AsyncCallbackTextHandler
@@ -112,6 +113,7 @@ async def websocket_endpoint(websocket: WebSocket,
                              use_multion: bool = Query(default=False),
                              db: Session = Depends(get_db),
                              catalog_manager=Depends(get_catalog_manager),
+                             memory_manager=Depends(get_memory_manager),
                              speech_to_text=Depends(get_speech_to_text),
                              default_text_to_speech=Depends(get_text_to_speech)):
     # Default user_id to session_id. If auth is enabled and token is provided, use
@@ -138,8 +140,8 @@ async def websocket_endpoint(websocket: WebSocket,
     try:
         main_task = asyncio.create_task(
             handle_receive(websocket, session_id, user_id, db, llm, catalog_manager,
-                           character_id, platform, use_search, use_quivr, use_multion,
-                           speech_to_text, default_text_to_speech, language,
+                           memory_manager, character_id, platform, use_search, use_quivr,
+                           use_multion, speech_to_text, default_text_to_speech, language,
                            session_auth_result.is_existing_session))
 
         await asyncio.gather(main_task)
@@ -150,7 +152,7 @@ async def websocket_endpoint(websocket: WebSocket,
 
 
 async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db: Session,
-                         llm: LLM, catalog_manager: CatalogManager,
+                         llm: LLM, catalog_manager: CatalogManager, memory_manager: MemoryManager,
                          character_id: str, platform: str, use_search: bool, use_quivr: bool,
                          use_multion: bool, speech_to_text: SpeechToText,
                          default_text_to_speech: TextToSpeech,
@@ -418,4 +420,5 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
     except WebSocketDisconnect:
         logger.info(f"User #{user_id} closed the connection")
         await manager.disconnect(websocket)
+        await memory_manager.process_session(session_id)
         return

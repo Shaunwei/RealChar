@@ -24,7 +24,7 @@ export default function Tabs({ defaultCharacters }) {
   return (
     <>
       <div className="grid grid-cols-3 mt-10">
-        <div className="col-start-2 grid grid-cols-2 gap-5">
+        <div className="col-start-2 grid grid-cols-2 gap-5 border-2 rounded-full p-1 border-tab">
           <TabButton
             isSelected={exploreTabDisplay}
             handlePress={() => setTabNow('explore')}

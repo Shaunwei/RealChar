@@ -99,18 +99,20 @@ export default function Conversation() {
             </Button>
           </Tooltip>
         </div>
-        <TabButton
-          isSelected={mode==='handsFree'}
-          handlePress={handsFreeMode}
-        >
-          Hands-free mode
-        </TabButton>
-        <TabButton
-          isSelected={mode==="text"}
-          handlePress={textMode}
-        >
-          Text mode
-        </TabButton>
+        <div className="col-span-2 flex gap-5 border-2 rounded-full p-1 border-tab">
+          <TabButton
+            isSelected={mode==='handsFree'}
+            handlePress={handsFreeMode}
+          >
+            Hands-free mode
+          </TabButton>
+          <TabButton
+            isSelected={mode==="text"}
+            handlePress={textMode}
+          >
+            Text mode
+          </TabButton>
+        </div>  
       </div>
       <div className="flex flex-col mx-48 mt-10 pt-6 border-t-2 border-divider gap-6">
         <SettingBar

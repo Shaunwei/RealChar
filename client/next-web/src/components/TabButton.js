@@ -17,7 +17,7 @@ export default function TabButton({
       isBlock
       isDisabled={isDisabled}
       radius="full"
-      className={`h-14 w-full font-medium text-lg justify-center py-4 text-foreground hover:opacity-80 ${styles}`}
+      className={`h-11 w-full font-medium text-lg justify-center py-4 text-foreground hover:opacity-80 ${styles}`}
       onPress={handlePress}
     >
       {children}

@@ -42,10 +42,10 @@ class CatalogManager(Singleton):
             self.db.persist()
         logger.info(
             f"Total document load: {self.db._client.get_collection('llm').count()}")
-        self.load_sql_db_lopp()
+        self.load_sql_db_loop()
 
-    def load_sql_db_lopp(self):
-        self.load_sql_db_thread = threading.Timer(self.sql_load_interval, self.load_sql_db_lopp)
+    def load_sql_db_loop(self):
+        self.load_sql_db_thread = threading.Timer(self.sql_load_interval, self.load_sql_db_loop)
         self.load_sql_db_thread.daemon = True
         self.load_sql_db_thread.start()
         self.load_character_from_sql_database()

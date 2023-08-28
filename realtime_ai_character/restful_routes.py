@@ -7,8 +7,6 @@ import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request, \
     status as http_status, UploadFile, File, Form
 from google.cloud import storage
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
 import firebase_admin
 from firebase_admin import auth, credentials
 from firebase_admin.exceptions import FirebaseError
@@ -21,12 +19,10 @@ from realtime_ai_character.models.character import Character, CharacterRequest, 
 from realtime_ai_character.models.quivr_info import QuivrInfo, UpdateQuivrInfoRequest
 from realtime_ai_character.llm.system_prompt_generator import generate_system_prompt
 from requests import Session
+from sqlalchemy import func
 
 
 router = APIRouter()
-
-templates = Jinja2Templates(directory=os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), 'static'))
 
 if os.getenv('USE_AUTH', ''):
     cred = credentials.Certificate(os.environ.get('FIREBASE_CONFIG_PATH'))
@@ -68,11 +64,6 @@ async def get_current_user(request: Request):
 @router.get("/status")
 async def status():
     return {"status": "ok", "message": "RealChar is running smoothly!"}
-
-
-@router.get("/", response_class=HTMLResponse)
-async def index(request: Request, user=Depends(get_current_user)):
-    return templates.TemplateResponse("index.html", {"request": request})
 
 
 @router.get("/characters")
@@ -311,10 +302,11 @@ async def quivr_info(user = Depends(get_current_user),
     if not quivr_info:
         return {"success": False}
 
-    return {"success": True, "api_key": quivr_info.quivr_api_key, "brain_id": quivr_info.quivr_brain_id}
+    return {"success": True, "api_key": quivr_info.quivr_api_key, 
+            "brain_id": quivr_info.quivr_brain_id}
 
 @router.post("/quivr_info")
-async def quivr_info(update_quivr_info_request: UpdateQuivrInfoRequest,
+async def quivr_info_update(update_quivr_info_request: UpdateQuivrInfoRequest,
                      user = Depends(get_current_user),
                      db: Session = Depends(get_db)):
     if not user:
@@ -456,3 +448,38 @@ async def system_prompt(request: GeneratePromptRequest, user = Depends(get_curre
     return {
         'system_prompt': await generate_system_prompt(name, background)
     }
+
+
+@router.get("/conversations", response_model=list[dict])
+def get_recent_conversations(user = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not user:
+        raise HTTPException(
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid authentication credentials',
+                headers={'WWW-Authenticate': 'Bearer'},
+            )
+    user_id = user['uid']
+    stmt = (
+        db.query(
+            Interaction.session_id,
+            Interaction.client_message_unicode,
+            Interaction.timestamp,
+            func.row_number().over(
+                partition_by=Interaction.session_id,
+                order_by=Interaction.timestamp.desc()).label("rn")).filter(
+                    Interaction.user_id == user_id).subquery()
+    )
+
+    results = (
+        db.query(stmt.c.session_id, stmt.c.client_message_unicode)
+        .filter(stmt.c.rn == 1)
+        .order_by(stmt.c.timestamp.desc())
+        .all()
+    )
+
+    # Format the results to the desired output
+    return [{
+        "session_id": r[0],
+        "client_message_unicode": r[1],
+        "timestamp": r[2]
+    } for r in results]

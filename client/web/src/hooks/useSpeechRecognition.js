@@ -16,6 +16,7 @@ const useSpeechRecognition = (
   audioSent,
   stopAudioPlayback,
   send,
+  startRecording,
   stopRecording,
   setTextAreaValue
 ) => {
@@ -40,6 +41,7 @@ const useSpeechRecognition = (
     recognition.current.onend = () => {
       if (callActive.current) {
         startListening();
+        startRecording();
       }
     };
 

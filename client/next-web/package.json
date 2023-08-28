@@ -1,0 +1,27 @@
+{
+  "name": "next-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@nextui-org/react": "^2.0.24",
+    "autoprefixer": "10.4.15",
+    "eslint": "8.47.0",
+    "eslint-config-next": "13.4.18",
+    "firebase": "^10.2.0",
+    "framer-motion": "^10.16.0",
+    "is-ip": "^5.0.1",
+    "next": "^13.4.19",
+    "postcss": "8.4.28",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-icons": "^4.10.1",
+    "swr": "^2.2.1",
+    "tailwindcss": "3.3.3"
+  }
+}

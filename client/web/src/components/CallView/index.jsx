@@ -55,6 +55,31 @@ const CallView = ({
     setAnalyser(audioContextRef.current);
   }, [audioContextRef.current]);
 
+  useEffect(() => {
+    // To handle call when TARGET_KEYCODE is pressed
+    function keydownHandler(event) {
+      const TARGET_KEYCODE = 13;
+
+      if (event.keyCode === TARGET_KEYCODE && isRecording) {
+        console.log('stop call');
+        handleStopCall();
+      }
+
+      if (event.keyCode === TARGET_KEYCODE && !isRecording) {
+        console.log('continue call');
+        handleContinueCall();
+      }
+    }
+
+    // Add the event listener to the document
+    document.addEventListener('keydown', keydownHandler);
+
+    // Return a cleanup function to remove the event listener
+    return () => {
+      document.removeEventListener('keydown', keydownHandler);
+    };
+  }, [isRecording]);
+
   const handlePowerOffClick = () => {
     navigate('/');
     handleDisconnect();

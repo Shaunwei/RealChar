@@ -70,6 +70,9 @@ const useMediaRecorder = (
   const startRecording = () => {
     console.log('start recording');
     if (!mediaRecorder.current) return;
+    if (mediaRecorder.current.state === 'recording') {
+      mediaRecorder.current.stop();
+    }
     mediaRecorder.current.start();
     setIsRecording(true);
   };

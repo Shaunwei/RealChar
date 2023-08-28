@@ -16,7 +16,7 @@ from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.feedback import Feedback, FeedbackRequest
 from realtime_ai_character.models.character import Character, CharacterRequest, \
     EditCharacterRequest, DeleteCharacterRequest, GeneratePromptRequest
-from realtime_ai_character.models.memory import Memory
+from realtime_ai_character.models.memory import Memory, EditMemoryRequest
 from realtime_ai_character.models.quivr_info import QuivrInfo, UpdateQuivrInfoRequest
 from realtime_ai_character.llm.system_prompt_generator import generate_system_prompt
 from requests import Session
@@ -504,3 +504,61 @@ def get_memory(user = Depends(get_current_user), db: Session = Depends(get_db)):
         "created_at": memory.created_at,
         "updated_at": memory.updated_at,
     } for memory in memories]
+
+
+@router.post("/delete_memory")
+async def delete_memory(memory_id: str, user = Depends(get_current_user), 
+                        db: Session = Depends(get_db)):
+    if not user:
+        raise HTTPException(
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid authentication credentials',
+                headers={'WWW-Authenticate': 'Bearer'},
+        )
+    
+    memories = db.query(Memory).filter(Memory.memory_id == memory_id).all()
+    if len(memories) == 0:
+        raise HTTPException(
+                status_code=http_status.HTTP_404_NOT_FOUND,
+                detail=f'Memory {memory_id} not found',
+            )
+    if memories[0].user_id != user['uid']:
+        raise HTTPException(
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid authentication credentials',
+                headers={'WWW-Authenticate': 'Bearer'},
+        )
+
+    db.delete(memories[0])
+    db.commit()
+
+
+@router.post("/edit_memory")
+async def edit_memory(edit_memory_request: EditMemoryRequest, user = Depends(get_current_user), 
+                      db: Session = Depends(get_db)):
+    if not user:
+        raise HTTPException(
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid authentication credentials',
+                headers={'WWW-Authenticate': 'Bearer'},
+        )
+    memory_id = edit_memory_request.memory_id
+    memories = db.query(Memory).filter(Memory.memory_id == memory_id).all()
+    if len(memories) == 0:
+        raise HTTPException(
+                status_code=http_status.HTTP_404_NOT_FOUND,
+                detail=f'Memory {memory_id} not found',
+            )
+    memory = memories[0]
+    if memory.user_id != user['uid']:
+        raise HTTPException(
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid authentication credentials',
+                headers={'WWW-Authenticate': 'Bearer'},
+        )
+    memory.source_session_id = edit_memory_request.source_session_id
+    memory.content = edit_memory_request.content
+    memory.updated_at = datetime.datetime.now()
+
+    db.merge(memory)
+    db.commit()

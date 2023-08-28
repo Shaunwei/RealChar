@@ -37,6 +37,7 @@ jobs:
           NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=806733379891
           NEXT_PUBLIC_FIREBASE_APP_ID=1:806733379891:web:48bf124c0d9b90298e6646
           NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-XVWF8XDKS5
+          API_HOST=api.realchar.ai
 
     - name: Deploy to Kubernetes
       if: ${{ contains(github.ref, 'deploy') }}

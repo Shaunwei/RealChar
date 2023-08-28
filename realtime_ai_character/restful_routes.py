@@ -16,6 +16,7 @@ from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.feedback import Feedback, FeedbackRequest
 from realtime_ai_character.models.character import Character, CharacterRequest, \
     EditCharacterRequest, DeleteCharacterRequest, GeneratePromptRequest
+from realtime_ai_character.models.memory import Memory
 from realtime_ai_character.models.quivr_info import QuivrInfo, UpdateQuivrInfoRequest
 from realtime_ai_character.llm.system_prompt_generator import generate_system_prompt
 from requests import Session
@@ -483,3 +484,23 @@ def get_recent_conversations(user = Depends(get_current_user), db: Session = Dep
         "client_message_unicode": r[1],
         "timestamp": r[2]
     } for r in results]
+
+
+@router.get("/memory", response_model=list[dict])
+def get_memory(user = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not user:
+        raise HTTPException(
+                status_code=http_status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid authentication credentials',
+                headers={'WWW-Authenticate': 'Bearer'},
+            )
+
+    memories = db.query(Memory).filter(Memory.user_id == user['uid']).all()
+
+    return [{
+        "memory_id": memory.memory_id,
+        "source_session_id": memory.source_session_id,
+        "content": memory.content,
+        "created_at": memory.created_at,
+        "updated_at": memory.updated_at,
+    } for memory in memories]

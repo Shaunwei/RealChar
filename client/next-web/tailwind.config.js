@@ -31,10 +31,21 @@ module.exports = {
       'real-silver': {
         500: '#636A84',
       },
+      'real-navy': {
+        DEFAULT: '#6785D3',
+      }
     }
   },
   darkMode: 'class',
   plugins: [nextui({
     defaultTheme: 'dark',
+    addCommonColors: true,
+    themes: {
+      dark: {
+        colors: {
+          background: '#02081D'
+        }
+      }
+    }
   })],
 }

@@ -13,13 +13,26 @@ export const currentModel = 'GPT-3.5';
 export const modelList = [
   {
     key: 'GPT-3.5',
-    label: 'GPT-3.5'
+    label: 'GPT-3.5',
+    description: [
+      'Fastest model',
+      'Good for most conversation'
+    ]
   }, {
     key: 'GPT-4',
-    label: 'GPT-4'
+    label: 'GPT-4',
+    description: [
+      'line 1',
+      'line 2',
+      'line 3'
+    ]
   }, {
     key: 'Claude-2',
-    label: 'Claude-2'
+    label: 'Claude-2',
+    description: [
+      'line 1',
+      'line 2'
+    ]
   }
 ];
 export const currentSpeaker = 'default';
@@ -42,4 +55,18 @@ export const microphoneList = [
     label: 'Option 2'
   }
 ]
-export const chatContent = [];
+export const chatContent = [
+  {
+    timeStamp: '2308260015',
+    from: 'character',
+    content: 'Hi my friend, how are you doing?',
+  }, {
+    timeStamp: '2308260016',
+    from: 'user',
+    content: 'I am good.',
+  }, {
+    timeStamp: '2308260017',
+    from: 'character',
+    content: 'What can I do for you?'
+  }
+];

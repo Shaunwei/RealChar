@@ -78,8 +78,8 @@ export default function Conversation() {
   }
 
   return (
-    <>
-      <div className="grid grid-cols-4 gap-5">
+    <div className="relative">
+      <div className="grid grid-cols-4 gap-5 pt-10">
         <div>
           <Tooltip 
             content="Exit"
@@ -114,7 +114,7 @@ export default function Conversation() {
           </TabButton>
         </div>  
       </div>
-      <div className="flex flex-col mx-48 mt-10 pt-6 border-t-2 border-divider gap-6">
+      <div className="flex flex-col mx-48 mt-10 pt-6 border-t-2 border-divider">
         <SettingBar
           mode={mode}
           inputMode={inputMode}
@@ -133,6 +133,8 @@ export default function Conversation() {
           handleShare={handleShare}
           openSettings={openSettings}
         />
+      </div>
+      <div className="mx-48 mt-6">
         <HandsFreeMode 
           isDisplay={mode==='handsFree'}
           character={character}
@@ -143,6 +145,6 @@ export default function Conversation() {
           chatContent={chatContent}
         />
       </div>
-    </>
+    </div>
   );
 }

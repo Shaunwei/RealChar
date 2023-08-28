@@ -5,7 +5,10 @@ import {
   DropdownSection,
   DropdownItem
 } from '@nextui-org/dropdown';
-import { Button } from '@nextui-org/button';
+import {
+  Button,
+  ButtonGroup
+} from '@nextui-org/button';
 import { Tooltip } from '@nextui-org/tooltip';
 import Image from 'next/image';
 import speakerSVG from '@/assets/svgs/speaker.svg';
@@ -21,70 +24,75 @@ export default function SpeakerControl({
 }) {
   return (
     <div className="flex">
-      <Tooltip content="Speaker">
-        <Button
-          isIconOnly
-          variant="light"
-          radius="full"
-          className="hover:bg-button"
-          onPress={toggleMute}
-        >
-          {isMute ? (
-            <Image
-              priority
-              src={muteSVG}
-              alt="mute"
-            />
-          ) : (
-            <Image
-              priority
-              src={speakerSVG}
-              alt="speaker settings"
-            />
-          )}
-        </Button>
-      </Tooltip>
-      <Dropdown
-        placement="bottom"
-        classNames={{
-          base: "bg-dropdown p-0"
-        }}
-      >
-        <DropdownTrigger aria-label="Dropdown trigger">
-            <Image
-              priority
-              src={arrowSVG}
-              alt="arrow"
-              className="w-5 px-1"
-            />
-        </DropdownTrigger>
-        <DropdownMenu
-          aria-label="Speaker Actions"
-          variant="flat"
-          disallowEmptySelection
-          selectionMode="single"
-          selectedKeys={speaker}
-          onSelectionChange={handleSpeakerSelect}
-          itemClasses={{
-            base: "font-light py-3 pl-2 data-[hover=true]:bg-dropdownHover"
-          }}
-        >
-        <DropdownSection
-          title="Select a speaker"
+      <ButtonGroup radius="full" variant="light">
+        <Tooltip content="Speaker">
+          <Button
+            isIconOnly
+            className="hover:bg-button"
+            onPress={toggleMute}
+          >
+            {isMute ? (
+              <Image
+                priority
+                src={muteSVG}
+                alt="mute"
+              />
+            ) : (
+              <Image
+                priority
+                src={speakerSVG}
+                alt="speaker settings"
+              />
+            )}
+          </Button>
+        </Tooltip>
+        <Dropdown
+          placement="bottom"
           classNames={{
-            base: "p-0",
-            header: "font-medium text-normal"
+            base: "bg-dropdown p-0"
           }}
-          items={speakerList}
         >
-          {(speakerItem) => (
-            <DropdownItem key={speakerItem.key}>
-              {speakerItem.label}
-            </DropdownItem>
-          )}
-        </DropdownSection>
-        </DropdownMenu>
-      </Dropdown>
+          <DropdownTrigger aria-label="Dropdown trigger">
+            <Button
+              isIconOnly
+              className="min-w-[20px] w-5"
+            >
+              <Image
+                priority
+                src={arrowSVG}
+                alt="arrow"
+                className="w-5 px-1"
+              />
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu
+            aria-label="Speaker Actions"
+            variant="flat"
+            disallowEmptySelection
+            selectionMode="single"
+            selectedKeys={speaker}
+            onSelectionChange={handleSpeakerSelect}
+            itemClasses={{
+              base: "font-light py-3 pl-2 data-[hover=true]:bg-dropdownHover"
+            }}
+          >
+          <DropdownSection
+            title="Select a speaker"
+            classNames={{
+              base: "p-0",
+              header: "font-medium text-normal"
+            }}
+            items={speakerList}
+          >
+            {(speakerItem) => (
+              <DropdownItem key={speakerItem.key}>
+                {speakerItem.label}
+              </DropdownItem>
+            )}
+          </DropdownSection>
+          </DropdownMenu>
+        </Dropdown>
+      </ButtonGroup>
     </div>
   );
 }

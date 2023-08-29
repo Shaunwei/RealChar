@@ -1,4 +1,4 @@
-name: Build Push and Deploy Docker Image for Frontend
+name: Build Push and Deploy Docker Image for Frontend (NextJS)
 
 on:
   release:

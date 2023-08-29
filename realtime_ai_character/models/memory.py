@@ -1,4 +1,6 @@
+import os
 from sqlalchemy import Column, String, DateTime, Unicode
+from pgvector.sqlalchemy import Vector
 from sqlalchemy.inspection import inspect
 import datetime
 from realtime_ai_character.database.base import Base
@@ -13,6 +15,8 @@ class Memory(Base):
     content = Column(Unicode(65535), nullable=True)
     created_at = Column(DateTime(), nullable=False)
     updated_at = Column(DateTime(), nullable=False)
+    if 'postgres' in os.environ.get('DATABASE_URL'):
+        embedding = Column(Vector(1536), nullable=True)
 
     def to_dict(self):
         return {

@@ -4,6 +4,8 @@ from typing import List, Optional
 from langchain.schema import AIMessage, BaseMessage, HumanMessage, SystemMessage
 from pydantic.dataclasses import dataclass
 from starlette.websockets import WebSocket, WebSocketState
+from sqlalchemy.orm import Session
+from realtime_ai_character.models.interaction import Interaction
 
 
 @dataclass
@@ -34,6 +36,12 @@ class ConversationHistory:
         for user_message, ai_message in zip(self.user, self.ai):
             yield user_message
             yield ai_message
+
+    def load_from_db(self, session_id: str, db: Session):
+        conversations = db.query(Interaction).filter(Interaction.session_id == session_id).all()
+        for conversation in conversations:
+            self.user.append(conversation.client_message_unicode)
+            self.ai.append(conversation.server_message_unicode)
 
 
 def build_history(conversation_history: ConversationHistory) -> List[BaseMessage]:

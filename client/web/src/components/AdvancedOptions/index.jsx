@@ -189,21 +189,21 @@ const AdvancedOptions = ({
       <label>Advanced Options</label>
       <div className='advanced-options'>
         <OptionSwitch
-          checked={useSearch}
-          name={'Enable Google Search'}
-          tooltip={
-            'Enable the character to access the latest information and online events, but may lead to a slight delay in response time.'
-          }
-          handleChange={handleSearchChange}
-          handleTooltipClick={() => {}}
-        />
-        <OptionSwitch
           checked={useEchoCancellation}
           name={'Open Speakers'}
           tooltip={
             'Enable VAD + WebRTC based echo cancellation, suitable for speakers, but may lead to a slight delay in response time or mistranscription.'
           }
           handleChange={handleEchoCanellationChange}
+          handleTooltipClick={() => {}}
+        />
+        <OptionSwitch
+          checked={useSearch}
+          name={'Enable Google Search'}
+          tooltip={
+            'Enable the character to access the latest information and online events, but may lead to a slight delay in response time.'
+          }
+          handleChange={handleSearchChange}
           handleTooltipClick={() => {}}
         />
         <OptionSwitch

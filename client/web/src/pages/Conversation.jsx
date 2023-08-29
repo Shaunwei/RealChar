@@ -31,6 +31,7 @@ const Conversation = ({
   audioSourceNodeRef,
   setIsPlaying,
   handleDisconnect,
+  isCallView,
   setIsCallView,
   send,
   stopAudioPlayback,
@@ -67,7 +68,7 @@ const Conversation = ({
     useEchoCancellationParam = '',
     useMultiOnParam = '',
   } = queryString.parse(search);
-  const isCallView = isCallViewParam === 'true';
+  const isCallViewUrl = isCallViewParam === 'true';
   const useSearch = useSearchParam === 'true';
   const useEchoCancellation = useEchoCancellationParam === 'true';
   const useMultiOn = useMultiOnParam === 'true';
@@ -89,7 +90,7 @@ const Conversation = ({
       character === '' ||
       selectedModel === '' ||
       selectedDevice === '' ||
-      isCallView === '' ||
+      isCallViewUrl === '' ||
       preferredLanguage === '' ||
       useSearch === '' ||
       useEchoCancellation === ''
@@ -105,7 +106,7 @@ const Conversation = ({
 
     setSelectedDevice(selectedDevice);
 
-    setIsCallView(isCallView);
+    setIsCallView(isCallViewUrl);
 
     setPreferredLanguage(preferredLanguage);
 

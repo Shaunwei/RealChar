@@ -1,7 +1,7 @@
-# <img src="./realtime_ai_character/static/realchar.svg" height="24px" style="padding-top:4px"/>RealChar. - Your Realtime AI Character
+# <img src="https://storage.googleapis.com/assistly/static/realchar/realchar.svg" height="24px" style="padding-top:4px"/>RealChar. - Your Realtime AI Character
 <br/>
 <div align="center">
-    <img src="./realtime_ai_character/static/logo.png" alt="RealChar-logo" width="80%"  style="padding: 40px"/>
+    <img src="https://storage.googleapis.com/assistly/static/realchar/logo.png" alt="RealChar-logo" width="80%"  style="padding: 40px"/>
 </div>
 <br/>
 <p align="center">
@@ -203,6 +203,10 @@ ELEVEN_LABS_API_KEY=<api key>
    ```
 - **Step 6**. Run server with `cli.py` or use uvicorn directly
     ```sh
+    # Build the web fronend.
+    python cli.py web-build
+    ```
+    ```sh
     python cli.py run-uvicorn
     # or
     uvicorn realtime_ai_character.main:app
@@ -210,14 +214,22 @@ ELEVEN_LABS_API_KEY=<api key>
 - **Step 7**. Run client:
     - Use **GPT4** for better conversation and **Wear headphone** for best audio(avoid echo)
     - There are two ways to access the web client:
-        - **Option 1**: Running the client in React.
+        - **Option 1** Open your web browser and navigate to http://localhost:8000 (NOT 0.0.0.0:8000)
+          - **Make sure you have ran `python cli.py web-build` before starting the server.**
+        - **Option 2**: Running the client in React.
             ```sh
             cd client/web
             npm install
             npm start
             ```
             After running these commands, a local development server will start, and your default web browser will open a new tab/window pointing to this server (usually http://localhost:3000).
-        - **Option 2** (legacy frontend): Open your web browser and navigate to http://localhost:8000 (NOT 0.0.0.0:8000)            
+        - **Option 3 (experimental)**: Running the client in Nextjs.
+            ```sh
+            cd client/next-web
+            npm install
+            npm run dev
+            ```
+            After running these commands, a local development server will start, and your default web browser will open a new tab/window pointing to this server (usually http://localhost:3000).
     - (Optional) Terminal client: Run the following command in your terminal
     ```sh
     python client/cli.py

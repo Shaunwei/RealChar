@@ -48,7 +48,8 @@ module.exports = {
     themes: {
       dark: {
         colors: {
-          background: '#02081D'
+          background: '#02081D',
+          warning: '#FAAD14',
         }
       }
     }

@@ -20,8 +20,7 @@ export default function SettingBar({
   model,
   modelList,
   handleLanguageModel,
-  chatContent,
-  openSettings
+  chatContent
 }) {
   return (
     <div className="flex justify-between">
@@ -60,9 +59,7 @@ export default function SettingBar({
           character={character}
           chatContent={chatContent}
         />
-        <SettingsButton
-          openSettings={openSettings}
-        />
+        <SettingsButton/>
       </div>
     </div>
   );

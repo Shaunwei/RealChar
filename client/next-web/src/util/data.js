@@ -70,3 +70,4 @@ export const chatContent = [
     content: 'What can I do for you?'
   }
 ];
+export const currentLanguage = "English";

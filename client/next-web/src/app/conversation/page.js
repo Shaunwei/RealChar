@@ -18,7 +18,8 @@ import {
   speakerList,
   currentMicrophone,
   microphoneList,
-  chatContent
+  chatContent,
+  currentLanguage
 } from '@/util/data';
 
 export default function Conversation() {
@@ -57,24 +58,6 @@ export default function Conversation() {
   function handleLanguageModel(keys) {
     setModel(new Set(keys));
     // TODO
-  }
-
-  // async function handleShare(key) {
-  //   // TODO
-  //   switch(key) {
-  //     case 'character':
-  //       console.log('share character');
-  //       return;
-  //     case 'chat':
-  //       console.log('share chat');
-  //       return;
-  //     default:
-  //       return;
-  //   }
-  // }
-
-  function openSettings() {
-
   }
 
   return (
@@ -131,7 +114,6 @@ export default function Conversation() {
           modelList={modelList}
           handleLanguageModel={handleLanguageModel}
           chatContent={chatContent}
-          openSettings={openSettings}
         />
       </div>
       <div className="mx-48 mt-6">

@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@nextui-org/react": "^2.0.24",
+    "@nextui-org/react": "^2.1.7",
     "autoprefixer": "10.4.15",
     "encoding": "^0.1.13",
     "eslint": "8.47.0",

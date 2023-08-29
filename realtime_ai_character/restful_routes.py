@@ -101,7 +101,8 @@ async def configs():
 @router.get("/session_history")
 async def get_session_history(session_id: str, db: Session = Depends(get_db)):
     # Read session history from the database.
-    interactions = db.query(Interaction).filter(Interaction.session_id == session_id).all()
+    interactions = await asyncio.to_thread(
+        db.query(Interaction).filter(Interaction.session_id == session_id).all)
     # return interactions in json format
     interactions_json = [interaction.to_dict() for interaction in interactions]
     return interactions_json
@@ -119,7 +120,7 @@ async def post_feedback(feedback_request: FeedbackRequest,
     feedback = Feedback(**feedback_request.dict())
     feedback.user_id = user['uid']
     feedback.created_at = datetime.datetime.now()
-    feedback.save(db)
+    await asyncio.to_thread(feedback.save, db)
 
 
 @router.post("/uploadfile")
@@ -176,7 +177,7 @@ async def create_character(character_request: CharacterRequest,
     now_time = datetime.datetime.now()
     character.created_at = now_time
     character.updated_at = now_time
-    character.save(db)
+    await asyncio.to_thread(character.save, db)
 
 
 @router.post("/edit_character")
@@ -190,7 +191,8 @@ async def edit_character(edit_character_request: EditCharacterRequest,
                 headers={'WWW-Authenticate': 'Bearer'},
             )
     character_id = edit_character_request.id
-    characters = db.query(Character).filter(Character.id == character_id).all()
+    characters = await asyncio.to_thread(
+        db.query(Character).filter(Character.id == character_id).all)
     if len(characters) == 0:
         raise HTTPException(
                 status_code=http_status.HTTP_404_NOT_FOUND,
@@ -221,7 +223,8 @@ async def delete_character(delete_character_request: DeleteCharacterRequest,
                 headers={'WWW-Authenticate': 'Bearer'},
             )
     character_id = delete_character_request.character_id
-    characters = db.query(Character).filter(Character.id == character_id).all()
+    characters = await asyncio.to_thread(
+        db.query(Character).filter(Character.id == character_id).all)
     if len(characters) == 0:
         raise HTTPException(
                 status_code=http_status.HTTP_404_NOT_FOUND,
@@ -298,7 +301,8 @@ async def quivr_info(user = Depends(get_current_user),
                 headers={'WWW-Authenticate': 'Bearer'},
         )
 
-    quivr_info = db.query(QuivrInfo).filter(QuivrInfo.user_id == user['uid']).first()
+    quivr_info = await asyncio.to_thread(
+        db.query(QuivrInfo).filter(QuivrInfo.user_id == user['uid']).first)
 
     if not quivr_info:
         return {"success": False}
@@ -361,7 +365,7 @@ async def quivr_info_update(update_quivr_info_request: UpdateQuivrInfoRequest,
                            quivr_api_key=api_key,
                            quivr_brain_id=brain_id)
 
-    quivr_info.save(db)
+    await asyncio.to_thread(quivr_info.save, db)
 
     return {"success": True, "brain_id": brain_id, "brain_name": brain_name}
 
@@ -452,7 +456,7 @@ async def system_prompt(request: GeneratePromptRequest, user = Depends(get_curre
 
 
 @router.get("/conversations", response_model=list[dict])
-def get_recent_conversations(user = Depends(get_current_user), db: Session = Depends(get_db)):
+async def get_recent_conversations(user = Depends(get_current_user), db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(
                 status_code=http_status.HTTP_401_UNAUTHORIZED,
@@ -472,10 +476,10 @@ def get_recent_conversations(user = Depends(get_current_user), db: Session = Dep
     )
 
     results = (
-        db.query(stmt.c.session_id, stmt.c.client_message_unicode)
+        await asyncio.to_thread(db.query(stmt.c.session_id, stmt.c.client_message_unicode)
         .filter(stmt.c.rn == 1)
         .order_by(stmt.c.timestamp.desc())
-        .all()
+        .all)
     )
 
     # Format the results to the desired output
@@ -487,7 +491,7 @@ def get_recent_conversations(user = Depends(get_current_user), db: Session = Dep
 
 
 @router.get("/memory", response_model=list[dict])
-def get_memory(user = Depends(get_current_user), db: Session = Depends(get_db)):
+async def get_memory(user = Depends(get_current_user), db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(
                 status_code=http_status.HTTP_401_UNAUTHORIZED,
@@ -495,7 +499,7 @@ def get_memory(user = Depends(get_current_user), db: Session = Depends(get_db)):
                 headers={'WWW-Authenticate': 'Bearer'},
             )
 
-    memories = db.query(Memory).filter(Memory.user_id == user['uid']).all()
+    memories = await asyncio.to_thread(db.query(Memory).filter(Memory.user_id == user['uid']).all)
 
     return [{
         "memory_id": memory.memory_id,
@@ -516,7 +520,7 @@ async def delete_memory(memory_id: str, user = Depends(get_current_user),
                 headers={'WWW-Authenticate': 'Bearer'},
         )
     
-    memories = db.query(Memory).filter(Memory.memory_id == memory_id).all()
+    memories = await asyncio.to_thread(db.query(Memory).filter(Memory.memory_id == memory_id).all)
     if len(memories) == 0:
         raise HTTPException(
                 status_code=http_status.HTTP_404_NOT_FOUND,
@@ -543,7 +547,7 @@ async def edit_memory(edit_memory_request: EditMemoryRequest, user = Depends(get
                 headers={'WWW-Authenticate': 'Bearer'},
         )
     memory_id = edit_memory_request.memory_id
-    memories = db.query(Memory).filter(Memory.memory_id == memory_id).all()
+    memories = await asyncio.to_thread(db.query(Memory).filter(Memory.memory_id == memory_id).all)
     if len(memories) == 0:
         raise HTTPException(
                 status_code=http_status.HTTP_404_NOT_FOUND,

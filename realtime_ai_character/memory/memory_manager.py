@@ -1,3 +1,4 @@
+import asyncio
 import os
 import datetime
 import uuid
@@ -43,7 +44,7 @@ class MemoryManager(Singleton):
         if 'postgres' in os.environ.get('DATABASE_URL'):
             embedding_result = await self.embedding.aembed_query(generated_memory)
             memory.content_embedding = embedding_result
-        memory.save(self.sql_db)
+        await asyncio.to_thread(memory.save, self.sql_db)
         logger.info(f"Memory generated for user {user_id} and session {session_id}.")
 
 

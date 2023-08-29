@@ -1,6 +1,15 @@
 version: '3'
 
 services:
+  db:
+    image: postgres:15
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: temo
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: Password1!
   backend:
     build: .
     ports:

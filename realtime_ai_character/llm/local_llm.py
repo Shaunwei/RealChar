@@ -19,18 +19,18 @@ from realtime_ai_character.utils import Character
 logger = get_logger(__name__)
 
 
-class Llama2wrapperLlm(LLM):
+class LocalLlm(LLM):
     def __init__(self, url):
         self.chat_open_ai = ChatOpenAI(
-            model="llama2-wrapper",
+            model="Local LLM",
             temperature=0.5,
             streaming=True,
-            # openai_api_base=url,
+            openai_api_base=url,
             # temporaryly use fixed url
-            openai_api_base="http://localhost:8001/v1",
+            # openai_api_base="http://localhost:8001/v1",
             
         )
-        self.config = {"model": "llama2-wrapper", "temperature": 0.5, "streaming": True}
+        self.config = {"model": "Local LLM", "temperature": 0.5, "streaming": True}
         self.db = get_chroma()
         self.search_agent = None
         self.search_agent = SearchAgent()

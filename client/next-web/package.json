@@ -11,6 +11,7 @@
   "dependencies": {
     "@nextui-org/react": "^2.0.24",
     "autoprefixer": "10.4.15",
+    "encoding": "^0.1.13",
     "eslint": "8.47.0",
     "eslint-config-next": "13.4.18",
     "firebase": "^10.2.0",

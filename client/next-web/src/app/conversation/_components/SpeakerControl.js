@@ -24,7 +24,10 @@ export default function SpeakerControl({
 }) {
   return (
     <div className="flex">
-      <ButtonGroup radius="full" variant="light">
+      <ButtonGroup 
+        radius="full" 
+        variant="light"
+      >
         <Tooltip content="Speaker">
           <Button
             isIconOnly

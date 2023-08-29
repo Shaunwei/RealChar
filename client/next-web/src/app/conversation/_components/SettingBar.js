@@ -20,7 +20,7 @@ export default function SettingBar({
   model,
   modelList,
   handleLanguageModel,
-  handleShare,
+  chatContent,
   openSettings
 }) {
   return (
@@ -57,7 +57,8 @@ export default function SettingBar({
           handleLanguageModel={handleLanguageModel}
         />
         <ShareButton
-          handleShare={handleShare}
+          character={character}
+          chatContent={chatContent}
         />
         <SettingsButton
           openSettings={openSettings}

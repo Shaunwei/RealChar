@@ -63,7 +63,7 @@ export const chatContent = [
   }, {
     timeStamp: '2308260016',
     from: 'user',
-    content: 'I am good.',
+    content: 'I am good. And I need to test the style of lots lots content should look like.',
   }, {
     timeStamp: '2308260017',
     from: 'character',

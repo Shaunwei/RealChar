@@ -59,19 +59,19 @@ export default function Conversation() {
     // TODO
   }
 
-  async function handleShare(key) {
-    // TODO
-    switch(key) {
-      case 'character':
-        console.log('share character');
-        return;
-      case 'chat':
-        console.log('share chat');
-        return;
-      default:
-        return;
-    }
-  }
+  // async function handleShare(key) {
+  //   // TODO
+  //   switch(key) {
+  //     case 'character':
+  //       console.log('share character');
+  //       return;
+  //     case 'chat':
+  //       console.log('share chat');
+  //       return;
+  //     default:
+  //       return;
+  //   }
+  // }
 
   function openSettings() {
 
@@ -130,7 +130,7 @@ export default function Conversation() {
           model={model}
           modelList={modelList}
           handleLanguageModel={handleLanguageModel}
-          handleShare={handleShare}
+          chatContent={chatContent}
           openSettings={openSettings}
         />
       </div>

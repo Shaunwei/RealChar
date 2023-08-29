@@ -25,6 +25,8 @@ module.exports = {
       'divider': 'rgba(99, 106, 132, 0.3)',
       'dropdown': '#1e2643',
       'dropdownHover': 'rgba(103, 133, 211, 0.3)',
+      'modalBG': '#050e2e',
+      'modalBorder': 'rgba(194, 211, 255, 0.3)',
       'real-black': {
         DEFAULT: '#02081D',
       },
@@ -33,6 +35,9 @@ module.exports = {
       },
       'real-navy': {
         DEFAULT: '#6785D3',
+      },
+      'real-contrastBlue': {
+        DEFAULT: '#1F4FCC',
       }
     }
   },

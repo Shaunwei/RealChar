@@ -420,5 +420,5 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
     except WebSocketDisconnect:
         logger.info(f"User #{user_id} closed the connection")
         await manager.disconnect(websocket)
-        await memory_manager.process_session(session_id)
+        await memory_manager.process_session(user_id, session_id, conversation_history)
         return

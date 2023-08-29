@@ -1,7 +1,7 @@
 # flake8: noqa
 from langchain.schema import HumanMessage, SystemMessage
 from realtime_ai_character.llm import get_chatmodel_from_env
-from realtime_ai_character.models.interaction import Interaction
+from realtime_ai_character.utils import ConversationHistory
 
 prompt_to_generate_memory = '''
 You are an excellent information analyst. Below is a conversation between a human user and an AI. The AI is a chatbot that is designed to be able to talk about anything.
@@ -21,16 +21,16 @@ Location: New York City
 Now start your analysis.
 '''
 
-async def generate_memory(interactions: list[Interaction]):
-    if interactions is None or len(interactions) == 0:
+async def generate_memory(conversation_history: ConversationHistory):
+    if conversation_history is None or len(conversation_history.user) == 0:
         return None
     chat_model = get_chatmodel_from_env()
-    conversation_history = []
-    conversation_history.append(SystemMessage(content=prompt_to_generate_memory))
+    conversation_summary = []
+    conversation_summary.append(SystemMessage(content=prompt_to_generate_memory))
     conversation_text = ''
-    for interaction in interactions:
-        conversation_text += f'User: {interaction.client_message_unicode}\n'
-        conversation_text += f'AI: {interaction.server_message_unicode}\n'
-    conversation_history.append(HumanMessage(content=conversation_text))
-    generated_memory = await chat_model.agenerate([conversation_history])
-    return generated_memory
+    for user_message, ai_message in zip(conversation_history.user, conversation_history.ai):
+        conversation_text += f'User: {user_message}\n'
+        conversation_text += f'AI: {ai_message}\n'
+    conversation_summary.append(HumanMessage(content=conversation_text))
+    response = await chat_model.agenerate([conversation_summary])
+    return response.generations[0][0].text

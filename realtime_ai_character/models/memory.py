@@ -16,7 +16,7 @@ class Memory(Base):
     created_at = Column(DateTime(), nullable=False)
     updated_at = Column(DateTime(), nullable=False)
     if 'postgres' in os.environ.get('DATABASE_URL'):
-        embedding = Column(Vector(1536), nullable=True)
+        content_embedding = Column(Vector(1536), nullable=True)
 
     def to_dict(self):
         return {

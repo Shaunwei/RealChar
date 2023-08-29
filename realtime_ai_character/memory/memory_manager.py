@@ -42,7 +42,7 @@ class MemoryManager(Singleton):
         memory.updated_at = timestamp
         if 'postgres' in os.environ.get('DATABASE_URL'):
             embedding_result = await self.embedding.aembed_query(generated_memory)
-            memory.embedding = embedding_result
+            memory.content_embedding = embedding_result
         memory.save(self.sql_db)
         logger.info(f"Memory generated for user {user_id} and session {session_id}.")
 

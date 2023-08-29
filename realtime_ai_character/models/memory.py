@@ -1,9 +1,12 @@
 import os
+import datetime
+
+from pydantic import BaseModel
+from realtime_ai_character.database.base import Base
 from sqlalchemy import Column, String, DateTime, Unicode
 from pgvector.sqlalchemy import Vector
 from sqlalchemy.inspection import inspect
-import datetime
-from realtime_ai_character.database.base import Base
+from typing import Optional
 
 
 class Memory(Base):
@@ -30,3 +33,9 @@ class Memory(Base):
     def save(self, db):
         db.add(self)
         db.commit()
+
+
+class EditMemoryRequest(BaseModel):
+    memory_id: str
+    source_session_id: Optional[str] = None
+    content: Optional[str] = None

@@ -75,7 +75,8 @@ async def check_session_auth(session_id: str, user_id: str, db: Session) -> Sess
             is_authenticated_user=True,
         )
     try:
-        original_chat = db.query(Interaction).filter(Interaction.session_id == session_id).first()
+        original_chat = await asyncio.to_thread(
+            db.query(Interaction).filter(Interaction.session_id == session_id).first)
     except Exception as e:
         logger.info(f'Failed to lookup session {session_id} with error {e}')
         return SessionAuthResult(
@@ -161,7 +162,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
         conversation_history = ConversationHistory()
         if load_from_existing_session:
             logger.info(f"User #{user_id} is loading from existing session {session_id}")
-            conversation_history.load_from_db(session_id=session_id, db=db)
+            await asyncio.to_thread(conversation_history.load_from_db, session_id=session_id, db=db)
 
         # 0. Receive client platform info (web, mobile, terminal)
         if not platform:
@@ -294,7 +295,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
 
                 # 2. Send message to LLM
                 if use_quivr:
-                    quivr_info = db.query(QuivrInfo).filter(QuivrInfo.user_id == user_id).first()
+                    quivr_info = await asyncio.to_thread(
+                        db.query(QuivrInfo).filter(QuivrInfo.user_id == user_id).first)
                 else:
                     quivr_info = None
                 message_id = str(uuid.uuid4().hex)[:16]
@@ -330,7 +332,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     tools.append('quivr')
                 if use_multion:
                     tools.append('multion')
-                Interaction(user_id=user_id,
+                interaction = Interaction(user_id=user_id,
                             session_id=session_id,
                             client_message_unicode=msg_data,
                             server_message_unicode=response,
@@ -340,7 +342,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                             tools=','.join(tools),
                             language=language,
                             message_id=message_id,
-                            llm_config=llm.get_config()).save(db)
+                            llm_config=llm.get_config())
+                await asyncio.to_thread(interaction.save, db)
 
             # handle binary message(audio)
             elif 'bytes' in data:
@@ -379,7 +382,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                         tools.append('quivr')
                     if use_multion:
                         tools.append('multion')
-                    Interaction(user_id=user_id,
+                    interaction = Interaction(user_id=user_id,
                                 session_id=session_id,
                                 client_message_unicode=transcript,
                                 server_message_unicode=response,
@@ -388,7 +391,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                                 character_id=character_id,
                                 tools=','.join(tools),
                                 language=language,
-                                llm_config=llm.get_config()).save(db)
+                                llm_config=llm.get_config())
+                    await asyncio.to_thread(interaction.save, db)
 
                 # 4. Send "thinking" status over websocket
                 if use_search or use_quivr:
@@ -397,7 +401,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
 
                 # 5. Send message to LLM
                 if use_quivr:
-                    quivr_info = db.query(QuivrInfo).filter(QuivrInfo.user_id == user_id).first()
+                    quivr_info = await asyncio.to_thread(
+                        db.query(QuivrInfo).filter(QuivrInfo.user_id == user_id).first)
                 else:
                     quivr_info = None
                 tts_task = asyncio.create_task(

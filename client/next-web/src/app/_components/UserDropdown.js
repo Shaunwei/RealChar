@@ -9,7 +9,6 @@ import signout from '@/firebase/auth/signout';
 
 export default function UserDropdown({ user }) {
   async function handleMenuClick(key) {
-    console.log(key);
     switch(key) {
       case 'profile':
         return;

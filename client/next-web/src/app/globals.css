@@ -16,7 +16,25 @@
   }
 }
 
-body {
+main .react-input-emoji--container {
+  background: transparent;
+  border: 0;
+  font-size: 18px;
+  font-weight: 300;
+  font-family: inherit;
   color: #fff;
-  background: #02081d;
+}
+
+main .react-emoji {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+main .react-input-emoji--button {
+  padding-left: 0;
+  padding-right: 20px;
+}
+
+main .react-input-emoji--input {
+  font-weight: 300;
 }

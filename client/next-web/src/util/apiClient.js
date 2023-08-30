@@ -1,16 +1,12 @@
-import { getApiServerUrl } from './urlUtil';
 import useSWR from 'swr';
+import { getApiServerUrl } from './urlUtil';
 
 const fetcher = (...args) => fetch(...args).then(res => res.json());
 
-function getBaseUrl() {
-  const referer = window.location.origin;
-  return getApiServerUrl(referer);
-}
-
 export function useMyCharacters() {
   // TODO
-  const { data, error, isLoading } = useSWR(`${getBaseUrl()}/characters`, fetcher);
+  const origin = window.location.origin;
+  const { data, error, isLoading } = useSWR(`${getApiServerUrl(origin)}/characters`, fetcher);
   
   if (error) {
     console.log('error');

@@ -159,9 +159,8 @@ class CatalogManager(Singleton):
 
 
     def load_character_from_sql_database(self):
-        logger.info('started loading')
+        logger.info('Started loading characters from SQL database')
         character_models = self.sql_db.query(CharacterModel).all()
-        logger.info('db read done')
 
         with self.sql_load_lock.gen_wlock():
             # delete all characters with location == 'database'

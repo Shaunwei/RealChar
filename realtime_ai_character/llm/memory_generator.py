@@ -7,16 +7,24 @@ prompt_to_generate_memory = '''
 You are an excellent information analyst. Below is a conversation between a human user and an AI. The AI is a chatbot that is designed to be able to talk about anything.
 The human user's words are lines started with "User: ", and the AI's responses are lines started with "AI: ".
 
-Your task: Extract facts of the user from the conversation. If there is not sufficient info to extract information about the user themselves, return "No info" only, do not make up things or speculate.
+Your task: Extract facts of the user from the conversation. Only extract facts based on what user said, NOT based on what AI said.
+If there is not sufficient info to extract information about the user themselves, return "No info" only, do not make up things or speculate.
 Do not respond to this request. Instead, start your analysis right away.
 
-Example:
+Example 1:
 User: Hi, my name is Paul. I live in New York City.
 AI: Hi Paul, nice to meet you. What can I do for you?
 
 Expected Response:
 Name: Paul
 Location: New York City
+
+Example 2:
+User: what's my name?
+AI: Hi, you are Paul.
+
+Expected Response:
+No info
 
 Now start your analysis.
 '''

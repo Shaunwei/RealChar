@@ -1,5 +1,6 @@
 import os
 import threading
+import time
 import yaml
 from pathlib import Path
 from contextlib import ExitStack
@@ -34,21 +35,26 @@ class CatalogManager(Singleton):
             self.db = get_chroma()
 
         self.characters = {}
+        self.author_name_cache = {}
         self.load_characters_from_community(overwrite)
         self.load_characters(overwrite)
-        self.load_character_from_sql_database()
         if overwrite:
             logger.info('Persisting data in the chroma.')
             self.db.persist()
         logger.info(
             f"Total document load: {self.db._client.get_collection('llm').count()}")
-        self.load_sql_db_loop()
-
-    def load_sql_db_loop(self):
-        self.load_sql_db_thread = threading.Timer(self.sql_load_interval, self.load_sql_db_loop)
+        self.run_load_sql_db_thread = True
+        self.load_sql_db_thread = threading.Thread(target=self.load_sql_db_loop)
         self.load_sql_db_thread.daemon = True
         self.load_sql_db_thread.start()
-        self.load_character_from_sql_database()
+
+    def load_sql_db_loop(self):
+        while self.run_load_sql_db_thread:
+            self.load_character_from_sql_database()
+            time.sleep(self.sql_load_interval)
+
+    def stop_load_sql_db_loop(self):
+        self.run_load_sql_db_thread = False
 
     def get_character(self, name) -> Character:
         with self.sql_load_lock.gen_rlock():
@@ -153,7 +159,9 @@ class CatalogManager(Singleton):
 
 
     def load_character_from_sql_database(self):
+        logger.info('Started loading characters from SQL database')
         character_models = self.sql_db.query(CharacterModel).all()
+
         with self.sql_load_lock.gen_wlock():
             # delete all characters with location == 'database'
             keys_to_delete = []
@@ -165,9 +173,13 @@ class CatalogManager(Singleton):
 
             # add all characters from sql database
             for character_model in character_models:
-                author_name = auth.get_user(
-                    character_model.author_id).display_name if os.getenv(
-                        'USE_AUTH', '') else "anonymous author"
+                if character_model.author_id not in self.author_name_cache:
+                    author_name = auth.get_user(
+                        character_model.author_id).display_name if os.getenv(
+                            'USE_AUTH', '') else "anonymous author"
+                    self.author_name_cache[character_model.author_id] = author_name
+                else:
+                    author_name = self.author_name_cache[character_model.author_id]
                 character = Character(
                     character_id=character_model.id,
                     name=character_model.name,

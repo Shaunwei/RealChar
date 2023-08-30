@@ -1,8 +1,6 @@
 import './globals.css';
 import { Prompt } from 'next/font/google';
 import { Providers } from './providers';
-import Header from './_components/header';
-import Footer from './_components/footer';
 
 const prompt = Prompt({
   weight: ['300', '400', '500'],
@@ -21,9 +19,7 @@ export default function RootLayout({ children }) {
     <html lang='en' className='dark'>
       <body className={prompt.className}>
         <Providers>
-          <Header />
           <main>{children}</main>
-          <Footer />
         </Providers>
       </body>
     </html>

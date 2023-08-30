@@ -47,6 +47,10 @@ class MemoryManager(Singleton):
         await asyncio.to_thread(memory.save, self.sql_db)
         logger.info(f"Memory generated for user {user_id} and session {session_id}.")
 
+    async def similarity_search(self, user_id: str, query: str):
+        # Not implemented.
+        pass
+
 
 def get_memory_manager():
     return MemoryManager.get_instance()

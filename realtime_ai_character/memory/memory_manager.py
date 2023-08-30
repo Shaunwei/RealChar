@@ -17,6 +17,10 @@ class MemoryManager(Singleton):
         # Not implemented.
         pass
 
+    async def similarity_search(self, user_id: str, query: str):
+        # Not implemented.
+        pass
+
 
 def get_memory_manager():
     return MemoryManager.get_instance()

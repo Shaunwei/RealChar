@@ -1,7 +1,7 @@
-# <img src="./realtime_ai_character/static/realchar.svg" height="24px" style="padding-top:4px"/>RealChar. - Your Realtime AI Character
+# <img src="https://storage.googleapis.com/assistly/static/realchar/realchar.svg" height="24px" style="padding-top:4px"/>RealChar. - Your Realtime AI Character
 <br/>
 <div align="center">
-    <img src="./realtime_ai_character/static/logo.png" alt="RealChar-logo" width="80%"  style="padding: 40px"/>
+    <img src="https://storage.googleapis.com/assistly/static/realchar/logo.png" alt="RealChar-logo" width="80%"  style="padding: 40px"/>
 </div>
 <br/>
 <p align="center">
@@ -214,6 +214,13 @@ ELEVEN_LABS_API_KEY=<api key>
             cd client/web
             npm install
             npm start
+            ```
+            After running these commands, a local development server will start, and your default web browser will open a new tab/window pointing to this server (usually http://localhost:3000).
+        - **Option 3 (experimental)**: Running the client in Nextjs.
+            ```sh
+            cd client/next-web
+            npm install
+            npm run dev
             ```
             After running these commands, a local development server will start, and your default web browser will open a new tab/window pointing to this server (usually http://localhost:3000).
     - (Optional) Terminal client: Run the following command in your terminal

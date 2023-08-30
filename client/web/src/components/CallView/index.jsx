@@ -12,7 +12,7 @@ import { TbPhoneCall } from 'react-icons/tb';
 import { MdCallEnd } from 'react-icons/md';
 import { TbMessageChatbot, TbPower, TbShare2 } from 'react-icons/tb';
 import IconButton from '../Common/IconButton';
-
+import { setAnalyser } from '../../components/AvatarView';
 // utils
 import { playAudios } from '../../utils/audioUtils';
 
@@ -36,7 +36,7 @@ const CallView = ({
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isPlaying) {
+    if (isPlaying && audioContextRef.current) {
       playAudios(
         audioContextRef,
         audioPlayer,
@@ -49,6 +49,11 @@ const CallView = ({
       );
     }
   }, [isPlaying]);
+
+  useEffect(() => {
+    if (!audioContextRef.current) return;
+    setAnalyser(audioContextRef.current);
+  }, [audioContextRef.current]);
 
   const handlePowerOffClick = () => {
     navigate('/');

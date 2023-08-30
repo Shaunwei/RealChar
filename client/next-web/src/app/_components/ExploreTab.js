@@ -1,7 +1,4 @@
-import {
-  Card,
-  CardBody
-} from '@nextui-org/card';
+import { Card, CardBody, CardFooter } from '@nextui-org/card';
 import { Avatar } from '@nextui-org/avatar';
 import Image from 'next/image';
 import audioSvg from '@/assets/svgs/audio.svg';
@@ -15,7 +12,7 @@ export default function ExploreTab({ characters, isDisplay }) {
         characters?.map(character => (
           <Card
             key={character.character_id}
-            className="basis-48 p-2.5">
+            className="basis-48 p-2.5 bg-blue-500">
             <CardBody className="p-0">
               <Avatar
                 radius="sm"
@@ -23,7 +20,9 @@ export default function ExploreTab({ characters, isDisplay }) {
                 className="w-44 h-44"
               />
               <p className="name text-base text-center mt-2 font-medium">{character.name}</p>
-              <p className="intro text-xs text-center mt-2 font-light">"I am burdened with glorious purpose."</p>
+              <p className="intro text-xs text-center mt-2 font-light"> 
+                &quot;I am burdened with glorious purpose.&quot;
+              </p>
               <div className="flex justify-center mt-4">
                 <Image
                   priority

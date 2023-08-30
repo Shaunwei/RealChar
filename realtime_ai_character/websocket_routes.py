@@ -15,6 +15,7 @@ from realtime_ai_character.audio.text_to_speech import (TextToSpeech,
                                                         get_text_to_speech)
 from realtime_ai_character.character_catalog.catalog_manager import (
     CatalogManager, get_catalog_manager)
+from realtime_ai_character.memory.memory_manager import (MemoryManager, get_memory_manager)
 from realtime_ai_character.database.connection import get_db
 from realtime_ai_character.llm import get_llm, LLM
 from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, AsyncCallbackTextHandler
@@ -74,7 +75,8 @@ async def check_session_auth(session_id: str, user_id: str, db: Session) -> Sess
             is_authenticated_user=True,
         )
     try:
-        original_chat = db.query(Interaction).filter(Interaction.session_id == session_id).first()
+        original_chat = await asyncio.to_thread(
+            db.query(Interaction).filter(Interaction.session_id == session_id).first)
     except Exception as e:
         logger.info(f'Failed to lookup session {session_id} with error {e}')
         return SessionAuthResult(
@@ -112,6 +114,7 @@ async def websocket_endpoint(websocket: WebSocket,
                              use_multion: bool = Query(default=False),
                              db: Session = Depends(get_db),
                              catalog_manager=Depends(get_catalog_manager),
+                             memory_manager=Depends(get_memory_manager),
                              speech_to_text=Depends(get_speech_to_text),
                              default_text_to_speech=Depends(get_text_to_speech)):
     # Default user_id to session_id. If auth is enabled and token is provided, use
@@ -138,8 +141,8 @@ async def websocket_endpoint(websocket: WebSocket,
     try:
         main_task = asyncio.create_task(
             handle_receive(websocket, session_id, user_id, db, llm, catalog_manager,
-                           character_id, platform, use_search, use_quivr, use_multion,
-                           speech_to_text, default_text_to_speech, language,
+                           memory_manager, character_id, platform, use_search, use_quivr,
+                           use_multion, speech_to_text, default_text_to_speech, language,
                            session_auth_result.is_existing_session))
 
         await asyncio.gather(main_task)
@@ -150,7 +153,7 @@ async def websocket_endpoint(websocket: WebSocket,
 
 
 async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db: Session,
-                         llm: LLM, catalog_manager: CatalogManager,
+                         llm: LLM, catalog_manager: CatalogManager, memory_manager: MemoryManager,
                          character_id: str, platform: str, use_search: bool, use_quivr: bool,
                          use_multion: bool, speech_to_text: SpeechToText,
                          default_text_to_speech: TextToSpeech,
@@ -159,7 +162,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
         conversation_history = ConversationHistory()
         if load_from_existing_session:
             logger.info(f"User #{user_id} is loading from existing session {session_id}")
-            conversation_history.load_from_db(session_id=session_id, db=db)
+            await asyncio.to_thread(conversation_history.load_from_db, session_id=session_id, db=db)
 
         # 0. Receive client platform info (web, mobile, terminal)
         if not platform:
@@ -292,7 +295,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
 
                 # 2. Send message to LLM
                 if use_quivr:
-                    quivr_info = db.query(QuivrInfo).filter(QuivrInfo.user_id == user_id).first()
+                    quivr_info = await asyncio.to_thread(
+                        db.query(QuivrInfo).filter(QuivrInfo.user_id == user_id).first)
                 else:
                     quivr_info = None
                 message_id = str(uuid.uuid4().hex)[:16]
@@ -328,7 +332,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     tools.append('quivr')
                 if use_multion:
                     tools.append('multion')
-                Interaction(user_id=user_id,
+                interaction = Interaction(user_id=user_id,
                             session_id=session_id,
                             client_message_unicode=msg_data,
                             server_message_unicode=response,
@@ -338,7 +342,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                             tools=','.join(tools),
                             language=language,
                             message_id=message_id,
-                            llm_config=llm.get_config()).save(db)
+                            llm_config=llm.get_config())
+                await asyncio.to_thread(interaction.save, db)
 
             # handle binary message(audio)
             elif 'bytes' in data:
@@ -377,7 +382,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                         tools.append('quivr')
                     if use_multion:
                         tools.append('multion')
-                    Interaction(user_id=user_id,
+                    interaction = Interaction(user_id=user_id,
                                 session_id=session_id,
                                 client_message_unicode=transcript,
                                 server_message_unicode=response,
@@ -386,7 +391,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                                 character_id=character_id,
                                 tools=','.join(tools),
                                 language=language,
-                                llm_config=llm.get_config()).save(db)
+                                llm_config=llm.get_config())
+                    await asyncio.to_thread(interaction.save, db)
 
                 # 4. Send "thinking" status over websocket
                 if use_search or use_quivr:
@@ -395,7 +401,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
 
                 # 5. Send message to LLM
                 if use_quivr:
-                    quivr_info = db.query(QuivrInfo).filter(QuivrInfo.user_id == user_id).first()
+                    quivr_info = await asyncio.to_thread(
+                        db.query(QuivrInfo).filter(QuivrInfo.user_id == user_id).first)
                 else:
                     quivr_info = None
                 tts_task = asyncio.create_task(
@@ -418,4 +425,5 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
     except WebSocketDisconnect:
         logger.info(f"User #{user_id} closed the connection")
         await manager.disconnect(websocket)
+        await memory_manager.process_session(session_id)
         return

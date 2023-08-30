@@ -122,30 +122,15 @@ class QuivrAgent:
 
     def question(self, query: str, apiKey: str, brainId: str) -> str:
         try:
-            # 1. Create new chat
-            url = "https://api.quivr.app/chat"
-            headers = {"Authorization": f"Bearer {apiKey}"}
-            data = {"name": "Chat from RealChar"}
-
-            response = requests.post(url, headers=headers, json=data)
-            response.raise_for_status()
-
-            chat_id = response.json()["chat_id"]
-
-            # 2. Ask question
-            url = f"https://api.quivr.app/chat/{chat_id}/question?brain_id={brainId}"
+            url = f"https://api.quivr.app/brains/{brainId}/question_context"
             headers = {"Authorization": f"Bearer {apiKey}"}
             data = {
-                "model": "gpt-3.5-turbo-16k",
-                "temperature": 0.5,
                 "question": query,
-                "max_tokens": 256,
-                "brain_id": brainId,
             }
 
             response = requests.post(url, headers=headers, json=data)
             response.raise_for_status()
-            quivr_result = response.json()["assistant"]
+            quivr_result = response.json()["context"]
 
             quivr_context = '\n'.join([
                 '---',

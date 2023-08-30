@@ -102,7 +102,7 @@ class OpenaiLlm(LLM):
         return context
 
     async def _generate_memory_context(self, user_id: str, query: str) -> str:
-        logger.info('get memory for' + user_id)
+        logger.info('Getting memory for ' + user_id)
         if not user_id or not query:
             return None
         if os.getenv('USE_MEMORY_CONTEXT', ''):

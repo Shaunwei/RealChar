@@ -17,14 +17,21 @@ git checkout -b private_main private/main
 a. Contribute code to private repo only
 (Make sure you are at private_main already, e.g. `git checkout private_main`, or `gcop` alias)
 ```
-git checkout -b <your name repo>
+git checkout -b <your change branch>
 git add & commit
 git push private
 ```
 (or use `gpp` alias)
 
 b. Bring public repo to private repo
+
+(Optionally but recommended: sync your local private to main first. It's the gpullp alias below)
 ```
+git pull private main --rebase
+```
+Merge origin to private:
+```
+git checkout -b <a merge branch name>
 git merge origin main
 git push <a merge branch>
 ```
@@ -32,6 +39,7 @@ git push <a merge branch>
 5. Aliases to help development
 Add these aliases to your `.bash_aliases` or `.zshrc` (if using zsh)
 ```
+alias gpullp='git pull private main --rebase'
 alias gcop='git checkout private_main'
 alias gpp='git push private'
 ```

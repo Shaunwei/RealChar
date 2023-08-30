@@ -164,7 +164,7 @@ class CatalogManager(Singleton):
         logger.info('db read done')
 
         with self.sql_load_lock.gen_wlock():
-        #     delete all characters with location == 'database'
+            # delete all characters with location == 'database'
             keys_to_delete = []
             for character_id in self.characters.keys():
                 if self.characters[character_id].location == 'database':

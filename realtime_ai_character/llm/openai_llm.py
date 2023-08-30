@@ -13,6 +13,7 @@ from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, \
     AsyncCallbackTextHandler, LLM, QuivrAgent, SearchAgent, MultiOnAgent
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Character
+from realtime_ai_character.memory.memory_manager import get_memory_manager
 
 logger = get_logger(__name__)
 
@@ -39,6 +40,7 @@ class OpenaiLlm(LLM):
             "streaming": True
         }
         self.db = get_chroma()
+        self.memory_manager = get_memory_manager()
         self.search_agent = SearchAgent()
         self.quivr_agent = QuivrAgent()
         self.multion_agent = MultiOnAgent()
@@ -62,7 +64,9 @@ class OpenaiLlm(LLM):
                     *args, **kwargs) -> str:
         # 1. Generate context
         context = self._generate_context(user_input, character)
-        memory_context = self._generate_memory_context(user_id='', query=user_input)
+        memory_context = await self._generate_memory_context(
+            user_id=kwargs.get('user_id', ''),
+            query=user_input)
         if memory_context:
             context += ("Information regarding this user based on previous chat: "
             + memory_context + '\n')
@@ -97,6 +101,14 @@ class OpenaiLlm(LLM):
         context = '\n'.join([d.page_content for d in docs])
         return context
 
-    def _generate_memory_context(self, user_id: str, query: str) -> str:
-        # Not implemented
-        pass
+    async def _generate_memory_context(self, user_id: str, query: str) -> str:
+        logger.info('get memory for' + user_id)
+        if not user_id or not query:
+            return None
+        if os.getenv('USE_MEMORY_CONTEXT', ''):
+            memory_results = await self.memory_manager.similarity_search(user_id, query)
+            logger.info(f'Found {len(memory_results)} memories')
+            response = ''
+            for result in memory_results:
+                response += result.content + '\n'
+            return response

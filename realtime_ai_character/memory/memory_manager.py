@@ -30,6 +30,7 @@ class MemoryManager(Singleton):
 
         generated_memory = await generate_memory(conversation_history)
         if generated_memory.lower() == 'no info':
+            logger.info('Skip memory generation due to no fact extracted.')
             return
 
         # Insert memory into database
@@ -44,13 +45,29 @@ class MemoryManager(Singleton):
         if 'postgres' in os.environ.get('DATABASE_URL'):
             embedding_result = await self.embedding.aembed_query(generated_memory)
             memory.content_embedding = embedding_result
+            query_similar = await asyncio.to_thread(
+                self.sql_db.query(Memory)
+                .filter(Memory.user_id==user_id)
+                .filter(Memory.content_embedding.cosine_distance(embedding_result) < 0.1)
+                .order_by(Memory.content_embedding.cosine_distance(embedding_result).asc())
+                .limit(1)
+                .first)
+            if query_similar:
+                logger.info("skip generating memory due to too similar to existing ones")
+                return
         await asyncio.to_thread(memory.save, self.sql_db)
         logger.info(f"Memory generated for user {user_id} and session {session_id}.")
 
-    async def similarity_search(self, user_id: str, query: str):
-        # Not implemented.
-        pass
-
+    async def similarity_search(self, user_id: str, query: str) -> str:
+        query_embedding = await self.embedding.aembed_query(query)
+        results = await asyncio.to_thread(
+            self.sql_db.query(Memory)
+            .filter(Memory.user_id==user_id)
+            .filter(Memory.content_embedding.cosine_distance(query_embedding) < 0.3)
+            .order_by(Memory.content_embedding.cosine_distance(query_embedding).asc())
+            .limit(3)
+            .all)
+        return results
 
 def get_memory_manager():
     return MemoryManager.get_instance()

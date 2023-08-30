@@ -26,7 +26,6 @@ class LocalLlm(LLM):
             temperature=0.5,
             streaming=True,
             openai_api_base=url,
-            # openai_api_base="http://localhost:8001/v1",
             
         )
         self.config = {"model": "Local LLM", "temperature": 0.5, "streaming": True}

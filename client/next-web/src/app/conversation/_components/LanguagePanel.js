@@ -43,6 +43,7 @@ export default function LanguagePanel() {
           classNames={{
             trigger: 'bg-white/10 data-[hover=true]:bg-white/20',
             value: 'text-lg font-light pl-4',
+            popover: 'bg-dropdown',
           }}
         >
           {languages.map((item) => (

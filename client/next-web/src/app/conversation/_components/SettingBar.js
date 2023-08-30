@@ -59,7 +59,14 @@ export default function SettingBar({
           character={character}
           chatContent={chatContent}
         />
-        <SettingsButton/>
+        <SettingsButton
+          microphone={microphone}
+          microphoneList={microphoneList}
+          handleMicrophoneSelect={handleMicrophoneSelect}
+          speaker={speaker}
+          speakerList={speakerList}
+          handleSpeakerSelect={handleSpeakerSelect}
+        />
       </div>
     </div>
   );

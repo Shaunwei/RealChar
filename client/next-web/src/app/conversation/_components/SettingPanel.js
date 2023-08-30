@@ -6,7 +6,14 @@ import AudioPanel from './AudioPanel';
 import LanguagePanel from './LanguagePanel';
 import EnhancePanel from './EnhancePanel';
 
-export default function SettingPanel() {
+export default function SettingPanel({
+  microphone,
+  microphoneList,
+  handleMicrophoneSelect,
+  speaker,
+  speakerList,
+  handleSpeakerSelect,
+}) {
   const [openedPanel, setOpenedPanel] = useState('audio');
 
   return (
@@ -37,9 +44,16 @@ export default function SettingPanel() {
           <MdOutlineAutoAwesomeMosaic/>Enhancements
         </Button>
       </div>
-      <div className="pl-10">
+      <div className="pl-10 w-full">
       {openedPanel === 'audio' && (
-        <AudioPanel/>
+        <AudioPanel
+          microphone={microphone}
+          microphoneList={microphoneList}
+          handleMicrophoneSelect={handleMicrophoneSelect}
+          speaker={speaker}
+          speakerList={speakerList}
+          handleSpeakerSelect={handleSpeakerSelect}
+        />
       )}
       {openedPanel === 'language' && (
         <LanguagePanel/>

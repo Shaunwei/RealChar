@@ -7,12 +7,6 @@ from realtime_ai_character.llm.base import LLM
 
 
 def get_llm(model="gpt-3.5-turbo-16k") -> LLM:
-    # temporaryly get url from .env LOCAL_LLM_URL
-    # need figure out how to set up model=url in frontend
-    # if select "Llama-2-70b" button from frontend,
-    # model here will be "meta-llama/Llama-2-70b-chat-hf"
-    model = os.getenv('LOCAL_LLM_URL')
-    print(model)
     # return Llama2wrapperLlm(url=model)
     if model.startswith('gpt'):
         from realtime_ai_character.llm.openai_llm import OpenaiLlm
@@ -21,9 +15,13 @@ def get_llm(model="gpt-3.5-turbo-16k") -> LLM:
         from realtime_ai_character.llm.anthropic_llm import AnthropicLlm
         return AnthropicLlm(model=model)
     elif "localhost" in model:
-        # Currently use llama2-wrapper to test local llama models
-        from realtime_ai_character.llm.local_llm import LocalLlm
-        return LocalLlm(url=model)
+        # Currently use llama2-wrapper to run local llama models
+        local_llm_url = os.getenv('LOCAL_LLM_URL', '')
+        if local_llm_url:
+            from realtime_ai_character.llm.local_llm import LocalLlm
+            return LocalLlm(url=local_llm_url)
+        else:
+            raise ValueError('LOCAL_LLM_URL not set')
     elif "llama" in model:
         # Currently use Anyscale to support llama models
         from realtime_ai_character.llm.anyscale_llm import AnysacleLlm

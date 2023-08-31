@@ -93,7 +93,7 @@ export default function ShareButton({
               Share Character
             </ModalHeader>
             <ModalBody>
-              Invite your friends to chat with this character as well! Sharing the character won't reveal your conversation history.
+              Invite your friends to chat with this character as well! Sharing the character won&apos;t reveal your conversation history.
             </ModalBody>
             <ModalFooter>
               {!isCopied ? (

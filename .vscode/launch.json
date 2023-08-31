@@ -1,0 +1,13 @@
+{
+  "configurations": [
+    {
+      "name": "Python: File",
+      "type": "python",
+      "request": "launch",
+      // "program": "${file}",
+      "program": "cli.py",
+      "justMyCode": true,
+      "args": ["run-uvicorn"]
+    }
+  ]
+}

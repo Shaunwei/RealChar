@@ -7,7 +7,7 @@ import {
 } from '@nextui-org/navbar';
 import Image from 'next/image';
 import logo from '@/assets/svgs/logo.svg';
-import SignIn from './signin';
+import SignIn from './SignIn';
 import UserDropdown from './UserDropdown';
 
 import { useAuthContext } from '@/context/AuthContext';

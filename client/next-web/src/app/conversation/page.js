@@ -24,20 +24,19 @@ import {
 
 export default function Conversation() {
   const [ mode, setMode ] = useState('handsFree');
-  const [ model, setModel ] = useState(new Set([currentModel]));
   const [ speaker, setSpeaker ] = useState(new Set([currentSpeaker]));
   const [ isMute, setIsMute ] = useState(false);
   const [ microphone, setMicrophone ] = useState(new Set([currentMicrophone]));
   const [ inputMode, setInputMode ] = useState('keyboard');
 
   function handsFreeMode() {
-    // TODO
     setMode('handsFree');
+    // TODO
   }
 
   function textMode() {
-    // TODO
     setMode('text');
+    // TODO
   }
 
   function toggleMute() {
@@ -55,16 +54,11 @@ export default function Conversation() {
     // TODO
   }
 
-  function handleLanguageModel(keys) {
-    setModel(new Set(keys));
-    // TODO
-  }
-
   return (
     <div className="relative">
       <div className="grid grid-cols-4 gap-5 pt-10">
         <div>
-          <Tooltip 
+          <Tooltip
             content="Exit"
             placement="bottom"
           >
@@ -95,9 +89,9 @@ export default function Conversation() {
           >
             Text mode
           </TabButton>
-        </div>  
+        </div>
       </div>
-      <div className="flex flex-col mx-48 mt-10 pt-6 border-t-2 border-divider">
+      <div className="flex flex-col mx-auto mt-10 w-[892px] pt-6 border-t-2 border-divider">
         <SettingBar
           mode={mode}
           inputMode={inputMode}
@@ -110,19 +104,16 @@ export default function Conversation() {
           microphone={microphone}
           microphoneList={microphoneList}
           handleMicrophoneSelect={handleMicrophoneSelect}
-          model={model}
-          modelList={modelList}
-          handleLanguageModel={handleLanguageModel}
           chatContent={chatContent}
         />
       </div>
       <div className="mx-48 mt-6">
-        <HandsFreeMode 
+        <HandsFreeMode
           isDisplay={mode==='handsFree'}
           character={character}
           chatContent={chatContent}
         />
-        <TextMode 
+        <TextMode
           isDisplay={mode==="text"}
           chatContent={chatContent}
         />

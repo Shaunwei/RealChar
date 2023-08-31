@@ -40,7 +40,6 @@ jobs:
           API_HOST=https://api.realchar.ai
 
     - name: Deploy to Kubernetes
-      if: ${{ contains(github.ref, 'deploy') }}
       run: |
         echo "${{ secrets.KUBECONFIG }}" | base64 --decode > ./kubeconfig.yaml
         export KUBECONFIG=./kubeconfig.yaml

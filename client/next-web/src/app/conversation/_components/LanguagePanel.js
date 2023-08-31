@@ -21,8 +21,13 @@ export default function LanguagePanel() {
     'Japanese',
     'Korean',
   ];
-  // todo
+
   const [language, setLanguage] = useState(new Set(['English']));
+
+  function handleLanguageChange(e) {
+    setLanguage(new Set([e.target.value]));
+    // todo
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -37,7 +42,7 @@ export default function LanguagePanel() {
           labelPlacement="outside"
           aria-label="language select"
           selectedKeys={language}
-          onSelectionChange={setLanguage}
+          onChange={handleLanguageChange}
           radius="sm"
           size="lg"
           classNames={{

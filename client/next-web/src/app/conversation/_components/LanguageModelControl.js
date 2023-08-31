@@ -1,63 +1,39 @@
 import {
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem
-} from '@nextui-org/dropdown';
-import { Button } from '@nextui-org/button';
-import Image from 'next/image';
-import arrowSVG from '@/assets/svgs/arrowdown.svg';
-import { useMemo } from 'react';
+  Select,
+  SelectItem
+} from '@nextui-org/select';
 
-export default function LanguageModelControl({
-  model,
-  modelList,
-  handleLanguageModel
-}) {
-  const selectedModel = useMemo(
-    () => Array.from(model).join(','),
-    [model]
-  );
+import { useState } from 'react';
+// mock data
+import { currentModel, modelList } from '@/util/data';
+
+export default function LanguageModelControl() {
+  const [model, setModel] = useState(new Set([currentModel]));
+
+  function handleModelChange(e) {
+    setModel(new Set([e.target.value]));
+    // todo
+  }
 
   return (
-    <Dropdown
-      placement="bottom"
+    <Select
+      labelPlacement="outside"
+      aria-label="model select"
+      selectedKeys={model}
+      onChange={handleModelChange}
+      radius="sm"
       classNames={{
-        base: "bg-dropdown p-0"
+        base: 'w-40',
+        trigger: 'bg-white/10 data-[hover=true]:bg-white/20',
+        value: 'font-light pl-4',
+        popover: 'bg-dropdown',
       }}
     >
-      <DropdownTrigger aria-label="Dropdown trigger">
-        <Button
-          radius="full"
-          variant="bordered"
-          className="hover:bg-button"
-        >
-          {selectedModel}
-          <Image
-            priority
-            src={arrowSVG}
-            alt="arrow"
-          />
-        </Button>
-      </DropdownTrigger>
-      <DropdownMenu
-        aria-label="Language Model Actions"
-        variant="flat"
-        disallowEmptySelection
-        selectionMode="single"
-        selectedKeys={model}
-        onSelectionChange={handleLanguageModel}
-        itemClasses={{
-          base: "font-light py-3 pl-5 data-[hover=true]:bg-dropdownHover"
-        }}
-        items={modelList}
-      >
-        {(model) => (
-          <DropdownItem key={model.key}>
-            {model.label}
-          </DropdownItem>
-        )}
-      </DropdownMenu>
-    </Dropdown>
+      {modelList.map((item) => (
+        <SelectItem key={item.key} textValue={item.label}>
+          <div className="font-light">{item.label}</div>
+        </SelectItem>
+      ))}
+    </Select>
   );
 }

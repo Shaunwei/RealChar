@@ -50,11 +50,7 @@ export default function SettingBar({
         )
       }
       <div className="flex gap-8">
-        <LanguageModelControl
-          model={model}
-          modelList={modelList}
-          handleLanguageModel={handleLanguageModel}
-        />
+        <LanguageModelControl/>
         <ShareButton
           character={character}
           chatContent={chatContent}

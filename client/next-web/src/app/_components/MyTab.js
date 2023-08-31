@@ -10,7 +10,7 @@ import { useMyCharacters } from '@/util/apiClient';
 export default function MyTab({ isDisplay }) {
   const { characters } = useMyCharacters();
   const display = isDisplay ? 'flex' : 'hidden';
-  
+
   return (
     <section
       className={`flex flex-row flex-wrap justify-center mt-10 gap-5 ${display}`}
@@ -28,19 +28,23 @@ export default function MyTab({ isDisplay }) {
       {characters?.map(character => (
         <Card
           key={character.character_id}
-          className='basis-48 p-2.5 bg-blue-500'
+          className='basis-52 p-2.5'
         >
-          <Avatar radius='sm' src={character.image_url} className='w-44 h-44' />
-          <CardFooter className='p-0 flex flex-col'>
-            <p className='name text-base text-center mt-2 font-medium'>
-              {character.name}
-            </p>
-            <p className='intro text-xs text-center mt-2 font-light'>
+          <CardBody className="p-0 text-center">
+            <Avatar
+              radius="sm"
+              src={character.image_url}
+              className="w-full h-full"
+            />
+            <p className="name text-base text-center mt-2 font-medium">{character.name}</p>
+            <p className="intro text-xs text-center mt-2 font-light">
               &quot;I am burdened with glorious purpose.&quot;
             </p>
             <div className='flex justify-center mt-4'>
               <Image priority src={audioSvg} alt='' />
             </div>
+          </CardBody>
+          <CardFooter className="pt-4 mt-4 pb-2 border-t-2 border-real-silver-500/30 justify-center">
             <Link href='/' className='text-xs leading-5 text-real-silver-500'>
               View detail
             </Link>

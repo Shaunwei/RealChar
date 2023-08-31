@@ -7,7 +7,6 @@ from realtime_ai_character.llm.base import LLM
 
 
 def get_llm(model="gpt-3.5-turbo-16k") -> LLM:
-    # return Llama2wrapperLlm(url=model)
     if model.startswith('gpt'):
         from realtime_ai_character.llm.openai_llm import OpenaiLlm
         return OpenaiLlm(model=model)

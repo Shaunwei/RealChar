@@ -23,7 +23,7 @@ export default function LanguageModelControl() {
       onChange={handleModelChange}
       radius="sm"
       classNames={{
-        base: 'w-40',
+        base: 'w-36',
         trigger: 'bg-white/10 data-[hover=true]:bg-white/20',
         value: 'font-light pl-4',
         popover: 'bg-dropdown',

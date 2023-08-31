@@ -12,14 +12,11 @@ import { useState } from 'react';
 //mocked data for demo
 import {
   character,
-  currentModel,
-  modelList,
   currentSpeaker,
   speakerList,
   currentMicrophone,
   microphoneList,
   chatContent,
-  currentLanguage
 } from '@/util/data';
 
 export default function Conversation() {
@@ -81,17 +78,17 @@ export default function Conversation() {
             isSelected={mode==='handsFree'}
             handlePress={handsFreeMode}
           >
-            Hands-free mode
+            Hands-free <span className="hidden lg:inline">mode</span>
           </TabButton>
           <TabButton
             isSelected={mode==="text"}
             handlePress={textMode}
           >
-            Text mode
+            Text <span className="hidden lg:inline">mode</span>
           </TabButton>
         </div>
       </div>
-      <div className="flex flex-col mx-auto mt-10 w-[892px] pt-6 border-t-2 border-divider">
+      <div className="flex flex-col mt-10 pt-6 border-t-2 border-divider md:mx-auto md:w-unit-9xl lg:w-[892px]">
         <SettingBar
           mode={mode}
           inputMode={inputMode}
@@ -107,7 +104,7 @@ export default function Conversation() {
           chatContent={chatContent}
         />
       </div>
-      <div className="mx-48 mt-6">
+      <div className="mt-6 md:mx-auto md:w-unit-9xl lg:w-[892px]">
         <HandsFreeMode
           isDisplay={mode==='handsFree'}
           character={character}

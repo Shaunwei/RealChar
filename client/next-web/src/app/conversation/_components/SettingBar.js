@@ -17,9 +17,6 @@ export default function SettingBar({
   microphone,
   microphoneList,
   handleMicrophoneSelect,
-  model,
-  modelList,
-  handleLanguageModel,
   chatContent
 }) {
   return (
@@ -40,12 +37,12 @@ export default function SettingBar({
         />
       </div>
       { mode==="text" && (
-        <div className="flex gap-1">
+        <div className="flex gap-1 items-center">
           <Avatar
             name={character.name}
             src={character.image_url}
           />
-          <span className="text-3xl">{character.name}</span>
+          <span className="lg:text-3xl">{character.name}</span>
         </div>
         )
       }

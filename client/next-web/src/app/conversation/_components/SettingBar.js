@@ -7,7 +7,6 @@ import { Avatar } from '@nextui-org/avatar';
 
 export default function SettingBar({
   mode,
-  inputMode,
   character,
   isMute,
   speaker,
@@ -29,12 +28,13 @@ export default function SettingBar({
           toggleMute={toggleMute}
           handleSpeakerSelect={handleSpeakerSelect}
         />
-        <MicrophoneControl
-          isDisabled={mode==='text'&&inputMode==='keyboard'}
-          microphone={microphone}
-          microphoneList={microphoneList}
-          handleMicrophoneSelect={handleMicrophoneSelect}
-        />
+        {mode==="handsFree" && (
+          <MicrophoneControl
+            microphone={microphone}
+            microphoneList={microphoneList}
+            handleMicrophoneSelect={handleMicrophoneSelect}
+          />
+        )}
       </div>
       { mode==="text" && (
         <div className="flex gap-1 items-center">

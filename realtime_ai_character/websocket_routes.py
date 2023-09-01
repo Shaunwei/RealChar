@@ -256,6 +256,9 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     pass
                 tts_event.clear()
 
+        speech_recognition_interim = False
+        current_speech = ''
+
         while True:
             data = await websocket.receive()
             if data['type'] != 'websocket.receive':
@@ -287,13 +290,28 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                                 text_to_speech, websocket, tts_event,
                                 character.voice_id)))
                     continue
+                # 1. Whether client will send speech interim audio clip in the next message.
+                if msg_data.startswith('[&Speech]'):
+                    speech_recognition_interim = True
+                    continue
 
-                # 1. Send "thinking" status over websocket
+                # 2. If client finished speech, use the sentence as input.
+                if msg_data.startswith('[SpeechFinished]'):
+                    msg_data = current_speech
+                    logger.info(f"Full transcript: {current_speech}")
+                    # Stop recognizing next audio as interim.
+                    speech_recognition_interim = False
+                    # Filter noises
+                    if not current_speech:
+                        continue
+                    current_speech = ''
+
+                # 2. Send "thinking" status over websocket
                 if use_search or use_quivr:
                     await manager.send_message(message='[thinking]\n',
                                                websocket=websocket)
 
-                # 2. Send message to LLM
+                # 3. Send message to LLM
                 if use_quivr:
                     quivr_info = await asyncio.to_thread(
                         db.query(QuivrInfo).filter(QuivrInfo.user_id == user_id).first)
@@ -348,8 +366,20 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
             # handle binary message(audio)
             elif 'bytes' in data:
                 binary_data = data['bytes']
+                # 0. Handle interim speech.
+                if speech_recognition_interim:
+                    interim_transcript: str = (await asyncio.to_thread(speech_to_text.transcribe,
+                        binary_data, platform=platform,prompt=current_speech, suppress_tokens=[0, 11, 13, 30])).strip()
+                    speech_recognition_interim = False
+                    # Filter noises.
+                    if not interim_transcript:
+                        continue
+                    logger.info(f"Speech interim: {interim_transcript}")
+                    current_speech = current_speech + ' ' + interim_transcript
+                    continue
+
                 # 1. Transcribe audio
-                transcript: str = (await asyncio.to_thread(speech_to_text.transcribe, 
+                transcript: str = (await asyncio.to_thread(speech_to_text.transcribe,
                     binary_data, platform=platform,
                     prompt=character.name)).strip()
 

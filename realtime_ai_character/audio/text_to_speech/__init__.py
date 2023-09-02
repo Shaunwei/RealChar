@@ -18,5 +18,9 @@ def get_text_to_speech(tts: str = None) -> TextToSpeech:
         from realtime_ai_character.audio.text_to_speech.unreal_speech import UnrealSpeech
         UnrealSpeech.initialize()
         return UnrealSpeech.get_instance()
+    elif tts == 'EDGE_TTS':
+        from realtime_ai_character.audio.text_to_speech.edge_tts import EdgeTTS
+        EdgeTTS.initialize()
+        return EdgeTTS.get_instance()
     else:
         raise NotImplementedError(f'Unknown text to speech engine: {tts}')

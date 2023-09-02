@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@avatechai/avatars": "^0.4.21-next.11",
+    "@avatechai/avatars": "^0.4.23-next.4",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
@@ -16,6 +16,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "firebase": "^10.0.0",
+    "hark": "^1.2.3",
     "is-ip": "^5.0.0",
     "lz": "^0.1.1",
     "query-string": "^8.1.0",

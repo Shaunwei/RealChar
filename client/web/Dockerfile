@@ -4,6 +4,11 @@ FROM node:alpine as build
 # Working directory be app
 WORKDIR /app
 
+ARG REACT_APP_BUILD_NUMBER
+ENV REACT_APP_BUILD_NUMBER $REACT_APP_BUILD_NUMBER
+ARG REACT_APP_API_HOST
+ENV REACT_APP_API_HOST $REACT_APP_API_HOST
+
 # Copy package.json and package-lock.json before other files
 # Utilise Docker cache to save re-installing dependencies if unchanged
 COPY package.json ./

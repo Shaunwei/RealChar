@@ -20,6 +20,8 @@ import SharedConversation from './pages/SharedConversation';
 import Home from './pages/Home';
 import CharCreate from './pages/CharCreate';
 import CharDelete from './pages/CharDelete';
+import Privacy from './pages/Privacy';
+import Support from './pages/Support';
 
 // utils
 import auth from './utils/firebase';
@@ -28,6 +30,8 @@ import auth from './utils/firebase';
 import useWebsocket from './hooks/useWebsocket';
 import useMediaRecorder from './hooks/useMediaRecorder';
 import useSpeechRecognition from './hooks/useSpeechRecognition';
+import useWebRTC from './hooks/useWebRTC';
+import useHark from './hooks/useVAD';
 
 const App = () => {
   const [sessionId, setSessionId] = useState('');
@@ -35,6 +39,11 @@ const App = () => {
   const [selectedDevice, setSelectedDevice] = useState('');
   const [selectedModel, setSelectedModel] = useState('gpt-3.5-turbo-16k');
   const [useSearch, setUseSearch] = useState(false);
+  const [useQuivr, setUseQuivr] = useState(false);
+  const [quivrApiKey, setQuivrApiKey] = useState('');
+  const [quivrBrainId, setQuivrBrainId] = useState('');
+  const [useMultiOn, setUseMultiOn] = useState(false);
+  const [useEchoCancellation, setUseEchoCancellation] = useState(false);
   const [user, setUser] = useState(null);
   const isLoggedIn = useRef(false);
   const [token, setToken] = useState('');
@@ -51,6 +60,7 @@ const App = () => {
   const [messageId, setMessageId] = useState('');
   const audioPlayer = useRef(null);
   const callActive = useRef(false);
+  const harkInitialized = useRef(false);
   const audioSent = useRef(false);
   const shouldPlayAudio = useRef(false);
   const audioQueue = useRef([]);
@@ -85,7 +95,10 @@ const App = () => {
     console.log('successfully connected');
     isConnected.current = true;
     await connectMicrophone(selectedDevice);
-    initializeSpeechRecognition();
+    if (!useEchoCancellation) {
+      initializeSpeechRecognition();
+    }
+    await connectPeer(selectedDevice);
   };
 
   const handleSocketOnMessage = event => {
@@ -134,6 +147,12 @@ const App = () => {
     }
   };
 
+  const handleOnTrack = event => {
+    if (event.streams && event.streams[0]) {
+      audioPlayer.current.srcObject = event.streams[0];
+    }
+  };
+
   // Use custom hooks
   const { socketRef, send, connectSocket, closeSocket } = useWebsocket(
     token,
@@ -142,11 +161,14 @@ const App = () => {
     selectedModel,
     preferredLanguage,
     useSearch,
+    useQuivr,
+    useMultiOn,
     selectedCharacter,
     setSessionId
   );
   const {
     isRecording,
+    setIsRecording,
     connectMicrophone,
     startRecording,
     stopRecording,
@@ -165,10 +187,20 @@ const App = () => {
     audioSent,
     stopAudioPlayback,
     send,
+    startRecording,
     stopRecording,
     setTextAreaValue
   );
-
+  const {
+    pcRef,
+    otherPCRef,
+    micStreamRef,
+    audioContextRef,
+    incomingStreamDestinationRef,
+    connectPeer,
+    closePeer,
+  } = useWebRTC(handleOnTrack);
+  const { speechEventsCallback, enableHark, disableHark } = useHark();
   const connectSocketWithState = useCallback(() => {
     isConnecting.current = true;
     connectSocket();
@@ -202,15 +234,37 @@ const App = () => {
   };
 
   const handleStopCall = () => {
-    stopRecording();
-    stopListening();
+    if (useEchoCancellation) {
+      setIsRecording(false);
+      disableHark();
+    } else {
+      stopRecording();
+      stopListening();
+    }
     stopAudioPlayback();
     callActive.current = false;
   };
 
   const handleContinueCall = () => {
-    startRecording();
-    startListening();
+    if (useEchoCancellation) {
+      if (!harkInitialized.current) {
+        speechEventsCallback(
+          micStreamRef.current,
+          () => {
+            stopAudioPlayback();
+            startRecording();
+          },
+          stopRecording
+        );
+        harkInitialized.current = true;
+      }
+      setIsRecording(true);
+      enableHark();
+    } else {
+      setIsRecording(true);
+      startRecording();
+      startListening();
+    }
     shouldPlayAudio.current = true;
     callActive.current = true;
   };
@@ -220,10 +274,14 @@ const App = () => {
       // stop media recorder, speech recognition and audio playing
       stopAudioPlayback();
       closeMediaRecorder();
-      closeRecognition();
+      if (!useEchoCancellation) {
+        closeRecognition();
+      }
+      closePeer();
       callActive.current = false;
       shouldPlayAudio.current = false;
       audioSent.current = false;
+      harkInitialized.current = false;
 
       // reset everything to initial states
       setSelectedCharacter(null);
@@ -264,6 +322,8 @@ const App = () => {
                 setCharacterConfirmed={setCharacterConfirmed}
                 characterConfirmed={characterConfirmed}
                 token={token}
+                setToken={setToken}
+                isLoggedIn={isLoggedIn}
               />
             }
           />
@@ -279,8 +339,21 @@ const App = () => {
                 setSelectedDevice={setSelectedDevice}
                 selectedModel={selectedModel}
                 setSelectedModel={setSelectedModel}
+                isLoggedIn={isLoggedIn}
+                token={token}
+                setToken={setToken}
                 useSearch={useSearch}
                 setUseSearch={setUseSearch}
+                useQuivr={useQuivr}
+                setUseQuivr={setUseQuivr}
+                quivrApiKey={quivrApiKey}
+                setQuivrApiKey={setQuivrApiKey}
+                quivrBrainId={quivrBrainId}
+                setQuivrBrainId={setQuivrBrainId}
+                useMultiOn={useMultiOn}
+                setUseMultiOn={setUseMultiOn}
+                useEchoCancellation={useEchoCancellation}
+                setUseEchoCancellation={setUseEchoCancellation}
                 send={send}
                 connect={connect}
                 setIsCallView={setIsCallView}
@@ -303,6 +376,8 @@ const App = () => {
                 handleStopCall={handleStopCall}
                 handleContinueCall={handleContinueCall}
                 audioQueue={audioQueue}
+                audioContextRef={audioContextRef}
+                audioSourceNodeRef={incomingStreamDestinationRef}
                 setIsPlaying={setIsPlaying}
                 handleDisconnect={handleDisconnect}
                 setIsCallView={setIsCallView}
@@ -314,6 +389,7 @@ const App = () => {
                 setMessageInput={setMessageInput}
                 useSearch={useSearch}
                 setUseSearch={setUseSearch}
+                setUseEchoCancellation={setUseEchoCancellation}
                 callActive={callActive}
                 startRecording={startRecording}
                 stopRecording={stopRecording}
@@ -323,6 +399,7 @@ const App = () => {
                 setSelectedCharacter={setSelectedCharacter}
                 setSelectedModel={setSelectedModel}
                 setSelectedDevice={setSelectedDevice}
+                setUseMultiOn={setUseMultiOn}
                 connect={connect}
                 messageId={messageId}
                 token={token}
@@ -343,6 +420,8 @@ const App = () => {
               />
             }
           />
+          <Route path='/privacy' element={<Privacy />} />
+          <Route path='/support' element={<Support />} />
         </Routes>
 
         <Footer />

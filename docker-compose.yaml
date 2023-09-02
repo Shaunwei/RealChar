@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env
+  web:
+    build: ./client/web/
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    env_file:
+      - ./.env

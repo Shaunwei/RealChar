@@ -245,7 +245,7 @@ Note if you want to remotely connect to a RealChar server, SSL set up is require
 
 <br/>
 
-## 🆕! Anyscale and LangSmith integration
+## 🆕! Anyscale, LangSmith, LiteLLM integrations
 <details><summary>👇click me</summary>
 
 ### Anyscale
@@ -265,6 +265,16 @@ LANGCHAIN_PROJECT=YOUR_LANGCHAIN_PROJECT
 ```
 And it should work out of the box.
 
+
+### LiteLLM
+Use any model from Replicate, Cohere, AI21, Huggingface, TogetherAI, Aleph Alpha, and more - https://docs.litellm.ai/docs/completion/supported
+
+in your .env, just set the `LITELLM_API_KEY` to be the one for any of the providers you want to use
+```
+LITELLM_API_KEY="" # this is the api key for any of the providers supported by litellm
+```
+
+and this will be passed to litellm to use! 
 </details>
 
 <br/>

@@ -1,5 +1,5 @@
-# Render.com Deployment Guide.
-We have experimented with Render (https://render.com/), which has a quick and easy way to deploy a repo directly. We hoep this helps you deploy RealChar quickly, without needing to set up the infra.
+# Render.com Deployment Guide
+We have heard from you about difficulties in deploying RealChar in certain environments. We have experimented with Render (https://render.com/), which has a quick and easy way to deploy a repo directly. We hoep this helps you deploy RealChar quickly, without needing to set up the infra.
 
 # Steps
 
@@ -8,6 +8,7 @@ Register account on [Render](https://render.com/).
 
 2. Create a new web service
 Click the "New+" in the top panel.
+<img width="587" alt="Screen Shot 2023-09-02 at 14 30 40" src="https://github.com/Shaunwei/RealChar/assets/6148473/c4fa6db4-59a0-4ace-a176-0313a5584585">
 
 3. Connect a repository
 If you are using your own private forked version of RealChar, you need to grant access to Render to connect to your private repo. Otherwise, you can just use the public repo link in the "Public Git repository" section.
@@ -22,6 +23,7 @@ For backend service, we recommend using a tier higher or equal than "Starter" to
 
 6. Advanced setting
 Click the "Advanced" button to open the advanced settings. You would need to set up the environment variables. This can be the same environment variables you use for the `.env` file.
+<img width="277" alt="Screen Shot 2023-09-02 at 14 37 03" src="https://github.com/Shaunwei/RealChar/assets/6148473/dac222db-c6d3-4ffe-8c84-6a8c8f35d544">
 
 You would also need to set an environment variable `PORT` with the port exposed from the Docker image (by default, we use 8000).
 

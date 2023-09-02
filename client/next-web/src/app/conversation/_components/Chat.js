@@ -5,11 +5,23 @@ import {
 import { Button } from '@nextui-org/button';
 import { useAppStore } from '@/lib/store';
 
-export default function Chat() {
+export default function Chat({
+  size
+}) {
   const { chatContent } = useAppStore();
 
+  let height = '';
+  switch (size) {
+    case 'sm':
+      height = 'h-[20vh]';
+      break;
+    case 'lg':
+      height = 'h-[50vh]';
+      break;
+  }
+
   return (
-    <div className="flex flex-col gap-5 mt-4">
+    <div className={`flex flex-col gap-5 mt-4 overflow-y-scroll ${height}`}>
       {
         chatContent?.map((line) => {
           if (line.from === 'character') {

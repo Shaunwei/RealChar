@@ -14,6 +14,7 @@ export default function SettingBar({
   const { character } = useAppStore();
 
   return (
+    <>
     <div className="flex justify-between">
       <div className="flex gap-6">
         <SpeakerControl
@@ -40,5 +41,18 @@ export default function SettingBar({
         <SettingsButton/>
       </div>
     </div>
+    {mode==="handsFree" && (
+      <div className="mt-6">
+        <Avatar
+          name={character.name}
+          src={character.image_url}
+          classNames={{
+            base: "block w-80 h-80 mx-auto"
+          }}
+        />
+        <p className="text-center font-medium text-3xl mt-4">{character.name}</p>
+      </div>
+    )}
+    </>
   );
 }

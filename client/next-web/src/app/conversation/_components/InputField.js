@@ -29,7 +29,7 @@ export default function InputField() {
   }
 
   return (
-    <div className="flex justify-center fixed bottom-0 left-0 right-0 pb-10 md:mx-auto md:w-unit-9xl lg:w-[892px]">
+    <div className="flex justify-center pb-10 md:mx-auto md:w-unit-9xl lg:w-[892px]">
       {inputMode === 'text' && (
       <div className="flex flex-row justify-center gap-4 w-full pb-10">
         <Tooltip content="Talk">

@@ -196,7 +196,7 @@ ELEVEN_LABS_API_KEY=<api key>
    ```
 - **Step 6**. Run server with `cli.py` or use uvicorn directly
     ```sh
-    # Build the web fronend.
+    # Build the web frontend.
     python cli.py web-build
     ```
     ```sh

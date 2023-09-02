@@ -31,7 +31,8 @@ class OpenaiLlm(LLM):
             self.chat_open_ai = ChatLiteLLM(
                 model=model,
                 temperature=0.5,
-                streaming=True
+                streaming=True,
+                api_key=os.getenv("LITELLM_API_KEY")
             )
         self.config = {
             "model": model,

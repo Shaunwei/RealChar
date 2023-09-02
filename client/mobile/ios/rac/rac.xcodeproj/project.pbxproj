@@ -56,6 +56,9 @@
 		2600B0912A69F786003E8388 /* PreferenceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceSettings.swift; sourceTree = "<group>"; };
 		261F66462A6A3A7C00648DE2 /* AppleSignInButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleSignInButton.swift; sourceTree = "<group>"; };
 		261F66482A6A405400648DE2 /* rac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = rac.entitlements; sourceTree = "<group>"; };
+		2639AD992A8DE4F400AAFD83 /* ci_pre_xcodebuild.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_pre_xcodebuild.sh; sourceTree = "<group>"; };
+		2639AD9B2A8DEC2300AAFD83 /* icon-ios-1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-ios-1024.png"; sourceTree = "<group>"; };
+		2639AD9C2A8DEC2300AAFD83 /* Contents.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Contents.json; sourceTree = "<group>"; };
 		264530382A8823FD0046DFCA /* CharacterMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterMessage.swift; sourceTree = "<group>"; };
 		2645303A2A8824030046DFCA /* UserMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMessage.swift; sourceTree = "<group>"; };
 		2645303C2A88240D0046DFCA /* CharacterMessageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterMessageViewModel.swift; sourceTree = "<group>"; };
@@ -114,9 +117,28 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
+		2639AD982A8DE4D400AAFD83 /* ci_scripts */ = {
+			isa = PBXGroup;
+			children = (
+				2639AD992A8DE4F400AAFD83 /* ci_pre_xcodebuild.sh */,
+				2639AD9A2A8DEC2300AAFD83 /* AppIcon-Beta.appiconset */,
+			);
+			path = ci_scripts;
+			sourceTree = "<group>";
+		};
+		2639AD9A2A8DEC2300AAFD83 /* AppIcon-Beta.appiconset */ = {
+			isa = PBXGroup;
+			children = (
+				2639AD9B2A8DEC2300AAFD83 /* icon-ios-1024.png */,
+				2639AD9C2A8DEC2300AAFD83 /* Contents.json */,
+			);
+			path = "AppIcon-Beta.appiconset";
+			sourceTree = "<group>";
+		};
 		26FE4CFC2A5B6F0D006A1882 = {
 			isa = PBXGroup;
 			children = (
+				2639AD982A8DE4D400AAFD83 /* ci_scripts */,
 				26FE4D072A5B6F0D006A1882 /* rac */,
 				26FE4D062A5B6F0D006A1882 /* Products */,
 			);

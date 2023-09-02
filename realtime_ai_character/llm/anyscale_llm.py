@@ -6,7 +6,8 @@ from langchain.chat_models import ChatOpenAI
 from langchain.schema import BaseMessage, HumanMessage
 
 from realtime_ai_character.database.chroma import get_chroma
-from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, AsyncCallbackTextHandler, LLM, SearchAgent
+from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, AsyncCallbackTextHandler, \
+    LLM, SearchAgent
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Character
 
@@ -42,9 +43,14 @@ class AnysacleLlm(LLM):
                     audioCallback: AsyncCallbackAudioHandler,
                     character: Character,
                     useSearch: bool = False,
+                    metadata: dict = None,
                     *args, **kwargs) -> str:
         # 1. Generate context
         context = self._generate_context(user_input, character)
+        memory_context = self._generate_memory_context(user_id='', query=user_input)
+        if memory_context:
+            context += ("Information regarding this user based on previous chat: "
+            + memory_context + '\n')
         # Get search result if enabled
         if useSearch:
             context += self.search_agent.search(user_input)
@@ -55,7 +61,8 @@ class AnysacleLlm(LLM):
 
         # 3. Generate response
         response = await self.chat_open_ai.agenerate(
-            [history], callbacks=[callback, audioCallback, StreamingStdOutCallbackHandler()])
+            [history], callbacks=[callback, audioCallback, StreamingStdOutCallbackHandler()],
+            metadata=metadata)
         logger.info(f'Response: {response}')
         return response.generations[0][0].text
 
@@ -66,3 +73,7 @@ class AnysacleLlm(LLM):
 
         context = '\n'.join([d.page_content for d in docs])
         return context
+
+    def _generate_memory_context(self, user_id: str, query: str) -> str:
+        # Not implemented
+        pass

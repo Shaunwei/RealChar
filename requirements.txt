@@ -5,8 +5,10 @@ anthropic
 chromadb>=0.4.2
 click
 EbookLib
+edge-tts
 elevenlabs
 fastapi
+faster-whisper
 ffmpeg
 firebase-admin
 google-cloud-speech
@@ -17,8 +19,7 @@ httpx
 ipywidgets
 langchain>=0.0.240
 llama_index
-faster-whisper
-torch
+multion
 psycopg2-binary
 pyaudio
 pydantic
@@ -32,6 +33,7 @@ simpleaudio
 soundfile
 SpeechRecognition
 sqlalchemy
+torch
 typing
 uvicorn
 websockets

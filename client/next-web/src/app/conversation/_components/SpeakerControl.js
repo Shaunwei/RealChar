@@ -15,17 +15,22 @@ import speakerSVG from '@/assets/svgs/speaker.svg';
 import muteSVG from '@/assets/svgs/mute.svg';
 import arrowSVG from '@/assets/svgs/arrowdown.svg';
 
+import { useAppStore } from '@/lib/store';
+
 export default function SpeakerControl({
   isMute,
-  speaker,
-  speakerList,
   toggleMute,
-  handleSpeakerSelect
 }) {
+  const {
+    speakerList,
+    selectedSpeaker,
+    handleSpeakerSelect,
+  } = useAppStore();
+
   return (
     <div className="flex">
-      <ButtonGroup 
-        radius="full" 
+      <ButtonGroup
+        radius="full"
         variant="light"
       >
         <Tooltip content="Speaker">
@@ -52,7 +57,7 @@ export default function SpeakerControl({
         <Dropdown
           placement="bottom"
           classNames={{
-            base: "bg-dropdown p-0"
+            base: "bg-dropdown"
           }}
         >
           <DropdownTrigger aria-label="Dropdown trigger">
@@ -73,23 +78,23 @@ export default function SpeakerControl({
             variant="flat"
             disallowEmptySelection
             selectionMode="single"
-            selectedKeys={speaker}
+            selectedKeys={selectedSpeaker}
             onSelectionChange={handleSpeakerSelect}
             itemClasses={{
-              base: "font-light py-3 pl-2 data-[hover=true]:bg-dropdownHover"
+              base: "font-light"
             }}
           >
           <DropdownSection
             title="Select a speaker"
             classNames={{
               base: "p-0",
-              header: "font-medium text-normal"
+              header: "text-normal font-light"
             }}
             items={speakerList}
           >
-            {(speakerItem) => (
-              <DropdownItem key={speakerItem.key}>
-                {speakerItem.label}
+            {(device) => (
+              <DropdownItem key={device.deviceId} textValue={device.label}>
+                {device.label}
               </DropdownItem>
             )}
           </DropdownSection>

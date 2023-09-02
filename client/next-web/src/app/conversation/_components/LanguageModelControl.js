@@ -3,23 +3,16 @@ import {
   SelectItem
 } from '@nextui-org/select';
 
-import { useState } from 'react';
-// mock data
-import { currentModel, modelList } from '@/util/data';
+import { useAppStore } from '@/lib/store';
 
 export default function LanguageModelControl() {
-  const [model, setModel] = useState(new Set([currentModel]));
-
-  function handleModelChange(e) {
-    setModel(new Set([e.target.value]));
-    // todo
-  }
+  const { models, selectedModel, handleModelChange } = useAppStore();
 
   return (
     <Select
       labelPlacement="outside"
       aria-label="model select"
-      selectedKeys={model}
+      selectedKeys={selectedModel}
       onChange={handleModelChange}
       radius="sm"
       classNames={{
@@ -29,9 +22,12 @@ export default function LanguageModelControl() {
         popover: 'bg-dropdown',
       }}
     >
-      {modelList.map((item) => (
-        <SelectItem key={item.key} textValue={item.label}>
-          <div className="font-light">{item.label}</div>
+      {models.map((item) => (
+        <SelectItem key={item.id} textValue={item.name}>
+          <div className="font-light flex flex-col">
+            <span>{item.name}</span>
+            <span className="text-tiny whitespace-normal text-white/50">{item.tooltip}</span>
+          </div>
         </SelectItem>
       ))}
     </Select>

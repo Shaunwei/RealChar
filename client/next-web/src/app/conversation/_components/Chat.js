@@ -2,19 +2,19 @@ import {
   RiThumbUpLine,
   RiThumbDownLine
 } from 'react-icons/ri';
-import { IconContext } from 'react-icons';
 import { Button } from '@nextui-org/button';
+import { useAppStore } from '@/lib/store';
 
-export default function Chat({ 
-  chatContent 
-}) {
+export default function Chat() {
+  const { chatContent } = useAppStore();
+
   return (
     <div className="flex flex-col gap-5 mt-4">
       {
         chatContent?.map((line) => {
           if (line.from === 'character') {
             return (
-              <div 
+              <div
                 key={line.timeStamp}
                 className="flex flex-row self-start"
               >
@@ -39,7 +39,7 @@ export default function Chat({
             );
           } else {
             return (
-              <div 
+              <div
                 key={line.timeStamp}
                 className="self-end"
               >

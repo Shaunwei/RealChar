@@ -1,9 +1,9 @@
 import Chat from './Chat';
 import InputField from './InputField';
+import { useAppStore } from '@/lib/store';
 
 export default function TextMode({
   isDisplay,
-  chatContent
 }) {
   const display = isDisplay ? 'flex' : 'hidden';
 
@@ -11,7 +11,7 @@ export default function TextMode({
     <section
       className={`flex flex-col gap-6 ${display}`}
     >
-      <Chat chatContent={chatContent} />
+      <Chat/>
       <div>
         <InputField />
       </div>

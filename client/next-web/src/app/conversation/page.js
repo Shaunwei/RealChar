@@ -8,36 +8,37 @@ import TabButton from '@/components/TabButton';
 import Image from 'next/image';
 import exitIcon from '@/assets/svgs/exit.svg';
 import { useState } from 'react';
-
-//mocked data for demo
-import {
-  character,
-  currentModel,
-  modelList,
-  currentSpeaker,
-  speakerList,
-  currentMicrophone,
-  microphoneList,
-  chatContent,
-  currentLanguage
-} from '@/util/data';
+import { useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useAppStore } from '@/lib/store';
+import lz from 'lz-string';
 
 export default function Conversation() {
-  const [ mode, setMode ] = useState('handsFree');
-  const [ model, setModel ] = useState(new Set([currentModel]));
-  const [ speaker, setSpeaker ] = useState(new Set([currentSpeaker]));
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [ mode, setMode ] = useState('text');
+  const { getAudioList, setCharacter } = useAppStore();
+
+  useEffect(() => {
+    const characterString = searchParams.get('character');
+    const character = JSON.parse(lz.decompressFromEncodedURIComponent(characterString));
+    setCharacter(character);
+  }, []);
+
+  useEffect(() => {
+    getAudioList()
+  }, [])
+
   const [ isMute, setIsMute ] = useState(false);
-  const [ microphone, setMicrophone ] = useState(new Set([currentMicrophone]));
-  const [ inputMode, setInputMode ] = useState('keyboard');
 
   function handsFreeMode() {
-    // TODO
     setMode('handsFree');
+    // TODO
   }
 
   function textMode() {
-    // TODO
     setMode('text');
+    // TODO
   }
 
   function toggleMute() {
@@ -45,26 +46,11 @@ export default function Conversation() {
     // TODO
   }
 
-  function handleSpeakerSelect(keys) {
-    setSpeaker(new Set(keys));
-    // TODO
-  }
-
-  function handleMicrophoneSelect(keys) {
-    setMicrophone(new Set(keys));
-    // TODO
-  }
-
-  function handleLanguageModel(keys) {
-    setModel(new Set(keys));
-    // TODO
-  }
-
   return (
     <div className="relative">
       <div className="grid grid-cols-4 gap-5 pt-10">
         <div>
-          <Tooltip 
+          <Tooltip
             content="Exit"
             placement="bottom"
           >
@@ -73,6 +59,7 @@ export default function Conversation() {
               isIconOnly
               radius="full"
               className="hover:opacity-80 h-12 w-12 ml-5 mt-1 bg-button"
+              onPress={() => router.push('/')}
             >
               <Image
                 priority
@@ -84,47 +71,32 @@ export default function Conversation() {
         </div>
         <div className="col-span-2 flex gap-5 border-2 rounded-full p-1 border-tab">
           <TabButton
-            isSelected={mode==='handsFree'}
-            handlePress={handsFreeMode}
-          >
-            Hands-free mode
-          </TabButton>
-          <TabButton
             isSelected={mode==="text"}
             handlePress={textMode}
           >
-            Text mode
+            Text <span className="hidden lg:inline">mode</span>
           </TabButton>
-        </div>  
+          <TabButton
+            isSelected={mode==='handsFree'}
+            handlePress={handsFreeMode}
+          >
+            Hands-free <span className="hidden lg:inline">mode</span>
+          </TabButton>
+        </div>
       </div>
-      <div className="flex flex-col mx-48 mt-10 pt-6 border-t-2 border-divider">
+      <div className="flex flex-col mt-10 pt-6 border-t-2 border-divider md:mx-auto md:w-unit-9xl lg:w-[892px]">
         <SettingBar
           mode={mode}
-          inputMode={inputMode}
-          character={character}
           isMute={isMute}
-          speaker={speaker}
-          speakerList={speakerList}
           toggleMute={toggleMute}
-          handleSpeakerSelect={handleSpeakerSelect}
-          microphone={microphone}
-          microphoneList={microphoneList}
-          handleMicrophoneSelect={handleMicrophoneSelect}
-          model={model}
-          modelList={modelList}
-          handleLanguageModel={handleLanguageModel}
-          chatContent={chatContent}
         />
       </div>
-      <div className="mx-48 mt-6">
-        <HandsFreeMode 
+      <div className="mt-6 md:mx-auto md:w-unit-9xl lg:w-[892px]">
+        <HandsFreeMode
           isDisplay={mode==='handsFree'}
-          character={character}
-          chatContent={chatContent}
         />
-        <TextMode 
+        <TextMode
           isDisplay={mode==="text"}
-          chatContent={chatContent}
         />
       </div>
     </div>

@@ -7,6 +7,9 @@
 import { isIP } from 'is-ip';
 
 export const getHostName = () => {
+  if (process.env.REACT_APP_API_HOST) {
+    return process.env.REACT_APP_API_HOST;
+  }
   var currentHost = window.location.host;
   var parts = currentHost.split(':');
   var hostname = parts[0];

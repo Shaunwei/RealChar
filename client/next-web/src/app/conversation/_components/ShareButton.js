@@ -21,10 +21,7 @@ import ChatPreview from './ChatPreview';
 
 import { useState } from 'react';
 
-export default function ShareButton({
-  character,
-  chatContent
-}) {
+export default function ShareButton() {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [shareContent, setShareContent] = useState('');
   const [isCopied, setIsCopied] = useState(false);
@@ -35,14 +32,24 @@ export default function ShareButton({
     onOpen();
   }
 
-  function copyLink() {
+  function copyLink(keyword) {
+    switch(keyword) {
+      case 'character':
+        navigator.clipboard.writeText(window.location.href);
+        break;
+      case 'chat':
+        // todo
+        break;
+      default:
+        break;
+    }
     setIsCopied(true);
     // todo
   }
 
   return (
     <>
-      <Dropdown 
+      <Dropdown
         placement="bottom"
         classNames={{
           base: "bg-dropdown p-0"
@@ -86,7 +93,7 @@ export default function ShareButton({
           footer: 'justify-center'
         }}
       >
-        <ModalContent>        
+        <ModalContent>
           {shareContent === 'character' && (
             <>
             <ModalHeader>
@@ -100,7 +107,7 @@ export default function ShareButton({
                 <Button
                   radius="none"
                   className="w-full bg-real-contrastBlue"
-                  onPress={copyLink}
+                  onPress={() => copyLink('character')}
                 >
                   <AiOutlineLink/>Copy link
                 </Button>
@@ -116,17 +123,14 @@ export default function ShareButton({
               Share Chat
             </ModalHeader>
             <ModalBody>
-              <ChatPreview
-                character={character}
-                chatContent={chatContent}
-              />
+              <ChatPreview/>
             </ModalBody>
             <ModalFooter>
               {!isCopied ? (
                 <Button
                   radius="none"
                   className="w-full bg-real-contrastBlue"
-                  onPress={copyLink}
+                  onPress={() => copyLink('chat')}
                 >
                   <AiOutlineLink />Copy link
                 </Button>

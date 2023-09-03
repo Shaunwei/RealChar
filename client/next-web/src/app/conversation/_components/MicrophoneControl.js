@@ -5,7 +5,7 @@ import {
   DropdownSection,
   DropdownItem
 } from '@nextui-org/dropdown';
-import { 
+import {
   Button,
   ButtonGroup
 } from '@nextui-org/button'
@@ -15,46 +15,39 @@ import microphoneSVG from '@/assets/svgs/microphone.svg';
 import arrowSVG from '@/assets/svgs/arrowdown.svg';
 import micOffSVG from '@/assets/svgs/mic_off.svg';
 
-export default function MicrophoneControl({
-  isDisabled,
-  microphone,
-  microphoneList,
-  handleMicrophoneSelect
-}) {
+import { useAppStore } from '@/lib/store';
+
+export default function MicrophoneControl() {
+  const {
+    microphoneList,
+    selectedMicrophone,
+    handleMicrophoneSelect,
+  } = useAppStore();
+
   return (
     <div className="flex">
       <ButtonGroup radius="full" variant="light">
         <Tooltip content="Microphone">
           <Button
             isIconOnly
-            isDisabled={isDisabled}
             className="hover:bg-button"
           >
-            {isDisabled ? (
-              <Image
-                priority
-                src={micOffSVG}
-                alt="microphone off"
-              />
-            ) : (
-              <Image
-                priority
-                src={microphoneSVG}
-                alt="microphone"
-              />
-            )}
+            <Image
+              priority
+              src={microphoneSVG}
+              alt="microphone"
+            />
           </Button>
         </Tooltip>
         <Dropdown
           placement="bottom"
           classNames={{
-            base: "bg-dropdown p-0"
+            base: "bg-dropdown"
           }}
         >
           <DropdownTrigger aria-label="Dropdown trigger">
             <Button
               isIconOnly
-              isDisabled={isDisabled}
               className="min-w-[20px] w-5"
             >
               <Image
@@ -70,22 +63,22 @@ export default function MicrophoneControl({
             variant="flat"
             disallowEmptySelection
             selectionMode="single"
-            selectedKeys={microphone}
+            selectedKeys={selectedMicrophone}
             onSelectionChange={handleMicrophoneSelect}
             itemClasses={{
-              base: "font-light py-3 pl-2 data-[hover=true]:bg-dropdownHover"
+              base: "font-light"
             }}
           >
             <DropdownSection
               title="Select a microphone"
               classNames={{
                 base: "p-0",
-                header: "font-medium text-normal"
+                header: "text-normal font-light"
               }}
               items={microphoneList}
             >
               {(microphoneItem) => (
-                <DropdownItem key={microphoneItem.key}>
+                <DropdownItem key={microphoneItem.deviceId}>
                   {microphoneItem.label}
                 </DropdownItem>
               )}

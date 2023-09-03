@@ -8,19 +8,23 @@ import {
   MdOutlineVolumeMute,
   MdOutlineVolumeUp,
 } from 'react-icons/md';
-import { useState } from 'react';
-
 import Slider from '@/components/Slider';
 
-export default function AudioPanel({
-  microphone,
-  microphoneList,
-  handleMicrophoneSelect,
-  speaker,
-  speakerList,
-  handleSpeakerSelect,
-}) {
-  //todo
+import { useState } from 'react';
+import { useAppStore } from '@/lib/store';
+
+export default function AudioPanel() {
+  const {
+    speakerList,
+    microphoneList,
+    selectedSpeaker,
+    selectedMicrophone,
+    handleSpeakerSelect,
+    handleMicrophoneSelect,
+   } = useAppStore();
+
+// get/set volume
+// testing audio
   const currentOutputVolume = 30;
   const currentInputVolume = 50;
 
@@ -67,7 +71,7 @@ export default function AudioPanel({
           <Select
             labelPlacement="outside"
             aria-label="speaker select"
-            selectedKeys={speaker}
+            selectedKeys={selectedSpeaker}
             onSelectionChange={handleSpeakerSelect}
             radius="sm"
             size="lg"
@@ -79,7 +83,7 @@ export default function AudioPanel({
             }}
           >
             {speakerList.map((item) => (
-              <SelectItem key={item.key} textValue={item.label}>
+              <SelectItem key={item.deviceId} textValue={item.label}>
                 <div className="text-lg font-light">{item.label}</div>
               </SelectItem>
             ))}
@@ -104,7 +108,7 @@ export default function AudioPanel({
             <Progress color="success" aria-label="output level" value={60} className="max-w-md"
               classNames={{
                 track: "rounded-none h-5",
-                indicator: "rounded-none h-5 bg-success"  
+                indicator: "rounded-none h-5 bg-success"
               }}
             />
           </div>
@@ -127,7 +131,7 @@ export default function AudioPanel({
           <Select
             labelPlacement="outside"
             aria-label="microphone select"
-            selectedKeys={microphone}
+            selectedKeys={selectedMicrophone}
             onSelectionChange={handleMicrophoneSelect}
             radius="sm"
             size="lg"
@@ -139,7 +143,7 @@ export default function AudioPanel({
             }}
           >
             {microphoneList.map((item) => (
-              <SelectItem key={item.key} textValue={item.label}>
+              <SelectItem key={item.deviceId} textValue={item.label}>
                 <div className="text-lg font-light">{item.label}</div>
               </SelectItem>
             ))}

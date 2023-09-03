@@ -25,14 +25,14 @@ def docker_build(name, rebuild):
         subprocess.run(["docker", "build", "-t", name, "."])
     else:
         click.secho(
-            f"Docker image: {name} already exists. Skipping build. " + \
+            f"Docker image: {name} already exists. Skipping build. " +
             "To rebuild, use --rebuild option", fg='yellow')
 
 
 @click.command()
-@click.option('--name', default="realtime-ai-character", 
+@click.option('--name', default="realtime-ai-character",
               help='The name of the Docker image to run.')
-@click.option('--db-file', default=None, 
+@click.option('--db-file', default=None,
               help='Path to the database file to mount inside the container.')
 def docker_run(name, db_file):
     click.secho(f"Running Docker image: {name}...", fg='green')
@@ -51,7 +51,7 @@ def docker_run(name, db_file):
 
 
 @click.command()
-@click.option('--name', default="realtime-ai-character", 
+@click.option('--name', default="realtime-ai-character",
               help='The name of the Docker image to delete.')
 def docker_delete(name):
     if image_exists(name):
@@ -66,9 +66,9 @@ def docker_delete(name):
 def run_uvicorn(args):
     click.secho("Running uvicorn server...", fg='green')
     subprocess.run(["uvicorn", "realtime_ai_character.main:app",
-                   "--ws-ping-interval", "60", 
-                   "--ws-ping-timeout", "60", 
-                   "--timeout-keep-alive", "60"] + list(args))
+                   "--ws-ping-interval", "60",
+                    "--ws-ping-timeout", "60",
+                    "--timeout-keep-alive", "60"] + list(args))
 
 
 @click.command()
@@ -79,6 +79,34 @@ def web_build():
     click.secho("Web app dependencies installed.", fg='green')
     subprocess.run(["npm", "run", "build"], cwd="client/web")
     click.secho("Web app built.", fg='green')
+
+
+@click.command()
+@click.option('--file', '-f', default='client/next-web/.env', help='Path to the .env file.')
+@click.option('--image-name', '-i', default='realchar-next-web', help='Name of the Docker image.')
+def docker_next_web_build(file, image_name):
+    """Build docker image using client/next-web/.env file for build arguments."""
+    build_args = ""
+
+    if not os.path.exists(file):
+        click.echo(f"File '{file}' does not exist.")
+        return
+
+    with open(file, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#"):
+                key, value = line.split("=", 1)
+                build_args += f" --build-arg {key}={value}"
+
+    docker_command = f"docker build {build_args} -t {image_name} client/next-web"
+    click.echo("Executing: " + docker_command)
+    result = subprocess.run(docker_command.split())
+
+    if result.returncode == 0:
+        click.secho("Docker image built successfully.", fg='green')
+    else:
+        click.secho("Failed to build Docker image.", fg='red')
 
 
 def image_exists(name):
@@ -92,6 +120,7 @@ cli.add_command(docker_run)
 cli.add_command(docker_delete)
 cli.add_command(run_uvicorn)
 cli.add_command(web_build)
+cli.add_command(docker_next_web_build)
 
 
 if __name__ == '__main__':

@@ -12,12 +12,14 @@ config = types.SimpleNamespace(**{
         'sample_rate_hertz': 48000,
         'language_code': 'en-US',
         'max_alternatives': 1,
+        'enable_automatic_punctuation': True,
     },
     'terminal': {
         'encoding': speech.RecognitionConfig.AudioEncoding.LINEAR16,
         'sample_rate_hertz': 44100,
         'language_code': 'en-US',
         'max_alternatives': 1,
+        'enable_automatic_punctuation': True,
     },
 })
 

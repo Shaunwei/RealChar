@@ -5,14 +5,14 @@
  * created by Lynchee on 7/16/23
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import './style.css';
 import { useNavigate } from 'react-router-dom';
 import { TbPhoneCall } from 'react-icons/tb';
 import { MdCallEnd } from 'react-icons/md';
 import { TbMessageChatbot, TbPower, TbShare2 } from 'react-icons/tb';
 import IconButton from '../Common/IconButton';
-
+import { setAnalyser } from '../../components/AvatarView';
 // utils
 import { playAudios } from '../../utils/audioUtils';
 
@@ -24,19 +24,36 @@ const CallView = ({
   handleStopCall,
   handleContinueCall,
   audioQueue,
+  audioContextRef,
+  audioSourceNodeRef,
   setIsPlaying,
   handleDisconnect,
   setIsCallView,
   sessionId,
+  handleFirstInteractionAudio,
 }) => {
+  const { initialize, setInitialize } = useState(true);
   const navigate = useNavigate();
-  const audioContextRef = useRef(null);
 
   useEffect(() => {
-    if (isPlaying) {
-      playAudios(audioContextRef, audioPlayer, audioQueue, setIsPlaying);
+    if (isPlaying && audioContextRef.current) {
+      playAudios(
+        audioContextRef,
+        audioPlayer,
+        audioQueue,
+        setIsPlaying,
+        handleFirstInteractionAudio,
+        audioSourceNodeRef,
+        initialize,
+        setInitialize
+      );
     }
   }, [isPlaying]);
+
+  useEffect(() => {
+    if (!audioContextRef.current) return;
+    setAnalyser(audioContextRef.current);
+  }, [audioContextRef.current]);
 
   const handlePowerOffClick = () => {
     navigate('/');

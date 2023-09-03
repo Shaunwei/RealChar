@@ -1,6 +1,8 @@
 import os
 from abc import ABC, abstractmethod
 import requests
+import multion
+import asyncio
 
 from langchain.callbacks.base import AsyncCallbackHandler
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -120,29 +122,15 @@ class QuivrAgent:
 
     def question(self, query: str, apiKey: str, brainId: str) -> str:
         try:
-            # 1. Create new chat
-            url = "https://api.quivr.app/chat"
-            headers = {"Authorization": f"Bearer {apiKey}"}
-            data = {"name": "Chat from RealChar"}
-
-            response = requests.post(url, headers=headers, json=data)
-            response.raise_for_status()
-
-            chat_id = response.json()["chat_id"]
-
-            # 2. Ask question
-            url = f"https://api.quivr.app/chat/{chat_id}/question?brain_id={brainId}"
+            url = f"https://api.quivr.app/brains/{brainId}/question_context"
             headers = {"Authorization": f"Bearer {apiKey}"}
             data = {
-                "model": "gpt-3.5-turbo-16k",
-                "temperature": 0.5,
                 "question": query,
-                "max_tokens": 512,
             }
 
             response = requests.post(url, headers=headers, json=data)
             response.raise_for_status()
-            quivr_result = response.json()["assistant"]
+            quivr_result = response.json()["context"]
 
             quivr_context = '\n'.join([
                 '---',
@@ -157,6 +145,26 @@ class QuivrAgent:
         except Exception as e:
             logger.error(f'Error when querying quivr: {e}')
         return ''
+
+class MultiOnAgent:
+    def __init__(self):
+        self.init = False
+
+    async def action(self, query: str) -> str:
+        if not self.init:
+            logger.info("Initializing multion agent...")
+            multion.login()
+            self.init = True
+        try:
+            await asyncio.wait_for(asyncio.to_thread(multion.new_session, {"input": query}),
+                                   timeout=30)
+            return ("This query has been handled by a MutliOn agent successfully. "
+                    "The result has been delivered to the user. Do not try to complete this "
+                    "request. Instead, inform user about the successful execution.")
+        except Exception as e:
+            logger.error(f'Error when querying multion: {e}')
+            return ("The query was attempted by a MutliOn agent, but failed. Inform user about "
+                    "this failure.")
 
 class LLM(ABC):
     @abstractmethod

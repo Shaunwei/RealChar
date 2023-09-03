@@ -45,7 +45,7 @@ const useMediaRecorder = (
             }
             audioSent.current = false;
             if (callActive.current) {
-              startRecording();
+              setIsRecording(true);
             }
           }
         };

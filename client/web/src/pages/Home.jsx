@@ -12,6 +12,7 @@ import lz from 'lz-string';
 import Characters from '../components/Characters';
 import Button from '@mui/material/Button';
 import { getHostName } from '../utils/urlUtils';
+import { signInWithGoogle } from '../components/Auth/SignIn';
 
 const Home = ({
   isMobile,
@@ -23,6 +24,8 @@ const Home = ({
   setCharacterConfirmed,
   characterConfirmed,
   token,
+  setToken,
+  isLoggedIn,
 }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -63,6 +66,18 @@ const Home = ({
     navigate('/settings?character=' + compressedCharacter);
   };
 
+  const handleCreateCharacter = () => {
+    if (!isLoggedIn.current) {
+      signInWithGoogle(isLoggedIn, setToken).then(() => {
+        if (isLoggedIn.current) {
+          navigate('/create');
+        }
+      });
+    } else {
+      navigate('/create');
+    }
+  };
+
   return (
     <div className='home'>
       {loading ? (
@@ -79,6 +94,14 @@ const Home = ({
             isPlaying={isPlaying}
             characterConfirmed={characterConfirmed}
           />
+          <Button
+            variant='contained'
+            color='primary'
+            onClick={handleCreateCharacter}
+            sx={{ marginBottom: '20px' }}
+          >
+            Create Your Character
+          </Button>
 
           <Button
             variant='contained'

@@ -1,7 +1,7 @@
-# <img src="./realtime_ai_character/static/realchar.svg" height="24px" style="padding-top:4px"/>RealChar. - Your Realtime AI Character
+# <img src="https://storage.googleapis.com/assistly/static/realchar/realchar.svg" height="24px" style="padding-top:4px"/>RealChar. - Your Realtime AI Character
 <br/>
 <div align="center">
-    <img src="./realtime_ai_character/static/logo.png" alt="RealChar-logo" width="80%"  style="padding: 40px"/>
+    <img src="https://storage.googleapis.com/assistly/static/realchar/logo.png" alt="RealChar-logo" width="80%"  style="padding: 40px"/>
 </div>
 <br/>
 <p align="center">
@@ -33,6 +33,8 @@ Try our site at [RealChar.ai](https://realchar.ai/)
 
 (We are also beta-testing our iOS mobile app📱! Sign up [here](https://testflight.apple.com/join/JA6p9sZQ))
 
+Not sure how to pronounce RealChar? Listen to this 👉 [audip](https://github.com/Shaunwei/RealChar/assets/6148473/45d4773c-eb4f-41e5-a162-f9513d650b76)
+
 ### Demo 1 - with AI Elon about cage fight!
 
 https://github.com/Shaunwei/RealChar/assets/5101573/5de0b023-6cf3-4947-84cb-596f429d109e
@@ -55,7 +57,7 @@ __Demo settings: Web, GPT4, ElevenLabs with voice clone, Chroma, Google Speech t
 
 ## 🔬 Tech stack
 <div align="center">
-    <img src="https://storage.googleapis.com/assistly/static/realchar/techstack.png" alt="RealChar-tech-stack" width="100%"  style="padding: 20px"/>
+    <img src="https://storage.googleapis.com/assistly/static/realchar/techstackv003.jpeg" alt="RealChar-tech-stack" width="100%"  style="padding: 20px"/>
 </div>
 
 - ✅**Web**: [React JS](https://react.dev/), [Vanilla JS](http://vanilla-js.com/), [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
@@ -214,6 +216,10 @@ For cloud deployment options and customizing your own embeddding model, check ou
    ```
 - **Step 6**. Run server with `cli.py` or use uvicorn directly
     ```sh
+    # Build the web frontend.
+    python cli.py web-build
+    ```
+    ```sh
     python cli.py run-uvicorn
     # or
     uvicorn realtime_ai_character.main:app
@@ -221,14 +227,22 @@ For cloud deployment options and customizing your own embeddding model, check ou
 - **Step 7**. Run client:
     - Use **GPT4** for better conversation and **Wear headphone** for best audio(avoid echo)
     - There are two ways to access the web client:
-        - **Option 1**: Running the client in React.
+        - **Option 1** Open your web browser and navigate to http://localhost:8000 (NOT 0.0.0.0:8000)
+          - **Make sure you have ran `python cli.py web-build` before starting the server.**
+        - **Option 2**: Running the client in React.
             ```sh
             cd client/web
             npm install
             npm start
             ```
             After running these commands, a local development server will start, and your default web browser will open a new tab/window pointing to this server (usually http://localhost:3000).
-        - **Option 2** (legacy frontend): Open your web browser and navigate to http://localhost:8000 (NOT 0.0.0.0:8000)            
+        - **Option 3 (experimental)**: Running the client in Nextjs.
+            ```sh
+            cd client/next-web
+            npm install
+            npm run dev
+            ```
+            After running these commands, a local development server will start, and your default web browser will open a new tab/window pointing to this server (usually http://localhost:3000).
     - (Optional) Terminal client: Run the following command in your terminal
     ```sh
     python client/cli.py
@@ -265,9 +279,17 @@ Note if you want to remotely connect to a RealChar server, SSL set up is require
 
 <br/>
 
-## 🆕! LangSmith integration
+## 🆕! Anyscale and LangSmith integration
 <details><summary>👇click me</summary>
 
+### Anyscale
+You can now use [Anyscale Endpoint](https://app.endpoints.anyscale.com/landing) to serve Llama-2 models in your RealChar easily! Simply register an account with Anyscale Endpoint. Once you get the API key, set this environment variable in your `.env` file:
+```
+ANYSCALE_ENDPOINT_API_KEY=<your API Key>
+```
+By default, we show the largest servable Llama-2 model (70B) in the Web UI. You can change the model name (`meta-llama/Llama-2-70b-chat-hf`) to other models, e.g. 13b or 7b versions.
+
+### LangSmith
 If you have access to LangSmith, you can edit these environment variables to enable:
 ```
 LANGCHAIN_TRACING_V2=false # default off
@@ -282,7 +304,7 @@ And it should work out of the box.
 <br/>
 
 ## 📍 Roadmap
-- [ ] Launch v0.0.3
+- [x] Launch v0.0.3
 - [ ] Create a new character via web UI
 - [ ] Add additional tts service
 - [ ] Better UI/UX for home page

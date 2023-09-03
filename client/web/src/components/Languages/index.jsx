@@ -18,6 +18,9 @@ const Languages = ({ preferredLanguage, setPreferredLanguage }) => {
     'Italian',
     'Polish',
     'Portuguese',
+    'Chinese',
+    'Japanese',
+    'Korean',
   ];
 
   return (

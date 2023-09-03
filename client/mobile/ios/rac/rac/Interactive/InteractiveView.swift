@@ -44,7 +44,7 @@ struct InteractiveView: View {
                                  isExpectingUserInput: .init(get: { voiceState == .idle(streamingEnded: true) }, set: { _ in }),
                                  onSendUserMessage: { message in
                     voiceState = .idle(streamingEnded: false)
-                    messages.append(.init(id: UUID(), role: .user, content: message))
+                    messages.append(.init(id: UUID().uuidString, role: .user, content: message, finalized: true))
                     webSocket.send(message: message)
                     complexSuccess()
                 })
@@ -59,19 +59,31 @@ struct InteractiveView: View {
                                  speechRecognizer: SpeechRecognizer(locale: preferenceSettings.languageOption.locale),
                                  onUpdateUserMessage: { message in
                     if messages.last?.role == .user {
-                        if !message.isEmpty {
-                            messages[messages.count - 1].content = message
-                        } else {
-                            messages.remove(at: messages.count - 1)
+                        if !messages[messages.count - 1].finalized {
+                            if !message.isEmpty {
+                                messages[messages.count - 1].content = message
+                            } else {
+                                messages.remove(at: messages.count - 1)
+                            }
                         }
                     } else {
                         if openMic {
                             voiceState = .listeningToUser
                         }
-                        messages.append(.init(id: UUID(), role: .user, content: message))
+                        messages.append(.init(id: UUID().uuidString, role: .user, content: message))
                     }
                 },
                                  onSendUserMessage: { message in
+                    if messages.last?.role == .user {
+                        if !message.isEmpty {
+                            messages[messages.count - 1].content = message
+                            messages[messages.count - 1].finalized = true
+                        } else {
+                            messages.remove(at: messages.count - 1)
+                        }
+                    } else {
+                        messages.append(.init(id: UUID().uuidString, role: .user, content: message, finalized: true))
+                    }
                     webSocket.send(message: message)
                     simpleSuccess()
                 },
@@ -147,6 +159,15 @@ struct InteractiveView: View {
                 let messageNewMatches = messageNewRegex.matches(in: message, options: [], range: NSRange(location: 0, length: message.utf16.count))
 
                 if message == "[end]\n" || !messageNewMatches.isEmpty {
+                    if messages.last?.role == .assistant &&
+                        !messageNewMatches.isEmpty &&
+                        !messages[messages.count - 1].finalized {
+                        messages[messages.count - 1].finalized = true
+                        if let nsRange = messageNewMatches.first?.range(at: 1), let range = Range(nsRange, in: message) {
+                            let messageId = String(message[range])
+                            messages[messages.count - 1].id = messageId
+                        }
+                    }
                     if case .idle(let streamingEnded) = voiceState, !streamingEnded {
                         voiceState = .idle(streamingEnded: true)
                     }
@@ -174,7 +195,7 @@ struct InteractiveView: View {
                         voiceState = .characterSpeaking(characterImageUrl: character.imageUrl, thinking: false)
                     }
                     streamingEnded = false
-                    messages.append(ChatMessage(id: UUID(), role: .assistant, content: message))
+                    messages.append(ChatMessage(id: UUID().uuidString, role: .assistant, content: message))
                     lightHapticFeedback()
                 }
             }
@@ -185,7 +206,7 @@ struct InteractiveView: View {
             }
             webSocket.onErrorReceived = { _ in
                 if messages.last?.content != Constants.serverError {
-                    messages.append(.init(id: UUID(), role: .assistant, content: Constants.serverError))
+                    messages.append(.init(id: UUID().uuidString, role: .assistant, content: Constants.serverError, finalized: true))
                     simpleError()
                 }
             }

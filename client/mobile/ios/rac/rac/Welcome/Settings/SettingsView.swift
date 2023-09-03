@@ -53,7 +53,7 @@ enum LlmOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Codable 
 
 enum LanguageOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Codable {
 
-    case english, spanish, french, german, italian, portuguese, polish, hindi
+    case english, spanish, french, german, italian, portuguese, polish, hindi, chinese, japanese, korean
 
     init?(rawValue: String) {
         for option in LanguageOption.allCases {
@@ -84,6 +84,12 @@ enum LanguageOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Cod
             return "pl-PL"
         case .hindi:
             return "hi-IN"
+        case .chinese:
+            return "zh-CN"
+        case .japanese:
+            return "ja-JP"
+        case .korean:
+            return "ko-KR"
         }
     }
 
@@ -105,6 +111,12 @@ enum LanguageOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Cod
             return "Polish"
         case .hindi:
             return "Hindi"
+        case .chinese:
+            return "Chinese"
+        case .japanese:
+            return "Japanese"
+        case .korean:
+            return "Korean"
         }
     }
 
@@ -113,12 +125,12 @@ enum LanguageOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Cod
     }
 }
 
-struct MemoryRequest: Codable {
+struct QuivrInfoRequest: Codable {
     let quivrApiKey: String
     let quivrBrainId: String
 }
 
-struct MemoryResponse: Codable {
+struct QuivrInfoResponse: Codable {
     let brainId: String
     let brainName: String
 }
@@ -283,7 +295,7 @@ struct SettingsView: View {
                         return
                     }
                     isRegisteringMemory = true
-                    let url = serverUrl.appending(path: "memory")
+                    let url = serverUrl.appending(path: "quivr_info")
                     var request = URLRequest(url: url)
                     do {
                         request.httpMethod = "POST"
@@ -291,13 +303,13 @@ struct SettingsView: View {
                         request.setValue("Bearer \(userToken)", forHTTPHeaderField: "Authorization")
                         let encoder = JSONEncoder()
                         encoder.keyEncodingStrategy = .convertToSnakeCase
-                        let memoryRequest = try encoder.encode(MemoryRequest(quivrApiKey: newValue.apiKey, quivrBrainId: newValue.brainId))
-                        request.httpBody = memoryRequest
+                        let quivrInfoRequest = try encoder.encode(QuivrInfoRequest(quivrApiKey: newValue.apiKey, quivrBrainId: newValue.brainId))
+                        request.httpBody = quivrInfoRequest
                         let (data, _) = try await URLSession.shared.data(for: request)
                         let decoder = JSONDecoder()
                         decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        let memoryResponse = try decoder.decode(MemoryResponse.self, from: data)
-                        preferenceSettings.quivrMeta = .init(apiKey: newValue.apiKey, brainId: memoryResponse.brainId, brainName: memoryResponse.brainName)
+                        let quivrInfoResponse = try decoder.decode(QuivrInfoResponse.self, from: data)
+                        preferenceSettings.quivrMeta = .init(apiKey: newValue.apiKey, brainId: quivrInfoResponse.brainId, brainName: quivrInfoResponse.brainName)
                         isRegisteringMemory = false
                     } catch {
                         print(error)

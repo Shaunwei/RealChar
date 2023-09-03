@@ -4,11 +4,15 @@ import {
   Button,
 } from '@nextui-org/react';
 import { MdInfoOutline } from 'react-icons/md';
-import { useState } from 'react';
+import { useAppStore } from '@/lib/store';
 
 export default function EnhancePanel() {
-  const [isGoogleSelected, setIsGoogleSelected] = useState(false);
-  const [isQuivrSelected, setIsQuivrSelected] = useState(false);
+  const {
+    enableGoogle,
+    enableQuivr,
+    handleGoogle,
+    handleQuivr
+  } = useAppStore();
 
   return (
     <div className="flex flex-col gap-4">
@@ -25,8 +29,8 @@ export default function EnhancePanel() {
           </Tooltip>
         </div>
         <Switch
-          isSelected={isGoogleSelected}
-          onValueChange={setIsGoogleSelected}
+          isSelected={enableGoogle}
+          onValueChange={handleGoogle}
           aria-label="google search"
         />
       </div>
@@ -40,8 +44,8 @@ export default function EnhancePanel() {
           </Tooltip>
         </div>
         <Switch
-          isSelected={isQuivrSelected}
-          onValueChange={setIsQuivrSelected}
+          isSelected={enableQuivr}
+          onValueChange={handleQuivr}
           aria-label="google search"
         />
       </div>

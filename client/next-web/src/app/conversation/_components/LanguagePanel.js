@@ -3,31 +3,15 @@ import {
   SelectItem,
 } from '@nextui-org/react';
 import { MdInfo } from 'react-icons/md';
-import { useState } from 'react';
-//mock data
-import {currentLanguage} from '@/util/data';
+
+import { useAppStore } from '@/lib/store';
 
 export default function LanguagePanel() {
-  const languages = [
-    'English',
-    'Spanish',
-    'French',
-    'German',
-    'Hindi',
-    'Italian',
-    'Polish',
-    'Portuguese',
-    'Chinese',
-    'Japanese',
-    'Korean',
-  ];
-
-  const [language, setLanguage] = useState(new Set(['English']));
-
-  function handleLanguageChange(e) {
-    setLanguage(new Set([e.target.value]));
-    // todo
-  }
+  const {
+    preferredLanguage,
+    languageList,
+    handleLanguageChange
+  } = useAppStore();
 
   return (
     <div className="flex flex-col gap-4">
@@ -41,7 +25,7 @@ export default function LanguagePanel() {
         <Select
           labelPlacement="outside"
           aria-label="language select"
-          selectedKeys={language}
+          selectedKeys={preferredLanguage}
           onChange={handleLanguageChange}
           radius="sm"
           size="lg"
@@ -51,7 +35,7 @@ export default function LanguagePanel() {
             popover: 'bg-dropdown',
           }}
         >
-          {languages.map((item) => (
+          {languageList.map((item) => (
             <SelectItem key={item} textValue={item}>
               <div className="text-lg font-light">{item}</div>
             </SelectItem>

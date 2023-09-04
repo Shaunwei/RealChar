@@ -21,7 +21,7 @@ export default function ExploreTab({ characters, isDisplay }) {
               <Avatar
                 radius="sm"
                 src={character.image_url}
-                className="w-full h-full"
+                className="w-44 h-44 mx-auto mt-2"
               />
               <p className="name text-base text-center mt-2 font-medium">{character.name}</p>
               <p className="intro text-xs text-center mt-2 font-light">

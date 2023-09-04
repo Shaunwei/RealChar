@@ -52,6 +52,11 @@ module.exports = {
           warning: '#FAAD14',
         }
       }
+    },
+    screens: {
+      'sm': { 'max': '767px' },
+      'md': { 'min': '768px' },
+      'lg': { 'min': '1024px' },
     }
   })],
 }

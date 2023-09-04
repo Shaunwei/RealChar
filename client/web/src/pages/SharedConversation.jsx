@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { isIP } from 'is-ip';
 import Avatar from '@mui/material/Avatar';
 import useAvatarView from '../components/AvatarView';
-import { getHostName } from '../utils/urlUtils';
+import { getHostName, getScheme } from '../utils/urlUtils';
 import { analytics } from '../utils/firebase';
 import { logEvent } from 'firebase/analytics';
 
@@ -30,7 +30,7 @@ const SharedConversation = () => {
     setLoading(true);
 
     // Get host
-    const scheme = window.location.protocol;
+    const scheme = getScheme();
     var newCharactersHost = getHostName() + '/characters';
     var newSessionHistoryHost =
       getHostName() + '/session_history?session_id=' + sessionId;

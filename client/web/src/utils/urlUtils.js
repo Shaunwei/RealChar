@@ -17,6 +17,10 @@ export const getHostName = () => {
     newPort = '8001';
   }
 
+  if (process.env.REACT_APP_API_HOST) {
+    return process.env.REACT_APP_API_HOST.split('//')[1];
+  }
+
   if (!(hostname === 'localhost' || isIP(hostname))) {
     // Remove www. from hostname
     hostname = hostname.replace('www.', '');
@@ -25,4 +29,11 @@ export const getHostName = () => {
   }
   var newHost = hostname + ':' + newPort;
   return newHost;
+};
+
+export const getScheme = () => {
+  if (process.env.REACT_APP_API_HOST) {
+    return process.env.REACT_APP_API_HOST.split('//')[0];
+  }
+  return window.location.protocol;
 };

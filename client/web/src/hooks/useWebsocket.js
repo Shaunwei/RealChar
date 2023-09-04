@@ -9,7 +9,7 @@ import { useRef, useCallback } from 'react';
 import { isIP, isIPv4 } from 'is-ip';
 import { languageCode } from './languageCode';
 import { v4 as uuidv4 } from 'uuid';
-import { getHostName } from '../utils/urlUtils';
+import { getHostName, getScheme } from '../utils/urlUtils';
 
 const useWebsocket = (
   token,
@@ -32,7 +32,7 @@ const useWebsocket = (
       }
       const sessionId = uuidv4().replace(/-/g, '');
       setSessionId(sessionId);
-      const ws_scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+      const ws_scheme = getScheme() === 'https:' ? 'wss' : 'ws';
       // Get the current host value
       // Generate the new host value with the same IP but different port
       var newHost = getHostName();

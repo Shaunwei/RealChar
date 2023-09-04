@@ -1,6 +1,6 @@
-import { getHostName } from '../utils/urlUtils';
+import { getHostName, getScheme } from '../utils/urlUtils';
 
-const scheme = window.location.protocol;
+const scheme = getScheme();
 const fileUrlMap = new Map();
 
 async function uploadfile(file, accessToken) {

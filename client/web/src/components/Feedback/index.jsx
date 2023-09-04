@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import Button from '../Common/Button';
 import './style.css';
-import { getHostName } from '../../utils/urlUtils';
+import { getHostName, getScheme } from '../../utils/urlUtils';
 
 Modal.setAppElement('#root');
 
@@ -29,7 +29,7 @@ function Feedback({ messageId, token }) {
     console.log(messageId);
     console.log(feedback, comment);
     // Get host
-    const scheme = window.location.protocol;
+    const scheme = getScheme();
     const url = scheme + '//' + getHostName() + '/feedback';
     fetch(url, {
       method: 'POST',

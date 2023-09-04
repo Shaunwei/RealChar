@@ -11,7 +11,7 @@ import lz from 'lz-string';
 
 import Characters from '../components/Characters';
 import Button from '@mui/material/Button';
-import { getHostName } from '../utils/urlUtils';
+import { getHostName, getScheme } from '../utils/urlUtils';
 import { signInWithGoogle } from '../components/Auth/SignIn';
 
 const Home = ({
@@ -35,7 +35,7 @@ const Home = ({
     setLoading(true);
 
     // Get host
-    const scheme = window.location.protocol;
+    const scheme = getScheme();
     const url = scheme + '//' + getHostName() + '/characters';
     let headers = {
       'Content-Type': 'application/json',

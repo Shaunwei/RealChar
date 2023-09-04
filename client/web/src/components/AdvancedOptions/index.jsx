@@ -17,12 +17,12 @@ import IconButton from '@mui/material/IconButton';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CustomTooltip from '../Common/CustomTooltip';
 import { signInWithGoogle } from '../Auth/SignIn';
-import { getHostName } from '../../utils/urlUtils';
+import { getHostName, getScheme } from '../../utils/urlUtils';
 import { useCallback, useState } from 'react';
 import { TextField } from '@mui/material';
 
 const updateQuivrInfo = async (token, quivrApiKey, quivrBrainId) => {
-  const scheme = window.location.protocol;
+  const scheme = getScheme();
   const url = scheme + '//' + getHostName() + '/quivr_info';
   // make a POST request to the URL with body of quivr_api_key and quivr_brain_id
   const response = await fetch(url, {
@@ -131,7 +131,7 @@ const AdvancedOptions = ({
       if (event.target.checked) {
         const fetchQuivrApiKey = async () => {
           if (isLoggedIn.current) {
-            const scheme = window.location.protocol;
+            const scheme = getScheme();
             const url = scheme + '//' + getHostName() + '/quivr_info';
             const quivrInfoResponse = await fetch(url, {
               headers: {

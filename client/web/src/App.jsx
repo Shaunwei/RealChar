@@ -254,7 +254,14 @@ const App = () => {
             stopAudioPlayback();
             startRecording();
           },
-          stopRecording
+          () => {
+            // Stops recording and send interim audio clip to server.
+            send('[&Speech]');
+            stopRecording();
+          },
+          () => {
+            send('[SpeechFinished]');
+          }
         );
         harkInitialized.current = true;
       }

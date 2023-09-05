@@ -56,21 +56,21 @@ class Whisper(Singleton, SpeechToText):
             self.wf.setsampwidth(2)  # Assuming 16-bit audio
             self.wf.setframerate(44100)  # Assuming 44100Hz sample rate
 
-    def transcribe(self, audio_bytes, platform, prompt="", language="en-US"):
+    def transcribe(self, audio_bytes, platform, prompt="", language="en-US", suppress_tokens=[-1]):
         logger.info("Transcribing audio...")
         if platform == "web":
             audio = self._convert_webm_to_wav(audio_bytes, self.use == "local")
         else:
             audio = self._convert_bytes_to_wav(audio_bytes, self.use == "local")
         if self.use == "local":
-            return self._transcribe(audio, prompt)
+            return self._transcribe(audio, prompt, suppress_tokens=suppress_tokens)
         elif self.use == "api":
             return self._transcribe_api(audio, prompt)
 
-    def _transcribe(self, audio, prompt="", language="en-US"):
+    def _transcribe(self, audio, prompt="", language="en-US", suppress_tokens=[-1]):
         language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, config.language)
         segs, _ = self.model.transcribe(
-            audio, language=language, vad_filter=True, initial_prompt=prompt
+            audio, language=language, vad_filter=True, initial_prompt=prompt, suppress_tokens=suppress_tokens
         )
         text = " ".join([seg.text for seg in segs])
         return text

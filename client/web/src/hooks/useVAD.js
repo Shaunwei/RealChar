@@ -8,12 +8,12 @@ const useHark = () => {
   const delayedSpeakingTimeoutID = useRef(null);
 
   const speechEventsCallback = useCallback(
-    (stream, voiceStartCallback, voiceEndCallback) => {
-      speechEvents.current = hark(stream, { interval: 10 });
+    (stream, voiceStartCallback, voiceInterimCallback, voiceEndCallback) => {
+      speechEvents.current = hark(stream, { interval: 20 });
       speechEvents.current.on('speaking', () => {
+        voiceStartCallback();
         if (!isSpeaking.current) {
           isSpeaking.current = true;
-          voiceStartCallback();
         } else {
           clearTimeout(delayedSpeakingTimeoutID.current);
         }
@@ -24,6 +24,7 @@ const useHark = () => {
             voiceEndCallback();
             isSpeaking.current = false;
           }, speakingMaxGap);
+          voiceInterimCallback();
         }
       });
       speechEvents.current.suspend();

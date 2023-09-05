@@ -187,7 +187,7 @@ const Characters = ({
       >
         <DialogTitle id='dialog-title'>
           {' '}
-          Select partner from RealChar community{' '}
+          Select partner from Temus community{' '}
         </DialogTitle>
         <DialogContent>
           <Grid container spacing={2}>

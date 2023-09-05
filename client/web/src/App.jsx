@@ -423,8 +423,8 @@ const App = () => {
           <Route path='/privacy' element={<Privacy />} />
           <Route path='/support' element={<Support />} />
         </Routes>
-
-        <Footer />
+        {/* 
+        <Footer /> */}
       </div>
     </Router>
   );

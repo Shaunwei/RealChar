@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-import logo from '../../assets/svgs/logo.svg';
 import './style.css';
 import SignIn from '../Auth/SignIn';
 import SignOut from '../Auth/SignOut';
@@ -14,15 +13,16 @@ import { Navbar } from '@nextui-org/react';
 
 const Header = ({ user, isLoggedIn, setToken, handleDisconnect }) => (
   <Navbar id='navbar' variant='floating'>
-    <a href='/'>
+    <a href='/' className='logo'>
       <Navbar.Brand
         css={{
           '@xs': {
             w: '12%',
           },
+          fontSize: `40px`,
         }}
       >
-        <img src={logo} alt='Logo' />
+        TEMUS
       </Navbar.Brand>
     </a>
 

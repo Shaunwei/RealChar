@@ -81,6 +81,18 @@ const App = () => {
     });
   }, []);
 
+  useEffect(() => {
+    if (!isTextStreaming && textAreaValue) {
+      const splits = textAreaValue.split('> ');
+      if (splits.length > 1) {
+        const lastMessage = splits[splits.length - 1];
+        if (!splits[splits.length - 2].endsWith('You'))
+          // TODO: Send POST request here
+          console.log(lastMessage);
+      }
+    }
+  }, [textAreaValue, isTextStreaming]);
+
   const stopAudioPlayback = () => {
     if (audioPlayer.current) {
       audioPlayer.current.pause();

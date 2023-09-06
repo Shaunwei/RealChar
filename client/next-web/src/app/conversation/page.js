@@ -4,11 +4,11 @@ import { Tooltip } from '@nextui-org/tooltip';
 import SettingBar from './_components/SettingBar';
 import HandsFreeMode from './_components/HandsFreeMode';
 import TextMode from './_components/TextMode';
+import HamburgerMenu from './_components/HamburgerMenu';
 import TabButton from '@/components/TabButton';
 import Image from 'next/image';
 import exitIcon from '@/assets/svgs/exit.svg';
 import { BsChatRightText, BsTelephone } from 'react-icons/bs';
-import { RxHamburgerMenu } from 'react-icons/rx';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -88,12 +88,7 @@ export default function Conversation() {
           </TabButton>
         </div>
         <div className="justify-self-end md:hidden">
-          <Button
-            variant="light"
-            className="min-w-8"
-          >
-            <RxHamburgerMenu size="1.75em"/>
-          </Button>
+          <HamburgerMenu/>
         </div>
       </div>
       <div className="flex flex-col mt-4 md:mt-10 pt-2 md:pt-6 border-t-2 border-divider md:mx-auto md:w-unit-9xl lg:w-[892px]">

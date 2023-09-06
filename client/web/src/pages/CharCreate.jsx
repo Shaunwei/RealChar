@@ -25,6 +25,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { analytics } from '../utils/firebase';
 import { logEvent } from 'firebase/analytics';
+import { GenerationEditor } from '@avatechai/avatars/react';
 
 const user_prompt = `
 Context
@@ -316,6 +317,15 @@ const CharCreate = ({ token }) => {
       />
 
       <h2 style={{ alignSelf: 'flex-start' }}>Avatar Id</h2>
+
+      <div className='md-align-self'>
+        <GenerationEditor
+          onAvatarIdLoaded={avatarId => {
+            setFormData({ ...formData, avatar_id: avatarId });
+          }}
+        ></GenerationEditor>
+      </div>
+
       <TextareaAutosize
         minRows={1}
         style={{ width: '100%' }}

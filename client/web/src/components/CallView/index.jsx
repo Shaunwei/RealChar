@@ -30,7 +30,7 @@ const CallView = ({
   handleDisconnect,
   setIsCallView,
   sessionId,
-  handleFirstInteractionAudio,
+  playAudioFromNode,
 }) => {
   const { initialize, setInitialize } = useState(true);
   const navigate = useNavigate();
@@ -42,18 +42,13 @@ const CallView = ({
         audioPlayer,
         audioQueue,
         setIsPlaying,
-        handleFirstInteractionAudio,
+        playAudioFromNode,
         audioSourceNodeRef,
         initialize,
         setInitialize
       );
     }
   }, [isPlaying]);
-
-  useEffect(() => {
-    if (!audioContextRef.current) return;
-    setAnalyser(audioContextRef.current);
-  }, [audioContextRef.current]);
 
   const handlePowerOffClick = () => {
     navigate('/');

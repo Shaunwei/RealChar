@@ -87,9 +87,9 @@ export default function ShareButton() {
         radius="none"
         size="xl"
         classNames={{
-          base: 'rounded-none font-light border-modalBorder bg-modalBG border-2 max-w-3xl py-16 px-28',
-          header: 'text-center font-light justify-center text-3xl',
-          body: 'text-xl py-6',
+          base: 'rounded-none font-light border-modalBorder bg-modalBG border-2 md:max-w-3xl md:py-16 md:px-28',
+          header: 'text-center font-light justify-center md:text-3xl',
+          body: 'md:text-xl py-6',
           footer: 'justify-center'
         }}
       >

@@ -7,6 +7,8 @@ import TextMode from './_components/TextMode';
 import TabButton from '@/components/TabButton';
 import Image from 'next/image';
 import exitIcon from '@/assets/svgs/exit.svg';
+import { BsChatRightText, BsTelephone } from 'react-icons/bs';
+import { RxHamburgerMenu } from 'react-icons/rx';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -48,7 +50,7 @@ export default function Conversation() {
 
   return (
     <div className="relative">
-      <div className="grid grid-cols-4 gap-5 pt-10">
+      <div className="grid grid-cols-4 gap-5 pt-4 md:pt-10 items-center">
         <div>
           <Tooltip
             content="Exit"
@@ -58,7 +60,7 @@ export default function Conversation() {
               isBlock
               isIconOnly
               radius="full"
-              className="hover:opacity-80 h-12 w-12 ml-5 mt-1 bg-button"
+              className="hover:opacity-80 h-8 w-8 md:h-12 md:w-12 ml-5 mt-1 bg-button"
               onPress={() => router.push('/')}
             >
               <Image
@@ -73,25 +75,35 @@ export default function Conversation() {
           <TabButton
             isSelected={mode==="text"}
             handlePress={textMode}
+            className="min-w-fit h-fit py-2 md:min-w-20 md:h-11 md:py-4"
           >
-            Text <span className="hidden lg:inline">mode</span>
+            <span className="md:hidden"><BsChatRightText size="1.2em"/></span><span className="hidden md:inline">Text</span><span className="hidden lg:inline">&nbsp;mode</span>
           </TabButton>
           <TabButton
             isSelected={mode==='handsFree'}
             handlePress={handsFreeMode}
+            className="min-w-fit h-fit py-2 md:min-w-20 md:h-11 md:py-4"
           >
-            Hands-free <span className="hidden lg:inline">mode</span>
+            <span className="md:hidden"><BsTelephone size="1.2em"/></span><span className="hidden md:inline">Hands-free</span><span className="hidden lg:inline">&nbsp;mode</span>
           </TabButton>
         </div>
+        <div className="justify-self-end md:hidden">
+          <Button
+            variant="light"
+            className="min-w-8"
+          >
+            <RxHamburgerMenu size="1.75em"/>
+          </Button>
+        </div>
       </div>
-      <div className="flex flex-col mt-10 pt-6 border-t-2 border-divider md:mx-auto md:w-unit-9xl lg:w-[892px]">
+      <div className="flex flex-col mt-4 md:mt-10 pt-2 md:pt-6 border-t-2 border-divider md:mx-auto md:w-unit-9xl lg:w-[892px]">
         <SettingBar
           mode={mode}
           isMute={isMute}
           toggleMute={toggleMute}
         />
       </div>
-      <div className="mt-6 md:mx-auto md:w-unit-9xl lg:w-[892px]">
+      <div className="mt-6 w-full px-4 md:px-0 mx-auto md:w-unit-9xl lg:w-[892px]">
         <HandsFreeMode
           isDisplay={mode==='handsFree'}
         />

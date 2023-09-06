@@ -4,6 +4,7 @@ export default function TabButton({
   isSelected,
   isDisabled=false,
   handlePress,
+  className='',
   children
 }) {
   let styles;
@@ -17,7 +18,7 @@ export default function TabButton({
       isBlock
       isDisabled={isDisabled}
       radius="full"
-      className={`h-11 w-full font-medium text-base md:text-lg justify-center py-4 text-foreground hover:opacity-80 ${styles}`}
+      className={`h-11 w-full font-medium text-base md:text-lg justify-center py-4 text-foreground hover:opacity-80 ${className} ${styles}`}
       onPress={handlePress}
     >
       {children}

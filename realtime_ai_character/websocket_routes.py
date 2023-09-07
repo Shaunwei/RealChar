@@ -24,7 +24,6 @@ from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.quivr_info import QuivrInfo
 from realtime_ai_character.utils import (ConversationHistory, build_history,
                                          get_connection_manager)
-from realtime_ai_character.publish import publish_to_sns
 
 logger = get_logger(__name__)
 
@@ -318,10 +317,6 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 # 3. Send response to client
                 await manager.send_message(message=f"{response}\n", # f'[end={message_id}]\n',
                                            websocket=websocket)
-
-                # 3a. Send response to SNS queue
-                logger.info(publish_to_sns(response))
-                
 
                 # 4. Update conversation history
                 conversation_history.user.append(msg_data)

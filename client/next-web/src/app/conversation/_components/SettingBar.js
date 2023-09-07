@@ -15,7 +15,7 @@ export default function SettingBar({
 
   return (
     <>
-    <div className={`flex flex-row px-4 ${mode==="text"?"justify-between":"justify-end"} md:hidden`}>
+    <div className={`flex flex-row px-4 ${mode==="text"?"justify-center":"justify-end"} md:hidden`}>
     { mode==="text" && (
       <div className="flex gap-1 items-center">
         <Avatar
@@ -23,16 +23,15 @@ export default function SettingBar({
           src={character.image_url}
         />
         <span className="pl-2">{character.name}</span>
+        <div>
+          <SpeakerControl
+            isMute={isMute}
+            toggleMute={toggleMute}
+          />
+        </div>
       </div>
       )
     }
-    <div className="flex flex-row gap-2 justify-self-end">
-      <SpeakerControl
-        isMute={isMute}
-        toggleMute={toggleMute}
-      />
-      <ShareButton/>
-    </div>
     </div>
     <div className="hidden md:flex justify-between">
       <div className="flex gap-6">
@@ -61,7 +60,7 @@ export default function SettingBar({
       </div>
     </div>
     {mode==="handsFree" && (
-      <div className="sm:mt-6">
+      <div className="mt-4 sm:mt-6">
         <Avatar
           name={character.name}
           src={character.image_url}

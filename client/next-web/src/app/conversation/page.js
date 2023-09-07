@@ -5,6 +5,7 @@ import SettingBar from './_components/SettingBar';
 import HandsFreeMode from './_components/HandsFreeMode';
 import TextMode from './_components/TextMode';
 import HamburgerMenu from './_components/HamburgerMenu';
+import ShareButton from './_components/ShareButton';
 import TabButton from '@/components/TabButton';
 import Image from 'next/image';
 import exitIcon from '@/assets/svgs/exit.svg';
@@ -87,7 +88,8 @@ export default function Conversation() {
             <span className="md:hidden"><BsTelephone size="1.2em"/></span><span className="hidden md:inline">Hands-free</span><span className="hidden lg:inline">&nbsp;mode</span>
           </TabButton>
         </div>
-        <div className="justify-self-end md:hidden">
+        <div className="flex flex-row justify-self-end md:hidden">
+          <ShareButton/>
           <HamburgerMenu/>
         </div>
       </div>

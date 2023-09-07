@@ -20,7 +20,7 @@ from langchain.chains import LLMChain
 
 from sqlalchemy import create_engine, MetaData, Table, Column, String, Numeric
 import psycopg2
-
+from dotenv import load_dotenv
 from realtime_ai_character.database.chroma import get_chroma
 from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, \
     AsyncCallbackTextHandler, LLM, QuivrAgent, SearchAgent, MultiOnAgent
@@ -28,7 +28,8 @@ from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Character
 
 logger = get_logger(__name__)
-
+load_dotenv()
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 
 class OpenaiLlm(LLM):
     def __init__(self, model):
@@ -103,20 +104,20 @@ class OpenaiLlm(LLM):
 
     def insert_sql_table(self, name=None, phone_number=None):
 
-        # Define connection parameters
-        params = {
-            'dbname': 'temo',
-            'user': 'angus.saw',
-            'host': 'localhost',  # adjust if your server is elsewhere
-            'port': '5432'  # default port for PostgreSQL
-        }
+        # # Define connection parameters
+        # params = {
+        #     'dbname': 'temo',
+        #     'user': 'admin',
+        #     'host': 'localhost',  # adjust if your server is elsewhere
+        #     'port': '5432'  # default port for PostgreSQL
+        # }
         table_name = "guests_test"
 
         # check for the values we have been given
         if name and phone_number:
             # Establish the connection
             try:
-                with psycopg2.connect(**params) as conn:
+                with psycopg2.connect(SQLALCHEMY_DATABASE_URL) as conn:
                     curs_obj = conn.cursor()
                     curs_obj.execute(f"INSERT INTO {table_name} (name, number) VALUES('{name}', {phone_number});")
                     conn.commit()

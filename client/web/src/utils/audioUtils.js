@@ -69,8 +69,8 @@ export const playAudios = async (
     );
     const bs = audioContextRef.current.createBufferSource();
     bs.buffer = audioBuffer;
-    // bs.connect(audioSourceNodeRef.current);
-    playAudioFromNode(bs, audioContextRef.current, true); // For enable avatar blend shapes and handle audio playing
+    bs.connect(audioSourceNodeRef.current);
+    playAudioFromNode(bs, audioContextRef.current, true); // For enable avatar blend shapes
 
     await playAudio(
       audioContextRef,

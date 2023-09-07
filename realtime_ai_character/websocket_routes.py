@@ -315,7 +315,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     metadata={"message_id": message_id})
 
                 # 3. Send response to client
-                await manager.send_message(message=f'[end={message_id}]\n',
+                await manager.send_message(message=f"{response}\n", # f'[end={message_id}]\n',
                                            websocket=websocket)
 
                 # 4. Update conversation history

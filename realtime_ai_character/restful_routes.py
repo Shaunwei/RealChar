@@ -13,6 +13,7 @@ from firebase_admin.exceptions import FirebaseError
 from realtime_ai_character.audio.text_to_speech import get_text_to_speech
 from realtime_ai_character.database.connection import get_db
 from realtime_ai_character.models.interaction import Interaction
+from realtime_ai_character.models.guest import Guest
 from realtime_ai_character.models.feedback import Feedback, FeedbackRequest
 from realtime_ai_character.models.character import Character, CharacterRequest, \
     EditCharacterRequest, DeleteCharacterRequest, GeneratePromptRequest
@@ -60,6 +61,13 @@ async def get_current_user(request: Request):
     else:
         return ""
 
+@router.get("/guests")
+async def attendees(db: Session = Depends(get_db)):
+    # Read session history from the database.
+    guests = db.query(Guest).all()
+    # return interactions in json format
+    guests_json = [guest.to_dict() for guest in guests]
+    return guests_json
 
 @router.get("/status")
 async def status():

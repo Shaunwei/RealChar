@@ -7,7 +7,7 @@ from contextlib import ExitStack
 from dotenv import load_dotenv
 from firebase_admin import auth
 from llama_index import SimpleDirectoryReader
-from langchain.text_splitter import CharacterTextSplitter
+from langchain.text_splitter import CharacterTextSplitter, RecursiveCharacterTextSplitter
 
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Singleton, Character
@@ -139,10 +139,10 @@ class CatalogManager(Singleton):
     def load_data(self, character_name: str, data_path: str):
         loader = SimpleDirectoryReader(Path(data_path))
         documents = loader.load_data()
-        text_splitter = CharacterTextSplitter(
-            separator='\n',
-            chunk_size=500,
-            chunk_overlap=100)
+        text_splitter = RecursiveCharacterTextSplitter(
+            separators=" ",
+            chunk_size=100,
+            chunk_overlap=10)
         docs = text_splitter.create_documents(
             texts=[d.text for d in documents],
             metadatas=[{

@@ -72,16 +72,17 @@ class OpenaiLlm(LLM):
     
         self.qa_tool = Tool(name = "meeting_details",
                             func = self.meeting_details,
-                            description = "Use this tool to know more about the meeting attendees and their details. The input to this tool should be a string")
+                            description = "Use this tool to know more about the meeting attendees and their details whenever a guest provides his or her name for a meeting. \
+                                            The input to this tool should be a string")
 
         self.sql_tool = Tool(name="Insert_guest_datatable",
                         func=self.parsing_name_number,
-                        description="Use this tool when you need to insert a name and phone number into a database to take attendance of a guest.\
-                            Take attendance of the guest after he has confirmed his details.\
-                            The input to this tool should be a comma separated list of strings of length two, representing the name and the phone number you would like to insert into the database.\
-                            For example, `John,91827364` would be the input if you wanted to insert the name John and the phone number 91827364\
-                            If only `John` is provided, only insert the name John\
-                            If only `91827364` is provided, only insert the phone number 91827364")
+                        description="Use this tool whenever a guest confirms his or her name and number for a meeting, when you need to insert a name and phone number into a database to take his or her attendance.\
+                                    Take attendance of the guest after he has confirmed his details.\
+                                    The input to this tool should be a comma separated list of strings of length two, representing the name and the phone number you would like to insert into the database.\
+                                    For example, `John,91827364` would be the input if you wanted to insert the name John and the phone number 91827364\
+                                    If only `John` is provided, only insert the name John\
+                                    If only `91827364` is provided, only insert the phone number 91827364")
 
 
         self.tools = [self.sql_tool, self.qa_tool]

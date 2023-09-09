@@ -5,18 +5,7 @@
  * created by Lynchee on 7/16/23
  */
 
-import React, { useEffect, useRef, useState } from 'react';
-import {
-  TbPower,
-  TbPhoneCall,
-  TbMicrophone,
-  TbPlayerStopFilled,
-  TbKeyboard,
-  TbShare2,
-} from 'react-icons/tb';
-import IconButton from '../Common/IconButton';
-import { MdVoiceChat } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef } from 'react';
 import { Button } from '../../components/ui/button';
 import { Textarea } from '../../components/ui/textarea';
 import { ScrollArea } from '../ui/scroll-area';
@@ -43,8 +32,6 @@ const TextView = ({
   token,
   sessionId,
 }) => {
-  const navigate = useNavigate();
-  const [keyboard, Setkeyboard] = useState(true);
   const chatWindowRef = useRef(null);
   const talking = useRef(false);
 
@@ -134,18 +121,7 @@ const TextView = ({
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
         />
-        {!callActive.current && !keyboard ? (
-          <IconButton
-            Icon={talking.current ? TbPlayerStopFilled : TbMicrophone}
-            className={`${
-              talking.current ? 'recording-animation' : 'icon-blue'
-            }`}
-            bgcolor={`${talking.current ? 'red' : 'default'}`}
-            onClick={handlePushTalk}
-          />
-        ) : (
-          <Button onClick={handleSendClick}>Send message</Button>
-        )}
+        <Button onClick={handleSendClick}>Send message</Button>
       </div>
     </div>
   );

@@ -16,23 +16,25 @@ export default function ExploreTab({ characters, isDisplay }) {
         characters?.map(character => (
           <Card
             key={character.character_id}
-            className="basis-52 p-2.5">
-            <CardBody className="p-0 text-center">
+            className="md:basis-52 p-2.5">
+            <CardBody className="p-0 text-center flex-row md:flex-col">
               <Avatar
                 radius="sm"
                 src={character.image_url}
-                className="w-full h-full"
+                className="w-20 h-20 md:w-44 md:h-44 mx-auto mt-2"
               />
-              <p className="name text-base text-center mt-2 font-medium">{character.name}</p>
-              <p className="intro text-xs text-center mt-2 font-light">
-                &quot;I am burdened with glorious purpose.&quot;
-              </p>
-              <div className="flex justify-center mt-4">
-                <Image
-                  priority
-                  src={audioSvg}
-                  alt=""
-                />
+              <div className="ml-4 md:ml-0">
+                <p className="name text-base text-center mt-2 font-medium">{character.name}</p>
+                <p className="intro text-xs text-center mt-2 font-light">
+                  &quot;I am burdened with glorious purpose.&quot;
+                </p>
+                <div className="flex justify-center mt-4">
+                  <Image
+                    priority
+                    src={audioSvg}
+                    alt=""
+                  />
+                </div>
               </div>
             </CardBody>
             <CardFooter>

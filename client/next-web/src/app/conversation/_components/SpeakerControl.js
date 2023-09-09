@@ -28,7 +28,31 @@ export default function SpeakerControl({
   } = useAppStore();
 
   return (
-    <div className="flex">
+    <>
+    <div className="flex md:hidden">
+      <Button
+        isIconOnly
+        variant="light"
+        onPress={toggleMute}
+      >
+        {
+          isMute ? (
+            <Image
+            priority
+            src={muteSVG}
+            alt="mute"
+          />
+          ) : (
+            <Image
+              priority
+              src={speakerSVG}
+              alt="speaker settings"
+            />
+          )
+        }
+      </Button>
+    </div>
+    <div className="hidden md:flex">
       <ButtonGroup
         radius="full"
         variant="light"
@@ -102,5 +126,6 @@ export default function SpeakerControl({
         </Dropdown>
       </ButtonGroup>
     </div>
+    </>
   );
 }

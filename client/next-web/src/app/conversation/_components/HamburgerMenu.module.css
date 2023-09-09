@@ -1,0 +1,18 @@
+.backdrop {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 50;
+  background: rgba(2,8,29,0.8);
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  width: 90vw;
+  max-width: 340px;
+  height: 100vh;
+  background: #050e2e;
+}

@@ -1,0 +1,6 @@
+What is Ray Summit? Who should attend? Ray Summit is an event for software engineers, machine learning practitioners, data scientists, developers, MLOps professionals, and architects — and anyone else who wants to learn about building and deploying large-scale applications, especially in AI and machine learning. The summit brings the global Ray community together to learn the fundamentals, explore new use cases, share best practices, and discuss the future of AI.
+Where in San Francisco will the conference be held? Ray Summit will take place at the Marriott Marquis (780 Mission Street, San Francisco, CA 94103) on September 18 and 19, 2023.
+Will there be a training day at Ray Summit? Yes. Training day is September 20.
+Is the conference in person or virtual? The conference will be an in-person event.
+Will content be available on demand after the conference? Yes, keynotes and select sessions will be available on demand after the conference.
+Is there an age requirement to attend the in-person Ray Summit 2023? Yes. All attendees must be 21 years or older.

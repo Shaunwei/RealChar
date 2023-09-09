@@ -1,0 +1,519 @@
+MONDAY, SEPTEMBER 18 8:30 AM
+Registration opens at 8:30 AM
+North Registration
+MONDAY, SEPTEMBER 18 8:30 AM
+Breakfast and Networking
+Rayground - Yerba Buena, Salon 7
+MONDAY, SEPTEMBER 18 9:30 AM
+Keynote, Day 1
+Robert Nishihara — Co-founder and CEO, Anyscale
+Ion Stoica — Executive Chairman and President, Anyscale, Professor, UC Berkeley
+Ya Xu — VP of Engineering, Head of Data and AI, LinkedIn
+John Schulman — Co-founder, OpenAI
+Yerba Buena Salon 9
+MONDAY, SEPTEMBER 18 11:30 AM
+Lunch and Networking Break
+MONDAY, SEPTEMBER 18 11:30 AM
+Rayground Open/Expo
+Rayground - Yerba Buena, Salon 7
+MONDAY, SEPTEMBER 18 11:45 AM
+GenAI for Enterprises—Practical Considerations From Pilot to Scale
+Kannan Keeranam — Director of AI Strategic Engagements, Intel
+Yerba Buena Salon 7
+MONDAY, SEPTEMBER 18 12:00 PM
+A Crash Course on LLMOps for Foundational Model Fine Tuning: Challenges & Alternatives on AWS
+Vedant Jain — Sr. AI/ML Specialist Partner SA, Amazon Web Services
+Mario Bourgoin — Global Tech Lead, MLOps, Amazon Web Services
+Yerba Buena Salon 7
+MONDAY, SEPTEMBER 18 12:15 PM
+Developing Ray Applications on Google Cloud TPUs
+Allen Wang — Software Engineer, Google
+Yerba Buena Salon 7
+MONDAY, SEPTEMBER 18 12:30 PM
+Standing Up Ray Clusters in the Blink of an AI to Drive Private AI
+Chris Wolf — Vice President, VMware AI Labs, VMware
+Yerba Buena Salon 7
+MONDAY, SEPTEMBER 18 12:45 PM
+Decentralized Ray - Scaling Ray for Global Inference
+Ahmad Shadid — Co-Founder & CTO, Antbit.io
+Matej Tomazin — Co-Founder & COO, Antbit.io
+Yerba Buena Salon 7
+MONDAY, SEPTEMBER 18 1:00 PM
+Build Instacart Training Platform on Ray
+Han Li, Instacart
+Rajpal Paryani, Instacart
+Yerba Buena Salon 1
+MONDAY, SEPTEMBER 18 1:00 PM
+Building Samara’s Machine Learning Platform with Ray
+Pang Wu, Samsara
+Saurabh Tripathi, Samsara
+Sharan Srinivasan, Samsara
+Yerba Buena Salon 4
+MONDAY, SEPTEMBER 18 1:00 PM
+Inference Graphs at Linkedin Using Ray-Serve
+Sasha Ovsankin, LinkedIn
+Ali Naqvi, LinkedIn
+Yerba Buena Salon 10
+MONDAY, SEPTEMBER 18 1:00 PM
+From Good to Great: Elevating DoorDash Model Training with Ray
+Swaroop Chitlur, DoorDash
+Dhaval Shah, DoorDash
+Yerba Buena Salon 13
+MONDAY, SEPTEMBER 18 1:00 PM
+Evaluating and Managing LLM Applications with the Langsmith Project
+Harrison Chase, LangChain
+Golden Gate Ballroom A
+MONDAY, SEPTEMBER 18 1:00 PM
+Developing and Serving RAG-Based LLM Applications in Production
+Philipp Moritz, Anyscale
+Goku Mohandas, Anyscale
+Golden Gate Ballroom B
+MONDAY, SEPTEMBER 18 1:00 PM
+The Interactive Roadmap Experience Part 1 of 2: Focus on Ray and Open Source Projects
+Sidney Rabsatt, Anyscale
+Richard Liaw, Anyscale
+Golden Gate C2
+MONDAY, SEPTEMBER 18 1:00 PM
+Enterprise Vector-based Information Retrieval & Prompt Engineering at Scale using Open Source on AWS
+Vedant Jain, Amazon Web Services
+Golden Gate C1
+
+MONDAY, SEPTEMBER 18 1:30 PM
+Break
+Rayground - Yerba Buena, Salon 7
+MONDAY, SEPTEMBER 18 1:45 PM
+Heterogeneous Training Cluster with Ray at Netflix
+Pablo Delgado, Netflix
+Lingyi Liu, Netflix
+Yerba Buena Salon 4
+MONDAY, SEPTEMBER 18 1:45 PM
+Ray on Spark
+Ben Wilson, Databricks
+Weichen Xu, Databricks
+Yerba Buena Salon 10
+MONDAY, SEPTEMBER 18 1:45 PM
+Ray, Knative, and Running Serverless Workloads in the Cloud
+Paul Schweigert, IBM
+Michael Maximilien, IBM
+Yerba Buena Salon 13
+MONDAY, SEPTEMBER 18 1:45 PM
+Practical Data Considerations for Building Production-Ready LLM Applications
+Jerry Liu, LlamaIndex
+Golden Gate Ballroom A
+MONDAY, SEPTEMBER 18 1:45 PM
+From Spark to Ray: An Exabyte-Scale Production Migration Case Study
+Patrick Ames, Amazon
+Golden Gate Ballroom B
+MONDAY, SEPTEMBER 18 1:45 PM
+Train and Deploy LLM/Generative AI Application Cheaper, Faster, and Safer with Anyscale's Infrastructure
+Ameer Haj Ali, Anyscale
+Yifei Feng, Anyscale
+Sriram Sankar, Anyscale
+Golden Gate C2
+MONDAY, SEPTEMBER 18 1:45 PM
+Making your Enterprise GenAI Ready and GenAI Enterprise Ready
+Ali Arsanjani, Google
+Golden Gate C1
+MONDAY, SEPTEMBER 18 2:15 PM
+Break
+Rayground - Yerba Buena, Salon 7
+MONDAY, SEPTEMBER 18 2:30 PM
+Last Mile Data Processing for ML Training using Ray
+Chia-Wei Chen, Pinterest
+Quingxian Lai, Pinterest
+Raymond Lee, Pinterest
+Yerba Buena Salon 1
+MONDAY, SEPTEMBER 18 2:30 PM
+Hyperparameter Tuning with Ray[Tune] for Next-Gen training platform at LinkedIn
+Frank Gu, LinkedIn
+Mingyuan Tian, LinkedIn
+Wei-Yu Yen, Linkedin
+Yerba Buena Salon 4
+MONDAY, SEPTEMBER 18 2:30 PM
+The Different Shades of using KubeRay with Kubernetes
+Ali Kanso, Microsoft
+Yerba Buena Salon 13
+MONDAY, SEPTEMBER 18 2:30 PM
+Open Source LLMs: Viable for Production or a Low-Quality Toy?
+M Waleed Kadous, Anyscale
+Golden Gate Ballroom A
+MONDAY, SEPTEMBER 18 2:30 PM
+DeepMind’s DreamerV3 on RLlib with multiple GPUs: Out-of-the-box, fast model-based RL.
+Sven Mika, Anyscale
+Golden Gate Ballroom B
+MONDAY, SEPTEMBER 18 2:30 PM
+How Anyscale Speeds Up ML Data Processing with Ray
+Amog Kamsetty, Anyscale
+Hao Chen, Anyscale
+Yi Cheng, Anyscale
+Golden Gate C2
+MONDAY, SEPTEMBER 18 2:30 PM
+Automatically scaling the execution of Foundation Models workflows: Ray with CodeFlare and Red Hat OpenShift Data Science Pipelines
+Yuan-Chi Chang, IBM
+Alex Corvin, Red Hat
+Golden Gate C1
+MONDAY, SEPTEMBER 18 3:00 PM
+Break
+Rayground - Yerba Buena, Salon 7
+MONDAY, SEPTEMBER 18 3:00 PM
+On-Demand Ray Clusters in ML Workflows via KubeRay & Sematic
+Josh Bauer, Sematic (sematic.dev)
+Yerba Buena Salon 7
+
+MONDAY, SEPTEMBER 18 3:15 PM
+Building Production AI Applications with Ray Serve
+Shreyas Krishnaswamy, Anyscale
+Edward Oakes, Anyscale
+Yerba Buena Salon 1
+MONDAY, SEPTEMBER 18 3:15 PM
+A Ray-based ML Platform for Early Cancer Detection
+Zachary Carrico, Freenome
+Yerba Buena Salon 10
+MONDAY, SEPTEMBER 18 3:15 PM
+Large Scale Pathways Recommender Systems (PaRS) at Verizon
+Luyang Wang, Verizon
+Xuning (Mike) Tang, Verizon
+Yerba Buena Salon 13
+MONDAY, SEPTEMBER 18 3:15 PM
+Optimizing LLM Training with Airbnb's Next-Gen ML Platform
+Shaowei Su, Airbnb
+Golden Gate Ballroom A
+MONDAY, SEPTEMBER 18 3:15 PM
+Ray Train: A Library for Seamless and Production-Ready Distributed Deep Learning
+Yunxuan Xiao, Anyscale
+Golden Gate Ballroom B
+MONDAY, SEPTEMBER 18 3:15 PM
+OneDigital ML Platform: Unleashing the Power of Machine Learning at Scale
+Paridhi Jha, Wesfarmers OneDigital
+Golden Gate C2
+MONDAY, SEPTEMBER 18 3:15 PM
+Integrating Ray.io into the Google Cloud Ecosystem for the Enterprise
+Ali Arsanjani, Google
+Golden Gate C1
+MONDAY, SEPTEMBER 18 3:45 PM
+Break
+Rayground - Yerba Buena, Salon 7
+MONDAY, SEPTEMBER 18 4:00 PM
+Scaling Computer Vision Models with Ray: A Cost-Effective and Efficient Distributed Training Framework
+David Scott, Instacart
+Yerba Buena Salon 10
+MONDAY, SEPTEMBER 18 4:00 PM
+How Snorkel Builds Interactive Enterprise ML Products Using Ray
+Will Hang, Snorkel AI
+John Allard, OpenAI
+Yerba Buena Salon 13
+MONDAY, SEPTEMBER 18 4:00 PM
+Llama, Scaling Up LLMs in an Open Ecosystem
+Joseph Spisak, Meta
+Golden Gate Ballroom A
+MONDAY, SEPTEMBER 18 4:00 PM
+Fault Tolerant Training of Large Models: Examples and Tutorial
+Justin Yu, Anyscale
+Golden Gate Ballroom B
+MONDAY, SEPTEMBER 18 4:00 PM
+KubeRay: A Ray cluster management solution on Kubernetes
+Kai-Hsun Chen, Anyscale
+Archit Kulkarni, Anyscale
+Golden Gate C2
+MONDAY, SEPTEMBER 18 4:00 PM
+Ray/RLLib-Empowered Reinforcement Learning based Recommender Systems in NetEase Game
+Kai Wang, Netease
+Runze Wu, Netease
+Golden Gate C1
+MONDAY, SEPTEMBER 18 4:30 PM
+Extended Networking Break
+Rayground - Yerba Buena, Salon 7
+MONDAY, SEPTEMBER 18 4:30 PM
+Making it easy to provision Ray clusters to support enterprise AI/ML efforts
+Chris Van Dyke — Principal Product Manager, Cloudera
+Yerba Buena Salon 7
+MONDAY, SEPTEMBER 18 4:45 PM
+Bridging MLOps and LLMOps: Integrating Governed Generative AI into your Enterprise
+Ahmet Gyger — Senior Director, Product Management, Domino Data Lab
+Yerba Buena Salon 7
+MONDAY, SEPTEMBER 18 5:00 PM
+Community Bash (Networking)
+Rayground - Yerba Buena, Salon 7
+MONDAY, SEPTEMBER 18 5:15 PM
+Ray Serve for IOT at Samsara
+Brian Westphal — Senior Machine Learning Engineer, Samsara
+Yerba Buena Salon 7
+MONDAY, SEPTEMBER 18 5:30 PM
+Real-Time Vectorization for Transactional Workloads with MongoDB Atlas + Anyscale
+Sigfrido Narvaez — Executive Solutions Architect, MongoDB
+Yerba Buena Salon 7
+MONDAY, SEPTEMBER 18 5:45 PM
+Building a distributed query engine with Ray
+Tony Wang — PhD student, Stanford
+Yerba Buena Salon 7
+MONDAY, SEPTEMBER 18 6:00 PM
+Parallel inferencing with KServe Ray integration
+Ted Chang — Software Engineer, IBM
+Jim Busche — Software Engineer, IBM
+Yerba Buena Salon 7
+MONDAY, SEPTEMBER 18 6:15 PM
+Unleashing the Power of GenAI: Scaling with Ray and Orchestrating with Kubernetes
+Apoorva Kulkarni — Sr. Specialist Solutions Architect, AWS
+Yerba Buena Salon 7
+MONDAY, SEPTEMBER 18 6:30 PM
+TimeGPT: A Foundation Large Time Series Model
+Azul Garza — CTO, Nixtla
+Max Mergenthaler — CEO & Co-Founder, Nixtla
+Yerba Buena Salon 7
+MONDAY, SEPTEMBER 18 6:45 PM
+Building an Instant-On Serverless Platform for Large-Scale Data Processing Using Ray
+Japson Jeyasekaran — Sr Software Engineer, AWS
+Harish Sitaraman — Software Development Manager, AWS
+Yerba Buena Salon 7
+
+TUESDAY, SEPTEMBER 19 8:30 AM
+Registration opens at 8:30 AM
+North Registration
+TUESDAY, SEPTEMBER 19 8:30 AM
+Breakfast and Networking
+Rayground - Yerba Buena, Salon 7
+TUESDAY, SEPTEMBER 19 9:30 AM
+Keynote, Day 2
+Albert Greenberg — VP of Engineering, Uber
+Brian McClendon — Senior Vice President of Engineering, Niantic, Inc
+Hien Luu — Senior Engineering Manager, DoorDash
+Zhitao Li — Principal Software Engineer/Tech Lead Manager, Uber
+Evan Cox — Engineering Manager, Netflix
+Ben Horowitz — Co-founder and General Partner, Andreessen Horowitz
+Yerba Buena Salon 9
+TUESDAY, SEPTEMBER 19 11:30 AM
+Lunch and Networking Break
+Rayground - Yerba Buena, Salon 7
+TUESDAY, SEPTEMBER 19 11:30 AM
+Rayground Open/Expo
+Rayground - Yerba Buena, Salon 7
+TUESDAY, SEPTEMBER 19 11:45 AM
+How to simplify execution of cloud-native model training and validation with CodeFlare: A Hands-On Demo
+Mustafa Eyceoz — Software Engineer, Red Hat
+Atin Sood — Program Manager - IBM Research, IBM
+Yerba Buena Salon 7
+TUESDAY, SEPTEMBER 19 12:00 PM
+Tend and Tune Your MARL Experiments with Ray and Weights & Biases
+Anish Shah — Machine Learning Engineer, Weights & Biases
+Yerba Buena Salon 7
+TUESDAY, SEPTEMBER 19 12:15 PM
+50x Faster Fine-Tuning in 10 Lines of YAML with Ludwig and Ray
+Travis Addair — Chief Technology Officer, Predibase Inc.
+Yerba Buena Salon 7
+TUESDAY, SEPTEMBER 19 12:30 PM
+How to Build an AI Copilot for Your Application
+Tristan Zajonc — CEO , Continual
+Yerba Buena Salon 7
+TUESDAY, SEPTEMBER 19 12:45 PM
+Gismo for Ray: A Multi-Node Shared Memory Object Store That Accelerates Ray Workloads
+Charles Fan — Co-Founder & CEO, MemVerge
+Yerba Buena Salon 7
+TUESDAY, SEPTEMBER 19 1:00 PM
+SkyPilot: Run AI on Any Cloud
+Zongheng Yang, UC Berkeley Sky Computing Lab
+Yerba Buena Salon 1
+TUESDAY, SEPTEMBER 19 1:00 PM
+Lessons From Fine-Tuning Llama-2
+Kourosh Hakhamaneshi, Anyscale
+Artur Niederfahrenhorst, Anyscale
+Yerba Buena Salon 4
+TUESDAY, SEPTEMBER 19 1:00 PM
+AI Factory Accelerating Solutions with Ray
+Peter Haddad, Lockheed Martin
+Yerba Buena Salon 13
+TUESDAY, SEPTEMBER 19 1:00 PM
+Build Augmented Reality Maps With Ray
+Qi Zhou, Niantic
+Golden Gate Ballroom B
+TUESDAY, SEPTEMBER 19 1:00 PM
+Ray Data Streaming for Large-Scale ML Training and Inference
+Eric Liang, Anyscale
+Golden Gate C2
+TUESDAY, SEPTEMBER 19 1:00 PM
+Simplified Training, Tuning and Deployment of Foundational Models as a Service with Red Hat OpenShift AI
+Carlos Costa, IBM Research
+Taneem Ibrahim, Red Hat
+Nick Hill, IBM Research
+Golden Gate C1
+TUESDAY, SEPTEMBER 19 1:30 PM
+Break
+Rayground - Yerba Buena, Salon 7
+TUESDAY, SEPTEMBER 19 1:30 PM
+Efficient Expert Witness Profiling with Ray: Automated Key Phrase Extraction from Legal Documents
+Harshit Singh, LexisNexis
+Yerba Buena Salon 7
+TUESDAY, SEPTEMBER 19 1:45 PM
+Scaling up Terascale Deep Learning on Commodity CPUs with ThirdAI and Ray
+Anshumali Shrivastava, ThirdAI Corp
+Yerba Buena Salon 1
+TUESDAY, SEPTEMBER 19 1:45 PM
+Ray Scalability Deep Dive: The Journey to Support 4,000 Nodes
+Yi Cheng, Anyscale
+Yerba Buena Salon 4
+TUESDAY, SEPTEMBER 19 1:45 PM
+How Spotify Built a Robust Ray Platform with a Frictionless Developer Experience
+David Xia, Spotify
+Keshi Dai, Spotify
+Yerba Buena Salon 10
+TUESDAY, SEPTEMBER 19 1:45 PM
+Ray-based Horizontally Scalable In-Memory Graph Platform at BASF
+Janez Ales, BASF
+Yerba Buena Salon 13
+TUESDAY, SEPTEMBER 19 1:45 PM
+Enabling End-to-End LLMOps on Michelangelo with Ray
+Bo Ling, Uber
+Chongxiao Cao, Uber
+Golden Gate Ballroom A
+TUESDAY, SEPTEMBER 19 1:45 PM
+The Ray Dataplane: History and the Cloudsort World Record
+Stephanie Wang, Anyscale
+Frank Luan, UC Berkeley
+Golden Gate Ballroom B
+TUESDAY, SEPTEMBER 19 1:45 PM
+Anyscale Workspaces: A Scalable Interactive ML Development Environment with Zero Setup
+Sofian Hnaide, Anyscale
+Golden Gate C2
+TUESDAY, SEPTEMBER 19 1:45 PM
+Easily Scale to Production-Ready Generative AI with NVIDIA and Anyscale
+Adel El Hallak, NVIDIA AI Enterprise
+Golden Gate C1
+
+TUESDAY, SEPTEMBER 19 2:15 PM
+Break
+Rayground - Yerba Buena, Salon 7
+TUESDAY, SEPTEMBER 19 2:30 PM
+Scaling time-series forecasting models to cope with the multi-verse with Ray
+Peyman Tavallali, JP Morgan Chase
+Yerba Buena Salon 1
+TUESDAY, SEPTEMBER 19 2:30 PM
+Ray Observability 2.0: How to Debug Your Ray Applications with New Observability Tooling
+SangBin Cho, Anyscale
+Alan Guo, Anyscale
+Chao Wang, Anyscale
+Yerba Buena Salon 4
+TUESDAY, SEPTEMBER 19 2:30 PM
+Forecasting Covid Infections for the UK's National Health Service using Ray and Kubernetes
+Alex Remedios, treebeardtech
+Yerba Buena Salon 10
+TUESDAY, SEPTEMBER 19 2:30 PM
+Python-centric AI Application Building in Minutes with Lepton and Ray
+Yangqing Jia , Lepton AI
+Yerba Buena Salon 13
+TUESDAY, SEPTEMBER 19 2:30 PM
+Enabling Cost-Efficient LLM Serving with Ray Serve
+Tanmay Chordia, Anyscale
+Cade Daniel, Anyscale
+Golden Gate Ballroom A
+TUESDAY, SEPTEMBER 19 2:30 PM
+Faster and Cheaper Offline Batch Inference with Ray
+Amog Kamsetty, Anyscale
+Balaji Veeramani, Anyscale
+Golden Gate Ballroom B
+TUESDAY, SEPTEMBER 19 3:00 PM
+Break
+Rayground - Yerba Buena, Salon 7
+TUESDAY, SEPTEMBER 19 3:15 PM
+BentoML or RayServe, You Can Choose Both with BentoRay
+Sean Sheng, BentoML
+Chaoyu Yang, BentoML
+Yerba Buena Salon 1
+TUESDAY, SEPTEMBER 19 3:15 PM
+Modernizing DoorDash Model Serving Platform with Ray Serve
+Siddharth Kodwani, DoorDash
+Kornel Csernai, DoorDash
+Yerba Buena Salon 4
+TUESDAY, SEPTEMBER 19 3:15 PM
+Supercharging self-driving algorithms development with Ray: scaling simulation workloads and democratizing autotuning at Zoox
+Yunpeng Pan, Zoox
+Ritwik Bera, Zoox
+Yerba Buena Salon 10
+TUESDAY, SEPTEMBER 19 3:15 PM
+How Ray Empowered Ant Group to Deliver a Large-Scale Online Serverless Platform
+Tengwei Cai, Ant Group
+Yerba Buena Salon 13
+TUESDAY, SEPTEMBER 19 3:15 PM
+Serving Large Language Models with KubeRay on TPUs
+Richard Liu, Google
+Winston Chiang, Google
+Golden Gate Ballroom A
+TUESDAY, SEPTEMBER 19 3:15 PM
+Deploying Many Models Efficiently with Ray Serve
+Sihan Wang, Anyscale
+Jon Park, Clari
+Cindy Zhang, Anyscale
+Golden Gate Ballroom B
+TUESDAY, SEPTEMBER 19 3:15 PM
+Redesigning Scheduling in Ray to Improve Cost-Efficiency at Scale
+Jiajun Yao, Anyscale
+Golden Gate C2
+TUESDAY, SEPTEMBER 19 3:15 PM
+FlightAware and Ray: Scaling Distributed XGBoost and Parallel Data Ingestion
+Patrick Dolan, FlightAware
+Golden Gate C1
+
+TUESDAY, SEPTEMBER 19 3:45 PM
+Break
+Rayground - Yerba Buena, Salon 7
+TUESDAY, SEPTEMBER 19 4:00 PM
+Deploying Ray Cluster on an Air-Gapped Kubernetes Cluster with Tight Security Control: Challenges and Best Practices
+Yiqing Wang, Instabase
+Ruoyu Huang, Instabase
+Yerba Buena Salon 1
+TUESDAY, SEPTEMBER 19 4:00 PM
+Legal Questions Around LLMs and Generative AI
+Justin Olsson, Anyscale
+Yerba Buena Salon 4
+TUESDAY, SEPTEMBER 19 4:00 PM
+Scaling AI Health Assistants: Challenges and Solutions
+Joshua Albert, Touch Medical Intelligence Inc.
+Yerba Buena Salon 10
+TUESDAY, SEPTEMBER 19 4:00 PM
+Understanding the Landscape of the Latest Large Models
+Chris Van Pelt, Weights and Biases
+Golden Gate Ballroom A
+TUESDAY, SEPTEMBER 19 4:00 PM
+Ray for Large-Scale, Time-Series Energy Forecasting to Plan a More Resilient Power Grid
+Joey Asperger, Kevala
+Golden Gate Ballroom B
+TUESDAY, SEPTEMBER 19 4:00 PM
+Large language-style universal models for Short Video recommendations
+Dinesh Ramasamy, Verse Innovation
+Golden Gate C2
+TUESDAY, SEPTEMBER 19 4:00 PM
+Semiconductor Fab Production Scheduling Using Deep Reinforcement Learning
+Jasper van Heugten, minds.ai
+Golden Gate C1
+
+WEDNESDAY, SEPTEMBER 20 8:00 AM
+Training Registration Opens at 8:00 AM
+North Registration
+WEDNESDAY, SEPTEMBER 20 9:00 AM
+Implementing a production MLOps pipeline to deliver end-to-end ML applications at scale
+Goku Mohandas — AI Education Lead, Anyscale
+Yerba Buena Salon 1
+WEDNESDAY, SEPTEMBER 20 9:00 AM
+Learn How to Build and Productionize LLM-Powered Applications with Ray and Anyscale
+Adam Breindel — Technical Traininer, Anyscale
+Yerba Buena Salon 4
+WEDNESDAY, SEPTEMBER 20 9:00 AM
+Introduction to Ray AI Libraries for Deep Learning
+Emmy Li — Technical Trainer, Anyscale
+Golden Gate Ballroom A
+WEDNESDAY, SEPTEMBER 20 1:00 PM
+Ray Core Deep Dive: API, Architectures and Best Practices
+Jules Damji — Lead Developer Advocate, Ray Team, Anyscale
+Yerba Buena Salon 1
+WEDNESDAY, SEPTEMBER 20 1:00 PM
+Practical Data and Evaluation Considerations for Building Production-Ready LLM Applications with LlamaIndex and Ray
+Simon Suo — , LlamadIndex
+Amog Kamsetty — Software Engineer, Anyscale
+Goku Mohandas — AI Education Lead, Anyscale
+Yerba Buena Salon 4
+WEDNESDAY, SEPTEMBER 20 1:00 PM
+Real-time ML - Deploying online inference pipelines
+Adam Breindel — Technical Traininer, Anyscale
+Golden Gate Ballroom A
+WEDNESDAY, SEPTEMBER 20 1:00 PM
+GenAI - Fine-tuning and Deploying Stable Diffusion Models with Ray and Anyscale
+Emmy Li — Technical Trainer, Anyscale
+Golden Gate Ballroom B

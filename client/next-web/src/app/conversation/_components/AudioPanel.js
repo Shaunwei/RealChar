@@ -102,7 +102,7 @@ export default function AudioPanel() {
             >Test speaker</Button>
           )}
         </div>
-        <div className="grid grid-cols-4 gap-4 text-lg text-white/50">
+        <div className="grid grid-cols-4 gap-3 text-base lg:text-lg text-white/50">
           <span>Output level</span>
           <div className="col-span-3">
             <Progress color="success" aria-label="output level" value={60} className="max-w-md"
@@ -113,7 +113,7 @@ export default function AudioPanel() {
             />
           </div>
         </div>
-        <div className="grid grid-cols-4 gap-4 text-lg text-white/50">
+        <div className="grid grid-cols-4 gap-3 text-base lg:text-lg text-white/50">
           <span>Output volume</span>
           <div className="col-span-3 flex flex-row gap-2 items-center">
             <span className="text-real-navy/60"><MdOutlineVolumeMute size="1.25em"/></span>
@@ -162,7 +162,7 @@ export default function AudioPanel() {
             >Test mic</Button>
           )}
         </div>
-        <div className="grid grid-cols-4 gap-4 text-lg text-white/50">
+        <div className="grid grid-cols-4 gap-3 text-base lg:text-lg text-white/50">
           <span>Input level</span>
           <div className="col-span-3">
             <Progress color="success" aria-label="input level" value={10} className="max-w-md"
@@ -173,7 +173,7 @@ export default function AudioPanel() {
             />
           </div>
         </div>
-        <div className="grid grid-cols-4 gap-4 text-lg text-white/50">
+        <div className="grid grid-cols-4 gap-3 text-base lg:text-lg text-white/50">
           <span>Input volume</span>
           <div className="col-span-3 flex flex-row gap-2 items-center">
             <span className="text-real-navy/60"><MdOutlineVolumeMute size="1.25em"/></span>

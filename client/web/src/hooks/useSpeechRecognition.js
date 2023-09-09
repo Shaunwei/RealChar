@@ -41,7 +41,6 @@ const useSpeechRecognition = (
     recognition.current.onend = () => {
       if (callActive.current) {
         startListening();
-        startRecording();
       }
     };
 
@@ -89,6 +88,7 @@ const useSpeechRecognition = (
           audioSent.current = false;
         }
         stopRecording();
+        startRecording();
       }
       finalTranscripts.current = [];
     };

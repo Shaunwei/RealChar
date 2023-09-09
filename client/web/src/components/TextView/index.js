@@ -44,7 +44,7 @@ const TextView = ({
   sessionId,
 }) => {
   const navigate = useNavigate();
-  const [keyboard, SetKeyboard] = useState(true);
+  const [keyboard, Setkeyboard] = useState(true);
   const chatWindowRef = useRef(null);
   const talking = useRef(false);
 
@@ -75,11 +75,6 @@ const TextView = ({
       );
     }
   }, [isThinking, textAreaValue]);
-
-  const handlePowerOffClick = () => {
-    navigate('/');
-    handleDisconnect();
-  };
 
   // send message to server. stop audio if it's playing to interrupt character.
   const sendMessage = () => {
@@ -120,15 +115,6 @@ const TextView = ({
     }
   };
 
-  const handleKeyboardClick = () => {
-    SetKeyboard(true);
-  };
-
-  const handleAudioClick = () => {
-    SetKeyboard(false);
-  };
-  console.log(textAreaValue);
-
   return (
     <div className='w-full mt-5'>
       <ScrollArea className='h-60 w-full mb-2'>
@@ -148,52 +134,19 @@ const TextView = ({
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
         />
-        <Button>Send message</Button>
-      </div>
-
-      {/* <div className='input-container'>
-        <div className='message-input-container'>
-          <input
-            className='message-input'
-            type='text'
-            placeholder='Type your message'
-            value={messageInput}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
+        {!callActive.current && !keyboard ? (
+          <IconButton
+            Icon={talking.current ? TbPlayerStopFilled : TbMicrophone}
+            className={`${
+              talking.current ? 'recording-animation' : 'icon-blue'
+            }`}
+            bgcolor={`${talking.current ? 'red' : 'default'}`}
+            onClick={handlePushTalk}
           />
-          <span className='focus-border'>
-            <i></i>
-          </span>
-        </div>
-        {!callActive.current && (
-          <div>
-            {keyboard ? (
-              <IconButton
-                Icon={MdVoiceChat}
-                className='icon-blue'
-                onClick={handleAudioClick}
-              />
-            ) : (
-              <IconButton
-                Icon={TbKeyboard}
-                className='icon-blue'
-                onClick={handleKeyboardClick}
-              />
-            )}
-          </div>
+        ) : (
+          <Button onClick={handleSendClick}>Send message</Button>
         )}
-      </div> */}
-
-      {/* {!callActive.current && !keyboard ? (
-        <IconButton
-          Icon={talking.current ? TbPlayerStopFilled : TbMicrophone}
-          className={`${talking.current ? 'recording-animation' : 'icon-blue'}`}
-          bgcolor={`${talking.current ? 'red' : 'default'}`}
-          onClick={handlePushTalk}
-        />
-      ) : (
-        <Button onClick={handleSendClick} name='Send Message' />
-      )} */}
+      </div>
     </div>
   );
 };

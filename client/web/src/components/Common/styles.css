@@ -78,6 +78,12 @@
   transform: scale(1.1);
 }
 
+.icon-green,
+.icon-red {
+  height: 60px;
+  width: 60px;
+}
+
 .icon-green:hover {
   background-color: #28c235;
   transform: scale(1.1);

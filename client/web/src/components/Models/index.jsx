@@ -6,8 +6,7 @@
  */
 
 import React from 'react';
-import './style.css';
-import Button from '@mui/material/Button';
+import { Button } from '../../components/ui/button';
 import Grid from '@mui/material/Grid';
 import CustomTooltip from '../Common/CustomTooltip';
 import CheckIcon from '@mui/icons-material/Check';
@@ -53,44 +52,31 @@ const Models = ({ isMobile, selectedModel, setSelectedModel }) => {
     );
   };
 
-  const handleModelSelect = e => {
-    setSelectedModel(e.currentTarget.value);
+  const handleModelSelect = value => {
+    setSelectedModel(value);
   };
   return (
-    <>
+    <div className='space-y-2'>
       <label>Large language model(LLM)</label>
-      <Grid container spacing={2} sx={{ marginBottom: 5 }}>
+      <div className='grid lg:grid-cols-4 grid-cols-2 gap-3 lg:gap-20'>
         {models.map((model, index) => (
-          <Grid item xs={isMobile ? 12 : 3} key={index}>
+          <div key={index}>
             <CustomTooltip
               title={<CustomTooltipContent tooltip={model.tooltip} />}
               placement='top-end'
             >
               <Button
-                value={model.id}
-                variant='outlined'
-                onClick={handleModelSelect}
-                sx={{
-                  width: '100%',
-                  backgroundColor:
-                    model.id === selectedModel ? '#35394A' : '#1B2134',
-                  borderColor:
-                    model.id === selectedModel ? '#A7BFFF' : '#1B2134',
-                  '&:hover': {
-                    backgroundColor: '#35394A',
-                    borderColor: '#617CC2',
-                  },
-                  textTransform: 'none',
-                  color: 'white',
-                }}
+                className='w-full'
+                onClick={() => handleModelSelect(model.id)}
+                variant={selectedModel === model.id ? 'default' : 'secondary'}
               >
                 {model.name}
               </Button>
             </CustomTooltip>
-          </Grid>
+          </div>
         ))}
-      </Grid>
-    </>
+      </div>
+    </div>
   );
 };
 

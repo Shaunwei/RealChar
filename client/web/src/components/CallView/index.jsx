@@ -115,25 +115,6 @@ const CallView = ({
           />
         )}
       </div>
-      <div className='options-container'>
-        <IconButton
-          Icon={TbPower}
-          className='icon-red'
-          onClick={handlePowerOffClick}
-        />
-        <IconButton
-          Icon={TbMessageChatbot}
-          className='icon-green'
-          onClick={() => setIsCallView(false)}
-        />
-        <IconButton
-          Icon={TbShare2}
-          disabled={isResponding}
-          onClick={() =>
-            window.open(`/shared?session_id=${sessionId}`, '_blank')
-          }
-        />
-      </div>
     </div>
   );
 };

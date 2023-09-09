@@ -1,22 +1,12 @@
-/**
- * src/pages/Settings.jsx
- *
- * created by Lynchee on 7/28/23
- */
-
-// TODO: user can access this page only if isConnected.current and selectedCharacter
-
 import React, { useState, useEffect } from 'react';
-import Languages from '../components/Languages';
 import MediaDevices from '../components/MediaDevices';
 import Models from '../components/Models';
-import Button from '@mui/material/Button';
 import { useNavigate, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import './styles.css';
 import CommunicationMethod from '../components/CommunicationMethod';
 import AdvancedOptions from '../components/AdvancedOptions';
 import lz from 'lz-string';
+import { Button } from '../components/ui/button';
 
 const Settings = ({
   setSelectedCharacter,
@@ -84,8 +74,7 @@ const Settings = ({
         (commMethod === 'Call') +
         '&character=' +
         character +
-        '&preferredLanguage=' +
-        preferredLanguage +
+        '&preferredLanguage=English' +
         '&selectedDevice=' +
         (selectedDevice || 'default') +
         '&selectedModel=' +
@@ -100,61 +89,42 @@ const Settings = ({
   };
 
   return (
-    <div className='settings'>
-      <h2 className='center'>Confirm your setting</h2>
+    <main className='p-8 mx-auto max-w-7xl w-full relative'>
+      <>
+        <div className='flex items-center'>
+          <h2 className='mr-2 text-3xl font-bold tracking-tight mb-5'>
+            Settings
+          </h2>
+        </div>
+        <div className='space-y-6'>
+          <CommunicationMethod
+            commMethod={commMethod}
+            setCommMethod={setCommMethod}
+          />
 
-      <CommunicationMethod
-        commMethod={commMethod}
-        setCommMethod={setCommMethod}
-      />
+          <MediaDevices
+            selectedDevice={selectedDevice}
+            setSelectedDevice={setSelectedDevice}
+          />
 
-      <Languages
-        preferredLanguage={preferredLanguage}
-        setPreferredLanguage={setPreferredLanguage}
-      />
+          <Models
+            isMobile={isMobile}
+            selectedModel={selectedModel}
+            setSelectedModel={setSelectedModel}
+          />
 
-      <MediaDevices
-        selectedDevice={selectedDevice}
-        setSelectedDevice={setSelectedDevice}
-      />
-
-      <Models
-        isMobile={isMobile}
-        selectedModel={selectedModel}
-        setSelectedModel={setSelectedModel}
-      />
-
-      <AdvancedOptions
-        isLoggedIn={isLoggedIn}
-        token={token}
-        setToken={setToken}
-        useSearch={useSearch}
-        setUseSearch={setUseSearch}
-        useQuivr={useQuivr}
-        setUseQuivr={setUseQuivr}
-        quivrApiKey={quivrApiKey}
-        setQuivrApiKey={setQuivrApiKey}
-        quivrBrainId={quivrBrainId}
-        setQuivrBrainId={setQuivrBrainId}
-        useMultiOn={useMultiOn}
-        setUseMultiOn={setUseMultiOn}
-        useEchoCancellation={useEchoCancellation}
-        setUseEchoCancellation={setUseEchoCancellation}
-        send={send}
-      />
-
-      <Button
-        variant='contained'
-        onClick={handleStartClick}
-        fullWidth
-        size='large'
-        sx={{
-          textTransform: 'none',
-        }}
-      >
-        Get Started
-      </Button>
-    </div>
+          <AdvancedOptions
+            useSearch={useSearch}
+            setUseSearch={setUseSearch}
+            useEchoCancellation={useEchoCancellation}
+            setUseEchoCancellation={setUseEchoCancellation}
+          />
+          <Button onClick={handleStartClick} className='w-[150px]'>
+            Proceed to chat
+          </Button>
+        </div>
+      </>
+    </main>
   );
 };
 

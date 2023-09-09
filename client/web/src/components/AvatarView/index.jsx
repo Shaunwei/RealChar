@@ -32,8 +32,8 @@ const useAvatarView = (avatarId, emotion) => {
     audioService: externalAvatarVoiceService,
     // Style Props
     style: {
-      width: '400px',
       height: '400px',
+      width: '400px',
     },
   });
 

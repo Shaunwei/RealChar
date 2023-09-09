@@ -6,7 +6,6 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import './style.css';
 import {
   TbPower,
   TbPhoneCall,
@@ -17,9 +16,10 @@ import {
 } from 'react-icons/tb';
 import IconButton from '../Common/IconButton';
 import { MdVoiceChat } from 'react-icons/md';
-import Button from '../Common/Button';
 import { useNavigate } from 'react-router-dom';
-import Feedback from '../Feedback';
+import { Button } from '../../components/ui/button';
+import { Textarea } from '../../components/ui/textarea';
+import { ScrollArea } from '../ui/scroll-area';
 
 const TextView = ({
   selectedCharacter,
@@ -127,20 +127,31 @@ const TextView = ({
   const handleAudioClick = () => {
     SetKeyboard(false);
   };
+  console.log(textAreaValue);
 
   return (
-    <div className='text-screen'>
-      <textarea
-        className='chat-window'
-        readOnly
-        draggable='false'
-        ref={chatWindowRef}
-        value={textAreaValue}
-      ></textarea>
+    <div className='w-full mt-5'>
+      <ScrollArea className='h-60 w-full mb-2'>
+        <Textarea
+          className='h-80 resize-none'
+          readOnly
+          draggable='false'
+          ref={chatWindowRef}
+          value={textAreaValue}
+        />
+      </ScrollArea>
+      <div className='grid w-full gap-2'>
+        <Textarea
+          className='w-full resize-none'
+          placeholder='Type your message here.'
+          value={messageInput}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+        />
+        <Button>Send message</Button>
+      </div>
 
-      <Feedback messageId={messageId} token={token} />
-
-      <div className='input-container'>
+      {/* <div className='input-container'>
         <div className='message-input-container'>
           <input
             className='message-input'
@@ -171,9 +182,9 @@ const TextView = ({
             )}
           </div>
         )}
-      </div>
+      </div> */}
 
-      {!callActive.current && !keyboard ? (
+      {/* {!callActive.current && !keyboard ? (
         <IconButton
           Icon={talking.current ? TbPlayerStopFilled : TbMicrophone}
           className={`${talking.current ? 'recording-animation' : 'icon-blue'}`}
@@ -182,28 +193,7 @@ const TextView = ({
         />
       ) : (
         <Button onClick={handleSendClick} name='Send Message' />
-      )}
-
-      <div className='options-container'>
-        <IconButton
-          Icon={TbPower}
-          className='icon-red'
-          onClick={handlePowerOffClick}
-        />
-        <IconButton
-          Icon={TbPhoneCall}
-          className='icon-blue'
-          onClick={() => setIsCallView(true)}
-          disabled={talking.current}
-        />
-        <IconButton
-          Icon={TbShare2}
-          disabled={isResponding}
-          onClick={() =>
-            window.open(`/shared?session_id=${sessionId}`, '_blank')
-          }
-        />
-      </div>
+      )} */}
     </div>
   );
 };

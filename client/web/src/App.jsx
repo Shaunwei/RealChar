@@ -120,7 +120,7 @@ const App = () => {
       if (message === '[end]\n' || message.match(/\[end=([a-zA-Z0-9]+)\]/)) {
         setIsTextStreaming(false);
         setIsResponding(false);
-        setTextAreaValue(prevState => prevState + '\n\n');
+        setTextAreaValue(prevState => prevState + '\n');
         const messageIdMatches = message.match(/\[end=([a-zA-Z0-9]+)\]/);
         if (messageIdMatches) {
           const messageId = messageIdMatches[1];

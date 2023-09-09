@@ -12,13 +12,24 @@
     "@mui/icons-material": "^5.14.1",
     "@mui/material": "^5.14.2",
     "@nextui-org/react": "^1.0.0-beta.13",
+    "@radix-ui/react-avatar": "^1.0.3",
+    "@radix-ui/react-dropdown-menu": "^2.0.5",
+    "@radix-ui/react-scroll-area": "^1.0.4",
+    "@radix-ui/react-select": "^1.2.2",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-switch": "^1.0.3",
+    "@radix-ui/react-toggle": "^1.0.3",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
     "firebase": "^10.0.0",
     "hark": "^1.2.3",
     "is-ip": "^5.0.0",
+    "lucide-react": "^0.274.0",
     "lz": "^0.1.1",
+    "next-themes": "^0.2.1",
     "query-string": "^8.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -26,6 +37,8 @@
     "react-modal": "^3.16.1",
     "react-router-dom": "^6.14.2",
     "react-scripts": "5.0.1",
+    "tailwind-merge": "^1.14.0",
+    "tailwindcss-animate": "^1.0.7",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -59,6 +72,7 @@
     "eslint-config-prettier": "^8.10.0",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react": "^7.33.1",
-    "prettier": "^3.0.1"
+    "prettier": "^3.0.1",
+    "tailwindcss": "^3.3.3"
   }
 }

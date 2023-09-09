@@ -5,18 +5,8 @@
  * created by Lynchee on 7/30/23
  */
 
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import IconButton from '@mui/material/IconButton';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import CustomTooltip from '../Common/CustomTooltip';
-import { signInWithGoogle } from '../Auth/SignIn';
 import { getHostName, getScheme } from '../../utils/urlUtils';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '../../components/ui/button';
 const updateQuivrInfo = async (token, quivrApiKey, quivrBrainId) => {
   const scheme = getScheme();

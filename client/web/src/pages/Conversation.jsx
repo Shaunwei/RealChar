@@ -77,7 +77,7 @@ const Conversation = ({
   const [emotion, setEmotion] = useState('');
 
   const { avatarDisplay, handleFirstInteractionAudio } = useAvatarView(
-    '84e3290e-4fd3-45f8-84b5-0372a1e85d41',
+    'a966ce24-1af4-4aa9-a5ca-83146ba77fe2',
     emotion
   );
 

@@ -5,7 +5,7 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import BaseMessage, HumanMessage
 
-from realtime_ai_character.database.chroma import get_database
+from realtime_ai_character.database import get_database
 from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, AsyncCallbackTextHandler, \
     LLM, SearchAgent
 from realtime_ai_character.logger import get_logger

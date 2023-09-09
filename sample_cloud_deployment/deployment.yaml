@@ -22,6 +22,8 @@ spec:
         env:
         - name: DATABASE_URL
           value: sqlite:///./test.db
+        - name: DATABASE_USE
+          value: CHROMA
         - name: OPENAI_API_KEY
           value: <YOUR_OPENAI_API_KEY>
         - name: SPEECH_TO_TEXT_USE

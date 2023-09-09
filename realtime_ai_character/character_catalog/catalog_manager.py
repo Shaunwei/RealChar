@@ -12,7 +12,7 @@ from langchain.text_splitter import CharacterTextSplitter
 
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Singleton, Character
-from realtime_ai_character.database.chroma import get_chroma
+from realtime_ai_character.database import get_database
 from readerwriterlock import rwlock
 from realtime_ai_character.database.connection import get_db
 from realtime_ai_character.models.character import Character as CharacterModel
@@ -24,7 +24,7 @@ logger = get_logger(__name__)
 class CatalogManager(Singleton):
     def __init__(self, overwrite=True):
         super().__init__()
-        self.db = get_chroma()
+        self.db = get_database()
         self.sql_db = next(get_db())
         self.sql_load_interval = 30
         self.sql_load_lock = rwlock.RWLockFair()
@@ -32,7 +32,7 @@ class CatalogManager(Singleton):
         if overwrite:
             logger.info('Overwriting existing data in the chroma.')
             self.db.delete_collection()
-            self.db = get_chroma()
+            self.db = get_database()
 
         self.characters = {}
         self.author_name_cache = {}

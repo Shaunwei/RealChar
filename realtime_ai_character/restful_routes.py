@@ -70,7 +70,7 @@ async def status():
 @router.get("/characters")
 async def characters(user=Depends(get_current_user)):
     def get_image_url(character):
-        gcs_path = 'https://storage.googleapis.com/assistly'
+        gcs_path = 'https://storage.cloud.google.com/realchar-dev'
         if character.data and 'avatar_filename' in character.data:
             return f'{gcs_path}/{character.data["avatar_filename"]}'
         else:
@@ -424,6 +424,10 @@ async def clone_voice(
         "xi-api-key": os.getenv("ELEVEN_LABS_API_KEY"),
     }
 
+    print("Sending request to Eleven Labs API...")
+    print(f"Request data: {data}")
+    print(f"Request headers: {headers}")
+    print(f"Request files: {files}")
     async with httpx.AsyncClient() as client:
         response = await client.post("https://api.elevenlabs.io/v1/voices/add",
                                      headers=headers, data=data, files=files)

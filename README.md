@@ -302,3 +302,39 @@ Please check out our [Contribution Guide](contribute.md)!
 
 ## 🎲 Community
 - Join us on [Discord](https://discord.gg/e4AYNnFg2F)
+
+## Dev Notes
+-   Seems the local deployment does not work well without auth system. There's authentication checks throughout `restful_routes.py` to ensure user is signed-in, and requires a working Firebase auth service to verify that.
+
+    To make the auth system work, set the following values to `.env`
+
+    ```
+    USE_AUTH=true
+    FIREBASE_CONFIG_PATH=firebase_credentials.json
+    ```
+
+    One can easily create a free Firebase project and enable the auth feature. The required `firebase_credentials.json` can be downloaded from Firebase. It's in the Project settings > Service accounts > Generate new private key. Make sure you keep that file confidential, as it grants full access to your Firebase project.
+
+-   Although it's written in the README that `google_credentials.json` is optional as if it's only needed for Google Speech-to-Text services, it's actually required for this project's cloud storage system. This project stores user data on Google Cloud Platform. The way to enable the storage service is as follows:
+
+    1.  Go to google cloud platform and start a project. New users get a $300 credit trial project.
+
+    1.  Under `service account` tab, create a new key and download, rename the `json` file as `google_credentials.json` and put it under the project root directory. 
+
+    1.  Create a storage bucket on GCP, put the bucket name in `.env` file:
+
+    ```
+    GCP_STORAGE_BUCKET_NAME=your-bucket-name
+    ```
+
+-   `firebase.js`
+
+    Is it better to store `firebaseConfig` in a config file so that people can deploy on their own Firebase projects without modifying the main branch code?
+
+-   I set in `.env` gpt-3.5-turbo-4k but 16k was actually used.
+
+-   Figure out what the "text-embedding-ada-002-v2" requests are. It's stealing my opanai api credits.
+
+-   Need to add cuDNN path to `LD_LIBRARY_PATH` for whisper to run. 
+
+-   Deleting a character does not delete the avatar image on google cloud.

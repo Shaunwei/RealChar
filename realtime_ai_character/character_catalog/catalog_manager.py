@@ -11,7 +11,8 @@ from llama_index import SimpleDirectoryReader
 from langchain.text_splitter import CharacterTextSplitter
 
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Singleton, Character
+from realtime_ai_character.utils import Character
+from realtime_ai_character.singleton import Singleton
 from realtime_ai_character.database import get_database
 from readerwriterlock import rwlock
 from realtime_ai_character.database.connection import get_db
@@ -156,6 +157,7 @@ class CatalogManager(Singleton):
                 'id': d.id_,
             } for d in documents])
         self.db.add_documents(docs)
+        print("blahblah")
 
 
     def load_character_from_sql_database(self):

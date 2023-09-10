@@ -6,7 +6,7 @@ from pydantic.dataclasses import dataclass
 from starlette.websockets import WebSocket, WebSocketState
 from sqlalchemy.orm import Session
 from realtime_ai_character.models.interaction import Interaction
-
+from .singleton import Singleton
 
 @dataclass
 class Character:
@@ -54,25 +54,6 @@ def build_history(conversation_history: ConversationHistory) -> List[BaseMessage
         else:
             history.append(HumanMessage(content=message))
     return history
-
-
-class Singleton:
-    _instances = {}
-
-    @classmethod
-    def get_instance(cls, *args, **kwargs):
-        """ Static access method. """
-        if cls not in cls._instances:
-            cls._instances[cls] = cls(*args, **kwargs)
-
-        return cls._instances[cls]
-
-    @classmethod
-    def initialize(cls, *args, **kwargs):
-        """ Static access method. """
-        if cls not in cls._instances:
-            cls._instances[cls] = cls(*args, **kwargs)
-
 
 class ConnectionManager(Singleton):
     def __init__(self):

@@ -10,7 +10,7 @@ from torch.cuda import is_available as is_cuda_available
 
 from realtime_ai_character.audio.speech_to_text.base import SpeechToText
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Singleton
+from realtime_ai_character.singleton import Singleton
 
 DEBUG = False
 logger = get_logger(__name__)

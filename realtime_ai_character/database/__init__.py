@@ -1,19 +1,19 @@
 import os
 from realtime_ai_character.database.base import Database
-from .qdrant import Qdrant
-from .chroma import Chroma
+
 def get_database(db: str = None) -> Database:
     if not db:
         db = os.getenv('DATABASE_USE', 'CHROMA')
     
     if db == 'QDRANT':
-        # Initialize if necessary
-        return Qdrant()  # Adjust with appropriate arguments
+        from realtime_ai_character.database.qdrant import Qdrant
+        Qdrant.initialize()  # Adjust with appropriate arguments if necessary
+        return Qdrant.get_instance()
 
     elif db == 'CHROMA':  
-        # Initialize if necessary
-        return Chroma()  # Adjust with appropriate arguments
+        from realtime_ai_character.database.chroma import Chroma
+        Chroma.initialize()  # Adjust with appropriate arguments if necessary
+        return Chroma.get_instance()
 
     else:
         raise NotImplementedError(f'Unknown database engine: {db}')
-

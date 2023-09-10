@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Singleton
+from realtime_ai_character.singleton import Singleton
 from realtime_ai_character.database.connection import get_db
 
 load_dotenv()

@@ -303,6 +303,12 @@ Please check out our [Contribution Guide](contribute.md)!
 ## 🎲 Community
 - Join us on [Discord](https://discord.gg/e4AYNnFg2F)
 
+## Change Log
+
+-   Added Llama2-7b-chat-hf as an option for cost effective dev & test.
+
+-   Switched from assistly-kubernetes to realchar-dev, which is my own Firebase and GCP storage, for experimenting and testing.
+
 ## Dev Notes
 -   Seems the local deployment does not work well without auth system. There's authentication checks throughout `restful_routes.py` to ensure user is signed-in, and requires a working Firebase auth service to verify that.
 
@@ -331,10 +337,17 @@ Please check out our [Contribution Guide](contribute.md)!
 
     Is it better to store `firebaseConfig` in a config file so that people can deploy on their own Firebase projects without modifying the main branch code?
 
--   I set in `.env` gpt-3.5-turbo-4k but 16k was actually used.
-
--   Figure out what the "text-embedding-ada-002-v2" requests are. It's stealing my opanai api credits.
-
 -   Need to add cuDNN path to `LD_LIBRARY_PATH` for whisper to run. 
 
 -   Deleting a character does not delete the avatar image on google cloud.
+
+-   What's the advantage of letting AI to prefix the "char_name>" instead of we hard code it?
+
+
+## Issues
+-   Currently the TTS function relies on detecting the prefix, "char_name>", to activate speaking. If it fails to detect the ">" token, it does not spit a sound at all. And we're relying on the AI to cleverly generate that prefix for us, which sometimes don't.
+## To Do
+
+-   Add response latency measurements.
+
+-   Can also collect the role the user is playing. For example, my name, my background. And make the chat history "balanced" in term of the prefixes "You>" and "char_name>".

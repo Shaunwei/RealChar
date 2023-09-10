@@ -73,8 +73,8 @@ class OpenaiLlm(LLM):
     
         self.qa_tool = Tool(name = "meeting_details",
                             func = self.meeting_details,
-                            description = "Use this tool to know more about the meeting attendees and their details whenever a guest provides his or her name for a meeting. \
-                                            The input to this tool should be a string")
+                            description = "Use this tool whenever a guest provides his or her name for a meeting to retrieve their details. \
+                                        The input to this tool should be a string. You must use this tool and DO NOT make up the phone number of the guest (eg 12345678)!")
 
         self.sql_tool = Tool(name="Insert_guest_datatable",
                         func=self.parsing_name_number,

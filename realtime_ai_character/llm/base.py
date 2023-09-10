@@ -9,8 +9,11 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.utilities import GoogleSerperAPIWrapper, SerpAPIWrapper, GoogleSearchAPIWrapper
 
 from realtime_ai_character.logger import get_logger
+from realtime_ai_character.utils import get_timer
 
 logger = get_logger(__name__)
+
+timer = get_timer()
 
 StreamingStdOutCallbackHandler.on_chat_model_start = lambda *args, **kwargs: None
 
@@ -57,7 +60,14 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
         pass
 
     async def on_llm_new_token(self, token: str, *args, **kwargs):
-        if not self.is_reply and ">" in token:  # small models might not give ">" (llama2-7b gives ">:" for example)
+        elapsed_time = timer.get_elapsed_time("llm")
+        if elapsed_time:
+            logger.info(f"LLM latency: {elapsed_time:.3f} s")
+            timer.start("tts")
+
+        if (
+            not self.is_reply and ">" in token
+        ):  # small models might not give ">" (e.g. llama2-7b gives ">:" as a token)
             self.is_reply = True
         elif self.is_reply:
             if token not in {'.', '?', '!'}:
@@ -73,6 +83,10 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
                 self.current_sentence = ""
                 if self.is_first_sentence:
                     self.is_first_sentence = False
+                    
+                elapsed_time = timer.get_elapsed_time("tts")
+                if elapsed_time:
+                    logger.info(f"TTS latency: {elapsed_time:.3f} s")
 
     async def on_llm_end(self, *args, **kwargs):
         if self.current_sentence != "":

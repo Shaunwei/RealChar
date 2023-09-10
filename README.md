@@ -303,13 +303,18 @@ Please check out our [Contribution Guide](contribute.md)!
 ## 🎲 Community
 - Join us on [Discord](https://discord.gg/e4AYNnFg2F)
 
-## Change Log
+## Changelog
 
--   Fixed issue that llama2-7b couldn't recognize the prefix, resulting in TTS not trigerred.
+### 2023-09-10 
+-   Added info loggers showing latencies of STT, LLM, TTS processes.
 
--   Added Llama2-7b-chat-hf as an option for cost effective dev & test.
+### 2023-09-09
+-   Fixed bug that TTS not trigerred due to Llama2-7b generating non-standard character prefix.
 
--   Switched from assistly-kubernetes to realchar-dev, which is my own Firebase and GCP storage, for experimenting and testing.
+### 2023-09-08
+-   Added Llama2-7b-chat-hf and more for cost effective dev & test.
+
+-   Switched from assistly-kubernetes to realchar-dev, which is my own Firebase and GCP, for dev & test.
 
 ## Dev Notes
 -   Seems the local deployment does not work well without auth system. There's authentication checks throughout `restful_routes.py` to ensure user is signed-in, and requires a working Firebase auth service to verify that.
@@ -350,8 +355,9 @@ Please check out our [Contribution Guide](contribute.md)!
 ## Issues
 -   Currently the TTS function relies on detecting the prefix, "char_name>", to activate speaking. If it fails to detect the ">" token, it does not spit a sound at all. And we're relying on the AI to cleverly generate that prefix for us, which sometimes don't.
 
-## Ideas
+-   Open Mic seems not working?
 
+## Ideas
 -   Add response latency measurements.
 
 -   Hard code the prefix "char_name>" instead of relying on the LLM generating it. Make the chat history "balanced" in term of the prefixes "You>" and "char_name>".
@@ -363,3 +369,14 @@ Please check out our [Contribution Guide](contribute.md)!
 -   Try allow AI to speak spontaneously, i.e., get out of the 1 question - 1 response paradigm. Maybe add time encoding to the input, like positional encoding did. Now it sounds more like a simplified audio based Transformer model.
 
 -   Add dev switch that keep large models for general users while allow developers to use small / test local models.
+
+## [1.1.0] - 2023-09-10
+### Added
+- New feature X
+
+### Fixed
+- Bug Y
+
+## [1.0.0] - 2023-08-25
+### Added
+- Initial release features

@@ -355,11 +355,9 @@ Please check out our [Contribution Guide](contribute.md)!
 ## Issues
 -   Currently the TTS function relies on detecting the prefix, "char_name>", to activate speaking. If it fails to detect the ">" token, it does not spit a sound at all. And we're relying on the AI to cleverly generate that prefix for us, which sometimes don't.
 
--   Open Mic seems not working?
+-   The hang-up button seems to need click twice to work in the CallView. And there's information redirection that causes the AI to speak twice (after stop recording).
 
 ## Ideas
--   Add response latency measurements.
-
 -   Hard code the prefix "char_name>" instead of relying on the LLM generating it. Make the chat history "balanced" in term of the prefixes "You>" and "char_name>".
 
 -   Can also collect the role the user is playing. For example, my name, my background. 
@@ -369,3 +367,5 @@ Please check out our [Contribution Guide](contribute.md)!
 -   Try allow AI to speak spontaneously, i.e., get out of the 1 question - 1 response paradigm. Maybe add time encoding to the input, like positional encoding did. Now it sounds more like a simplified audio based Transformer model.
 
 -   Add dev switch that keep large models for general users while allow developers to use small / test local models.
+
+-   Maybe reduce response latency by early generating before user has finished speaking or typing.

@@ -58,7 +58,7 @@ class AnysacleLlm(LLM):
         # 2. Add user input to history
         history.append(HumanMessage(content=user_input_template.format(
             context=context, query=user_input)))
-        
+
         # 3. Generate response
         response = await self.chat_open_ai.agenerate(
             [history], callbacks=[callback, audioCallback, StreamingStdOutCallbackHandler()],

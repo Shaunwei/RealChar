@@ -424,10 +424,6 @@ async def clone_voice(
         "xi-api-key": os.getenv("ELEVEN_LABS_API_KEY"),
     }
 
-    print("Sending request to Eleven Labs API...")
-    print(f"Request data: {data}")
-    print(f"Request headers: {headers}")
-    print(f"Request files: {files}")
     async with httpx.AsyncClient() as client:
         response = await client.post("https://api.elevenlabs.io/v1/voices/add",
                                      headers=headers, data=data, files=files)

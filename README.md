@@ -361,3 +361,5 @@ Please check out our [Contribution Guide](contribute.md)!
 -   Can provide some template prompts that specify the relation between the user and the character, for example, friends, parents, spouse, fans, etc.
 
 -   Try allow AI to speak spontaneously, i.e., get out of the 1 question - 1 response paradigm. Maybe add time encoding to the input, like positional encoding did. Now it sounds more like a simplified audio based Transformer model.
+
+-   Add dev switch that keep large models for general users while allow developers to use small / test local models.

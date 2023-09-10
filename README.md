@@ -369,14 +369,3 @@ Please check out our [Contribution Guide](contribute.md)!
 -   Try allow AI to speak spontaneously, i.e., get out of the 1 question - 1 response paradigm. Maybe add time encoding to the input, like positional encoding did. Now it sounds more like a simplified audio based Transformer model.
 
 -   Add dev switch that keep large models for general users while allow developers to use small / test local models.
-
-## [1.1.0] - 2023-09-10
-### Added
-- New feature X
-
-### Fixed
-- Bug Y
-
-## [1.0.0] - 2023-08-25
-### Added
-- Initial release features

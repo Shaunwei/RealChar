@@ -41,7 +41,7 @@ export default function SettingsButton({
       onClose={onClose}
       size="2xl"
       classNames={{
-        base: 'rounded-none font-light border-modalBorder bg-modalBG border-2 max-w-5xl lg:py-16 lg:pl-10 lg:pr-10',
+        base: 'rounded-none font-light border-real-blue-300/30 bg-modalBG border-2 max-w-5xl lg:py-16 lg:pl-10 lg:pr-10',
         header: 'text-center font-light justify-center text-3xl',
         body: 'text-xl py-6',
       }}

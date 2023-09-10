@@ -61,7 +61,7 @@ export default function InputField() {
         />
         <Button
           size="lg"
-          className="bg-real-navy px-2 min-w-fit sm:min-w-16 sm:px-4"
+          className="bg-real-blue-500 px-2 min-w-fit sm:min-w-16 sm:px-4"
           onPress={handleOnEnter}
         >
           <IoPaperPlaneOutline size="2em"/>
@@ -91,7 +91,7 @@ export default function InputField() {
             isIconOnly
             size="lg"
             radius="full"
-            className="bg-real-navy w-24 h-24 mb-4"
+            className="bg-real-blue-500 w-24 h-24 mb-4"
             onPress={startTalk}
           >
             <Image
@@ -109,13 +109,13 @@ export default function InputField() {
       <div className="text-center">
           <p className="font-light">You <span className="text-white/50">are speaking...</span></p>
         <div className="mt-10 mb-4">
-          <span className="animate-ping absolute w-24 h-24 bg-real-navy opacity-50 rounded-full"></span>
+          <span className="animate-ping absolute w-24 h-24 bg-real-blue-500 opacity-50 rounded-full"></span>
           <Button
             isIconOnly
             radius="full"
             size="lg"
             onPress={stopTalk}
-            className="bg-real-navy w-24 h-24"
+            className="bg-real-blue-500 w-24 h-24"
           >
             <Image
               priority

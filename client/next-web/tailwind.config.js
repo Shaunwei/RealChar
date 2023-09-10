@@ -26,18 +26,30 @@ module.exports = {
       'dropdown': '#1e2643',
       'dropdownHover': 'rgba(103, 133, 211, 0.3)',
       'modalBG': '#050e2e',
-      'modalBorder': 'rgba(194, 211, 255, 0.3)',
       'real-black': {
         DEFAULT: '#02081D',
       },
       'real-silver': {
+        300: '#BEC5D9',
         500: '#636A84',
       },
-      'real-navy': {
-        DEFAULT: '#6785D3',
+      'real-blue': {
+        100: '#EEF3FF',
+        300: '#C2D3FF',
+        500: '#6785D3',
       },
       'real-contrastBlue': {
         DEFAULT: '#1F4FCC',
+      },
+      'real-orange': {
+        500: '#F24B2A',
+        700: '#D33414',
+      },
+      'real-dark': {
+        trending: '#1c2733',
+        search: '#283340',
+        4: '#3A444C',
+        6: '#8899A6',
       }
     }
   },

@@ -52,32 +52,17 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
         self.tts_event = tts_event
         # optimization: trade off between latency and quality for the first sentence
         self.is_first_sentence = True
-        logger.debug(f"\033[36mtext_to_speech: {repr(text_to_speech)}\033[0m")
-        logger.debug(f"\033[36mwebsocket: {repr(websocket)}\033[0m")
-        logger.debug(f"\033[36mtts_event: {repr(tts_event)}\033[0m")
-        logger.debug(f"\033[36mvoice_id: {repr(voice_id)}\033[0m")
-        logger.debug(f"\033[36mlanguage: {repr(language)}\033[0m")
 
     async def on_chat_model_start(self, *args, **kwargs):
-        logger.debug(f"\033[36mIn AsyncCallbackAudioHandler.on_chat_model_start\033[0m")
         pass
 
     async def on_llm_new_token(self, token: str, *args, **kwargs):
-        logger.debug(f"\033[36mIn AsyncCallbackAudioHandler.on_llm_new_token\033[0m")
-        logger.debug(f"\033[36mself.is_reply: {repr(self.is_reply)}\033[0m")
-        logger.debug(f"\033[36mtoken: {repr(token)}\033[0m")
-        if not self.is_reply and ">" in token:  # small models might not give ">" (llama2-7b gives ">:" sometime)
+        if not self.is_reply and ">" in token:  # small models might not give ">" (llama2-7b gives ">:" for example)
             self.is_reply = True
         elif self.is_reply:
             if token not in {'.', '?', '!'}:
                 self.current_sentence += token
             else:
-                logger.debug(f"\033[36mcurrent_sentence: {repr(self.current_sentence)}\033[0m")
-                logger.debug(f"\033[36mwebsocket: {repr(self.websocket)}\033[0m")
-                logger.debug(f"\033[36mtts_event: {repr(self.tts_event)}\033[0m")
-                logger.debug(f"\033[36mvoice_id: {repr(self.voice_id)}\033[0m")
-                logger.debug(f"\033[36mis_first_sentence: {repr(self.is_first_sentence)}\033[0m")
-                logger.debug(f"\033[36mlanguage: {repr(self.language)}\033[0m")
                 await self.text_to_speech.stream(
                     self.current_sentence,
                     self.websocket,
@@ -90,7 +75,6 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
                     self.is_first_sentence = False
 
     async def on_llm_end(self, *args, **kwargs):
-        logger.debug(f"\033[36mIn AsyncCallbackAudioHandler.on_llm_end\033[0m")
         if self.current_sentence != "":
             await self.text_to_speech.stream(
                 self.current_sentence,

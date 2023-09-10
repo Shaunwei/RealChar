@@ -305,6 +305,8 @@ Please check out our [Contribution Guide](contribute.md)!
 
 ## Change Log
 
+-   Fixed issue that llama2-7b couldn't recognize the prefix, resulting in TTS not trigerred.
+
 -   Added Llama2-7b-chat-hf as an option for cost effective dev & test.
 
 -   Switched from assistly-kubernetes to realchar-dev, which is my own Firebase and GCP storage, for experimenting and testing.
@@ -348,8 +350,14 @@ Please check out our [Contribution Guide](contribute.md)!
 ## Issues
 -   Currently the TTS function relies on detecting the prefix, "char_name>", to activate speaking. If it fails to detect the ">" token, it does not spit a sound at all. And we're relying on the AI to cleverly generate that prefix for us, which sometimes don't.
 
-## To Do
+## Ideas
 
 -   Add response latency measurements.
 
--   Can also collect the role the user is playing. For example, my name, my background. And make the chat history "balanced" in term of the prefixes "You>" and "char_name>".
+-   Hard code the prefix "char_name>" instead of relying on the LLM generating it. Make the chat history "balanced" in term of the prefixes "You>" and "char_name>".
+
+-   Can also collect the role the user is playing. For example, my name, my background. 
+
+-   Can provide some template prompts that specify the relation between the user and the character, for example, friends, parents, spouse, fans, etc.
+
+-   Try allow AI to speak spontaneously, i.e., get out of the 1 question - 1 response paradigm. Maybe add time encoding to the input, like positional encoding did. Now it sounds more like a simplified audio based Transformer model.

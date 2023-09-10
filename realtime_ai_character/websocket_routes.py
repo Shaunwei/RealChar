@@ -23,13 +23,15 @@ from realtime_ai_character.logger import get_logger
 from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.quivr_info import QuivrInfo
 from realtime_ai_character.utils import (ConversationHistory, build_history,
-                                         get_connection_manager)
+                                         get_connection_manager, get_timer)
 
 logger = get_logger(__name__)
 
 router = APIRouter()
 
 manager = get_connection_manager()
+
+timer = get_timer()
 
 GREETING_TXT_MAP = {
     "en-US": "Hi, my friend, what brings you here today?",
@@ -265,6 +267,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 raise WebSocketDisconnect('disconnected')
             # handle text message
             if 'text' in data:
+                timer.start("llm")
                 msg_data = data['text']
                 # Handle client side commands
                 if msg_data.startswith('[!'):
@@ -365,11 +368,19 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
 
             # handle binary message(audio)
             elif 'bytes' in data:
+                timer.start("stt")
                 binary_data = data['bytes']
                 # 0. Handle interim speech.
                 if speech_recognition_interim:
-                    interim_transcript: str = (await asyncio.to_thread(speech_to_text.transcribe,
-                        binary_data, platform=platform,prompt=current_speech, suppress_tokens=[0, 11, 13, 30])).strip()
+                    interim_transcript: str = (
+                        await asyncio.to_thread(
+                            speech_to_text.transcribe,
+                            binary_data,
+                            platform=platform,
+                            prompt=current_speech,
+                            suppress_tokens=[0, 11, 13, 30],
+                        )
+                    ).strip()
                     speech_recognition_interim = False
                     # Filter noises.
                     if not interim_transcript:
@@ -395,6 +406,12 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 await stop_audio()
 
                 previous_transcript = transcript
+
+                # record time spent on Speech-to-Text
+                elapsed_time = timer.get_elapsed_time("stt")
+                if elapsed_time:
+                    logger.info(f"STT latency: {elapsed_time:.3f} s")
+                    timer.start("llm")
 
                 async def tts_task_done_call_back(response):
                     # Send response to client, [=] indicates the response is done

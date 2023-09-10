@@ -1,4 +1,5 @@
 from dataclasses import field
+from time import perf_counter
 from typing import List, Optional
 
 from langchain.schema import AIMessage, BaseMessage, HumanMessage, SystemMessage
@@ -99,3 +100,23 @@ class ConnectionManager(Singleton):
 
 def get_connection_manager():
     return ConnectionManager.get_instance()
+
+
+class Timer(Singleton):
+    def __init__(self):
+        self.start_time: dict[str, float] = {}
+
+    def start(self, id: str):
+        self.start_time[id] = perf_counter()
+
+    def get_elapsed_time(self, id: str):
+        if id in self.start_time:
+            elapsed = perf_counter() - self.start_time[id]
+            del self.start_time[id]
+            return elapsed
+        else:
+            return None
+        
+
+def get_timer() -> Timer:
+    return Timer.get_instance()

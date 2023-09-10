@@ -17,7 +17,7 @@ if os.getenv('OPENAI_API_TYPE') == 'azure':
 class Qdrant(Singleton, Database):
     def __init__(self):
         from qdrant_client import QdrantClient  
-
+        super().__init__()
         self.db = LangChainQdrant(
             client=QdrantClient(),  
             collection_name="llm",  

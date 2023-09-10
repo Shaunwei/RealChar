@@ -16,6 +16,7 @@ if os.getenv('OPENAI_API_TYPE') == 'azure':
 
 class Chroma(Singleton, Database):
     def __init__(self):
+        super().__init__()
         self.db = LangChainChroma(
             collection_name='llm',
             embedding_function=embedding,

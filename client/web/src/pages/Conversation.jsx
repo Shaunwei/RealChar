@@ -9,6 +9,7 @@ import CallView from '../components/CallView';
 import TextView from '../components/TextView';
 import { useNavigate, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
+
 import Avatar from '@mui/material/Avatar';
 import useAvatarView from '../components/AvatarView';
 import { extractEmotionFromPrompt } from '@avatechai/avatars';
@@ -76,7 +77,7 @@ const Conversation = ({
   const [emotion, setEmotion] = useState('');
 
   const { avatarDisplay, handleFirstInteractionAudio } = useAvatarView(
-    selectedCharacter?.avatar_id,
+    '66e4c0a5-da55-4d6c-b542-44345a5c39c4',
     emotion
   );
 
@@ -145,7 +146,7 @@ const Conversation = ({
   }
 
   return (
-    <div className='conversation-page'>
+    <main className='p-8 mx-auto max-w-7xl w-full' style={{ height: '100vh' }}>
       {/* we render both views but only display one. */}
       <p className='alert text-white'>
         {isConnected.current && isThinking && isCallView ? (
@@ -154,17 +155,8 @@ const Conversation = ({
           <span className='recording'>Recording</span>
         ) : null}
       </p>
-
-      <div className={`avatar-wrapper ${isPlaying ? 'pulsating-avatar' : ''}`}>
-        {selectedCharacter?.avatar_id ? (
-          <>{avatarDisplay}</>
-        ) : (
-          <Avatar
-            alt={selectedCharacter.name}
-            src={selectedCharacter.image_url}
-            sx={{ width: 76, height: 76 }}
-          />
-        )}
+      <div className='flex flex-col space-y-4 w-full justify-center items-center'>
+        {avatarDisplay}
       </div>
 
       <div
@@ -189,10 +181,7 @@ const Conversation = ({
         />
       </div>
 
-      <div
-        className='main-screen'
-        style={{ display: isCallView ? 'none' : 'flex' }}
-      >
+      <div style={{ width: '100%', display: isCallView ? 'none' : 'flex' }}>
         <TextView
           selectedCharacter={selectedCharacter}
           send={send}
@@ -218,7 +207,7 @@ const Conversation = ({
           sessionId={sessionId}
         />
       </div>
-    </div>
+    </main>
   );
 };
 

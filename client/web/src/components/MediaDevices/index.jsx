@@ -6,7 +6,13 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import './style.css';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../components/ui/select';
 
 const MediaDevices = ({ selectedDevice, setSelectedDevice }) => {
   const [devices, setDevices] = useState([]);
@@ -27,27 +33,31 @@ const MediaDevices = ({ selectedDevice, setSelectedDevice }) => {
         }
       })
       .catch(err => console.log('An error occurred: ' + err));
-  }, []);
+  }, [selectedDevice]);
 
-  const handleDeviceChange = event => {
-    setSelectedDevice(event.target.value);
+  const handleDeviceChange = value => {
+    setSelectedDevice(value);
   };
-
   return (
-    <div className='devices-container'>
+    <div className='space-y-2'>
       <label>Microphone</label>
-      <select
-        id='audio-device-selection'
+      <Select
         value={selectedDevice}
-        onChange={handleDeviceChange}
+        onValueChange={handleDeviceChange}
+        id='audio-device-selection'
         className='select'
       >
-        {devices.map((device, index) => (
-          <option key={device.deviceId} value={device.deviceId}>
-            {device.label || `Microphone ${index + 1}`}
-          </option>
-        ))}
-      </select>
+        <SelectTrigger>
+          <SelectValue placeholder='Select a Microphone' />
+        </SelectTrigger>
+        <SelectContent>
+          {devices.map((device, index) => (
+            <SelectItem key={device.deviceId} value={device.deviceId}>
+              {device.label || `Microphone ${index + 1}`}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 };

@@ -5,21 +5,10 @@
  * created by Lynchee on 7/16/23
  */
 
-import React, { useEffect, useRef, useState } from 'react';
-import './style.css';
-import {
-  TbPower,
-  TbPhoneCall,
-  TbMicrophone,
-  TbPlayerStopFilled,
-  TbKeyboard,
-  TbShare2,
-} from 'react-icons/tb';
-import IconButton from '../Common/IconButton';
-import { MdVoiceChat } from 'react-icons/md';
-import Button from '../Common/Button';
-import { useNavigate } from 'react-router-dom';
-import Feedback from '../Feedback';
+import React, { useEffect, useRef } from 'react';
+import { Button } from '../../components/ui/button';
+import { Textarea } from '../../components/ui/textarea';
+import { ScrollArea } from '../ui/scroll-area';
 
 const TextView = ({
   selectedCharacter,
@@ -43,8 +32,6 @@ const TextView = ({
   token,
   sessionId,
 }) => {
-  const navigate = useNavigate();
-  const [keyboard, SetKeyboard] = useState(true);
   const chatWindowRef = useRef(null);
   const talking = useRef(false);
 
@@ -75,11 +62,6 @@ const TextView = ({
       );
     }
   }, [isThinking, textAreaValue]);
-
-  const handlePowerOffClick = () => {
-    navigate('/');
-    handleDisconnect();
-  };
 
   // send message to server. stop audio if it's playing to interrupt character.
   const sendMessage = () => {
@@ -120,89 +102,26 @@ const TextView = ({
     }
   };
 
-  const handleKeyboardClick = () => {
-    SetKeyboard(true);
-  };
-
-  const handleAudioClick = () => {
-    SetKeyboard(false);
-  };
-
   return (
-    <div className='text-screen'>
-      <textarea
-        className='chat-window'
-        readOnly
-        draggable='false'
-        ref={chatWindowRef}
-        value={textAreaValue}
-      ></textarea>
-
-      <Feedback messageId={messageId} token={token} />
-
-      <div className='input-container'>
-        <div className='message-input-container'>
-          <input
-            className='message-input'
-            type='text'
-            placeholder='Type your message'
-            value={messageInput}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-          />
-          <span className='focus-border'>
-            <i></i>
-          </span>
-        </div>
-        {!callActive.current && (
-          <div>
-            {keyboard ? (
-              <IconButton
-                Icon={MdVoiceChat}
-                className='icon-blue'
-                onClick={handleAudioClick}
-              />
-            ) : (
-              <IconButton
-                Icon={TbKeyboard}
-                className='icon-blue'
-                onClick={handleKeyboardClick}
-              />
-            )}
-          </div>
-        )}
-      </div>
-
-      {!callActive.current && !keyboard ? (
-        <IconButton
-          Icon={talking.current ? TbPlayerStopFilled : TbMicrophone}
-          className={`${talking.current ? 'recording-animation' : 'icon-blue'}`}
-          bgcolor={`${talking.current ? 'red' : 'default'}`}
-          onClick={handlePushTalk}
+    <div className='w-full mt-5'>
+      <ScrollArea className='h-60 w-full mb-2'>
+        <Textarea
+          className='h-80 resize-none'
+          readOnly
+          draggable='false'
+          ref={chatWindowRef}
+          value={textAreaValue}
         />
-      ) : (
-        <Button onClick={handleSendClick} name='Send Message' />
-      )}
-
-      <div className='options-container'>
-        <IconButton
-          Icon={TbPower}
-          className='icon-red'
-          onClick={handlePowerOffClick}
+      </ScrollArea>
+      <div className='grid w-full gap-2'>
+        <Textarea
+          className='w-full resize-none'
+          placeholder='Type your message here.'
+          value={messageInput}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
         />
-        <IconButton
-          Icon={TbPhoneCall}
-          className='icon-blue'
-          onClick={() => setIsCallView(true)}
-          disabled={talking.current}
-        />
-        <IconButton
-          Icon={TbShare2}
-          disabled={isResponding}
-          onClick={() =>
-            window.open(`/shared?session_id=${sessionId}`, '_blank')
-          }
-        />
+        <Button onClick={handleSendClick}>Send message</Button>
       </div>
     </div>
   );

@@ -22,3 +22,17 @@ class Qdrant(Database):
             collection_name="MyCollection",  # You would pass the collection name when creating an instance of this class
             embeddings=embedding,
         )
+    
+    def delete_collection(self):
+        # Implement logic to delete all data from the collection
+        pass
+
+    def persist(self):
+        # Implement logic to save/load the data to/from disk
+        pass
+    
+    def add_documents(self, docs):
+        pass
+    
+    def similarity_search(self, query):
+        self.db.similarity_search(query)

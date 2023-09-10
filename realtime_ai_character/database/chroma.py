@@ -20,3 +20,15 @@ class Chroma(Database):
             embedding_function=embedding,
             persist_directory='./chroma.db'
         )
+    
+    def delete_collection(self):
+        self.db.delete_collection()
+
+    def persist(self):
+        self.db.persist()
+    
+    def add_documents(self, docs):
+        self.db.add_documents(docs)
+
+    def similarity_search(self, query):
+        self.db.similarity_search(query)

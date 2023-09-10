@@ -45,6 +45,8 @@ class ElevenLabs(Singleton, TextToSpeech):
             logger.info("voice_id is not found in .env file, using ElevenLabs default voice")
             voice_id = "21m00Tcm4TlvDq8ikWAM"
         headers = config.headers
+        logger.debug(f"\033[36mvoice_id: {repr(voice_id)}\033[0m")
+        logger.debug(f"\033[36mheaders: {repr(headers)}\033[0m")
         if language != 'en-US':
             config.data["model_id"] = 'eleven_multilingual_v1'
         data = {
@@ -52,10 +54,13 @@ class ElevenLabs(Singleton, TextToSpeech):
             **config.data,
         }
         url = config.url.format(voice_id=voice_id)
+        logger.debug(f"\033[36murl: {repr(url)}\033[0m")
         if first_sentence:
             url = url + '?optimize_streaming_latency=4'
+            logger.debug(f"\033[36murl update: {repr(url)}\033[0m")
         async with httpx.AsyncClient() as client:
             response = await client.post(url, json=data, headers=headers)
+            logger.debug(f"\033[36mresponse.status_code: {repr(response.status_code)}\033[0m")
             if response.status_code != 200:
                 logger.error(
                     f"ElevenLabs returns response {response.status_code}")

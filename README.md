@@ -343,9 +343,11 @@ Please check out our [Contribution Guide](contribute.md)!
 
 -   What's the advantage of letting AI to prefix the "char_name>" instead of we hard code it?
 
+-   Voice Cloning doesn't work because my free-tier XI-Lab account doesn't support it.
 
 ## Issues
 -   Currently the TTS function relies on detecting the prefix, "char_name>", to activate speaking. If it fails to detect the ">" token, it does not spit a sound at all. And we're relying on the AI to cleverly generate that prefix for us, which sometimes don't.
+
 ## To Do
 
 -   Add response latency measurements.

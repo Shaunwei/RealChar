@@ -266,6 +266,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
             # handle text message
             if 'text' in data:
                 msg_data = data['text']
+                logger.debug(f"\033[36mmsg_data: {msg_data}\033[0m")
                 # Handle client side commands
                 if msg_data.startswith('[!'):
                     command_end = msg_data.find(']')
@@ -333,6 +334,9 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     quivrBrainId=quivr_info.quivr_brain_id if quivr_info else None,
                     useMultiOn=use_multion,
                     metadata={"message_id": message_id})
+
+                logger.debug(f"\033[36mmessage_id: {message_id}\033[0m")
+                logger.debug(f"\033[36mresponse: {response}\033[0m")
 
                 # 3. Send response to client
                 await manager.send_message(message=f'[end={message_id}]\n',

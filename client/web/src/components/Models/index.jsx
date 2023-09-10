@@ -35,14 +35,19 @@ const Models = ({ isMobile, selectedModel, setSelectedModel }) => {
       tooltip: 'Slower model, longer context window for long conversation',
     },
     {
-      id: 'meta-llama/Llama-2-70b-chat-hf',
-      name: 'Llama-2-70b',
-      tooltip: 'Open source model, good for most conversation',
-    },
-    {
       id: 'meta-llama/Llama-2-7b-chat-hf',
       name: 'Llama-2-7b',
       tooltip: 'Cheapest model, good for dev and testing',
+    },
+    {
+      id: 'meta-llama/Llama-2-13b-chat-hf',
+      name: 'Llama-2-13b',
+      tooltip: 'Simply for dev and testing',
+    },
+    {
+      id: 'meta-llama/Llama-2-70b-chat-hf',
+      name: 'Llama-2-70b',
+      tooltip: 'Open source model, good for most conversation',
     },
   ];
 

@@ -85,3 +85,9 @@ p {
   color: white;
   font-size: large;
 }
+
+@media (min-width: 768px) {
+  .md-align-self {
+    align-self: stretch;
+  }
+}

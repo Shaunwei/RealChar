@@ -60,11 +60,8 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
         pass
 
     async def on_llm_new_token(self, token: str, *args, **kwargs):
-        elapsed_time = timer.get_elapsed_time("llm")
-        if elapsed_time:
-            logger.info(f"LLM latency: {elapsed_time:.3f} s")
-            timer.start("tts")
-
+        timer.log("LLM API")
+        timer.log("LLM", lambda: timer.start("TTS"))
         if (
             not self.is_reply and ">" in token
         ):  # small models might not give ">" (e.g. llama2-7b gives ">:" as a token)
@@ -73,6 +70,8 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
             if token not in {'.', '?', '!'}:
                 self.current_sentence += token
             else:
+                if self.is_first_sentence:
+                    timer.start("TTS API")
                 await self.text_to_speech.stream(
                     self.current_sentence,
                     self.websocket,
@@ -83,10 +82,6 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
                 self.current_sentence = ""
                 if self.is_first_sentence:
                     self.is_first_sentence = False
-                    
-                elapsed_time = timer.get_elapsed_time("tts")
-                if elapsed_time:
-                    logger.info(f"TTS latency: {elapsed_time:.3f} s")
 
     async def on_llm_end(self, *args, **kwargs):
         if self.current_sentence != "":

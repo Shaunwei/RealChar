@@ -3,10 +3,13 @@ import types
 import httpx
 
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Singleton
+from realtime_ai_character.utils import Singleton, get_timer
 from realtime_ai_character.audio.text_to_speech.base import TextToSpeech
 
 logger = get_logger(__name__)
+
+timer = get_timer()
+
 DEBUG = False
 
 config = types.SimpleNamespace(**{
@@ -39,6 +42,7 @@ class UnrealSpeech(Singleton, TextToSpeech):
 
         async with httpx.AsyncClient() as client:
             response = await client.get(config.url, params=params)
+            timer.log("TTS API")
             if response.status_code != 200:
                 logger.error(
                     f"Unreal Speech returns response {response.status_code}")
@@ -48,6 +52,7 @@ class UnrealSpeech(Singleton, TextToSpeech):
                     # stop streaming audio
                     break
                 await websocket.send_bytes(chunk)
+                timer.log("TTS")
 
     async def generate_audio(self, text, voice_id=5, *args, **kwargs) -> bytes:
         params = {

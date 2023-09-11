@@ -7,10 +7,13 @@ from google.oauth2 import service_account
 import google.auth.transport.requests
 
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Singleton
+from realtime_ai_character.utils import Singleton, get_timer
 from realtime_ai_character.audio.text_to_speech.base import TextToSpeech
 
 logger = get_logger(__name__)
+
+timer = get_timer()
+
 DEBUG = False
 
 config = types.SimpleNamespace(**{
@@ -77,6 +80,7 @@ class GoogleCloudTTS(Singleton, TextToSpeech):
         url = config.url
         async with httpx.AsyncClient() as client:
             response = await client.post(url, json=data, headers=headers)
+            timer.log("TTS API")
             # Google Cloud TTS API does not support streaming, we send the whole content at once
             if response.status_code != 200:
                 logger.error(f"Google Cloud TTS returns response {response.status_code}")
@@ -85,6 +89,7 @@ class GoogleCloudTTS(Singleton, TextToSpeech):
                 # Decode the base64-encoded audio content
                 audio_content = base64.b64decode(audio_content)
                 await websocket.send_bytes(audio_content)
+                timer.log("TTS")
 
 
     async def generate_audio(self, text, voice_id = "", language='en-US') -> bytes:

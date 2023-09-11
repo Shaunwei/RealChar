@@ -9,9 +9,11 @@ from realtime_ai_character.database.chroma import get_chroma
 from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, AsyncCallbackTextHandler, \
     LLM, SearchAgent
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Character
+from realtime_ai_character.utils import Character, get_timer
 
 logger = get_logger(__name__)
+
+timer = get_timer()
 
 
 class AnysacleLlm(LLM):
@@ -60,6 +62,7 @@ class AnysacleLlm(LLM):
             context=context, query=user_input)))
 
         # 3. Generate response
+        timer.start('LLM API')
         response = await self.chat_open_ai.agenerate(
             [history], callbacks=[callback, audioCallback, StreamingStdOutCallbackHandler()],
             metadata=metadata)

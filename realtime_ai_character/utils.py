@@ -1,12 +1,15 @@
 from dataclasses import field
 from time import perf_counter
-from typing import List, Optional
+from typing import List, Optional, Callable
 
 from langchain.schema import AIMessage, BaseMessage, HumanMessage, SystemMessage
 from pydantic.dataclasses import dataclass
 from starlette.websockets import WebSocket, WebSocketState
 from sqlalchemy.orm import Session
 from realtime_ai_character.models.interaction import Interaction
+from realtime_ai_character.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 @dataclass
@@ -116,6 +119,13 @@ class Timer(Singleton):
             return elapsed
         else:
             return None
+        
+    def log(self, id: str, callback: Optional[Callable] = None):
+        elapsed_time = self.get_elapsed_time(id)
+        if elapsed_time:
+            logger.info(f"{id} latency: {elapsed_time:.3f} s")
+            if callback:
+                callback()
         
 
 def get_timer() -> Timer:

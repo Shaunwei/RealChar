@@ -1,4 +1,3 @@
-import os
 from typing import List, Union
 
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -13,10 +12,12 @@ from realtime_ai_character.llm.base import (
     SearchAgent,
 )
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Character
+from realtime_ai_character.utils import Character, get_timer
 
 
 logger = get_logger(__name__)
+
+timer = get_timer()
 
 
 class LocalLlm(LLM):
@@ -63,6 +64,7 @@ class LocalLlm(LLM):
         )
 
         # 3. Generate response
+        timer.start('LLM API')
         response = await self.chat_open_ai.agenerate(
             [history],
             callbacks=[callback, audioCallback, StreamingStdOutCallbackHandler()],

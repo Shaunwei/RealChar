@@ -10,10 +10,14 @@ from torch.cuda import is_available as is_cuda_available
 
 from realtime_ai_character.audio.speech_to_text.base import SpeechToText
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Singleton
+from realtime_ai_character.utils import Singleton, get_timer
 
 DEBUG = False
+
 logger = get_logger(__name__)
+
+timer = get_timer()
+
 config = types.SimpleNamespace(**{
     'model': os.getenv("LOCAL_WHISPER_MODEL", "base"),
     'language': 'en',
@@ -69,17 +73,25 @@ class Whisper(Singleton, SpeechToText):
 
     def _transcribe(self, audio, prompt="", language="en-US", suppress_tokens=[-1]):
         language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, config.language)
+        timer.start("STT API")
         segs, _ = self.model.transcribe(
-            audio, language=language, vad_filter=True, initial_prompt=prompt, suppress_tokens=suppress_tokens
+            audio,
+            language=language,
+            vad_filter=True,
+            initial_prompt=prompt,
+            suppress_tokens=suppress_tokens,
         )
+        timer.log("STT API")
         text = " ".join([seg.text for seg in segs])
         return text
 
     def _transcribe_api(self, audio, prompt=""):
+        timer.start("STT API")
         text = self.recognizer.recognize_whisper_api(
             audio,
             api_key=config.api_key,
         )
+        timer.log("STT API")
         return text
 
     def _convert_webm_to_wav(self, webm_data, local=True):

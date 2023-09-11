@@ -8,7 +8,7 @@ class Guest(Base):
     __tablename__ = "guests_test"
 
     name = Column(String, primary_key=True)
-    number = Column(String)
+    email = Column(String)
 
 
     def to_dict(self):

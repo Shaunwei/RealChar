@@ -22,6 +22,7 @@ import CharCreate from './pages/CharCreate';
 import CharDelete from './pages/CharDelete';
 import Privacy from './pages/Privacy';
 import Support from './pages/Support';
+import Meeting from './pages/Meeting';
 
 // utils
 import auth from './utils/firebase';
@@ -434,6 +435,7 @@ const App = () => {
           />
           <Route path='/privacy' element={<Privacy />} />
           <Route path='/support' element={<Support />} />
+          <Route path='/meeting' element={<Meeting />} />
         </Routes>
         {/* 
         <Footer /> */}

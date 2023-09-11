@@ -19,7 +19,7 @@ depends_on = None
 def upgrade() -> None:
     op.create_table('guests_test',
                     sa.Column('name', sa.String(), primary_key=True),
-                    sa.Column('number', sa.String()),
+                    sa.Column('email', sa.String()),
                     sa.PrimaryKeyConstraint('name')
                     )
 

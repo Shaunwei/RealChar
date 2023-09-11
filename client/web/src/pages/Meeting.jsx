@@ -94,7 +94,6 @@ const Meeting = () => {
             </div>
             <div className='mt-4'>
               <Table>
-                <TableCaption>Board Meeting Guest Registry Table</TableCaption>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Board Member</TableHead>

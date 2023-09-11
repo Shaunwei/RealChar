@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from langchain.vectorstores import Chroma as LangChainChroma
+from langchain.vectorstores import Qdrant as LangChainQdrant
 from langchain.embeddings import OpenAIEmbeddings
 from realtime_ai_character.logger import get_logger
 from .base import Database
@@ -14,24 +14,26 @@ if os.getenv('OPENAI_API_TYPE') == 'azure':
     embedding = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"), deployment=os.getenv(
         "OPENAI_API_EMBEDDING_DEPLOYMENT_NAME", "text-embedding-ada-002"), chunk_size=1)
 
-class Chroma(Singleton, Database):
+class Qdrant(Singleton, Database):
     def __init__(self):
+        from qdrant_client import QdrantClient  
         super().__init__()
-        self.db = LangChainChroma(
-            collection_name='llm',
-            embedding_function=embedding,
-            persist_directory='./chroma.db'
+        self.db = LangChainQdrant(
+            client=QdrantClient(),  
+            collection_name="llm",  
+            embeddings=embedding,
         )
-        print("There are", self.db._collection.count(), "in the collection")
     
     def delete_collection(self):
-        self.db.delete_collection()
+        # Implement logic to delete all data from the collection
+        pass
 
     def persist(self):
-        self.db.persist()
+        # Implement logic to save/load the data to/from disk
+        pass
     
     def add_documents(self, docs):
-        self.db.add_documents(docs)
-
+        pass
+    
     def similarity_search(self, query):
         self.db.similarity_search(query)

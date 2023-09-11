@@ -3,7 +3,7 @@ import types
 
 from realtime_ai_character.audio.speech_to_text.base import SpeechToText
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Singleton
+from realtime_ai_character.singleton import Singleton
 
 logger = get_logger(__name__)
 config = types.SimpleNamespace(**{

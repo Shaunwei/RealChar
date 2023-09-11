@@ -7,7 +7,7 @@ from google.oauth2 import service_account
 import google.auth.transport.requests
 
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Singleton
+from realtime_ai_character.singleton import Singleton
 from realtime_ai_character.audio.text_to_speech.base import TextToSpeech
 
 logger = get_logger(__name__)

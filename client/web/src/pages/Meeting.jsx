@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { getHostName, getScheme } from '../utils/urlUtils';
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../components/ui/table';
 
 const Meeting = () => {
   const [data, setData] = useState([]);
@@ -68,52 +77,46 @@ const Meeting = () => {
     return () => clearInterval(intervalId);
   }, []);
 
+  if (loading) {
+    <div>loading</div>;
+  }
   return (
-    <div>
-      <h1 style={{ fontSize: '24px', marginBottom: '20px' }}>
-        Board Meeting Guest Registry
-      </h1>
-      <table style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr>
-            <th style={{ border: '1px solid #000', padding: '8px' }}>#</th>
-            <th style={{ border: '1px solid #000', padding: '8px' }}>
-              Board Member
-            </th>
-            <th style={{ border: '1px solid #000', padding: '8px' }}>
-              Email Address
-            </th>
-            <th style={{ border: '1px solid #000', padding: '8px' }}>
-              Check-in Time
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan='4'>Loading...</td>
-            </tr>
-          ) : (
-            data.map((item, index) => (
-              <tr key={index} style={{ border: '1px solid #000' }}>
-                <td style={{ border: '1px solid #000', padding: '8px' }}>
-                  {index + 1}
-                </td>
-                <td style={{ border: '1px solid #000', padding: '8px' }}>
-                  {item.name}
-                </td>
-                <td style={{ border: '1px solid #000', padding: '8px' }}>
-                  {item.email}
-                </td>
-                <td style={{ border: '1px solid #000', padding: '8px' }}>
-                  {item['Check-in Time']}
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
+    <main className='p-8 mx-auto max-w-7xl w-full'>
+      <div>
+        {loading ? (
+          <h2>Loading...</h2>
+        ) : (
+          <>
+            <div className='flex items-center'>
+              <h2 className='mr-2 text-3xl font-bold tracking-tight'>
+                Board Meeting Guest Registry
+              </h2>
+            </div>
+            <div className='mt-4'>
+              <Table>
+                <TableCaption>Board Meeting Guest Registry Table</TableCaption>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Board Member</TableHead>
+                    <TableHead>Email Address</TableHead>
+                    <TableHead>Check-in Time</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data.map((item, index) => (
+                    <TableRow key={index}>
+                      <TableCell className='font-medium'>{item.name}</TableCell>
+                      <TableCell>{item.email}</TableCell>
+                      <TableCell> {item['Check-in Time']}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </>
+        )}
+      </div>
+    </main>
   );
 };
 

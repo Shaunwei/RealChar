@@ -29,8 +29,8 @@ export default function NewsCard() {
       <Divider/>
       <CardBody className="p-4">
         <ul className="flex flex-col gap-5">
-        {recommends.map((user) => (
-          <li key={user.userId} className="flex flex-row justify-between">
+        {recommends.map((user, index) => (
+          <li key={index} className="flex flex-row justify-between">
             <User
               name={user.username}
               description={user.description}

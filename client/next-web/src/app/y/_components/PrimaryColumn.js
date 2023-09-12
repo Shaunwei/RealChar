@@ -6,7 +6,7 @@ import Posts from './Posts';
 export default function PrimaryColumn() {
   return (
     <>
-      <header>Home</header>
+      <header className="font-semibold text-lg px-4 pt-4 pb-2.5">Home</header>
       <Spacer/>
       <Divider/>
       <Editer />

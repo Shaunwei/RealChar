@@ -29,8 +29,8 @@ export default function NewsCard() {
       <Divider/>
       <CardBody className="p-0">
         <ul className="">
-        {news.map((item) => (
-          <li key={item.key}>
+        {news.map((item, index) => (
+          <li key={index}>
             <Link href={item.href} className="grid grid-cols-4 px-4 py-2.5 hover:bg-real-dark-trending/40">
               <section className="text-sm col-span-3">
                 <header className="text-real-dark-6">{item.topic}&nbsp;·&nbsp;{item.pubtime}</header>

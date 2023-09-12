@@ -22,27 +22,29 @@ export default function Post({
       <article>
         <header className="font-semibold">{post.username}&nbsp;·&nbsp;<span className="font-normal text-real-dark-6">{post.pubtime}</span></header>
         <p>{post.content.text}</p>
-        <div>
+        <div className="my-2.5 border-2 border-divider rounded-2xl overflow-hidden">
           <img src={post.content.photosURL[0]} alt="photo"/>
         </div>
-        <div>
+        <div className="flex flex-row gap-16">
           <Button
+            radius="full"
             onPress={() => setOpen(!open)}
-            isIconOnly
             variant="light"
+            className="px-2"
           >
-            <Image src={commentSVG} alt="comments"/><span>{post.comments?.length}</span>
+            <Image src={commentSVG} alt="comments"/><span className="ml-2">{post.comments?.length}</span>
           </Button>
           <Button
-            isIconOnly
+            radius="full"
             variant="light"
+            className="px-2"
           >
-            <Image src={likeSVG} alt="like"/><span>{post.liked}</span>
+            <Image src={likeSVG} alt="like"/><span className="ml-2">{post.liked}</span>
           </Button>
         </div>
-        <ul className={open ? 'flex' : 'hidden'}>
+        <ul className={`my-2 py-2 rounded-small bg-real-dark-trending/50 ${open ? 'flex' : 'hidden'}`}>
         {post.comments.map(comment => (
-          <li key={comment.pubtime} className="flex flex-row gap-2 text-sm w-full">
+          <li key={comment.pubtime} className="flex flex-row gap-2 text-sm w-full px-2">
             <Avatar src={comment.photoURL} alt="user avatar"/>
             <div className="grow">
               <div className="flex flex-row justify-between">

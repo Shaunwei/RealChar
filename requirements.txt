@@ -10,6 +10,7 @@ elevenlabs
 fastapi
 faster-whisper
 ffmpeg
+ffmpeg-python>=0.2
 firebase-admin
 google-cloud-speech
 google-cloud-storage
@@ -20,6 +21,8 @@ ipywidgets
 langchain>=0.0.240
 llama_index
 multion
+nltk
+pandas
 psycopg2-binary
 pyaudio
 pydantic
@@ -29,11 +32,14 @@ python-dotenv
 python-multipart
 readerwriterlock
 replicate
+setuptools>=65
 simpleaudio
 soundfile
 SpeechRecognition
 sqlalchemy
-torch
+torch>=2
+torchaudio>=2
+transformers
 typing
 uvicorn
 websockets

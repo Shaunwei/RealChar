@@ -1,3 +1,4 @@
+import asyncio
 from dataclasses import field
 from time import perf_counter
 from typing import List, Optional, Callable
@@ -8,8 +9,6 @@ from starlette.websockets import WebSocket, WebSocketState
 from sqlalchemy.orm import Session
 from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.logger import get_logger
-
-logger = get_logger(__name__)
 
 
 @dataclass
@@ -108,25 +107,53 @@ def get_connection_manager():
 class Timer(Singleton):
     def __init__(self):
         self.start_time: dict[str, float] = {}
+        self.elapsed_time = {}
+        self.logger = get_logger("Timer")
 
     def start(self, id: str):
         self.start_time[id] = perf_counter()
 
-    def get_elapsed_time(self, id: str):
-        if id in self.start_time:
-            elapsed = perf_counter() - self.start_time[id]
-            del self.start_time[id]
-            return elapsed
-        else:
-            return None
-        
     def log(self, id: str, callback: Optional[Callable] = None):
-        elapsed_time = self.get_elapsed_time(id)
-        if elapsed_time:
-            logger.info(f"{id} latency: {elapsed_time:.3f} s")
+        if id in self.start_time:
+            elapsed_time = perf_counter() - self.start_time[id]
+            del self.start_time[id]
+            if id in self.elapsed_time:
+                self.elapsed_time[id].append(elapsed_time)
+            else:
+                self.elapsed_time[id] = [elapsed_time]
             if callback:
                 callback()
-        
+
+    def report(self):
+        for id, t in self.elapsed_time.items():
+            self.logger.info(
+                f"{id:<30s}: {sum(t)/len(t):.3f}s [{min(t):.3f}s - {max(t):.3f}s] "
+                f"({len(t)} samples)"
+            )
+
+    def reset(self):
+        self.start_time = {}
+        self.elapsed_time = {}
+
 
 def get_timer() -> Timer:
     return Timer.get_instance()
+
+
+def timed(func):
+    if asyncio.iscoroutinefunction(func):
+        async def async_wrapper(*args, **kwargs):
+            timer = get_timer()
+            timer.start(func.__qualname__)
+            result = await func(*args, **kwargs)
+            timer.log(func.__qualname__)
+            return result
+        return async_wrapper
+    else:
+        def sync_wrapper(*args, **kwargs):
+            timer = get_timer()
+            timer.start(func.__qualname__)
+            result = func(*args, **kwargs)
+            timer.log(func.__qualname__)
+            return result
+        return sync_wrapper

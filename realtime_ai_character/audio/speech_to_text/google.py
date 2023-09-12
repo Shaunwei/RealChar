@@ -3,11 +3,9 @@ import types
 
 from realtime_ai_character.audio.speech_to_text.base import SpeechToText
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Singleton, get_timer
+from realtime_ai_character.utils import Singleton, timed
 
 logger = get_logger(__name__)
-
-timer = get_timer()
 
 config = types.SimpleNamespace(**{
     'web': {
@@ -33,6 +31,7 @@ class Google(Singleton, SpeechToText):
         logger.info("Setting up [Google Speech to Text]...")
         self.client = speech.SpeechClient()
 
+    @timed
     def transcribe(
         self, audio_bytes, platform, prompt="", language="en-US", suppress_tokens=[-1]
     ) -> str:
@@ -42,12 +41,10 @@ class Google(Singleton, SpeechToText):
         batch_config.language_code = language
         if language != 'en-US':
             batch_config.alternative_language_codes = ['en-US']
-        timer.start("STT API")
         response = self.client.recognize(
             config=batch_config,
             audio=speech.RecognitionAudio(content=audio_bytes)
         )
-        timer.log("STT API")
         if not response.results:
             return ''
         result = response.results[0]

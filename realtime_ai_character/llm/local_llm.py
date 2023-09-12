@@ -12,12 +12,10 @@ from realtime_ai_character.llm.base import (
     SearchAgent,
 )
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Character, get_timer
+from realtime_ai_character.utils import Character, timed
 
 
 logger = get_logger(__name__)
-
-timer = get_timer()
 
 
 class LocalLlm(LLM):
@@ -37,6 +35,7 @@ class LocalLlm(LLM):
     def get_config(self):
         return self.config
 
+    @timed
     async def achat(
         self,
         history: Union[List[BaseMessage], List[str]],
@@ -64,7 +63,6 @@ class LocalLlm(LLM):
         )
 
         # 3. Generate response
-        timer.start('LLM API')
         response = await self.chat_open_ai.agenerate(
             [history],
             callbacks=[callback, audioCallback, StreamingStdOutCallbackHandler()],

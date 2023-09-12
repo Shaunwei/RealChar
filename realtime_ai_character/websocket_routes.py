@@ -267,7 +267,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 raise WebSocketDisconnect('disconnected')
             # handle text message
             if 'text' in data:
-                timer.start("LLM")
+                timer.start("LLM First Token")
                 msg_data = data['text']
                 # Handle client side commands
                 if msg_data.startswith('[!'):
@@ -388,7 +388,6 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     current_speech = current_speech + ' ' + interim_transcript
                     continue
 
-                timer.start("STT")
                 # 1. Transcribe audio
                 transcript: str = (await asyncio.to_thread(speech_to_text.transcribe,
                     binary_data, platform=platform,
@@ -398,6 +397,9 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 if (not transcript or len(transcript) < 2):
                     continue
 
+                # start counting time for LLM to generate the first token
+                timer.start("LLM First Token")
+
                 # 2. Send transcript to client
                 await manager.send_message(
                     message=f'[+]You said: {transcript}', websocket=websocket)
@@ -406,9 +408,6 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 await stop_audio()
 
                 previous_transcript = transcript
-
-                # record time spent on Speech-to-Text
-                timer.log("STT", lambda: timer.start("LLM"))
 
                 async def tts_task_done_call_back(response):
                     # Send response to client, [=] indicates the response is done
@@ -465,9 +464,13 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                               useMultiOn=use_multion,
                               quivrApiKey=quivr_info.quivr_api_key if quivr_info else None,
                               quivrBrainId=quivr_info.quivr_brain_id if quivr_info else None))
+                
+            # log latency info
+            timer.report()
 
     except WebSocketDisconnect:
         logger.info(f"User #{user_id} closed the connection")
+        timer.reset()
         await manager.disconnect(websocket)
         await memory_manager.process_session(session_id)
         return

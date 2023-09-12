@@ -8,11 +8,9 @@ from realtime_ai_character.database.chroma import get_chroma
 from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, \
     AsyncCallbackTextHandler, LLM, QuivrAgent, SearchAgent
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Character, get_timer
+from realtime_ai_character.utils import Character, timed
 
 logger = get_logger(__name__)
-
-timer = get_timer()
 
 
 class AnthropicLlm(LLM):
@@ -34,6 +32,7 @@ class AnthropicLlm(LLM):
     def get_config(self):
         return self.config
 
+    @timed
     async def achat(self,
                     history: List[BaseMessage],
                     user_input: str,
@@ -65,7 +64,6 @@ class AnthropicLlm(LLM):
             context=context, query=user_input)))
 
         # 3. Generate response
-        timer.start('LLM API')
         response = await self.chat_anthropic.agenerate(
             [history], callbacks=[callback, audioCallback, StreamingStdOutCallbackHandler()],
             metadata=metadata)

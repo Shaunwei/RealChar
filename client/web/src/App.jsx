@@ -33,7 +33,7 @@ import useSpeechRecognition from './hooks/useSpeechRecognition';
 import useWebRTC from './hooks/useWebRTC';
 import useHark from './hooks/useVAD';
 
-const baselineModel = 'meta-llama/Llama-2-7b-chat-hf';
+const baselineModel = 'meta-llama/Llama-2-70b-chat-hf';
 
 const App = () => {
   const [sessionId, setSessionId] = useState('');

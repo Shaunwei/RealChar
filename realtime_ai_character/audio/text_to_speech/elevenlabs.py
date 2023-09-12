@@ -4,12 +4,10 @@ import types
 import httpx
 
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Singleton, get_timer
+from realtime_ai_character.utils import Singleton, timed
 from realtime_ai_character.audio.text_to_speech.base import TextToSpeech
 
 logger = get_logger(__name__)
-
-timer = get_timer()
 
 DEBUG = False
 
@@ -40,6 +38,7 @@ class ElevenLabs(Singleton, TextToSpeech):
         super().__init__()
         logger.info("Initializing [ElevenLabs Text To Speech] voices...")
 
+    @timed
     async def stream(self, text, websocket, tts_event: asyncio.Event, 
                      voice_id="21m00Tcm4TlvDq8ikWAM",
                      first_sentence=False, language='en-US') -> None:
@@ -60,7 +59,6 @@ class ElevenLabs(Singleton, TextToSpeech):
             url = url + '?optimize_streaming_latency=4'
         async with httpx.AsyncClient() as client:
             response = await client.post(url, json=data, headers=headers)
-            timer.log("TTS API")
             if response.status_code != 200:
                 logger.error(
                     f"ElevenLabs returns response {response.status_code}")
@@ -70,7 +68,6 @@ class ElevenLabs(Singleton, TextToSpeech):
                     # stop streaming audio
                     break
                 await websocket.send_bytes(chunk)
-                timer.log("TTS")
 
     async def generate_audio(self, text, voice_id = "", language='en-US') -> bytes:
         if DEBUG:

@@ -1,4 +1,3 @@
-import os
 from typing import List, Union
 
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -13,7 +12,7 @@ from realtime_ai_character.llm.base import (
     SearchAgent,
 )
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Character
+from realtime_ai_character.utils import Character, timed
 
 
 logger = get_logger(__name__)
@@ -36,6 +35,7 @@ class LocalLlm(LLM):
     def get_config(self):
         return self.config
 
+    @timed
     async def achat(
         self,
         history: Union[List[BaseMessage], List[str]],

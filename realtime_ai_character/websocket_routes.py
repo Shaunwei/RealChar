@@ -23,13 +23,15 @@ from realtime_ai_character.logger import get_logger
 from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.quivr_info import QuivrInfo
 from realtime_ai_character.utils import (ConversationHistory, build_history,
-                                         get_connection_manager)
+                                         get_connection_manager, get_timer)
 
 logger = get_logger(__name__)
 
 router = APIRouter()
 
 manager = get_connection_manager()
+
+timer = get_timer()
 
 GREETING_TXT_MAP = {
     "en-US": "Hi, my friend, what brings you here today?",
@@ -265,6 +267,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 raise WebSocketDisconnect('disconnected')
             # handle text message
             if 'text' in data:
+                timer.start("LLM First Token")
                 msg_data = data['text']
                 # Handle client side commands
                 if msg_data.startswith('[!'):
@@ -368,8 +371,15 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 binary_data = data['bytes']
                 # 0. Handle interim speech.
                 if speech_recognition_interim:
-                    interim_transcript: str = (await asyncio.to_thread(speech_to_text.transcribe,
-                        binary_data, platform=platform,prompt=current_speech, suppress_tokens=[0, 11, 13, 30])).strip()
+                    interim_transcript: str = (
+                        await asyncio.to_thread(
+                            speech_to_text.transcribe,
+                            binary_data,
+                            platform=platform,
+                            prompt=current_speech,
+                            suppress_tokens=[0, 11, 13, 30],
+                        )
+                    ).strip()
                     speech_recognition_interim = False
                     # Filter noises.
                     if not interim_transcript:
@@ -386,6 +396,9 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 # ignore audio that picks up background noise
                 if (not transcript or len(transcript) < 2):
                     continue
+
+                # start counting time for LLM to generate the first token
+                timer.start("LLM First Token")
 
                 # 2. Send transcript to client
                 await manager.send_message(
@@ -451,9 +464,13 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                               useMultiOn=use_multion,
                               quivrApiKey=quivr_info.quivr_api_key if quivr_info else None,
                               quivrBrainId=quivr_info.quivr_brain_id if quivr_info else None))
+                
+            # log latency info
+            timer.report()
 
     except WebSocketDisconnect:
         logger.info(f"User #{user_id} closed the connection")
+        timer.reset()
         await manager.disconnect(websocket)
         await memory_manager.process_session(session_id)
         return

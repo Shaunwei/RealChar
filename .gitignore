@@ -177,3 +177,5 @@ firebase_credentials.json
 # scripts
 reset_database.sh
 
+# test files
+benchmark/

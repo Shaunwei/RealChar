@@ -305,6 +305,11 @@ Please check out our [Contribution Guide](contribute.md)!
 
 ## Changelog
 
+### 2023-09-11
+-   Refactored Timer code, made into decorators.
+
+-   Added WhisperX as new speech-to-text engine. 3X faster than fast-whisper. Now, STT latency is less than 0.2s.
+
 ### 2023-09-10 
 -   Added info loggers showing latencies of STT, LLM, TTS processes.
 
@@ -354,12 +359,16 @@ Please check out our [Contribution Guide](contribute.md)!
 
 -   So it seems the latency in Google-TTS is about 1.3s, local whisper is about 0.8s, LLM generating the first sentense takes 1.2s. A total latency before audio response thus sums to 3.3s. A noticable gap for users.
 
+-   Implementing whisperX. Seems whisperX does not provide the `supperss_tokens` as inputs. What tokens are these `suppress_tokens = [0, 11, 13, 30]` in the open-mic code?
+
 ## Issues
 -   Currently the TTS function relies on detecting the prefix, "char_name>", to activate speaking. If it fails to detect the ">" token, it does not spit a sound at all. And we're relying on the AI to cleverly generate that prefix for us, which sometimes don't.
 
 -   The hang-up button seems to need click twice to work in the CallView. And there's information redirection that causes the AI to speak twice (after stop recording).
 
 -   Need to reduce latency of the first transcription when using local whisper.
+
+-   `torchaudio` is 10X faster than `pydub` in loading binary audios. Consider replace them.
 
 -   Even Llama2-70b could forget to add the prefix, after I told it to tell me a long story. It seems has spammed the chat history.
 

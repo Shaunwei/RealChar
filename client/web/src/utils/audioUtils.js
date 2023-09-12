@@ -5,8 +5,6 @@
  * created by Lynchee on 7/16/23
  */
 
-import { setupAvatarLipSync } from '../components/AvatarView';
-
 const unlockAudioContext = audioContext => {
   if (audioContext.state === 'suspended') {
     const unlock = function () {
@@ -60,7 +58,7 @@ export const playAudios = async (
   audioPlayer,
   audioQueue,
   setIsPlaying,
-  handleFirstInteractionAudio,
+  playAudioFromNode,
   audioSourceNodeRef,
   initialize,
   setInitialize
@@ -72,8 +70,8 @@ export const playAudios = async (
     const bs = audioContextRef.current.createBufferSource();
     bs.buffer = audioBuffer;
     bs.connect(audioSourceNodeRef.current);
-    setupAvatarLipSync(audioContextRef.current, bs);
-    handleFirstInteractionAudio(); // For the first interaction, we need to play a sound to unlock blend shapes
+    playAudioFromNode(bs, audioContextRef.current, true); // For enable avatar blend shapes
+
     await playAudio(
       audioContextRef,
       audioPlayer,

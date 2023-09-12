@@ -75,7 +75,7 @@ const Conversation = ({
   const message = isTextStreaming ? '' : textAreaValue;
   const [emotion, setEmotion] = useState('');
 
-  const { avatarDisplay, handleFirstInteractionAudio } = useAvatarView(
+  const { avatarDisplay, playAudioFromNode } = useAvatarView(
     selectedCharacter?.avatar_id,
     emotion
   );
@@ -185,7 +185,7 @@ const Conversation = ({
           handleDisconnect={handleDisconnect}
           setIsCallView={setIsCallView}
           sessionId={sessionId}
-          handleFirstInteractionAudio={handleFirstInteractionAudio}
+          playAudioFromNode={playAudioFromNode}
         />
       </div>
 

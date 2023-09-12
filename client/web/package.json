@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@avatechai/avatars": "^0.4.23-next.4",
+    "@avatechai/avatars": "^0.4.25-next.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@fortawesome/fontawesome-svg-core": "^6.4.2",

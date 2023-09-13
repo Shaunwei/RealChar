@@ -9,8 +9,11 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.utilities import GoogleSerperAPIWrapper, SerpAPIWrapper, GoogleSearchAPIWrapper
 
 from realtime_ai_character.logger import get_logger
+from realtime_ai_character.utils import get_timer, timed
 
 logger = get_logger(__name__)
+
+timer = get_timer()
 
 StreamingStdOutCallbackHandler.on_chat_model_start = lambda *args, **kwargs: None
 
@@ -57,12 +60,17 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
         pass
 
     async def on_llm_new_token(self, token: str, *args, **kwargs):
-        if not self.is_reply and token == ">":
+        timer.log("LLM First Token", lambda: timer.start("LLM First Sentence"))
+        if (
+            not self.is_reply and ">" in token
+        ):  # small models might not give ">" (e.g. llama2-7b gives ">:" as a token)
             self.is_reply = True
         elif self.is_reply:
             if token not in {'.', '?', '!'}:
                 self.current_sentence += token
             else:
+                if self.is_first_sentence:
+                    timer.log("LLM First Sentence", lambda: timer.start("TTS First Sentence"))
                 await self.text_to_speech.stream(
                     self.current_sentence,
                     self.websocket,
@@ -73,6 +81,7 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
                 self.current_sentence = ""
                 if self.is_first_sentence:
                     self.is_first_sentence = False
+                timer.log("TTS First Sentence")
 
     async def on_llm_end(self, *args, **kwargs):
         if self.current_sentence != "":
@@ -168,6 +177,7 @@ class MultiOnAgent:
 
 class LLM(ABC):
     @abstractmethod
+    @timed
     async def achat(self, *args, **kwargs):
         pass
 

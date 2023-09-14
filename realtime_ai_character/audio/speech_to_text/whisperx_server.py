@@ -14,13 +14,11 @@ from realtime_ai_character.utils import Singleton, timed
 
 logger = get_logger(__name__)
 
-config = types.SimpleNamespace(
-    **{
-        "model": os.getenv("LOCAL_WHISPER_MODEL", "base"),
-        "language": "en",
-        "api_key": os.getenv("WHISPER_X_API_KEY"),
-    }
-)
+config = types.SimpleNamespace(**{
+    'model': os.getenv("LOCAL_WHISPER_MODEL", "base"),
+    'language': 'en',
+    'api_key': os.getenv("WHISPER_X_API_KEY"),
+})
 
 # Whisper use a shorter version for language code. Provide a mapping to convert
 # from the standard language code to the whisper language code.
@@ -33,9 +31,9 @@ WHISPER_LANGUAGE_CODE_MAPPING = {
     "pt-PT": "pt",
     "hi-IN": "hi",
     "pl-PL": "pl",
-    "zh-CN": "zh",
-    "ja-JP": "jp",
-    "ko-KR": "ko",
+    'zh-CN': 'zh',
+    'ja-JP': 'jp',
+    'ko-KR': 'ko',
 }
 
 
@@ -58,14 +56,8 @@ class WhisperXServer(Singleton, SpeechToText):
 
     # still need to support the platform, prompt, and suppress_tokens
     @timed
-    def transcribe(
-        self,
-        audio_bytes,
-        prompt="",
-        language="en-US",
-        suppress_tokens=[-1],
-        diarization=False,
-    ):
+    def transcribe(self, audio_bytes, platform, prompt="", language="en-US", suppress_tokens=[-1],
+                   diarization=False):
         logger.info(f"Received {len(audio_bytes)} bytes of audio data. Language: {language}")
 
         reader = torchaudio.io.StreamReader(io.BytesIO(audio_bytes))
@@ -74,9 +66,8 @@ class WhisperXServer(Singleton, SpeechToText):
         audio = audio.flatten().numpy().astype(np.float32)
         language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, config.language)
 
-        self.model.options = self.model.options._replace(
-            initial_prompt=prompt, suppress_tokens=suppress_tokens
-        )
+        # self.model.options["initial_prompt"] = prompt  # type: ignore
+        # self.model.options["suppress_tokens"] = suppress_tokens  # type: ignore
         result = self.model.transcribe(audio, batch_size=1, language=language)
 
         if diarization:
@@ -84,7 +75,7 @@ class WhisperXServer(Singleton, SpeechToText):
 
         text = " ".join([seg["text"].strip() for seg in result["segments"]])
         return text, result["segments"]
-
+    
     def _diarize(self, audio, result):
         result = whisperx.align(
             result["segments"],

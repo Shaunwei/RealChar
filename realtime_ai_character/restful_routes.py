@@ -570,14 +570,16 @@ async def edit_memory(edit_memory_request: EditMemoryRequest, user = Depends(get
 
 
 @router.post("/transcribe")
-async def transcribe(audio_file: UploadFile = File(...), language: str = Form(default="en-US"),
-                     api_key: str = Form(default="")):
+async def transcribe(audio_file: UploadFile = File(...), api_key: str = Form(default=""), 
+                     prompt: str = Form(default=""), language: str = Form(default="en-US"), 
+                     suppress_tokens: list[int] = Form(default=[-1]), 
+                     diarization: bool = Form(default=False)):
     if api_key != os.getenv('WHISPER_X_API_KEY', ''):
         raise HTTPException(status_code=401, detail="Invalid API key.")
     try:
         audio_bytes = await audio_file.read()
         stt = WhisperXServer.get_instance()
-        text, segments = stt.transcribe(audio_bytes, language)
+        text, segments = stt.transcribe(audio_bytes, prompt, language, suppress_tokens, diarization)
         return {"text": text, "segments": segments}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -64,16 +64,15 @@ class WhisperX(Singleton, SpeechToText):
     def transcribe(self, audio_bytes, platform, prompt="", language="en-US", suppress_tokens=[-1]):
         logger.info("Transcribing audio...")
         if self.use == "local":
-            text, _ = self._transcribe(audio_bytes, platform, prompt, language, suppress_tokens)
+            text, _ = self._transcribe(audio_bytes, prompt, language, suppress_tokens)
         else:
-            text, _ = self._transcribe_api(audio_bytes, platform, prompt, language, suppress_tokens)
+            text, _ = self._transcribe_api(audio_bytes, prompt, language, suppress_tokens)
         return text
 
     # still need to support the platform, prompt, and suppress_tokens
     def _transcribe(
         self,
         audio_bytes,
-        platform,
         prompt="",
         language="en-US",
         suppress_tokens=[-1],
@@ -85,13 +84,14 @@ class WhisperX(Singleton, SpeechToText):
         audio = audio.flatten().numpy().astype(np.float32)
         language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, config.language)
 
-        # self.model.options["initial_prompt"] = prompt  # type: ignore
-        # self.model.options["suppress_tokens"] = suppress_tokens  # type: ignore
+        self.model.options = self.model.options._replace(
+            initial_prompt=prompt, suppress_tokens=suppress_tokens
+        )
         result = self.model.transcribe(audio, batch_size=1, language=language)
 
         if diarization:
             result = self._diarize(audio, result)
-            
+
         text = " ".join([seg["text"].strip() for seg in result["segments"]])
 
         return text, result["segments"]
@@ -99,7 +99,6 @@ class WhisperX(Singleton, SpeechToText):
     def _transcribe_api(
         self,
         audio_bytes,
-        platform,
         prompt="",
         language="en-US",
         suppress_tokens=[-1],
@@ -107,13 +106,25 @@ class WhisperX(Singleton, SpeechToText):
     ):
         files = {"audio_file": ("audio_file", audio_bytes)}
         logger.info(f"Sent request to whisperX server: {len(audio_bytes)} bytes")
-        data = {"language": language, "api_key": config.api_key}
-        response = requests.post(config.url, data=data, files=files, timeout=10)
+        data = {
+            "api_key": config.api_key,
+            "prompt": prompt,
+            "language": language,
+            "suppress_tokens": suppress_tokens,
+            "diarization": diarization,
+        }
         try:
+            response = requests.post(config.url, data=data, files=files, timeout=10)
             data = response.json()
             return data["text"], data["segments"]
-        except Exception as e:
+        except requests.exceptions.Timeout as e:
+            raise Exception(f"WhisperX server timed out: {e}")
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Could not connect to whisperX server: {e}")
+        except KeyError as e:
             raise Exception(f"Could not parse response from whisperX server: {e}")
+        except Exception as e:
+            raise Exception(f"Unknown error from whisperX server: {e}")
 
     def _diarize(self, audio, result):
         result = whisperx.align(

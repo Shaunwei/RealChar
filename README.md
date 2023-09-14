@@ -361,6 +361,34 @@ Please check out our [Contribution Guide](contribute.md)!
 
 -   Implementing whisperX. Seems whisperX does not provide the `supperss_tokens` as inputs. What tokens are these `suppress_tokens = [0, 11, 13, 30]` in the open-mic code?
 
+    From huggingface:/openai/whisper-base
+
+    | token | vocab |
+    | - | - |
+    | 0 | "!" |
+    | 11 | "," |
+    | 13 | "." |
+    | 30 | "?" |
+
+-   To serve local service to the internet using `ngrok`, one need to modify one line of code: comment out
+
+    ```JavaScript
+        // hostname = 'api.' + hostname;
+    ```
+
+    In file `client/web/src/utils/urlUtils.js`
+
+-   fast-whisper and whisperX Benchmark:
+
+    | | fast-whisper | fast-whisper | whisperX | whisperX | whisper-jax | whisper-jax |
+    | - | - | - | - | - | - | - |
+    | device | CPU | GPU | CPU | GPU | CPU | GPU |
+    | 2-5 s audio | 0.87 s | 0.39 s | 0.52 s | 0.10 s| 1.23 s | 0.14 s|
+    | 5-10 s ausio | 1.01 s | 0.43 s | 0.76 s | 0.13 s | 1.88 s | 0.14 s |
+    | VRAM usage | | 1.7 GB | | 3.1 GB | | 19.5 GB|
+
+    Tested on AMD 5950X + RTX4090, on 296 samples of 2-5s audios and 194 samples of 5-10s audios. Using "base" model of whisper.
+
 ## Issues
 -   Currently the TTS function relies on detecting the prefix, "char_name>", to activate speaking. If it fails to detect the ">" token, it does not spit a sound at all. And we're relying on the AI to cleverly generate that prefix for us, which sometimes don't.
 
@@ -386,3 +414,7 @@ Please check out our [Contribution Guide](contribute.md)!
 -   Maybe reduce response latency by early generating before user has finished speaking or typing.
 
 -   Try using whisperX and compare performance.
+
+-   Can use fast STT to align AI text typing and voice. Make it more natrual.
+
+-   Can start transcribing from the first word. And keep transcribing the whole sentence. Correct the text message on screen as the sentence finishes.

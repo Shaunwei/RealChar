@@ -11,6 +11,7 @@ import firebase_admin
 from firebase_admin import auth, credentials
 from firebase_admin.exceptions import FirebaseError
 from realtime_ai_character.audio.text_to_speech import get_text_to_speech
+from realtime_ai_character.audio.speech_to_text.whisperx_server import WhisperXServer
 from realtime_ai_character.database.connection import get_db
 from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.feedback import Feedback, FeedbackRequest
@@ -566,3 +567,17 @@ async def edit_memory(edit_memory_request: EditMemoryRequest, user = Depends(get
 
     db.merge(memory)
     db.commit()
+
+
+@router.post("/transcribe")
+async def transcribe(audio_file: UploadFile = File(...), language: str = Form(default="en-US"),
+                     api_key: str = Form(default="")):
+    if api_key != os.getenv('WHISPER_X_API_KEY', ''):
+        raise HTTPException(status_code=401, detail="Invalid API key.")
+    try:
+        audio_bytes = await audio_file.read()
+        stt = WhisperXServer.get_instance()
+        text, segments = stt.transcribe(audio_bytes, language)
+        return {"text": text, "segments": segments}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

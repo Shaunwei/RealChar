@@ -125,9 +125,15 @@ class Timer(Singleton):
                 callback()
 
     def report(self):
+        self.logger.info(f"{'Timer report':<30s}: average [min - median - max]")
         for id, t in self.elapsed_time.items():
+            t.sort()
+            if len(t) % 2 == 0:
+                median = (t[len(t) // 2] + t[len(t) // 2 - 1]) / 2
+            else:
+                median = t[len(t) // 2]
             self.logger.info(
-                f"{id:<30s}: {sum(t)/len(t):.3f}s [{min(t):.3f}s - {max(t):.3f}s] "
+                f"{id:<30s}: {sum(t)/len(t):.3f}s [{t[0]:.3f}s - {median:.3f} - {t[-1]:.3f}s] "
                 f"({len(t)} samples)"
             )
 

@@ -33,11 +33,13 @@ import useSpeechRecognition from './hooks/useSpeechRecognition';
 import useWebRTC from './hooks/useWebRTC';
 import useHark from './hooks/useVAD';
 
+const baselineModel = 'meta-llama/Llama-2-70b-chat-hf';
+
 const App = () => {
   const [sessionId, setSessionId] = useState('');
   const [preferredLanguage, setPreferredLanguage] = useState('English');
   const [selectedDevice, setSelectedDevice] = useState('');
-  const [selectedModel, setSelectedModel] = useState('gpt-3.5-turbo-16k');
+  const [selectedModel, setSelectedModel] = useState(baselineModel);
   const [useSearch, setUseSearch] = useState(false);
   const [useQuivr, setUseQuivr] = useState(false);
   const [quivrApiKey, setQuivrApiKey] = useState('');
@@ -215,7 +217,7 @@ const App = () => {
   const connect = async () => {
     try {
       // requires login if user wants to use gpt4 or claude.
-      if (selectedModel !== 'gpt-3.5-turbo-16k') {
+      if (selectedModel !== baselineModel) {
         if (isLoggedIn.current) {
           connectSocketWithState();
         } else {
@@ -296,7 +298,7 @@ const App = () => {
       setCharacterGroups([]);
       setIsCallView(false);
       setTextAreaValue('');
-      setSelectedModel('gpt-3.5-turbo-16k');
+      setSelectedModel(baselineModel);
       setPreferredLanguage('English');
 
       // close web socket connection

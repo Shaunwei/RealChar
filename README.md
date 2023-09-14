@@ -302,3 +302,119 @@ Please check out our [Contribution Guide](contribute.md)!
 
 ## 🎲 Community
 - Join us on [Discord](https://discord.gg/e4AYNnFg2F)
+
+## Changelog
+
+### 2023-09-11
+-   Refactored Timer code, made into decorators.
+
+-   Added WhisperX as new speech-to-text engine. 3X faster than fast-whisper. Now, STT latency is less than 0.2s.
+
+### 2023-09-10 
+-   Added info loggers showing latencies of STT, LLM, TTS processes.
+
+### 2023-09-09
+-   Fixed bug that TTS not trigerred due to Llama2-7b generating non-standard character prefix.
+
+### 2023-09-08
+-   Added Llama2-7b-chat-hf and more for cost effective dev & test.
+
+-   Switched from assistly-kubernetes to realchar-dev, which is my own Firebase and GCP, for dev & test.
+
+## Dev Notes
+-   Seems the local deployment does not work well without auth system. There's authentication checks throughout `restful_routes.py` to ensure user is signed-in, and requires a working Firebase auth service to verify that.
+
+    To make the auth system work, set the following values to `.env`
+
+    ```
+    USE_AUTH=true
+    FIREBASE_CONFIG_PATH=firebase_credentials.json
+    ```
+
+    One can easily create a free Firebase project and enable the auth feature. The required `firebase_credentials.json` can be downloaded from Firebase. It's in the Project settings > Service accounts > Generate new private key. Make sure you keep that file confidential, as it grants full access to your Firebase project.
+
+-   Although it's written in the README that `google_credentials.json` is optional as if it's only needed for Google Speech-to-Text services, it's actually required for this project's cloud storage system. This project stores user data on Google Cloud Platform. The way to enable the storage service is as follows:
+
+    1.  Go to google cloud platform and start a project. New users get a $300 credit trial project.
+
+    1.  Under `service account` tab, create a new key and download, rename the `json` file as `google_credentials.json` and put it under the project root directory. 
+
+    1.  Create a storage bucket on GCP, put the bucket name in `.env` file:
+
+    ```
+    GCP_STORAGE_BUCKET_NAME=your-bucket-name
+    ```
+
+-   `firebase.js`
+
+    Is it better to store `firebaseConfig` in a config file so that people can deploy on their own Firebase projects without modifying the main branch code?
+
+-   Need to add cuDNN path to `LD_LIBRARY_PATH` for whisper to run. 
+
+-   Deleting a character does not delete the avatar image on google cloud.
+
+-   What's the advantage of letting AI to prefix the "char_name>" instead of we hard code it?
+
+-   Voice Cloning doesn't work because my free-tier XI-Lab account doesn't support it.
+
+-   So it seems the latency in Google-TTS is about 1.3s, local whisper is about 0.8s, LLM generating the first sentense takes 1.2s. A total latency before audio response thus sums to 3.3s. A noticable gap for users.
+
+-   Implementing whisperX. Seems whisperX does not provide the `supperss_tokens` as inputs. What tokens are these `suppress_tokens = [0, 11, 13, 30]` in the open-mic code?
+
+    From huggingface:/openai/whisper-base
+
+    | token | vocab |
+    | - | - |
+    | 0 | "!" |
+    | 11 | "," |
+    | 13 | "." |
+    | 30 | "?" |
+
+-   To serve local service to the internet using `ngrok`, one need to modify one line of code: comment out
+
+    ```JavaScript
+        // hostname = 'api.' + hostname;
+    ```
+
+    In file `client/web/src/utils/urlUtils.js`
+
+-   fast-whisper and whisperX Benchmark:
+
+    | | fast-whisper | fast-whisper | whisperX | whisperX | whisper-jax | whisper-jax |
+    | - | - | - | - | - | - | - |
+    | device | CPU | GPU | CPU | GPU | CPU | GPU |
+    | 2-5 s audio | 0.87 s | 0.39 s | 0.52 s | 0.10 s| 1.23 s | 0.14 s|
+    | 5-10 s ausio | 1.01 s | 0.43 s | 0.76 s | 0.13 s | 1.88 s | 0.14 s |
+    | VRAM usage | | 1.7 GB | | 3.1 GB | | 19.5 GB|
+
+    Tested on AMD 5950X + RTX4090, on 296 samples of 2-5s audios and 194 samples of 5-10s audios. Using "base" model of whisper.
+
+## Issues
+-   Currently the TTS function relies on detecting the prefix, "char_name>", to activate speaking. If it fails to detect the ">" token, it does not spit a sound at all. And we're relying on the AI to cleverly generate that prefix for us, which sometimes don't.
+
+-   The hang-up button seems to need click twice to work in the CallView. And there's information redirection that causes the AI to speak twice (after stop recording).
+
+-   Need to reduce latency of the first transcription when using local whisper.
+
+-   `torchaudio` is 10X faster than `pydub` in loading binary audios. Consider replace them.
+
+-   Even Llama2-70b could forget to add the prefix, after I told it to tell me a long story. It seems has spammed the chat history.
+
+## Ideas
+-   Hard code the prefix "char_name>" instead of relying on the LLM generating it. Make the chat history "balanced" in term of the prefixes "You>" and "char_name>".
+
+-   Can also collect the role the user is playing. For example, my name, my background. 
+
+-   Can provide some template prompts that specify the relation between the user and the character, for example, friends, parents, spouse, fans, etc.
+
+-   Try allow AI to speak spontaneously, i.e., get out of the 1 question - 1 response paradigm. Maybe add time encoding to the input, like positional encoding did. Now it sounds more like a simplified audio based Transformer model.
+
+-   Add dev switch that keep large models for general users while allow developers to use small / test local models.
+
+-   Maybe reduce response latency by early generating before user has finished speaking or typing.
+
+-   Try using whisperX and compare performance.
+
+-   Can use fast STT to align AI text typing and voice. Make it more natrual.
+
+-   Can start transcribing from the first word. And keep transcribing the whole sentence. Correct the text message on screen as the sentence finishes.

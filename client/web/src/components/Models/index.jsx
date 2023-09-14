@@ -15,8 +15,13 @@ import CheckIcon from '@mui/icons-material/Check';
 const Models = ({ isMobile, selectedModel, setSelectedModel }) => {
   const models = [
     {
+      id: 'gpt-3.5-turbo',
+      name: 'GPT-3.5-4k',
+      tooltip: 'Most Cost effective GPT-3.5 from OpenAI',
+    },
+    {
       id: 'gpt-3.5-turbo-16k',
-      name: 'GPT-3.5',
+      name: 'GPT-3.5-16k',
       tooltip: 'Fastest model, good for most conversation',
     },
     {
@@ -28,6 +33,16 @@ const Models = ({ isMobile, selectedModel, setSelectedModel }) => {
       id: 'claude-2',
       name: 'Claude-2',
       tooltip: 'Slower model, longer context window for long conversation',
+    },
+    {
+      id: 'meta-llama/Llama-2-7b-chat-hf',
+      name: 'Llama-2-7b',
+      tooltip: 'Cheapest model, good for dev and testing',
+    },
+    {
+      id: 'meta-llama/Llama-2-13b-chat-hf',
+      name: 'Llama-2-13b',
+      tooltip: 'Simply for dev and testing',
     },
     {
       id: 'meta-llama/Llama-2-70b-chat-hf',

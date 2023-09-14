@@ -11,6 +11,7 @@ import firebase_admin
 from firebase_admin import auth, credentials
 from firebase_admin.exceptions import FirebaseError
 from realtime_ai_character.audio.text_to_speech import get_text_to_speech
+from realtime_ai_character.audio.speech_to_text.whisperx_server import WhisperXServer
 from realtime_ai_character.database.connection import get_db
 from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.feedback import Feedback, FeedbackRequest
@@ -70,7 +71,7 @@ async def status():
 @router.get("/characters")
 async def characters(user=Depends(get_current_user)):
     def get_image_url(character):
-        gcs_path = 'https://storage.googleapis.com/assistly'
+        gcs_path = 'https://storage.cloud.google.com/realchar-dev'
         if character.data and 'avatar_filename' in character.data:
             return f'{gcs_path}/{character.data["avatar_filename"]}'
         else:
@@ -566,3 +567,19 @@ async def edit_memory(edit_memory_request: EditMemoryRequest, user = Depends(get
 
     db.merge(memory)
     db.commit()
+
+
+@router.post("/transcribe")
+async def transcribe(audio_file: UploadFile = File(...), api_key: str = Form(default=""), 
+                     prompt: str = Form(default=""), language: str = Form(default="en-US"), 
+                     suppress_tokens: list[int] = Form(default=[-1]), 
+                     diarization: bool = Form(default=False)):
+    if api_key != os.getenv('WHISPER_X_API_KEY', ''):
+        raise HTTPException(status_code=401, detail="Invalid API key.")
+    try:
+        audio_bytes = await audio_file.read()
+        stt = WhisperXServer.get_instance()
+        text, segments = stt.transcribe(audio_bytes, prompt, language, suppress_tokens, diarization)
+        return {"text": text, "segments": segments}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

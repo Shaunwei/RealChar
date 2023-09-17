@@ -10,10 +10,12 @@ from torch.cuda import is_available as is_cuda_available
 
 from realtime_ai_character.audio.speech_to_text.base import SpeechToText
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Singleton
+from realtime_ai_character.utils import Singleton, timed
 
 DEBUG = False
+
 logger = get_logger(__name__)
+
 config = types.SimpleNamespace(**{
     'model': os.getenv("LOCAL_WHISPER_MODEL", "base"),
     'language': 'en',
@@ -42,7 +44,8 @@ class Whisper(Singleton, SpeechToText):
         super().__init__()
         if use == "local":
             device = 'cuda' if is_cuda_available() else 'cpu'
-            logger.info(f"Loading [Local Whisper] model: [{config.model}]({device}) ...")
+            logger.info(
+                f"Loading [Local Whisper] model: [{config.model}]({device}) ...")
             self.model = WhisperModel(
                 model_size_or_path=config.model,
                 device="auto",
@@ -56,12 +59,14 @@ class Whisper(Singleton, SpeechToText):
             self.wf.setsampwidth(2)  # Assuming 16-bit audio
             self.wf.setframerate(44100)  # Assuming 44100Hz sample rate
 
+    @timed
     def transcribe(self, audio_bytes, platform, prompt="", language="en-US", suppress_tokens=[-1]):
         logger.info("Transcribing audio...")
         if platform == "web":
             audio = self._convert_webm_to_wav(audio_bytes, self.use == "local")
         else:
-            audio = self._convert_bytes_to_wav(audio_bytes, self.use == "local")
+            audio = self._convert_bytes_to_wav(
+                audio_bytes, self.use == "local")
         if self.use == "local":
             return self._transcribe(audio, prompt, suppress_tokens=suppress_tokens)
         elif self.use == "api":
@@ -70,7 +75,11 @@ class Whisper(Singleton, SpeechToText):
     def _transcribe(self, audio, prompt="", language="en-US", suppress_tokens=[-1]):
         language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, config.language)
         segs, _ = self.model.transcribe(
-            audio, language=language, vad_filter=True, initial_prompt=prompt, suppress_tokens=suppress_tokens
+            audio,
+            language=language,
+            vad_filter=True,
+            initial_prompt=prompt,
+            suppress_tokens=suppress_tokens,
         )
         text = " ".join([seg.text for seg in segs])
         return text
@@ -83,7 +92,8 @@ class Whisper(Singleton, SpeechToText):
         return text
 
     def _convert_webm_to_wav(self, webm_data, local=True):
-        webm_audio = AudioSegment.from_file(io.BytesIO(webm_data), format="webm")
+        webm_audio = AudioSegment.from_file(
+            io.BytesIO(webm_data), format="webm")
         wav_data = io.BytesIO()
         webm_audio.export(wav_data, format="wav")
         if local:
@@ -94,6 +104,7 @@ class Whisper(Singleton, SpeechToText):
 
     def _convert_bytes_to_wav(self, audio_bytes, local=True):
         if local:
-            audio = io.BytesIO(sr.AudioData(audio_bytes, 44100, 2).get_wav_data())
+            audio = io.BytesIO(sr.AudioData(
+                audio_bytes, 44100, 2).get_wav_data())
             return audio
         return sr.AudioData(audio_bytes, 44100, 2)

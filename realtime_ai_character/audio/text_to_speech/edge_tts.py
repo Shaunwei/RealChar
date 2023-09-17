@@ -3,7 +3,7 @@ import edge_tts
 from edge_tts import VoicesManager
 
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Singleton
+from realtime_ai_character.utils import Singleton, timed
 from realtime_ai_character.audio.text_to_speech.base import TextToSpeech
 
 logger = get_logger(__name__)
@@ -14,6 +14,7 @@ class EdgeTTS(Singleton, TextToSpeech):
         super().__init__()
         logger.info("Initializing [EdgeTTS] voices...")
 
+    @timed
     async def stream(self, text, websocket, tts_event: asyncio.Event, voice_id="",
                      first_sentence=False, language='en-US') -> None:
         if DEBUG:

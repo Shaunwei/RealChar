@@ -21,6 +21,7 @@ import Home from './pages/Home';
 import CharCreate from './pages/CharCreate';
 import CharDelete from './pages/CharDelete';
 import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 import Support from './pages/Support';
 
 // utils
@@ -428,6 +429,7 @@ const App = () => {
             }
           />
           <Route path='/privacy' element={<Privacy />} />
+          <Route path='/terms' element={<Terms />} />
           <Route path='/support' element={<Support />} />
         </Routes>
 

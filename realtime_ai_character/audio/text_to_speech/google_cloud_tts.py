@@ -7,10 +7,11 @@ from google.oauth2 import service_account
 import google.auth.transport.requests
 
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Singleton
+from realtime_ai_character.utils import Singleton, timed
 from realtime_ai_character.audio.text_to_speech.base import TextToSpeech
 
 logger = get_logger(__name__)
+
 DEBUG = False
 
 config = types.SimpleNamespace(**{
@@ -53,6 +54,7 @@ class GoogleCloudTTS(Singleton, TextToSpeech):
         # Set the Authorization header with the access token
         config.headers['Authorization'] = f'Bearer {self.access_token}'
 
+    @timed
     async def stream(self, text, websocket, tts_event: asyncio.Event, voice_id="",
                      first_sentence=False, language='en-US') -> None:
         if DEBUG:

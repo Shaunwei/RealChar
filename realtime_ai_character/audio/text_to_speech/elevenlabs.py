@@ -4,11 +4,13 @@ import types
 import httpx
 
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Singleton
+from realtime_ai_character.utils import Singleton, timed
 from realtime_ai_character.audio.text_to_speech.base import TextToSpeech
 
 logger = get_logger(__name__)
+
 DEBUG = False
+
 ELEVEN_LABS_MULTILINGUAL_MODEL = 'eleven_multilingual_v2' if os.getenv(
     "ELEVEN_LABS_USE_V2",
     'false').lower() in ('true', '1') else 'eleven_multilingual_v1'
@@ -36,6 +38,7 @@ class ElevenLabs(Singleton, TextToSpeech):
         super().__init__()
         logger.info("Initializing [ElevenLabs Text To Speech] voices...")
 
+    @timed
     async def stream(self, text, websocket, tts_event: asyncio.Event, 
                      voice_id="21m00Tcm4TlvDq8ikWAM",
                      first_sentence=False, language='en-US') -> None:

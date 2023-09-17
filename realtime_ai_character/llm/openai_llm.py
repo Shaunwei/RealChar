@@ -12,7 +12,7 @@ from realtime_ai_character.database.chroma import get_chroma
 from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, \
     AsyncCallbackTextHandler, LLM, QuivrAgent, SearchAgent, MultiOnAgent
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Character
+from realtime_ai_character.utils import Character, timed
 from realtime_ai_character.memory.memory_manager import get_memory_manager
 
 logger = get_logger(__name__)
@@ -48,6 +48,7 @@ class OpenaiLlm(LLM):
     def get_config(self):
         return self.config
 
+    @timed
     async def achat(self,
                     history: List[BaseMessage],
                     user_input: str,
@@ -69,7 +70,7 @@ class OpenaiLlm(LLM):
             query=user_input)
         if memory_context:
             context += ("Information regarding this user based on previous chat: "
-            + memory_context + '\n')
+                        + memory_context + '\n')
         # Get search result if enabled
         if useSearch:
             context += self.search_agent.search(user_input)
@@ -77,8 +78,8 @@ class OpenaiLlm(LLM):
             context += self.quivr_agent.question(
                 user_input, quivrApiKey, quivrBrainId)
         if useMultiOn:
-            if (user_input.lower().startswith("multi_on") or 
-                user_input.lower().startswith("multion")):
+            if (user_input.lower().startswith("multi_on") or
+                    user_input.lower().startswith("multion")):
                 response = await self.multion_agent.action(user_input)
                 context += response
 
@@ -88,7 +89,8 @@ class OpenaiLlm(LLM):
 
         # 3. Generate response
         response = await self.chat_open_ai.agenerate(
-            [history], callbacks=[callback, audioCallback, StreamingStdOutCallbackHandler()],
+            [history], callbacks=[callback, audioCallback,
+                                  StreamingStdOutCallbackHandler()],
             metadata=metadata)
         logger.info(f'Response: {response}')
         return response.generations[0][0].text

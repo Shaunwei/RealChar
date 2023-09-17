@@ -1,4 +1,3 @@
-import os
 from typing import List, Union
 
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -13,7 +12,7 @@ from realtime_ai_character.llm.base import (
     SearchAgent,
 )
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Character
+from realtime_ai_character.utils import Character, timed
 
 
 logger = get_logger(__name__)
@@ -26,9 +25,9 @@ class LocalLlm(LLM):
             temperature=0.5,
             streaming=True,
             openai_api_base=url,
-            
         )
-        self.config = {"model": "Local LLM", "temperature": 0.5, "streaming": True}
+        self.config = {"model": "Local LLM",
+                       "temperature": 0.5, "streaming": True}
         self.db = get_chroma()
         self.search_agent = None
         self.search_agent = SearchAgent()
@@ -36,6 +35,7 @@ class LocalLlm(LLM):
     def get_config(self):
         return self.config
 
+    @timed
     async def achat(
         self,
         history: Union[List[BaseMessage], List[str]],
@@ -54,18 +54,20 @@ class LocalLlm(LLM):
         # Get search result if enabled
         if useSearch:
             context += self.search_agent.search(user_input)
-        
+
         # 2. Add user input to history
         history.append(
             HumanMessage(
-                content=user_input_template.format(context=context, query=user_input)
+                content=user_input_template.format(
+                    context=context, query=user_input)
             )
         )
 
         # 3. Generate response
         response = await self.chat_open_ai.agenerate(
             [history],
-            callbacks=[callback, audioCallback, StreamingStdOutCallbackHandler()],
+            callbacks=[callback, audioCallback,
+                       StreamingStdOutCallbackHandler()],
             metadata=metadata,
         )
         logger.info(f"Response: {response}")

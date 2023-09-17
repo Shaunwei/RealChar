@@ -1,6 +1,6 @@
-import { isIP } from 'is-ip';
+import {isIP} from 'is-ip';
 
-export function getApiServerUrl(url) {
+function getProtocolAndHost(url) {
   const urlRegex = /^(https?:)\/\/([^:/]+)(:\d+)?/;
   const match = url?.match(urlRegex);
   if (!match) {
@@ -8,16 +8,32 @@ export function getApiServerUrl(url) {
   }
   const protocol = match[1];
   const host = match[2];
+  return [protocol, host];
+}
 
-  // Local deployment uses 8000 port by default.
-  let newPort = '8000';
-  let newHost = host === 'localhost' ? '127.0.0.1' : host;
+export function getApiServerUrl(url) {
+  const [protocol, host] = getProtocolAndHost(url)
+  return `${protocol}//${getServerUrl(protocol, host)}`;
+}
 
-  if (!(newHost === 'localhost' || isIP(newHost))) {
-    // Remove www. from hostname
-    newHost = newHost.replace('www.', '');
-    newHost = 'api.' + newHost;
-    newPort = protocol === 'https:' ? 443 : 80;
-  }
-  return `${protocol}//${newHost}:${newPort}`;
+
+export function getWsServerUrl(url) {
+  const [protocol, host] = getProtocolAndHost(url);
+  const ws_scheme = protocol === 'https:' ? 'wss' : 'ws';
+  return `${ws_scheme}://${getServerUrl(protocol, host)}`;
+}
+
+export function getServerUrl(protocol, host) {
+    const parts = host.split(':');
+    let hostname = parts[0];
+    // Local deployment uses 8000 port by default.
+    let newPort = '8000';
+
+    if (!(hostname === 'localhost' || isIP(hostname))) {
+      // Remove www. from hostname
+      hostname = hostname.replace('www.', '');
+      hostname = 'api.' + hostname;
+      newPort = protocol === 'https:' ? 443 : 80;
+    }
+  return hostname + ':' + newPort;
 }

@@ -8,7 +8,7 @@ import { useAppStore } from '@/lib/store';
 export default function Chat({
   size
 }) {
-  const { chatContent } = useAppStore();
+  const { chatContent, interimChat } = useAppStore();
 
   let height = '';
   switch (size) {
@@ -23,11 +23,19 @@ export default function Chat({
   return (
     <div className={`flex flex-col gap-5 md:mt-4 overflow-y-scroll ${height}`}>
       {
-        chatContent?.map((line) => {
-          if (line.from === 'character') {
+        [...chatContent, interimChat].sort((a, b) => {
+          if (!a) {
+            return 1;
+          } else if (!b) {
+            return -1;
+          } else {
+            return a.timestamp > b.timestamp ? 1 : -1;
+          }
+        })?.map((line) => {
+          if (line && line.hasOwnProperty('from') && line.from === 'character') {
             return (
               <div
-                key={line.timeStamp}
+                key={line.hasOwnProperty('timestamp') ? line.timestamp: 0}
                 className="flex flex-col md:flex-row self-start items-start md:items-stretch"
               >
                 <p className="w-60 md:w-fit md:text-lg py-2 px-5 font-light flex-none rounded-full md:mr-3 rounded-bl-none bg-real-navy/20">{line.content}</p>
@@ -50,10 +58,10 @@ export default function Chat({
                 </div>
               </div>
             );
-          } else {
+          } else if (line && line.hasOwnProperty('from') && line.from === 'user') {
             return (
               <div
-                key={line.timeStamp}
+                key={line.timestamp}
                 className="self-end"
               >
                 <p className="w-60 md:w-fit md:text-lg py-2 px-5 font-light flex-none rounded-full rounded-br-none bg-real-navy/50">{line.content}</p>

@@ -6,8 +6,14 @@ import {
 } from '@nextui-org/dropdown';
 import { Avatar } from '@nextui-org/avatar';
 import signout from '@/firebase/auth/signout';
+import {useAppStore} from "@/lib/store";
+import {useEffect} from "react";
 
 export default function UserDropdown({ user }) {
+  const {setToken} = useAppStore();
+  useEffect(()=> {
+    setToken(user.accessToken);
+  }, []);
   async function handleMenuClick(key) {
     switch(key) {
       case 'profile':

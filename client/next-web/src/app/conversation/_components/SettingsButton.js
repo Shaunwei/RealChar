@@ -10,14 +10,7 @@ import Image from 'next/image';
 import settingsSVG from '@/assets/svgs/settings.svg';
 import SettingPanel from './SettingPanel';
 
-export default function SettingsButton({
-  microphone,
-  microphoneList,
-  handleMicrophoneSelect,
-  speaker,
-  speakerList,
-  handleSpeakerSelect,
-}) {
+export default function SettingsButton() {
   const {isOpen, onOpen, onClose} = useDisclosure();
 
   return (
@@ -49,14 +42,7 @@ export default function SettingsButton({
       <ModalContent>
         <ModalHeader>Settings</ModalHeader>
         <ModalBody>
-          <SettingPanel
-            microphone={microphone}
-            microphoneList={microphoneList}
-            handleMicrophoneSelect={handleMicrophoneSelect}
-            speaker={speaker}
-            speakerList={speakerList}
-            handleSpeakerSelect={handleSpeakerSelect}
-          />
+          <SettingPanel/>
         </ModalBody>
       </ModalContent>
     </Modal>

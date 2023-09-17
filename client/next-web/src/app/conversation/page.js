@@ -1,4 +1,5 @@
 'use client'
+
 import { Button } from '@nextui-org/button';
 import { Tooltip } from '@nextui-org/tooltip';
 import SettingBar from './_components/SettingBar';
@@ -10,38 +11,130 @@ import TabButton from '@/components/TabButton';
 import Image from 'next/image';
 import exitIcon from '@/assets/svgs/exit.svg';
 import { BsChatRightText, BsTelephone } from 'react-icons/bs';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import {useEffect, useRef, useState} from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAppStore } from '@/lib/store';
 import lz from 'lz-string';
+import {playAudios} from "@/util/audioUtils";
 
 export default function Conversation() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [ mode, setMode ] = useState('text');
-  const { getAudioList, setCharacter } = useAppStore();
+  const {character, getAudioList, setCharacter, clearChatContent } = useAppStore();
+  // Websocket.
+  const {socketIsOpen, sendOverSocket, connectSocket, closeSocket } = useAppStore();
+  // Media recorder.
+  const {mediaRecorder, connectMicrophone, startRecording, stopRecording, closeMediaRecorder} = useAppStore();
+  // Audio player
+  const audioPlayerRef = useRef(null);
+  const audioQueueRef = useRef(useAppStore.getState().audioQueue);
+  const {isPlaying, setIsPlaying, popAudioQueueFront} = useAppStore();
+  const {setAudioPlayerRef, stopAudioPlayback} = useAppStore();
+  // Web RTC
+  const {connectPeer, closePeer, micStream, incomingStreamDestination, audioContext, rtcConnectionEstablished} = useAppStore();
+  const {vadEventsCallback, disableVAD, enableVAD, closeVAD} = useAppStore();
 
-  useEffect(() => {
+  useEffect(() => useAppStore.subscribe(
+      state => (audioQueueRef.current = state.audioQueue)
+  ), [])
+
+  useEffect(()=>{
     const characterString = searchParams.get('character');
     const character = JSON.parse(lz.decompressFromEncodedURIComponent(characterString));
     setCharacter(character);
-  }, []);
+  },[]);
+
+  // Bind current audio player to state ref.
+  useEffect(() => {
+      setAudioPlayerRef(audioPlayerRef);
+  }, [])
 
   useEffect(() => {
-    getAudioList()
-  }, [])
+      connectSocket();
+  }, [character]);
+
+  const handleOnTrack = event => {
+    if (event.streams && event.streams[0]) {
+      audioPlayerRef.current.srcObject = event.streams[0];
+    }
+  }
+
+  useEffect(() => {
+      getAudioList().then(
+          () => {
+              connectMicrophone();
+          }
+      ).then(()=> {
+          connectPeer(handleOnTrack);
+      });
+  }, []);
+
+  async function initializeVAD() {
+      vadEventsCallback(micStream,
+          () => {
+              stopAudioPlayback();
+              startRecording();
+          },
+          () => {
+              // Stops recording and send interim audio clip to server.
+              sendOverSocket('[&Speech]');
+              stopRecording();
+          },
+          () => {
+              sendOverSocket('[SpeechFinished]');
+          })
+  }
+
+  useEffect(() => {
+      if (!mediaRecorder || !socketIsOpen || !rtcConnectionEstablished) {
+          return;
+      }
+      initializeVAD();
+  }, [mediaRecorder, socketIsOpen, rtcConnectionEstablished]);
+
+  // Reconnects websocket on setting change.
+  const {preferredLanguage, selectedModel, enableGoogle, enableQuivr, enableMultiOn} = useAppStore();
+  useEffect(() => {
+      if (!mediaRecorder || !socketIsOpen || !rtcConnectionEstablished) {
+          return;
+      }
+      closeVAD();
+      closeSocket();
+      clearChatContent();
+      connectSocket();
+      initializeVAD();
+      if (mode === 'handsFree') {
+          enableVAD();
+      }
+  }, [preferredLanguage, selectedModel, enableGoogle, enableQuivr, enableMultiOn]);
+
+  // Audio Playback
+  useEffect(() => {
+          if (isPlaying && audioContext) {
+              playAudios(
+                  audioContext,
+                  audioPlayerRef,
+                  audioQueueRef,
+                  isPlaying,
+                  setIsPlaying,
+                  incomingStreamDestination,
+                  popAudioQueueFront
+              );
+          }
+      }
+, [isPlaying]);
 
   const [ isMute, setIsMute ] = useState(false);
 
   function handsFreeMode() {
     setMode('handsFree');
-    // TODO
+    enableVAD();
   }
 
   function textMode() {
     setMode('text');
-    // TODO
+    disableVAD();
   }
 
   function toggleMute() {
@@ -49,8 +142,21 @@ export default function Conversation() {
     // TODO
   }
 
+  const cleanUpStates = () => {
+      disableVAD();
+      closeVAD();
+      closeMediaRecorder();
+      closePeer();
+      closeSocket();
+      clearChatContent();
+      setCharacter({});
+  }
+
   return (
     <div className="relative">
+      <audio ref={audioPlayerRef} className='audio-player'>
+        <source src='' type='audio/mp3' />
+      </audio>
       <div className="grid grid-cols-4 gap-5 pt-4 md:pt-10 items-center">
         <div>
           <Tooltip
@@ -62,7 +168,10 @@ export default function Conversation() {
               isIconOnly
               radius="full"
               className="hover:opacity-80 h-8 w-8 md:h-12 md:w-12 ml-5 mt-1 bg-button"
-              onPress={() => router.push('/')}
+              onPress={() => {
+                router.push('/');
+                cleanUpStates();
+              }}
             >
               <Image
                 priority

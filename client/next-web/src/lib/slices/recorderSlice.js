@@ -96,7 +96,7 @@ export const createRecorderSlice = (set, get) => ({
         }
     },
     enableVAD: () =>{
-        get().vadEvents.resume();
+        get().vadEvents?.resume();
     },
     disableVAD: () => {
         if (get().vadEvents) {

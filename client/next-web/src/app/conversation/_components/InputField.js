@@ -8,14 +8,21 @@ import Image from 'next/image';
 import talkSvg from '@/assets/svgs/talk.svg';
 import micSvg from '@/assets/svgs/microphone.svg';
 import pauseSvg from '@/assets/svgs/pause.svg';
+import {useAppStore} from "@/lib/store";
 
 export default function InputField() {
   const [text, setText] = useState('');
   const [inputMode, setInputMode] = useState('text');
   const [isTalking, setIsTalking] = useState(false);
+  const {sendOverSocket, appendUserChat} = useAppStore();
+  const {stopAudioPlayback} = useAppStore();
 
   function handleOnEnter(text) {
-    // todo
+    if (text) {
+      stopAudioPlayback();
+      appendUserChat(text);
+      sendOverSocket(text);
+    }
   }
 
   function startTalk() {

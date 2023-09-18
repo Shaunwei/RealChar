@@ -6,14 +6,7 @@ import AudioPanel from './AudioPanel';
 import LanguagePanel from './LanguagePanel';
 import EnhancePanel from './EnhancePanel';
 
-export default function SettingPanel({
-  microphone,
-  microphoneList,
-  handleMicrophoneSelect,
-  speaker,
-  speakerList,
-  handleSpeakerSelect,
-}) {
+export default function SettingPanel() {
   const [openedPanel, setOpenedPanel] = useState('audio');
 
   return (
@@ -46,14 +39,7 @@ export default function SettingPanel({
       </div>
       <div className="pl-10 w-full">
       {openedPanel === 'audio' && (
-        <AudioPanel
-          microphone={microphone}
-          microphoneList={microphoneList}
-          handleMicrophoneSelect={handleMicrophoneSelect}
-          speaker={speaker}
-          speakerList={speakerList}
-          handleSpeakerSelect={handleSpeakerSelect}
-        />
+        <AudioPanel/>
       )}
       {openedPanel === 'language' && (
         <LanguagePanel/>

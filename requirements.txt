@@ -17,7 +17,7 @@ google-search-results
 html2text
 httpx
 ipywidgets
-langchain>=0.0.240
+langchain==0.0.292
 llama_index
 multion
 pgvector

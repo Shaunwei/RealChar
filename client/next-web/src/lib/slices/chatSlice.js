@@ -1,17 +1,35 @@
 export const createChatSlice = (set) => ({
-  chatContent: [
-    {
-      timeStamp: '2308260015',
-      from: 'character',
-      content: 'Hi my friend, how are you doing?',
-    }, {
-      timeStamp: '2308260016',
-      from: 'user',
-      content: 'I am good. And I need to test the style of lots lots content should look like.',
-    }, {
-      timeStamp: '2308260017',
-      from: 'character',
-      content: 'What can I do for you?'
-    }
-  ],
+  // interimChat = null means not in text streaming.
+  interimChat: null,
+  setSender: (sender) => {
+      set((state)=>({
+          interimChat: state.interimChat ? {...state.interimChat, from: sender} : {from: sender, timestamp: `${Date.now()}`}
+      }));
+  },
+  appendInterimChatContent: (content) => {
+      set((state)=> ({
+          interimChat: state.interimChat ? {...state.interimChat, content: `${'content' in state.interimChat ? state.interimChat.content : ''}` + content} : {content: content, timestamp: `${Date.now()}`}
+      }));
+  },
+
+  messageId: '',
+  setMessageId: (id) => {
+    set({messageId: id});
+  },
+
+  chatContent: [],
+
+  appendChatContent: () =>{
+    set((state) => ({
+        interimChat: null,
+        chatContent: [...state.chatContent, {...state.interimChat}]}));
+  },
+  appendUserChat: (chat) => {
+      set((state) => ({
+          chatContent: [...state.chatContent, {timestamp: `${Date.now()}`, from: 'user', content: chat}]
+      }));
+  },
+  clearChatContent: () => {
+      set({chatContent: []});
+  }
 })

@@ -312,6 +312,9 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     # Filter noises
                     if not current_speech:
                         continue
+
+                    await manager.send_message(
+                        message=f'[+]You said: {current_speech}', websocket=websocket)
                     current_speech = ''
 
                 # 2. Send "thinking" status over websocket

@@ -173,7 +173,3 @@ google_credentials.json
 firebase_credentials.json
 
 ./node_modules
-
-# scripts
-reset_database.sh
-

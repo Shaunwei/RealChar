@@ -20,7 +20,7 @@ import {playAudios} from "@/util/audioUtils";
 export default function Conversation() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [ mode, setMode ] = useState('text');
+  const [ isTextMode, setIsTextMode ] = useState(true);
   const {character, getAudioList, setCharacter, clearChatContent } = useAppStore();
   // Websocket.
   const {socketIsOpen, sendOverSocket, connectSocket, closeSocket } = useAppStore();
@@ -104,7 +104,7 @@ export default function Conversation() {
       clearChatContent();
       connectSocket();
       initializeVAD();
-      if (mode === 'handsFree') {
+      if (!isTextMode) {
           enableVAD();
       }
   }, [preferredLanguage, selectedModel, enableGoogle, enableQuivr, enableMultiOn]);
@@ -128,12 +128,12 @@ export default function Conversation() {
   const [ isMute, setIsMute ] = useState(false);
 
   function handsFreeMode() {
-    setMode('handsFree');
+    setIsTextMode(false);
     enableVAD();
   }
 
   function textMode() {
-    setMode('text');
+    setIsTextMode(true);
     disableVAD();
   }
 
@@ -183,14 +183,14 @@ export default function Conversation() {
         </div>
         <div className="col-span-2 flex gap-5 border-2 rounded-full p-1 border-tab">
           <TabButton
-            isSelected={mode==="text"}
+            isSelected={isTextMode}
             handlePress={textMode}
             className="min-w-fit h-fit py-2 md:min-w-20 md:h-11 md:py-4"
           >
             <span className="md:hidden"><BsChatRightText size="1.2em"/></span><span className="hidden md:inline">Text</span><span className="hidden lg:inline">&nbsp;mode</span>
           </TabButton>
           <TabButton
-            isSelected={mode==='handsFree'}
+            isSelected={!isTextMode}
             handlePress={handsFreeMode}
             className="min-w-fit h-fit py-2 md:min-w-20 md:h-11 md:py-4"
           >
@@ -204,17 +204,17 @@ export default function Conversation() {
       </div>
       <div className="flex flex-col mt-4 md:mt-10 pt-2 md:pt-6 border-t-2 border-divider md:mx-auto md:w-unit-9xl lg:w-[892px]">
         <SettingBar
-          mode={mode}
+          isTextMode={isTextMode}
           isMute={isMute}
           toggleMute={toggleMute}
         />
       </div>
       <div className="mt-6 w-full px-4 md:px-0 mx-auto md:w-unit-9xl lg:w-[892px]">
         <HandsFreeMode
-          isDisplay={mode==='handsFree'}
+          isDisplay={!isTextMode}
         />
         <TextMode
-          isDisplay={mode==="text"}
+          isDisplay={isTextMode}
         />
       </div>
     </div>

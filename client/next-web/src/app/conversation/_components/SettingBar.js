@@ -7,7 +7,7 @@ import { Avatar } from '@nextui-org/avatar';
 import { useAppStore } from '@/lib/store';
 
 export default function SettingBar({
-  mode,
+  isTextMode,
   isMute,
   toggleMute,
 }) {
@@ -15,8 +15,8 @@ export default function SettingBar({
 
   return (
     <>
-    <div className={`flex flex-row px-4 ${mode==="text"?"justify-center":"justify-end"} md:hidden`}>
-    { mode==="text" && (
+    <div className={`flex flex-row px-4 ${isTextMode?"justify-center":"justify-end"} md:hidden`}>
+    { isTextMode && (
       <div className="flex gap-1 items-center">
         <Avatar
           name={character.name}
@@ -39,11 +39,11 @@ export default function SettingBar({
           isMute={isMute}
           toggleMute={toggleMute}
         />
-        {mode==="handsFree" && (
+        {!isTextMode && (
           <MicrophoneControl/>
         )}
       </div>
-      { mode==="text" && (
+      { isTextMode && (
         <div className="flex gap-1 items-center">
           <Avatar
             name={character.name}
@@ -59,7 +59,7 @@ export default function SettingBar({
         <SettingsButton/>
       </div>
     </div>
-    {mode==="handsFree" && (
+    {!isTextMode && (
       <div className="mt-4 sm:mt-6">
         <Avatar
           name={character.name}

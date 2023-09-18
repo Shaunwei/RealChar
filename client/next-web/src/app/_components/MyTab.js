@@ -15,7 +15,7 @@ export default function MyTab({ isDisplay }) {
     <section
       className={`flex flex-row flex-wrap justify-center mt-10 gap-5 ${display}`}
     >
-      <Card className='hidden md:flex md:basis-52'>
+      <Card className='hidden md:basis-52'>
         <CardBody className='flex justify-center'>
           <Link href='/'>
             <BsPlusLg className='w-7 h-7 block my-2.5 mx-auto fill-real-silver-500' />

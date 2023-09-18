@@ -25,9 +25,9 @@ class LocalLlm(LLM):
             temperature=0.5,
             streaming=True,
             openai_api_base=url,
+            
         )
-        self.config = {"model": "Local LLM",
-                       "temperature": 0.5, "streaming": True}
+        self.config = {"model": "Local LLM", "temperature": 0.5, "streaming": True}
         self.db = get_chroma()
         self.search_agent = None
         self.search_agent = SearchAgent()
@@ -54,20 +54,18 @@ class LocalLlm(LLM):
         # Get search result if enabled
         if useSearch:
             context += self.search_agent.search(user_input)
-
+        
         # 2. Add user input to history
         history.append(
             HumanMessage(
-                content=user_input_template.format(
-                    context=context, query=user_input)
+                content=user_input_template.format(context=context, query=user_input)
             )
         )
 
         # 3. Generate response
         response = await self.chat_open_ai.agenerate(
             [history],
-            callbacks=[callback, audioCallback,
-                       StreamingStdOutCallbackHandler()],
+            callbacks=[callback, audioCallback, StreamingStdOutCallbackHandler()],
             metadata=metadata,
         )
         logger.info(f"Response: {response}")

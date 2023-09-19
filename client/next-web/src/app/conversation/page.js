@@ -213,7 +213,7 @@ export default function Conversation() {
           />
         </div>
       </div>
-      <div className="h-full mb-[-176px]">
+      <div className="h-full -mb-44">
         <div className="h-[154px] md:h-[226px]"></div>
         {!isTextMode && (<div className="h-[250px] md:h-[300px]"></div>)}
         <div className="w-full px-4 md:px-0 mx-auto md:w-unit-9xl lg:w-[892px]">

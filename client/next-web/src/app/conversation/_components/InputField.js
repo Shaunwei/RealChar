@@ -88,12 +88,12 @@ export default function InputField() {
             onPress={() =>
               setInputMode('text')
             }
-            className="-ml-24"
+            className="md:-ml-24"
           >
             <FaRegKeyboard/>
           </Button>
         </Tooltip>
-        <div className="text-center ml-12">
+        <div className="text-center md:ml-12">
           <Button
             isIconOnly
             size="lg"

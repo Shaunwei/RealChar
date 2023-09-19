@@ -4,9 +4,19 @@ import {
 } from 'react-icons/ri';
 import { Button } from '@nextui-org/button';
 import { useAppStore } from '@/lib/store';
+import { useRef, useEffect } from 'react';
 
 export default function Chat() {
   const { chatContent, interimChat } = useAppStore();
+  const messageEndRef = useRef(null);
+
+  useEffect(() => {
+    messageEndRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: 'start',
+      inline: 'nearest'
+    })
+  }, [chatContent])
 
   return (
     <div className={`flex flex-col gap-5 md:mt-4 overflow-y-scroll min-h-25`}>
@@ -58,6 +68,7 @@ export default function Chat() {
           }
         })
       }
+      <div ref={messageEndRef}></div>
     </div>
   );
 }

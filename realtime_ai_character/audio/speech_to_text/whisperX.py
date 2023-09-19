@@ -1,13 +1,9 @@
 import io
 import os
 import types
-import torch
-import torchaudio
+
 import requests
 import numpy as np
-from torch.cuda import is_available as is_cuda_available
-
-import whisperx
 
 from realtime_ai_character.audio.speech_to_text.base import SpeechToText
 from realtime_ai_character.logger import get_logger
@@ -45,9 +41,12 @@ class WhisperX(Singleton, SpeechToText):
     def __init__(self, use: str = "local"):
         super().__init__()
         if use == "local":
+            import whisperx
+            from torch.cuda import is_available as is_cuda_available
             self.device = "cuda" if is_cuda_available() else "cpu"
             compute_type = "float16" if self.device == "cuda" else "default"
-            logger.info(f"Loading [Local WhisperX] model: [{config.model}]({self.device}) ...")
+            logger.info(
+                f"Loading [Local WhisperX] model: [{config.model}]({self.device}) ...")
             self.model = whisperx.load_model(
                 config.model,
                 self.device,
@@ -57,16 +56,19 @@ class WhisperX(Singleton, SpeechToText):
             self.model_a, self.metadata = whisperx.load_align_model(
                 language_code=config.language, device=self.device
             )
-            self.diarize_model = whisperx.DiarizationPipeline(device=self.device)
+            self.diarize_model = whisperx.DiarizationPipeline(
+                device=self.device)
         self.use = use
 
     @timed
     def transcribe(self, audio_bytes, platform, prompt="", language="en-US", suppress_tokens=[-1]):
         logger.info("Transcribing audio...")
         if self.use == "local":
-            result = self._transcribe(audio_bytes, prompt, language, suppress_tokens)
+            result = self._transcribe(
+                audio_bytes, prompt, language, suppress_tokens)
         else:
-            result = self._transcribe_api(audio_bytes, prompt, language, suppress_tokens)
+            result = self._transcribe_api(
+                audio_bytes, prompt, language, suppress_tokens)
         text = " ".join([seg["text"].strip() for seg in result["segments"]])
         return text
 
@@ -78,9 +80,12 @@ class WhisperX(Singleton, SpeechToText):
         suppress_tokens=[-1],
         diarization=False,
     ):
+        import torch
+        import torchaudio
         reader = torchaudio.io.StreamReader(io.BytesIO(audio_bytes))
         reader.add_basic_audio_stream(1000, sample_rate=16000)
-        audio = torch.concat([chunk[0] for chunk in reader.stream()])  # type: ignore
+        audio = torch.concat([chunk[0]
+                             for chunk in reader.stream()])  # type: ignore
         audio = audio.flatten().numpy().astype(np.float32)
         language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, config.language)
 
@@ -95,6 +100,7 @@ class WhisperX(Singleton, SpeechToText):
         return result
 
     def _diarize(self, audio, result):
+        import whisperx
         result = whisperx.align(
             result["segments"],
             self.model_a,
@@ -115,7 +121,8 @@ class WhisperX(Singleton, SpeechToText):
         diarization=False,
     ):
         files = {"audio_file": ("audio_file", audio_bytes)}
-        logger.info(f"Sent request to whisperX server: {len(audio_bytes)} bytes")
+        logger.info(
+            f"Sent request to whisperX server: {len(audio_bytes)} bytes")
         data = {
             "api_key": config.api_key,
             "prompt": prompt,
@@ -124,13 +131,15 @@ class WhisperX(Singleton, SpeechToText):
             "diarization": diarization,
         }
         try:
-            response = requests.post(config.url, data=data, files=files, timeout=10)
+            response = requests.post(
+                config.url, data=data, files=files, timeout=10)
             return response.json()
         except requests.exceptions.Timeout as e:
             raise Exception(f"WhisperX server timed out: {e}")
         except requests.exceptions.RequestException as e:
             raise Exception(f"Could not connect to whisperX server: {e}")
         except KeyError as e:
-            raise Exception(f"Could not parse response from whisperX server: {e}")
+            raise Exception(
+                f"Could not parse response from whisperX server: {e}")
         except Exception as e:
             raise Exception(f"Unknown error from whisperX server: {e}")

@@ -12,7 +12,7 @@ import {useAppStore} from "@/lib/store";
 
 export default function InputField() {
   const [text, setText] = useState('');
-  const [inputMode, setInputMode] = useState('text');
+  const [isTextInput, setIsTextInput] = useState(true);
   const [isTalking, setIsTalking] = useState(false);
   const {sendOverSocket, appendUserChat} = useAppStore();
   const {stopAudioPlayback} = useAppStore();
@@ -37,7 +37,7 @@ export default function InputField() {
 
   return (
     <div className="flex justify-center pb-10 md:mx-auto md:w-unit-9xl lg:w-[892px]">
-      {inputMode === 'text' && (
+      {isTextInput && (
       <div className="flex flex-row justify-center gap-4 w-full pb-10 pt-4">
         <Tooltip content="Talk">
           <Button
@@ -47,7 +47,7 @@ export default function InputField() {
             radius="full"
             size="lg"
             onPress={() =>
-              setInputMode('talk')
+              setIsTextInput(false)
             }
           >
             <Image
@@ -76,7 +76,7 @@ export default function InputField() {
         </Button>
       </div>
       )}
-      {inputMode === 'talk' && !isTalking && (
+      {!isTextInput && !isTalking && (
       <div className="flex flex-row items-center">
         <Tooltip content="Text">
           <Button
@@ -86,7 +86,7 @@ export default function InputField() {
             color="white"
             size="lg"
             onPress={() =>
-              setInputMode('text')
+              setIsTextInput(true)
             }
             className="md:-ml-24"
           >
@@ -112,7 +112,7 @@ export default function InputField() {
         </div>
       </div>
       )}
-      {inputMode === 'talk' && isTalking && (
+      {!isTextInput && isTalking && (
       <div className="text-center">
           {/* <p className="font-light mb-10">You <span className="text-white/50">are speaking...</span></p> */}
         <div className="mb-4">

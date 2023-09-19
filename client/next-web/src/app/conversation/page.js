@@ -160,7 +160,7 @@ export default function Conversation() {
         <source src='' type='audio/mp3' />
       </audio>
       <div className="fixed top-0 w-full bg-background z-10">
-        <div className="grid grid-cols-4 gap-5 pt-4 md:pt-10 items-center">
+        <div className="grid grid-cols-4 gap-5 pt-4 md:pt-5 items-center">
           <div>
             <Tooltip
               content="Exit"
@@ -205,7 +205,7 @@ export default function Conversation() {
             <HamburgerMenu/>
           </div>
         </div>
-        <div className="flex flex-col mt-4 md:mt-10 pt-2 md:pt-6 pb-6 border-t-2 border-divider md:mx-auto md:w-unit-9xl lg:w-[892px]">
+        <div className="flex flex-col mt-4 md:mt-5 pt-2 md:pt-5 pb-5 border-t-2 border-divider md:mx-auto md:w-unit-9xl lg:w-[892px]">
           <SettingBar
             isTextMode={isTextMode}
             isMute={isMute}
@@ -213,13 +213,13 @@ export default function Conversation() {
           />
         </div>
       </div>
-      <div className="h-full -mb-44">
-        <div className="h-[154px] md:h-[226px]"></div>
-        {!isTextMode && (<div className="h-[250px] md:h-[300px]"></div>)}
+      <div className="h-full -mb-28">
+        <div className="h-[154px] md:h-[178px]"></div>
+        {!isTextMode && (<div className="h-[250px] md:h-[288px]"></div>)}
         <div className="w-full px-4 md:px-0 mx-auto md:w-unit-9xl lg:w-[892px]">
             <Chat />
         </div>
-        <div className="h-44"></div>
+        <div className="h-28"></div>
       </div>
       <div className="fixed bottom-0 w-full bg-background">
         <div className="px-4 md:px-0 mx-auto md:w-unit-9xl lg:w-[892px]">

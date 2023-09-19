@@ -36,7 +36,7 @@ export default function InputField() {
   }
 
   return (
-    <div className="flex justify-center pb-10 md:mx-auto md:w-unit-9xl lg:w-[892px]">
+    <div className="flex justify-center md:mx-auto md:w-unit-9xl lg:w-[892px]">
       {isTextInput && (
       <div className="flex flex-row justify-center gap-4 w-full pb-10 pt-4">
         <Tooltip content="Talk">
@@ -88,12 +88,12 @@ export default function InputField() {
             onPress={() =>
               setIsTextInput(true)
             }
-            className="md:-ml-24"
+            className="-ml-16 md:-ml-24"
           >
             <FaRegKeyboard/>
           </Button>
         </Tooltip>
-        <div className="text-center md:ml-12">
+        <div className="text-center ml-8 md:ml-12">
           <Button
             isIconOnly
             size="lg"
@@ -108,7 +108,7 @@ export default function InputField() {
               className="w-6"
             />
           </Button>
-          <p className="font-light">Click and start talking</p>
+          {/* <p className="font-light">Click and start talking</p> */}
         </div>
       </div>
       )}
@@ -131,7 +131,7 @@ export default function InputField() {
             />
           </Button>
         </div>
-        <p className="font-light">Click and stop talking</p>
+        {/* <p className="font-light">Click and stop talking</p> */}
       </div>
       )}
     </div>

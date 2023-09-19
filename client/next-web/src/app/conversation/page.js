@@ -222,7 +222,7 @@ export default function Conversation() {
         <div className="h-44"></div>
       </div>
       <div className="fixed bottom-0 w-full bg-background">
-        <div className="px-4 pt-6 md:px-0 mx-auto md:w-unit-9xl lg:w-[892px]">
+        <div className="px-4 md:px-0 mx-auto md:w-unit-9xl lg:w-[892px]">
           <HandsFreeMode
             isDisplay={!isTextMode}
           />

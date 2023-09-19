@@ -38,7 +38,7 @@ export default function InputField() {
   return (
     <div className="flex justify-center pb-10 md:mx-auto md:w-unit-9xl lg:w-[892px]">
       {inputMode === 'text' && (
-      <div className="flex flex-row justify-center gap-4 w-full pb-10">
+      <div className="flex flex-row justify-center gap-4 w-full pb-10 pt-4">
         <Tooltip content="Talk">
           <Button
             isIconOnly
@@ -114,8 +114,8 @@ export default function InputField() {
       )}
       {inputMode === 'talk' && isTalking && (
       <div className="text-center">
-          <p className="font-light">You <span className="text-white/50">are speaking...</span></p>
-        <div className="mt-10 mb-4">
+          {/* <p className="font-light mb-10">You <span className="text-white/50">are speaking...</span></p> */}
+        <div className="mb-4">
           <span className="animate-ping absolute w-24 h-24 bg-real-navy opacity-50 rounded-full"></span>
           <Button
             isIconOnly

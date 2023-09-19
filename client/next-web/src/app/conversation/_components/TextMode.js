@@ -8,7 +8,6 @@ export default function TextMode({
 
   return (
     <section className={`flex flex-col gap-6 ${display}`}>
-      <Chat size="lg"/>
       <div>
         <InputField />
       </div>

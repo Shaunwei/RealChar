@@ -65,7 +65,7 @@ export default function SettingBar({
           name={character.name}
           src={character.image_url}
           classNames={{
-            base: "block w-56 h-56 sm:w-80 sm:h-80 mx-auto"
+            base: "block w-56 h-56 md:w-60 md:h-60 mx-auto"
           }}
         />
         <p className="text-center font-medium text-2xl sm:text-3xl mt-4">{character.name}</p>

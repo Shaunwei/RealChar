@@ -78,6 +78,22 @@ const Home = ({
     }
   };
 
+  const handleEditCharacter = () => {
+    setCharacterConfirmed(true);
+    const compressedCharacter = lz.compressToEncodedURIComponent(
+      JSON.stringify(selectedCharacter)
+    );
+    if (!isLoggedIn.current) {
+      signInWithGoogle(isLoggedIn, setToken).then(() => {
+        if (isLoggedIn.current) {
+          navigate('/create?character=' + compressedCharacter);
+        }
+      });
+    } else {
+      navigate('/create?character=' + compressedCharacter);
+    }
+  };
+
   return (
     <div className='home'>
       {loading ? (
@@ -118,6 +134,23 @@ const Home = ({
             }}
           >
             Next
+          </Button>
+          <Button
+            variant='contained'
+            onClick={handleEditCharacter}
+            fullWidth
+            size='large'
+            disabled={!selectedCharacter}
+            sx={{
+              marginTop: '10px',
+              '&.Mui-disabled': {
+                backgroundColor: '#BEC5D9',
+                color: '#636A84',
+              },
+              textTransform: 'none',
+            }}
+          >
+            Edit
           </Button>
         </>
       )}

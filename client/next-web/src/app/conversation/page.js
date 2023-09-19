@@ -217,7 +217,7 @@ export default function Conversation() {
         <div className="h-[154px] md:h-[226px]"></div>
         {!isTextMode && (<div className="h-[250px] md:h-[300px]"></div>)}
         <div className="w-full px-4 md:px-0 mx-auto md:w-unit-9xl lg:w-[892px]">
-            <Chat size="sm" />
+            <Chat />
         </div>
         <div className="h-44"></div>
       </div>

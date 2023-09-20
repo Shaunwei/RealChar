@@ -12,13 +12,13 @@ import {useAppStore} from "@/lib/store";
 
 export default function InputField() {
   const [text, setText] = useState('');
-  const [inputMode, setInputMode] = useState('text');
+  const [isTextInput, setIsTextInput] = useState(true);
   const [isTalking, setIsTalking] = useState(false);
   const {sendOverSocket, appendUserChat} = useAppStore();
   const {stopAudioPlayback} = useAppStore();
   const {startRecording, stopRecording} = useAppStore();
 
-  function handleOnEnter(text) {
+  function handleOnEnter() {
     if (text) {
       stopAudioPlayback();
       appendUserChat(text);
@@ -37,9 +37,9 @@ export default function InputField() {
   }
 
   return (
-    <div className="flex justify-center pb-10 md:mx-auto md:w-unit-9xl lg:w-[892px]">
-      {inputMode === 'text' && (
-      <div className="flex flex-row justify-center gap-4 w-full pb-10">
+    <div className="flex justify-center md:mx-auto md:w-unit-9xl lg:w-[892px]">
+      {isTextInput && (
+      <div className="flex flex-row justify-center gap-4 w-full pb-10 pt-4">
         <Tooltip content="Talk">
           <Button
             isIconOnly
@@ -48,7 +48,7 @@ export default function InputField() {
             radius="full"
             size="lg"
             onPress={() =>
-              setInputMode('talk')
+              setIsTextInput(false)
             }
           >
             <Image
@@ -77,7 +77,7 @@ export default function InputField() {
         </Button>
       </div>
       )}
-      {inputMode === 'talk' && !isTalking && (
+      {!isTextInput && !isTalking && (
       <div className="flex flex-row items-center">
         <Tooltip content="Text">
           <Button
@@ -87,14 +87,14 @@ export default function InputField() {
             color="white"
             size="lg"
             onPress={() =>
-              setInputMode('text')
+              setIsTextInput(true)
             }
-            className="-ml-24"
+            className="-ml-16 md:-ml-24"
           >
             <FaRegKeyboard/>
           </Button>
         </Tooltip>
-        <div className="text-center ml-12">
+        <div className="text-center ml-8 md:ml-12">
           <Button
             isIconOnly
             size="lg"
@@ -109,14 +109,14 @@ export default function InputField() {
               className="w-6"
             />
           </Button>
-          <p className="font-light">Click and start talking</p>
+          {/* <p className="font-light">Click and start talking</p> */}
         </div>
       </div>
       )}
-      {inputMode === 'talk' && isTalking && (
+      {!isTextInput && isTalking && (
       <div className="text-center">
-          <p className="font-light">You <span className="text-white/50">are speaking...</span></p>
-        <div className="mt-10 mb-4">
+          {/* <p className="font-light mb-10">You <span className="text-white/50">are speaking...</span></p> */}
+        <div className="mb-4">
           <span className="animate-ping absolute w-24 h-24 bg-real-navy opacity-50 rounded-full"></span>
           <Button
             isIconOnly
@@ -132,7 +132,7 @@ export default function InputField() {
             />
           </Button>
         </div>
-        <p className="font-light">Click and stop talking</p>
+        {/* <p className="font-light">Click and stop talking</p> */}
       </div>
       )}
     </div>

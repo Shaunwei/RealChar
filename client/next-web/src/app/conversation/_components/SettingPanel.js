@@ -10,8 +10,16 @@ export default function SettingPanel() {
   const [openedPanel, setOpenedPanel] = useState('audio');
 
   return (
-    <div className="flex flex-row min-h-[400px]">
-      <div className="flex flex-col gap-4 pr-10 border-r-2 border-white/10">
+    <div className="flex flex-col gap-12 min-h-[400px]">
+      <section>
+        <header className="pb-5">Preferred Language</header>
+        <LanguagePanel/>
+      </section>
+      <section>
+        <header className="pb-5">Advanced options</header>
+        <EnhancePanel/>
+      </section>
+      {/* <div className="flex flex-col gap-4 pr-10 border-r-2 border-white/10">
         <Button
           size="lg"
           radius="sm"
@@ -47,7 +55,7 @@ export default function SettingPanel() {
       {openedPanel === 'enhance' && (
         <EnhancePanel/>
       )}
-      </div>
+      </div> */}
     </div>
   );
 }

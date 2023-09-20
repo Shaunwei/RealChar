@@ -25,10 +25,14 @@ export default function ExploreTab({ characters, isDisplay }) {
               />
               <div className="ml-4 md:ml-0">
                 <p className="name text-base text-center mt-2 font-medium">{character.name}</p>
-                <p className="intro text-xs text-center mt-2 font-light">
+                {/* <p className="intro text-xs text-center mt-2 font-light">
                   &quot;I am burdened with glorious purpose.&quot;
-                </p>
+                </p> */}
                 <div className="flex justify-center mt-4">
+                  <audio>
+                    <source src={character.demo} type='audio/mp3' />
+                    Your browser does not support the audio tag.
+                  </audio>
                   <Image
                     priority
                     src={audioSvg}

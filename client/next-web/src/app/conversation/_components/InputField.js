@@ -16,6 +16,7 @@ export default function InputField() {
   const [isTalking, setIsTalking] = useState(false);
   const {sendOverSocket, appendUserChat} = useAppStore();
   const {stopAudioPlayback} = useAppStore();
+  const {startRecording, stopRecording} = useAppStore();
 
   function handleOnEnter() {
     if (text) {
@@ -27,12 +28,12 @@ export default function InputField() {
 
   function startTalk() {
     setIsTalking(true);
-    // todo
+    startRecording();
   }
 
   function stopTalk() {
     setIsTalking(false);
-    // todo
+    stopRecording();
   }
 
   return (

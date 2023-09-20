@@ -141,8 +141,10 @@ export default function Conversation() {
   }
 
   function toggleMute() {
+    if (!isMute) {
+        stopAudioPlayback();
+    }
     setIsMute(!isMute);
-    // TODO
   }
 
   function handleMic() {

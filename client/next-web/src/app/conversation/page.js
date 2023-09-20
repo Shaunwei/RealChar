@@ -146,11 +146,7 @@ export default function Conversation() {
   }
 
   function handleMic() {
-    if (!disableMic) {
-      disableVAD();
-    } else {
-      enableVAD()
-    }
+    // TODO
     setDisableMic(!disableMic);
   }
 

@@ -132,7 +132,9 @@ export default function Conversation() {
 
   function handsFreeMode() {
     setIsTextMode(false);
-    enableVAD();
+    if (!disableMic) {
+        enableVAD();
+    }
   }
 
   function textMode() {

@@ -17,7 +17,10 @@ import micOffSVG from '@/assets/svgs/mic_off.svg';
 
 import { useAppStore } from '@/lib/store';
 
-export default function MicrophoneControl() {
+export default function MicrophoneControl({
+  isDisabled,
+  handleMic
+}) {
   const {
     microphoneList,
     selectedMicrophone,
@@ -25,18 +28,49 @@ export default function MicrophoneControl() {
   } = useAppStore();
 
   return (
-    <div className="flex">
+    <>
+    <div className="flex md:hidden">
+      <Button
+        isIconOnly
+        variant="light"
+        onPress={handleMic}
+      >
+      {!isDisabled ? (
+        <Image
+          priority
+          src={microphoneSVG}
+          alt="microphone"
+        />
+      ) : (
+        <Image
+          priority
+          src={micOffSVG}
+          alt="disabled mic"
+        />
+      )}
+      </Button>
+    </div>
+    <div className="hidden md:flex">
       <ButtonGroup radius="full" variant="light">
         <Tooltip content="Microphone">
           <Button
             isIconOnly
             className="hover:bg-button"
+            onPress={handleMic}
           >
+          {!isDisabled ? (
             <Image
               priority
               src={microphoneSVG}
               alt="microphone"
             />
+          ) : (
+            <Image
+              priority
+              src={micOffSVG}
+              alt="disabled mic"
+            />
+          )}
           </Button>
         </Tooltip>
         <Dropdown
@@ -87,5 +121,6 @@ export default function MicrophoneControl() {
         </Dropdown>
       </ButtonGroup>
     </div>
+    </>
   )
 }

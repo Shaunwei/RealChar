@@ -114,7 +114,7 @@ export default function Conversation() {
 
   useEffect(() => {
       // The chrome on android seems to have problems selecting devices.
-      if (audioPlayerRef.current.hasOwnProperty('setSinkId')) {
+      if (typeof audioPlayerRef.current.setSinkId === 'function') {
           audioPlayerRef.current.setSinkId(selectedSpeaker.values().next().value);
       }
   }, [selectedSpeaker]);

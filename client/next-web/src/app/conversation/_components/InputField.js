@@ -69,11 +69,11 @@ export default function InputField() {
         />
         <Button
           size="lg"
-          className="bg-real-navy px-2 min-w-fit sm:min-w-16 sm:px-4"
+          className="bg-real-navy px-2 min-w-fit sm:min-w-16 sm:px-4 hidden md:flex"
           onPress={handleOnEnter}
         >
-          <IoPaperPlaneOutline size="2em"/>
-          <span className="hidden sm:inline">Send</span>
+          <IoPaperPlaneOutline size="1.5em"/>
+          <span className="hidden lg:inline">Send</span>
         </Button>
       </div>
       )}

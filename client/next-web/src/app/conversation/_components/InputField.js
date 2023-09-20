@@ -17,7 +17,7 @@ export default function InputField() {
   const {sendOverSocket, appendUserChat} = useAppStore();
   const {stopAudioPlayback} = useAppStore();
 
-  function handleOnEnter(text) {
+  function handleOnEnter() {
     if (text) {
       stopAudioPlayback();
       appendUserChat(text);

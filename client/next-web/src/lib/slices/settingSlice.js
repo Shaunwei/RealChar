@@ -7,6 +7,7 @@ export const createSettingSlice = (set) => ({
   enableGoogle: false,
   enableQuivr: false,
   enableMultiOn: false,
+  isMute: false,
   languageList: [
     'English',
     'Spanish',
@@ -86,5 +87,8 @@ export const createSettingSlice = (set) => ({
   },
   handleQuivr: (value) => {
     set({ enableQuivr: value })
+  },
+  setIsMute: (v) => {
+    set({isMute: v});
   }
 })

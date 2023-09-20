@@ -125,7 +125,7 @@ export default function Conversation() {
       }
 , [isPlaying]);
 
-  const [ isMute, setIsMute ] = useState(false);
+  const { isMute, setIsMute } = useAppStore();
 
   function handsFreeMode() {
     setMode('handsFree');
@@ -138,8 +138,10 @@ export default function Conversation() {
   }
 
   function toggleMute() {
+    if (!isMute) {
+        stopAudioPlayback();
+    }
     setIsMute(!isMute);
-    // TODO
   }
 
   const cleanUpStates = () => {

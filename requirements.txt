@@ -41,6 +41,7 @@ sqlalchemy
 torch>=2
 torchaudio>=2
 transformers
+twilio
 typing
 uvicorn
 websockets

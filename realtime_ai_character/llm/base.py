@@ -64,7 +64,7 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
     async def on_llm_new_token(self, token: str, *args, **kwargs):
         timer.log("LLM First Token", lambda: timer.start("LLM First Sentence"))
         if (
-            not self.is_reply #and ">" in token
+            not self.is_reply and ">" in token
         ):  # small models might not give ">" (e.g. llama2-7b gives ">:" as a token)
             self.is_reply = True
         elif self.is_reply:
@@ -72,7 +72,8 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
                 self.current_sentence += token
             else:
                 if self.is_first_sentence:
-                    timer.log("LLM First Sentence", lambda: timer.start("TTS First Sentence"))
+                    timer.log("LLM First Sentence",
+                              lambda: timer.start("TTS First Sentence"))
                 await self.text_to_speech.stream(
                     self.current_sentence,
                     self.websocket,
@@ -80,7 +81,7 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
                     self.voice_id,
                     self.is_first_sentence,
                     self.language,
-                    self.twilio_stream_id, 
+                    self.twilio_stream_id,
                     self.platform)
                 self.current_sentence = ""
                 if self.is_first_sentence:
@@ -97,6 +98,7 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
                 self.is_first_sentence,
                 self.language)
 
+
 class SearchAgent:
 
     def __init__(self):
@@ -107,10 +109,11 @@ class SearchAgent:
             self.search_wrapper = SerpAPIWrapper()
         elif os.getenv('GOOGLE_API_KEY') and os.getenv('GOOGLE_CSE_ID'):
             self.search_wrapper = GoogleSearchAPIWrapper()
-    
+
     def search(self, query: str) -> str:
         if self.search_wrapper is None:
-            logger.warning('Search is not enabled, please set SERPER_API_KEY to enable it.')
+            logger.warning(
+                'Search is not enabled, please set SERPER_API_KEY to enable it.')
         else:
             try:
                 search_result: str = self.search_wrapper.run(query)
@@ -127,6 +130,7 @@ class SearchAgent:
             except Exception as e:
                 logger.error(f'Error when searching: {e}')
         return ''
+
 
 class QuivrAgent:
 
@@ -159,6 +163,7 @@ class QuivrAgent:
             logger.error(f'Error when querying quivr: {e}')
         return ''
 
+
 class MultiOnAgent:
     def __init__(self):
         self.init = False
@@ -178,6 +183,7 @@ class MultiOnAgent:
             logger.error(f'Error when querying multion: {e}')
             return ("The query was attempted by a MutliOn agent, but failed. Inform user about "
                     "this failure.")
+
 
 class LLM(ABC):
     @abstractmethod

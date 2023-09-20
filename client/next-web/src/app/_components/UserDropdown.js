@@ -2,7 +2,7 @@ import {
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
-  DropdownItem 
+  DropdownItem
 } from '@nextui-org/dropdown';
 import { Avatar } from '@nextui-org/avatar';
 import signout from '@/firebase/auth/signout';
@@ -18,10 +18,10 @@ export default function UserDropdown({ user }) {
     switch(key) {
       case 'profile':
         return;
-      case 'create':
-        return;
-      case 'delete':
-        return;
+      // case 'create':
+      //   return;
+      // case 'delete':
+      //   return;
       case 'logout':
         const { result, error } = await signout();
         if (error) {
@@ -43,15 +43,15 @@ export default function UserDropdown({ user }) {
         />
       </DropdownTrigger>
       <DropdownMenu
-        aria-label="Profile Actions" 
+        aria-label="Profile Actions"
         variant="flat"
         onAction={handleMenuClick}>
         <DropdownItem key="profile" className="h-14 gap-2">
           <p className="">Signed in as</p>
           <p className="">{user.email}</p>
         </DropdownItem>
-        <DropdownItem key="create">Create a character</DropdownItem>
-        <DropdownItem key="delete">Delete a character</DropdownItem>
+        {/* <DropdownItem key="create">Create a character</DropdownItem>
+        <DropdownItem key="delete">Delete a character</DropdownItem> */}
         <DropdownItem key="logout" color="danger">Log Out</DropdownItem>
       </DropdownMenu>
     </Dropdown>

@@ -128,6 +128,7 @@ export default function Conversation() {
 , [isPlaying]);
 
   const [ isMute, setIsMute ] = useState(false);
+  const [ disableMic, setDisableMic ] = useState(false);
 
   function handsFreeMode() {
     setIsTextMode(false);
@@ -142,6 +143,15 @@ export default function Conversation() {
   function toggleMute() {
     setIsMute(!isMute);
     // TODO
+  }
+
+  function handleMic() {
+    if (!disableMic) {
+      disableVAD();
+    } else {
+      enableVAD()
+    }
+    setDisableMic(!disableMic);
   }
 
   const cleanUpStates = () => {
@@ -210,6 +220,8 @@ export default function Conversation() {
             isTextMode={isTextMode}
             isMute={isMute}
             toggleMute={toggleMute}
+            disableMic={disableMic}
+            handleMic={handleMic}
           />
         </div>
       </div>

@@ -15,7 +15,7 @@ export default function MyTab({ isDisplay }) {
     <section
       className={`flex flex-row flex-wrap justify-center mt-10 gap-5 ${display}`}
     >
-      <div className='text-xl p-16 flex flex-row items-center gap-3'>
+      <div className="text-xl p-16 flex flex-row items-center gap-3">
         <code>Coming soon...</code>
       </div>
       {/* <Card className='hidden md:basis-52'>

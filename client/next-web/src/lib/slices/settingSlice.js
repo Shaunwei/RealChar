@@ -1,4 +1,4 @@
-export const createSettingSlice = set => ({
+export const createSettingSlice = (set) => ({
   character: {},
   preferredLanguage: new Set(['English']),
   selectedSpeaker: new Set(['default']),
@@ -46,49 +46,49 @@ export const createSettingSlice = set => ({
   speakerList: [],
   microphoneList: [],
   getAudioList: async () => {
-    await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    await navigator.mediaDevices.getUserMedia({audio: true, video: false});
     const res = await navigator.mediaDevices.enumerateDevices();
-    const audioInputDevices = res.filter(
-      device => device.kind === 'audioinput'
+    const audioInputDevices = res.filter(device =>
+      device.kind === 'audioinput'
     );
-    const audioOutputDevices = res.filter(
-      device => device.kind === 'audiooutput'
+    const audioOutputDevices = res.filter(device =>
+      device.kind === 'audiooutput'
     );
     if (audioInputDevices.length === 0) {
       console.log('No audio input devices found');
     } else {
-      set({ microphoneList: audioInputDevices });
+      set({microphoneList: audioInputDevices});
     }
     if (audioOutputDevices.length === 0) {
       console.log('No audio output devices found');
     } else {
-      set({ speakerList: audioOutputDevices });
+      set({speakerList: audioOutputDevices});
     }
   },
-  setCharacter: obj => {
-    set({ character: obj });
+  setCharacter: (obj) => {
+    set({ character: obj});
   },
-  handleLanguageChange: e => {
-    set({ preferredLanguage: new Set([e.target.value]) });
+  handleLanguageChange: (e) => {
+    set({ preferredLanguage: new Set([e.target.value])});
     // to do
   },
-  handleSpeakerSelect: keys => {
-    set({ selectedSpeaker: new Set(keys) });
+  handleSpeakerSelect: (keys) => {
+    set({ selectedSpeaker: new Set(keys)});
   },
-  handleMicrophoneSelect: keys => {
-    set({ selectedMicrophone: new Set(keys) });
+  handleMicrophoneSelect: (keys) => {
+    set({ selectedMicrophone: new Set(keys)});
   },
-  handleModelChange: e => {
-    set({ selectedModel: new Set([e.target.value]) });
+  handleModelChange: (e) => {
+    set({ selectedModel: new Set([e.target.value])});
   },
-  handleGoogle: value => {
+  handleGoogle: (value) => {
     set({ enableGoogle: value });
     // todo
   },
-  handleQuivr: value => {
-    set({ enableQuivr: value });
+  handleQuivr: (value) => {
+    set({ enableQuivr: value })
   },
-  setIsMute: v => {
-    set({ isMute: v });
-  },
-});
+  setIsMute: (v) => {
+    set({isMute: v});
+  }
+})

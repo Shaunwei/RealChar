@@ -64,6 +64,8 @@ class Whisper(Singleton, SpeechToText):
         logger.info("Transcribing audio...")
         if platform == "web":
             audio = self._convert_webm_to_wav(audio_bytes, self.use == "local")
+        elif platform == "twilio":
+            audio = self._ulaw_to_wav(audio_bytes, self.use == "local")
         else:
             audio = self._convert_bytes_to_wav(
                 audio_bytes, self.use == "local")
@@ -108,3 +110,19 @@ class Whisper(Singleton, SpeechToText):
                 audio_bytes, 44100, 2).get_wav_data())
             return audio
         return sr.AudioData(audio_bytes, 44100, 2)
+
+    def _ulaw_to_wav(self, audio_bytes, local=True): 
+        sound = AudioSegment(
+          data=audio_bytes,
+          sample_width=1,
+          frame_rate=8000,
+          channels=1
+        )
+
+        audio = io.BytesIO()
+        sound.export(audio, format="wav")
+        if local:
+          return audio
+        
+        return sr.AudioData(audio_bytes, 8000, 1)
+        

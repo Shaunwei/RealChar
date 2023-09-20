@@ -41,7 +41,7 @@ class ElevenLabs(Singleton, TextToSpeech):
     @timed
     async def stream(self, text, websocket, tts_event: asyncio.Event, 
                      voice_id="21m00Tcm4TlvDq8ikWAM",
-                     first_sentence=False, language='en-US') -> None:
+                     first_sentence=False, language='en-US', *args, **kwargs) -> None:
         if DEBUG:
             return
         if voice_id == "":

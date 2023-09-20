@@ -41,7 +41,7 @@ class AsyncCallbackTextHandler(AsyncCallbackHandler):
 
 class AsyncCallbackAudioHandler(AsyncCallbackHandler):
     def __init__(self, text_to_speech=None, websocket=None, tts_event=None, voice_id="",
-                 language="en-US", *args, **kwargs):
+                 language="en-US", sid="", platform="", *args, **kwargs):
         super().__init__(*args, **kwargs)
         if text_to_speech is None:
             def text_to_speech(token): return print(
@@ -53,6 +53,8 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
         self.language = language
         self.is_reply = False  # the start of the reply. i.e. the substring after '>'
         self.tts_event = tts_event
+        self.twilio_stream_id = sid
+        self.platform = platform
         # optimization: trade off between latency and quality for the first sentence
         self.is_first_sentence = True
 
@@ -62,7 +64,7 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
     async def on_llm_new_token(self, token: str, *args, **kwargs):
         timer.log("LLM First Token", lambda: timer.start("LLM First Sentence"))
         if (
-            not self.is_reply and ">" in token
+            not self.is_reply #and ">" in token
         ):  # small models might not give ">" (e.g. llama2-7b gives ">:" as a token)
             self.is_reply = True
         elif self.is_reply:
@@ -77,7 +79,9 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
                     self.tts_event,
                     self.voice_id,
                     self.is_first_sentence,
-                    self.language)
+                    self.language,
+                    self.twilio_stream_id, 
+                    self.platform)
                 self.current_sentence = ""
                 if self.is_first_sentence:
                     self.is_first_sentence = False

@@ -16,7 +16,7 @@ class EdgeTTS(Singleton, TextToSpeech):
 
     @timed
     async def stream(self, text, websocket, tts_event: asyncio.Event, voice_id="",
-                     first_sentence=False, language='en-US') -> None:
+                     first_sentence=False, language='en-US', *args, **kwargs) -> None:
         if DEBUG:
             return
         voices = await VoicesManager.create()

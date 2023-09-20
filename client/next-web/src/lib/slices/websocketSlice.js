@@ -48,7 +48,7 @@ export const createWebsocketSlice = (set, get) => ({
             }
         } else {
             // binary data
-            if (!get().shouldPlayAudio) {
+            if ((!get().shouldPlayAudio) || get().isMute) {
                 console.log('should not play audio');
                 return;
             }

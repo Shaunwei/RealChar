@@ -70,9 +70,9 @@ export const createRecorderSlice = (set, get) => ({
     isSpeaking: false,
     speakingMaxGap: 500, //in ms
     delayedSpeakingTimeoutID: null,
-    vadEventsCallback: (stream, voiceStartCallback, voiceInterimCallback, voiceEndCallback) => {
+    vadEventsCallback: (voiceStartCallback, voiceInterimCallback, voiceEndCallback) => {
         if (!get().vadEvents) {
-            let vadEvents = hark(stream, { interval: 20 });
+            let vadEvents = hark(get().micStream, { interval: 20 });
             vadEvents.on('speaking', () => {
                 voiceStartCallback();
                 if (!get().isSpeaking) {

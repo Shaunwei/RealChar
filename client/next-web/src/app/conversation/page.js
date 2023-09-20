@@ -34,8 +34,9 @@ export default function Conversation() {
   const {isPlaying, setIsPlaying, popAudioQueueFront} = useAppStore();
   const {setAudioPlayerRef, stopAudioPlayback} = useAppStore();
   // Web RTC
-  const {connectPeer, closePeer, micStream, incomingStreamDestination, audioContext, rtcConnectionEstablished} = useAppStore();
-  const {vadEventsCallback, disableVAD, enableVAD, closeVAD} = useAppStore();
+  const {connectPeer, closePeer, incomingStreamDestination, audioContext, rtcConnectionEstablished} = useAppStore();
+  const {selectedMicrophone, selectedSpeaker} = useAppStore();
+  const {vadEvents, vadEventsCallback, disableVAD, enableVAD, closeVAD} = useAppStore();
 
   useEffect(() => useAppStore.subscribe(
       state => (audioQueueRef.current = state.audioQueue)
@@ -56,24 +57,31 @@ export default function Conversation() {
       connectSocket();
   }, [character]);
 
-  const handleOnTrack = event => {
-    if (event.streams && event.streams[0]) {
-      audioPlayerRef.current.srcObject = event.streams[0];
-    }
-  }
-
   useEffect(() => {
+      if (mediaRecorder) {
+          closeMediaRecorder();
+      }
+      if (rtcConnectionEstablished) {
+          closePeer();
+      }
       getAudioList().then(
           () => {
               connectMicrophone();
           }
-      ).then(()=> {
-          connectPeer(handleOnTrack);
+      ).then(() => {
+          connectPeer().then(
+              () => {
+                  initializeVAD();
+              }
+          );
       });
-  }, []);
+  }, [selectedMicrophone]);
 
-  async function initializeVAD() {
-      vadEventsCallback(micStream,
+  function initializeVAD() {
+      if (vadEvents) {
+          closeVAD();
+      }
+      vadEventsCallback(
           () => {
               stopAudioPlayback();
               startRecording();
@@ -86,14 +94,10 @@ export default function Conversation() {
           () => {
               sendOverSocket('[SpeechFinished]');
           })
-  }
-
-  useEffect(() => {
-      if (!mediaRecorder || !socketIsOpen || !rtcConnectionEstablished) {
-          return;
+      if (!isTextMode && !disableMic) {
+          enableVAD();
       }
-      initializeVAD();
-  }, [mediaRecorder, socketIsOpen, rtcConnectionEstablished]);
+  }
 
   // Reconnects websocket on setting change.
   const {preferredLanguage, selectedModel, enableGoogle, enableQuivr, enableMultiOn} = useAppStore();
@@ -106,10 +110,14 @@ export default function Conversation() {
       clearChatContent();
       connectSocket();
       initializeVAD();
-      if (!isTextMode) {
-          enableVAD();
-      }
   }, [preferredLanguage, selectedModel, enableGoogle, enableQuivr, enableMultiOn]);
+
+  useEffect(() => {
+      // The chrome on android seems to have problems selecting devices.
+      if (audioPlayerRef.current.hasOwnProperty('setSinkId')) {
+          audioPlayerRef.current.setSinkId(selectedSpeaker.values().next().value);
+      }
+  }, [selectedSpeaker]);
 
   // Audio Playback
   useEffect(() => {

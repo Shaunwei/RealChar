@@ -127,7 +127,7 @@ export default function Conversation() {
       }
 , [isPlaying]);
 
-  const [ isMute, setIsMute ] = useState(false);
+  const {isMute, setIsMute } = useAppStore();
   const [ disableMic, setDisableMic ] = useState(false);
 
   function handsFreeMode() {
@@ -148,7 +148,11 @@ export default function Conversation() {
   }
 
   function handleMic() {
-    // TODO
+      if (disableMic) {
+          enableVAD();
+      } else {
+          disableVAD();
+      }
     setDisableMic(!disableMic);
   }
 

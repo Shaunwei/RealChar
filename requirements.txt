@@ -34,6 +34,7 @@ soundfile
 SpeechRecognition
 sqlalchemy
 torch
+twilio
 typing
 uvicorn
 websockets

@@ -95,7 +95,7 @@ class Whisper(Singleton, SpeechToText):
 
     def _convert_webm_to_wav(self, webm_data, local=True):
         webm_audio = AudioSegment.from_file(
-            io.BytesIO(webm_data))
+            io.BytesIO(webm_data), format="webm")
         wav_data = io.BytesIO()
         webm_audio.export(wav_data, format="wav")
         if local:
@@ -111,18 +111,17 @@ class Whisper(Singleton, SpeechToText):
             return audio
         return sr.AudioData(audio_bytes, 44100, 2)
 
-    def _ulaw_to_wav(self, audio_bytes, local=True): 
+    def _ulaw_to_wav(self, audio_bytes, local=True):
         sound = AudioSegment(
-          data=audio_bytes,
-          sample_width=1,
-          frame_rate=8000,
-          channels=1
+            data=audio_bytes,
+            sample_width=1,
+            frame_rate=8000,
+            channels=1
         )
 
         audio = io.BytesIO()
         sound.export(audio, format="wav")
         if local:
-          return audio
-        
+            return audio
+
         return sr.AudioData(audio_bytes, 8000, 1)
-        

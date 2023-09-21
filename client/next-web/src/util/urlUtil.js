@@ -1,4 +1,4 @@
-import {isIP} from 'is-ip';
+import { isIP } from 'is-ip';
 
 function getProtocolAndHost(url) {
   const urlRegex = /^(https?:)\/\/([^:/]+)(:\d+)?/;
@@ -12,10 +12,9 @@ function getProtocolAndHost(url) {
 }
 
 export function getApiServerUrl(url) {
-  const [protocol, host] = getProtocolAndHost(url)
+  const [protocol, host] = getProtocolAndHost(url);
   return `${protocol}//${getServerUrl(protocol, host)}`;
 }
-
 
 export function getWsServerUrl(url) {
   const [protocol, host] = getProtocolAndHost(url);
@@ -24,17 +23,16 @@ export function getWsServerUrl(url) {
 }
 
 export function getServerUrl(protocol, host) {
-    const parts = host.split(':');
-    let hostname = parts[0];
-    // Local deployment uses 8000 port by default.
-    let newPort = '8000';
+  const parts = host.split(':');
+  let hostname = parts[0];
+  // Local deployment uses 8000 port by default.
+  let newPort = '8000';
 
-    if (!(hostname === 'localhost' || isIP(hostname))) {
-      // Remove www. from hostname
-      hostname = hostname.replace('www.', '');
-      hostname = 'api.' + hostname;
-      newPort = protocol === 'https:' ? 443 : 80;
-    }
-    return '1370-157-254-193-69.ngrok.io';
-    // return 'api.dev.realchar.ai' + ':' + newPort;
+  if (!(hostname === 'localhost' || isIP(hostname))) {
+    // Remove www. from hostname
+    hostname = hostname.replace('www.', '');
+    hostname = 'api.' + hostname;
+    newPort = protocol === 'https:' ? 443 : 80;
+  }
+  return hostname + ':' + newPort;
 }

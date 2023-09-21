@@ -1,0 +1,21 @@
+service: "main:svc"
+name: "whisperx-server"
+description: "file: ./README.md"
+labels:
+  owner: realchar.ai
+  stage: dev
+include:
+  - "*.py"
+  - "reference.mp3"
+exclude:
+  - "tests/"
+python:
+  requirements_txt: ./requirements.txt
+docker:
+    distro: debian
+    python_version: "3.10"
+    cuda_version: "11.7"
+    system_packages:
+      - ffmpeg
+      - git
+      

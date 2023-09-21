@@ -1,4 +1,5 @@
 import os
+import json
 from dotenv import load_dotenv
 from time import perf_counter, time
 from typing import cast
@@ -36,14 +37,13 @@ async def stats():
 
 
 @app.post("/transcribe")
-async def transcribe(
-    audio_file: UploadFile = File(...),
-    api_key: str = Form(default=""),
-    initial_prompt: str = Form(default=""),
-    language: str = Form(default="en-US"),
-    suppress_tokens: list[int] = Form(default=[-1]),
-    diarization: bool = Form(default=False),
-):
+async def transcribe(audio_file: UploadFile = File(...), metadata: str = Form(default="")):
+    metadict = cast(dict, json.loads(metadata))
+    api_key = metadict.get("api_key", "")
+    initial_prompt = metadict.get("initial_prompt", "")
+    language = metadict.get("language", "en-US")
+    suppress_tokens = metadict.get("suppress_tokens", [-1])
+    diarization = metadict.get("diarization", False)
     if api_key != API_KEY:
         raise HTTPException(status_code=401, detail="Invalid API key.")
     try:

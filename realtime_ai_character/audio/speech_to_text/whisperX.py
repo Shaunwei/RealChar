@@ -1,6 +1,7 @@
 import io
 import os
 import types
+import json
 
 import requests
 import numpy as np
@@ -123,23 +124,23 @@ class WhisperX(Singleton, SpeechToText):
         files = {"audio_file": ("audio_file", audio_bytes)}
         logger.info(
             f"Sent request to whisperX server: {len(audio_bytes)} bytes")
-        data = {
+        metadata = {
             "api_key": config.api_key,
             "prompt": prompt,
             "language": language,
             "suppress_tokens": suppress_tokens,
             "diarization": diarization,
         }
+        data = {"metadata": json.dumps(metadata)}
         try:
             response = requests.post(
                 config.url, data=data, files=files, timeout=10)
             return response.json()
         except requests.exceptions.Timeout as e:
-            raise Exception(f"WhisperX server timed out: {e}")
+            logger.error(f"WhisperX server timed out: {e}")
         except requests.exceptions.RequestException as e:
-            raise Exception(f"Could not connect to whisperX server: {e}")
+            logger.error(f"Could not connect to whisperX server: {e}")
         except KeyError as e:
-            raise Exception(
-                f"Could not parse response from whisperX server: {e}")
+            logger.error(f"Could not parse response from whisperX server: {e}")
         except Exception as e:
-            raise Exception(f"Unknown error from whisperX server: {e}")
+            logger.error(f"Unknown error from whisperX server: {e}")

@@ -44,10 +44,12 @@ class WhisperX(Singleton, SpeechToText):
         if use == "local":
             import whisperx
             from torch.cuda import is_available as is_cuda_available
+
             self.device = "cuda" if is_cuda_available() else "cpu"
             compute_type = "float16" if self.device == "cuda" else "default"
             logger.info(
-                f"Loading [Local WhisperX] model: [{config.model}]({self.device}) ...")
+                f"Loading [Local WhisperX] model: [{config.model}]({self.device}) ..."
+            )
             self.model = whisperx.load_model(
                 config.model,
                 self.device,
@@ -58,24 +60,31 @@ class WhisperX(Singleton, SpeechToText):
                 language_code=config.language, device=self.device
             )
             self.diarize_model = whisperx.DiarizationPipeline(
-                device=self.device)
+                device=self.device,
+                use_auth_token=os.getenv("HUGGING_FACE_ACCESS_TOKEN"),
+            )
         self.use = use
 
     @timed
-    def transcribe(self, audio_bytes, platform, prompt="", language="en-US", suppress_tokens=[-1]):
+    def transcribe(
+        self, audio_bytes, platform, prompt="", language="en-US", suppress_tokens=[-1]
+    ):
         logger.info("Transcribing audio...")
         if self.use == "local":
             result = self._transcribe(
-                audio_bytes, prompt, language, suppress_tokens)
+                audio_bytes, platform, prompt, language, suppress_tokens
+            )
         else:
             result = self._transcribe_api(
-                audio_bytes, prompt, language, suppress_tokens)
+                audio_bytes, prompt, language, suppress_tokens
+            )
         text = " ".join([seg["text"].strip() for seg in result["segments"]])
         return text
 
     def _transcribe(
         self,
         audio_bytes,
+        platform,
         prompt="",
         language="en-US",
         suppress_tokens=[-1],
@@ -83,13 +92,23 @@ class WhisperX(Singleton, SpeechToText):
     ):
         import torch
         import torchaudio
-        reader = torchaudio.io.StreamReader(io.BytesIO(audio_bytes))
-        reader.add_basic_audio_stream(1000, sample_rate=16000)
-        audio = torch.concat([chunk[0]
-                             for chunk in reader.stream()])  # type: ignore
+
+        if platform == "twilio":
+            torch_tensor = torch.frombuffer(audio_bytes, dtype=torch.uint8)
+            reader = torchaudio.io.StreamReader(
+                torch_tensor, format="mulaw", option={"sample_rate": "8000"}
+            )
+            reader.add_basic_audio_stream(
+                -1,
+                sample_rate=16000,
+            )
+        else:
+            reader = torchaudio.io.StreamReader(io.BytesIO(audio_bytes))
+            reader.add_basic_audio_stream(1000, sample_rate=16000)
+
+        audio = torch.concat([chunk[0] for chunk in reader.stream()])  # type: ignore
         audio = audio.flatten().numpy().astype(np.float32)
         language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, config.language)
-
         self.model.options = self.model.options._replace(
             initial_prompt=prompt, suppress_tokens=suppress_tokens
         )
@@ -102,6 +121,7 @@ class WhisperX(Singleton, SpeechToText):
 
     def _diarize(self, audio, result):
         import whisperx
+
         result = whisperx.align(
             result["segments"],
             self.model_a,
@@ -122,8 +142,7 @@ class WhisperX(Singleton, SpeechToText):
         diarization=False,
     ):
         files = {"audio_file": ("audio_file", audio_bytes)}
-        logger.info(
-            f"Sent request to whisperX server: {len(audio_bytes)} bytes")
+        logger.info(f"Sent request to whisperX server: {len(audio_bytes)} bytes")
         metadata = {
             "api_key": config.api_key,
             "prompt": prompt,
@@ -133,8 +152,7 @@ class WhisperX(Singleton, SpeechToText):
         }
         data = {"metadata": json.dumps(metadata)}
         try:
-            response = requests.post(
-                config.url, data=data, files=files, timeout=10)
+            response = requests.post(config.url, data=data, files=files, timeout=10)
             return response.json()
         except requests.exceptions.Timeout as e:
             logger.error(f"WhisperX server timed out: {e}")

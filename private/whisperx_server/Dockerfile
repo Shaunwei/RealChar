@@ -6,8 +6,8 @@ RUN apt-get update && apt-get install -y wget git build-essential && apt-get cle
 WORKDIR /whisperx_server
 
 # Copy the project files
-COPY ./*.py /whisperx_server/
-COPY ./*.mp3 /whisperx_server/
+COPY *.py /whisperx_server/
+COPY *.mp3 /whisperx_server/
 
 # Install Python dependencies
 # RUN bash -i /whisperx_server/setup.sh

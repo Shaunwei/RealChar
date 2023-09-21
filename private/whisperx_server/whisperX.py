@@ -1,5 +1,11 @@
-import os, io, time, torch, torchaudio, whisperx, json
+import os
+import io
+import time
+import torch
+import torchaudio
 import numpy as np
+
+import whisperx
 
 
 WHISPER_LANGUAGE_CODE_MAPPING = {
@@ -41,6 +47,7 @@ class WhisperX:
     def transcribe(
         self,
         audio_bytes,
+        platform="web",
         prompt="",
         language="en-US",
         suppress_tokens=[-1],
@@ -48,7 +55,12 @@ class WhisperX:
     ):
         log(f"Received {len(audio_bytes)} bytes of audio data. Language: {language}")
 
-        reader = torchaudio.io.StreamReader(io.BytesIO(audio_bytes))
+        if platform == "twilio":
+            reader = torchaudio.io.StreamReader(
+                io.BytesIO(audio_bytes), format="mulaw", option={"sample_rate": "8000"}
+            )
+        else:
+            reader = torchaudio.io.StreamReader(io.BytesIO(audio_bytes))
         reader.add_basic_audio_stream(1000, sample_rate=16000)
         audio = torch.concat([chunk[0] for chunk in reader.stream()])  # type: ignore
         audio = audio.flatten().numpy().astype(np.float32)

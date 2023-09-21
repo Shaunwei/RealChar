@@ -40,6 +40,7 @@ async def stats():
 async def transcribe(audio_file: UploadFile = File(...), metadata: str = Form(default="")):
     metadict = cast(dict, json.loads(metadata))
     api_key = metadict.get("api_key", "")
+    platform = metadict.get("platform", "web")
     initial_prompt = metadict.get("initial_prompt", "")
     language = metadict.get("language", "en-US")
     suppress_tokens = metadict.get("suppress_tokens", [-1])
@@ -50,7 +51,7 @@ async def transcribe(audio_file: UploadFile = File(...), metadata: str = Form(de
         start = perf_counter()
         audio_bytes = await audio_file.read()
         result = whisperx.transcribe(
-            audio_bytes, initial_prompt, language, suppress_tokens, diarization
+            audio_bytes, platform, initial_prompt, language, suppress_tokens, diarization
         )
         elapsed = perf_counter() - start
         now = time()

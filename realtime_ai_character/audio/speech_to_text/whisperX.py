@@ -67,7 +67,7 @@ class WhisperX(Singleton, SpeechToText):
 
     @timed
     def transcribe(
-        self, audio_bytes, platform, prompt="", language="en-US", suppress_tokens=[-1]
+        self, audio_bytes, platform="web", prompt="", language="en-US", suppress_tokens=[-1]
     ):
         logger.info("Transcribing audio...")
         if self.use == "local":
@@ -76,15 +76,17 @@ class WhisperX(Singleton, SpeechToText):
             )
         else:
             result = self._transcribe_api(
-                audio_bytes, prompt, language, suppress_tokens
+                audio_bytes, platform, prompt, language, suppress_tokens
             )
+        if result is None:
+            return ""
         text = " ".join([seg["text"].strip() for seg in result["segments"]])
         return text
 
     def _transcribe(
         self,
         audio_bytes,
-        platform,
+        platform="web",
         prompt="",
         language="en-US",
         suppress_tokens=[-1],
@@ -94,18 +96,12 @@ class WhisperX(Singleton, SpeechToText):
         import torchaudio
 
         if platform == "twilio":
-            torch_tensor = torch.frombuffer(audio_bytes, dtype=torch.uint8)
             reader = torchaudio.io.StreamReader(
-                torch_tensor, format="mulaw", option={"sample_rate": "8000"}
-            )
-            reader.add_basic_audio_stream(
-                -1,
-                sample_rate=16000,
+                io.BytesIO(audio_bytes), format="mulaw", option={"sample_rate": "8000"}
             )
         else:
             reader = torchaudio.io.StreamReader(io.BytesIO(audio_bytes))
-            reader.add_basic_audio_stream(1000, sample_rate=16000)
-
+        reader.add_basic_audio_stream(1000, sample_rate=16000)
         audio = torch.concat([chunk[0] for chunk in reader.stream()])  # type: ignore
         audio = audio.flatten().numpy().astype(np.float32)
         language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, config.language)
@@ -136,6 +132,7 @@ class WhisperX(Singleton, SpeechToText):
     def _transcribe_api(
         self,
         audio_bytes,
+        platform="web",
         prompt="",
         language="en-US",
         suppress_tokens=[-1],
@@ -145,7 +142,8 @@ class WhisperX(Singleton, SpeechToText):
         logger.info(f"Sent request to whisperX server: {len(audio_bytes)} bytes")
         metadata = {
             "api_key": config.api_key,
-            "prompt": prompt,
+            "platform": platform,
+            "initial_prompt": prompt,
             "language": language,
             "suppress_tokens": suppress_tokens,
             "diarization": diarization,

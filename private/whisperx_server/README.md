@@ -6,17 +6,20 @@ Self hosted whisperX endpoint.
 1. Create a virtural environment
 
     ```bash
-    conda create -n whisperx-server python=3.10
-    conda activate whisperx-server
+    conda create -n whisperx-server python=3.10 -y && conda activate whisperx-server
     ```
 
-1. Install PyTorch with CUDA
+1. Install ffmpeg
 
     ```bash
-    conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+    conda install ffmpeg -c pytorch
     ```
 
-    or with other platforms following PyTorch official instruction.
+    or
+
+    ```bash
+    sudo apt update && sudo apt install ffmpeg
+    ```
 
 1. Install whisperX
 
@@ -56,53 +59,84 @@ Self hosted whisperX endpoint.
     CUDA_VISIBLE_DEVICES=-1 uvicorn main:app
     ```
 
-1.  Use with Docker
+## Use with Docker
 
-    Build image
+1. Build image
 
     ```bash
     docker build -t whisperx-server .
     ```
 
-    Create container with GPU
+1. Create container with GPU
 
     ```bash
-    docker run -dp 8000:8000 --gpus all --name whisperx-server-gpu whisperx-server
+    docker run -dp 8000:8000 --gpus all --env-file .env --name whisperx-server-gpu whisperx-server
     ```
-
-    Configure environment variables such as `MODEL`, `LANGUAGE`, `API_KEY`, `HF_ACCESS_TOKEN` and `CUDA_VISIBLE_DEVICES`
 
     Create container with CPU
 
     ```bash
-    docker run -dp 8000:8000 --name whisperx-server-cpu whisperx-server
+    docker run -dp 8000:8000 --env-file .env --name whisperx-server-cpu whisperx-server
     ```
 
-    Remember to assign `WHISPER_X_API_URL` with the server IP in `.env` of the RealChar backend.
+1. Remember to assign `WHISPER_X_API_URL` with the server IP in `.env` of the RealChar backend.
 
-    Compiled image also found at [Docker Hub](https://hub.docker.com/repository/docker/y1guo/whisperx-server/general): `y1guo/whisperx-server`
+1. Compiled image also found at [Docker Hub](https://hub.docker.com/repository/docker/y1guo/whisperx-server/general): `y1guo/whisperx-server`
+
+## Use with BentoML
+
+1.  Install BentoML
+
+    ```bash
+    pip install bentoml
+    ```
+
+1.  Build the bento
+
+    ```bash
+    cd bento && bentoml build
+    ```
+
+1.  Start the bento
+
+    ```bash
+    BENTOML_CONFIG=bentoml_configuration.yaml bentoml serve whisperx-server:latest
+    ```
+
+1.  Upload the bento
+
+    ```bash
+    bentoml push whisperx-server:latest
+    ```
+
+-   Note: Environment variables are set on deployment
 
 ## Client Setup
 
 ### Example Code
 
 ```python
+import json
 import requests
 
 
 url = "http://localhost:8000/transcribe"
 
 
-def sample_api(audio_bytes, api_key, initial_prompt, language, suppress_tokens, diarization):
+def sample_api(
+    audio_bytes, api_key, platform, initial_prompt, language, suppress_tokens, diarization
+):
     # send request
     files = {"audio_file": ("filename", audio_bytes)}
-    data = {
+    metadata = {
         "api_key": api_key,
+        "platform": platform,
         "initial_prompt": initial_prompt,
         "language": language,
         "suppress_tokens": suppress_tokens,
         "diarization": diarization,
     }
+    data = {"metadata": json.dumps(metadata)}
     response = requests.post(url, data=data, files=files)
 
     # parse response
@@ -116,7 +150,7 @@ def sample_api(audio_bytes, api_key, initial_prompt, language, suppress_tokens, 
 with open("audio.wav", "rb") as f:
     audio_bytes = f.read()
 
-sample_api(audio_bytes, "YOUR_API_KEY", "", "en-US", [-1], False)
+sample_api(audio_bytes, "YOUR_API_KEY", "web", "", "en-US", [-1], False)
 ```
 
 ## Appendix

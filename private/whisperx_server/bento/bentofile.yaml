@@ -1,4 +1,4 @@
-service: "main:svc"
+service: "service:svc"
 name: "whisperx-server"
 description: "file: ./README.md"
 labels:
@@ -6,9 +6,7 @@ labels:
   stage: dev
 include:
   - "*.py"
-  - "reference.mp3"
-exclude:
-  - "tests/"
+  - "*.mp3"
 python:
   requirements_txt: ./requirements.txt
 docker:

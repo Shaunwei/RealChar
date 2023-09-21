@@ -1,21 +1,29 @@
 import requests
+import json
 from time import perf_counter
 
 
 url = "http://localhost:8002/transcribe"
-with open("../reference.mp3", "rb") as f:
+# url = "http://localhost:3000/transcribe"
+# url = "http://whisperx-server-0-org-realchar--aws-us-west-1.mt1.bentoml.ai/transcribe"
+
+# audio_file = "../reference.mp3"
+audio_file = "/home/yiguo/Downloads/addf8-mulaw-GW.wav"
+with open(audio_file, "rb") as f:
     audio_bytes = f.read()
 
 
 def test(verbose=True):
     files = {"audio_file": ("audio_file", audio_bytes)}
-    data = {
-        "api_key": "YOUR_API_KEY",
+    metadata = {
+        "api_key": "YOUR_API_KEY_12345",
+        "platform": "twilio",
         "initial_prompt": "",
         "language": "en-US",
         "suppress_tokens": [-1],
         "diarization": False,
     }
+    data = {"metadata": json.dumps(metadata)}
     start = perf_counter()
     if verbose:
         print(f"Sent {len(audio_bytes)} bytes of audio data.")

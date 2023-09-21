@@ -72,6 +72,7 @@ async def transcribe(audio_file: io.BytesIO, metadata: str):
     audio_bytes = audio_file.read()
     metadict = t.cast(dict, json.loads(metadata))
     api_key = metadict.get("api_key", "")
+    platform = metadict.get("platform", "web")
     initial_prompt = metadict.get("initial_prompt", "")
     language = metadict.get("language", "en-US")
     suppress_tokens = metadict.get("suppress_tokens", [-1])
@@ -80,7 +81,7 @@ async def transcribe(audio_file: io.BytesIO, metadata: str):
         raise bentoml.exceptions.InvalidArgument("Invalid API key.")
     try:
         result = await runner.transcribe.async_run(
-            audio_bytes, initial_prompt, language, suppress_tokens, diarization
+            audio_bytes, platform, initial_prompt, language, suppress_tokens, diarization
         )
         return result
     except Exception as e:

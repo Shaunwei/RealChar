@@ -46,6 +46,20 @@ twilio_router = APIRouter(
 
 manager = get_connection_manager()
 
+GREETING_TXT_MAP = {
+    "en-US": "Hi, my friend, what brings you here today?",
+    "es-ES": "Hola, mi amigo, ¿qué te trae por aquí hoy?",
+    "fr-FR": "Salut mon ami, qu'est-ce qui t'amène ici aujourd'hui?",
+    "de-DE": "Hallo mein Freund, was bringt dich heute hierher?",
+    "it-IT": "Ciao amico mio, cosa ti porta qui oggi?",
+    "pt-PT": "Olá meu amigo, o que te traz aqui hoje?",
+    "hi-IN": "नमस्ते मेरे दोस्त, आज आपको यहां क्या लाया है?",
+    "pl-PL": "Cześć mój przyjacielu, co cię tu dziś przynosi?",
+    "zh-CN": "嗨，我的朋友，今天你为什么来这里？",
+    "ja-JP": "こんにちは、私の友達、今日はどうしたの？",
+    "ko-KR": "안녕, 내 친구, 오늘 여기 왜 왔어?",
+}
+
 
 @twilio_router.get("/voice")
 async def get_websocket(request: Request):
@@ -135,6 +149,7 @@ async def handle_receive(
 ):
     buffer = AudioBytesBuffer()
     conversation_history = ConversationHistory()
+    conversation_history.system_prompt = character.llm_system_prompt
     user_input_template = character.llm_user_prompt
     tts_event = asyncio.Event()
     token_buffer = []
@@ -208,6 +223,20 @@ async def handle_receive(
                 logger.info("Receive twilio start event")
                 sid = obj["start"]["streamSid"]
                 buffer.setStreamID(sid)
+                # greet the user when the stream starts
+                logger.info(f"Using character: {character.name}")
+                # Greet the user
+                greeting_text = GREETING_TXT_MAP[language]
+                await text_to_speech.stream(
+                    text=greeting_text,
+                    websocket=websocket,
+                    tts_event=tts_event,
+                    voice_id="",
+                    first_sentence=True,
+                    language=language,
+                    sid=sid,
+                    platform="twilio",
+                )
                 continue
 
             if obj["event"] == "media":

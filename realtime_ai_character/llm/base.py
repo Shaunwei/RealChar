@@ -19,11 +19,12 @@ StreamingStdOutCallbackHandler.on_chat_model_start = lambda *args, **kwargs: Non
 
 
 class AsyncCallbackTextHandler(AsyncCallbackHandler):
-    def __init__(self, on_new_token=None, token_buffer=None, on_llm_end=None, *args, **kwargs):
+    def __init__(self, on_new_token=None, token_buffer=None, on_llm_end=None, tts_event=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.on_new_token = on_new_token
         self._on_llm_end = on_llm_end
         self.token_buffer = token_buffer
+        self.tts_event = tts_event
 
     async def on_chat_model_start(self, *args, **kwargs):
         pass
@@ -31,7 +32,12 @@ class AsyncCallbackTextHandler(AsyncCallbackHandler):
     async def on_llm_new_token(self, token: str, *args, **kwargs):
         if self.token_buffer is not None:
             self.token_buffer.append(token)
-        await self.on_new_token(token)
+        if self.tts_event is not None:
+            while not self.tts_event.is_set():
+                await asyncio.sleep(0.01)
+                await self.on_new_token(token)
+        else:
+            await self.on_new_token(token)
 
     async def on_llm_end(self, *args, **kwargs):
         if self._on_llm_end is not None:
@@ -63,30 +69,30 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
 
     async def on_llm_new_token(self, token: str, *args, **kwargs):
         timer.log("LLM First Token", lambda: timer.start("LLM First Sentence"))
-        if (
-            not self.is_reply and ">" in token
-        ):  # small models might not give ">" (e.g. llama2-7b gives ">:" as a token)
-            self.is_reply = True
-        elif self.is_reply:
-            if token not in {'.', '?', '!'}:
-                self.current_sentence += token
-            else:
-                if self.is_first_sentence:
-                    timer.log("LLM First Sentence",
-                              lambda: timer.start("TTS First Sentence"))
-                await self.text_to_speech.stream(
-                    self.current_sentence,
-                    self.websocket,
-                    self.tts_event,
-                    self.voice_id,
-                    self.is_first_sentence,
-                    self.language,
-                    self.twilio_stream_id,
-                    self.platform)
-                self.current_sentence = ""
-                if self.is_first_sentence:
-                    self.is_first_sentence = False
-                timer.log("TTS First Sentence")
+        # if (
+        #     not self.is_reply and ">" in token
+        # ):  # small models might not give ">" (e.g. llama2-7b gives ">:" as a token)
+        #     self.is_reply = True
+        # elif self.is_reply:
+        if token not in {'.', '?', '!'}:
+            self.current_sentence += token
+        else:
+            if self.is_first_sentence:
+                timer.log("LLM First Sentence",
+                          lambda: timer.start("TTS First Sentence"))
+            await self.text_to_speech.stream(
+                self.current_sentence,
+                self.websocket,
+                self.tts_event,
+                self.voice_id,
+                self.is_first_sentence,
+                self.language,
+                self.twilio_stream_id,
+                self.platform)
+            self.current_sentence = ""
+            if self.is_first_sentence:
+                self.is_first_sentence = False
+            timer.log("TTS First Sentence")
 
     async def on_llm_end(self, *args, **kwargs):
         if self.current_sentence != "":

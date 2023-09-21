@@ -9,6 +9,7 @@ from realtime_ai_character.audio.text_to_speech.base import TextToSpeech
 logger = get_logger(__name__)
 DEBUG = False
 
+
 class EdgeTTS(Singleton, TextToSpeech):
     def __init__(self):
         super().__init__()
@@ -20,7 +21,7 @@ class EdgeTTS(Singleton, TextToSpeech):
         if DEBUG:
             return
         voices = await VoicesManager.create()
-        voice = voices.find(Gender="Male", Language="en")[0]
+        voice = voices.find(ShortName=voice_id)[0]
         communicate = edge_tts.Communicate(text, voice["Name"])
         messages = []
         async for message in communicate.stream():
@@ -30,14 +31,12 @@ class EdgeTTS(Singleton, TextToSpeech):
                 messages.extend(message["data"])
         await websocket.send_bytes(bytes(messages))
 
-
-    async def generate_audio(self, text, voice_id = "", language='en-US') -> bytes:
+    async def generate_audio(self, text, voice_id="", language='en-US') -> bytes:
         voices = await VoicesManager.create()
-        voice = voices.find(Gender="Male", Language="en")[0]
-        communicate = edge_tts.Communicate(text, voice["Name"])
+        voice = voices.find(ShortName=voice_id)[0]
+        communicate = edge_tts.Communicate(text, voice["Name"], rate="+20%")
         messages = []
         async for message in communicate.stream():
             if message["type"] == "audio":
                 messages.extend(message["data"])
         return bytes(messages)
-

@@ -102,7 +102,7 @@ export const createRecorderSlice = (set, get) => ({
         }
     },
     closeVAD: () => {
-        get().vadEvents.stop();
+        get().vadEvents?.stop();
         set({vadEvents: null,
             isSpeaking: false});
     }

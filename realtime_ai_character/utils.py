@@ -25,6 +25,7 @@ class Character:
     avatar_id: Optional[str] = ''
     visibility: str = ''
     tts: Optional[str] = ''
+    order: int = 10  # display order on the website
     data: Optional[dict] = None
 
 
@@ -41,7 +42,8 @@ class ConversationHistory:
             yield ai_message
 
     def load_from_db(self, session_id: str, db: Session):
-        conversations = db.query(Interaction).filter(Interaction.session_id == session_id).all()
+        conversations = db.query(Interaction).filter(
+            Interaction.session_id == session_id).all()
         for conversation in conversations:
             self.user.append(conversation.client_message_unicode)
             self.ai.append(conversation.server_message_unicode)

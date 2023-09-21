@@ -44,7 +44,8 @@ class CatalogManager(Singleton):
         logger.info(
             f"Total document load: {self.db._client.get_collection('llm').count()}")
         self.run_load_sql_db_thread = True
-        self.load_sql_db_thread = threading.Thread(target=self.load_sql_db_loop)
+        self.load_sql_db_thread = threading.Thread(
+            target=self.load_sql_db_loop)
         self.load_sql_db_thread.daemon = True
         self.load_sql_db_thread.start()
 
@@ -68,6 +69,7 @@ class CatalogManager(Singleton):
         character_id = yaml_content['character_id']
         character_name = yaml_content['character_name']
         voice_id = yaml_content['voice_id']
+        order = yaml_content.get('order', 10)
         if (os.getenv(character_id.upper() + "_VOICE_ID", "")):
             voice_id = os.getenv(character_id.upper() + "_VOICE_ID")
         self.characters[character_id] = Character(
@@ -79,6 +81,7 @@ class CatalogManager(Singleton):
             source='default',
             location='repo',
             visibility='public',
+            order=order,
             tts=yaml_content["text_to_speech_use"]
         )
 
@@ -122,6 +125,7 @@ class CatalogManager(Singleton):
                 yaml_content = yaml.safe_load(f_yaml)
             character_id = yaml_content['character_id']
             character_name = yaml_content['character_name']
+            order = yaml_content.get('order', 10)
             self.characters[character_id] = Character(
                 character_id=character_id,
                 name=character_name,
@@ -132,7 +136,8 @@ class CatalogManager(Singleton):
                 location='repo',
                 author_name=yaml_content["author_name"],
                 visibility=yaml_content["visibility"],
-                tts=yaml_content["text_to_speech_use"]
+                tts=yaml_content["text_to_speech_use"],
+                order=order
             )
 
             if "avatar_id" in yaml_content:
@@ -156,7 +161,6 @@ class CatalogManager(Singleton):
                 'id': d.id_,
             } for d in documents])
         self.db.add_documents(docs)
-
 
     def load_character_from_sql_database(self):
         logger.info('Started loading characters from SQL database')

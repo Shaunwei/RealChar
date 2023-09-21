@@ -139,6 +139,7 @@ class GoogleCloudTTS(Singleton, TextToSpeech):
         #     config.data["voice"]["languageCode"] = language
         data = {
             "input": {"text": text},
+            "audioConfig": {"speakingRate": 1.2},
             **config.data,
         }
         url = config.url

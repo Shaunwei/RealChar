@@ -105,7 +105,6 @@ export default function Conversation() {
       if (!mediaRecorder || !socketIsOpen || !rtcConnectionEstablished) {
           return;
       }
-      closeVAD();
       closeSocket();
       clearChatContent();
       connectSocket();

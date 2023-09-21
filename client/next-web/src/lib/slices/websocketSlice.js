@@ -88,7 +88,7 @@ export const createWebsocketSlice = (set, get) => ({
     },
     closeSocket: () => {
         get().socket.close();
-        set({ socket: null });
+        set({ socket: null, socketIsOpen: false});
     },
     sessionId: '',
     setSessionId: (id) => {

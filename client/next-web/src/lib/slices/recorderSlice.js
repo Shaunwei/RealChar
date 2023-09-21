@@ -71,29 +71,27 @@ export const createRecorderSlice = (set, get) => ({
     speakingMaxGap: 500, //in ms
     delayedSpeakingTimeoutID: null,
     vadEventsCallback: (voiceStartCallback, voiceInterimCallback, voiceEndCallback) => {
-        if (!get().vadEvents) {
-            let vadEvents = hark(get().micStream, { interval: 20 });
-            vadEvents.on('speaking', () => {
-                voiceStartCallback();
-                if (!get().isSpeaking) {
-                    set({isSpeaking: true});
-                } else {
-                    clearTimeout(get().delayedSpeakingTimeoutID);
-                }
-            });
-            vadEvents.on('stopped_speaking', () => {
-                if (get().isSpeaking) {
-                    const task = setTimeout(() => {
-                        voiceEndCallback();
-                        set({isSpeaking: false})
-                    }, get().speakingMaxGap);
-                    set({delayedSpeakingTimeoutID: task});
-                    voiceInterimCallback();
-                }
-            });
-            vadEvents.suspend();
-            set({vadEvents: vadEvents});
-        }
+        let vadEvents = hark(get().micStream, { interval: 20 });
+        vadEvents.on('speaking', () => {
+            voiceStartCallback();
+            if (!get().isSpeaking) {
+                set({isSpeaking: true});
+            } else {
+                clearTimeout(get().delayedSpeakingTimeoutID);
+            }
+        });
+        vadEvents.on('stopped_speaking', () => {
+            if (get().isSpeaking) {
+                const task = setTimeout(() => {
+                    voiceEndCallback();
+                    set({isSpeaking: false})
+                }, get().speakingMaxGap);
+                set({delayedSpeakingTimeoutID: task});
+                voiceInterimCallback();
+            }
+        });
+        vadEvents.suspend();
+        set({vadEvents: vadEvents});
     },
     enableVAD: () =>{
         get().vadEvents?.resume();

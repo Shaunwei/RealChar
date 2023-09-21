@@ -110,7 +110,8 @@ export const createWebRTCSlice = (set, get) => ({
         get().otherPC.close();
         set({
             pc: null,
-            otherPC: null
+            otherPC: null,
+            rtcConnectionEstablished: false
         });
     }
 });

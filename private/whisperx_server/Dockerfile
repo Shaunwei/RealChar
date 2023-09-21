@@ -6,7 +6,8 @@ RUN apt-get update && apt-get install -y wget git build-essential && apt-get cle
 WORKDIR /whisperx_server
 
 # Copy the project files
-COPY ./ /whisperx_server
+COPY ./*.py /whisperx_server/
+COPY ./*.mp3 /whisperx_server/
 
 # Install Python dependencies
 # RUN bash -i /whisperx_server/setup.sh
@@ -18,9 +19,6 @@ RUN pip cache purge
 
 # Expose 8000 port from the docker image.
 EXPOSE 8000
-
-# Select the GPU to use
-ENV NVIDIA_VISIBLE_DEVICES 0
 
 # Run the application
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

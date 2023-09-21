@@ -70,13 +70,15 @@ Self hosted whisperX endpoint.
     docker run -dp 8000:8000 --gpus all --name whisperx-server-gpu whisperx-server
     ```
 
+    Configure environment variables such as `MODEL`, `LANGUAGE`, `API_KEY`, `HF_ACCESS_TOKEN` and `CUDA_VISIBLE_DEVICES`
+
     Create container with CPU
 
     ```bash
     docker run -dp 8000:8000 --name whisperx-server-cpu whisperx-server
     ```
 
-    Remember to assign the server IP to `WHISPER_X_API_URL` in `.env`
+    Remember to assign `WHISPER_X_API_URL` with the server IP in `.env` of the RealChar backend.
 
     Compiled image also found at [Docker Hub](https://hub.docker.com/repository/docker/y1guo/whisperx-server/general): `y1guo/whisperx-server`
 

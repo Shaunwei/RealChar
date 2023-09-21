@@ -13,9 +13,9 @@ export default function MyTab({ isDisplay }) {
 
   return (
     <section
-      className={`flex flex-row flex-wrap justify-center mt-10 gap-5 ${display}`}
+      className={`flex flex-row flex-wrap justify-center mt-10 gap-5 ${display} sm:h-[30vh]`}
     >
-      <div className="text-xl p-16 flex flex-row items-center gap-3">
+      <div className="text-xl py-16 flex flex-row items-center gap-3">
         <code>Coming soon...</code>
       </div>
       {/* <Card className='hidden md:basis-52'>

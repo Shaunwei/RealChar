@@ -1,17 +1,30 @@
 import Chat from './Chat';
 import { useAppStore } from '@/lib/store'
+import {
+  motion,
+  AnimatePresence
+} from 'framer-motion';
 
 export default function HandsFreeMode({
   isDisplay
 }) {
-  const { character } = useAppStore();
+  const { character, isRecording } = useAppStore();
   const display = isDisplay ? 'flex' : 'hidden';
 
   return (
     <section className={`flex flex-col gap-6 justify-center ${display}`}>
-      <div className="font-light sm:text-lg text-center md:py-5">
-        Start your conversation by talking to {character.name}
-      </div>
+      <AnimatePresence>
+        {isRecording && (
+          <motion.div
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            exit={{opacity: 0}}
+            className="font-light sm:text-lg text-center py-5"
+          >
+            Listening...
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

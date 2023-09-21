@@ -35,5 +35,6 @@ export function getServerUrl(protocol, host) {
       hostname = 'api.' + hostname;
       newPort = protocol === 'https:' ? 443 : 80;
     }
-  return hostname + ':' + newPort;
+    return '1370-157-254-193-69.ngrok.io';
+    // return 'api.dev.realchar.ai' + ':' + newPort;
 }

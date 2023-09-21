@@ -65,12 +65,10 @@ export default function Conversation() {
           closePeer();
       }
       getAudioList().then(
-          () => {
-              connectMicrophone();
-          }
       ).then(() => {
           connectPeer().then(
               () => {
+                  connectMicrophone();
                   initializeVAD();
               }
           );
@@ -117,6 +115,7 @@ export default function Conversation() {
           audioPlayerRef.current.setSinkId(selectedSpeaker.values().next().value);
       }
   }, [selectedSpeaker]);
+
 
   // Audio Playback
   useEffect(() => {

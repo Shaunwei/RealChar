@@ -6,7 +6,6 @@ export const createRecorderSlice = (set, get) => ({
     setIsRecording: (v)=>{
         set({isRecording: v});
     },
-    chunks: [],
     mediaRecorder: null,
     connectMicrophone: () => {
         const deviceId = get().selectedMicrophone.values().next().value;
@@ -14,19 +13,15 @@ export const createRecorderSlice = (set, get) => ({
         navigator.mediaDevices
             .getUserMedia({
                 audio: {
-                    deviceId: deviceId ? { exact: deviceId } : undefined,
-                    echoCancellation: true,
+                    deviceId: deviceId ? deviceId  : undefined,
                 },
             })
             .then(stream => {
                 let mediaRecorder = new MediaRecorder(stream);
+                // Temporary workaround for mimic stop event behavior, as for now on iOS 16 stop event doesn't fire.
                 mediaRecorder.ondataavailable = event => {
-                    set({chunks: [...get().chunks, event.data]});
-                };
-                mediaRecorder.onstop = () => {
-                    let blob = new Blob(get().chunks, { type: 'audio/webm' });
+                    let blob = new Blob([event.data], { type: 'audio/webm' });
                     get().sendOverSocket(blob);
-                    set({chunks: []});
                 };
                 set({mediaRecorder: mediaRecorder});
             })
@@ -62,7 +57,6 @@ export const createRecorderSlice = (set, get) => ({
         get().stopRecording();
         set({
             mediaRecorder: null,
-            chunks: []
         });
     },
     // VAD

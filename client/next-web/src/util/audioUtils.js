@@ -4,8 +4,9 @@ const playAudio = (
     bufferSource,
 ) => {
     return new Promise(resolve => {
-        audioPlayer.current.muted = true; // Start muted
-        bufferSource.onended = resolve;
+        bufferSource.onended = ()=>{
+            resolve();
+        };
         bufferSource.start();
         audioPlayer.current
             .play()

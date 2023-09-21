@@ -12,6 +12,8 @@ export const createWebsocketSlice = (set, get) => ({
         ) {
             get().socket.send(data);
             console.log('message sent to server');
+        } else {
+            console.log('tries to send message to server but socket not open.');
         }
     },
 
@@ -77,7 +79,8 @@ export const createWebsocketSlice = (set, get) => ({
             };
             socket.onmessage = get().socketOnMessageHandler;
             socket.onerror = error => {
-                console.log(`WebSocket Error: ${error}`);
+                console.log(`WebSocket Error: `);
+                console.log(error);
             };
             socket.onclose = event => {
                 console.log('Socket closed');

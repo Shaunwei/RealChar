@@ -17,13 +17,21 @@ export const createRecorderSlice = (set, get) => ({
                 },
             })
             .then(stream => {
-                let mediaRecorder = new MediaRecorder(stream);
+                let micStreamSourceNode = get().audioContext.createMediaStreamSource(stream);
+                let gainNode = get().audioContext.createGain();
+                gainNode.gain.setValueAtTime(1.5, get().audioContext.currentTime);
+                let delayNode = get().audioContext.createDelay(0.1);
+                let micStreamDestinationNode = get().audioContext.createMediaStreamDestination();
+                micStreamSourceNode.connect(gainNode).connect(delayNode).connect(micStreamDestinationNode);
+                let mediaRecorder = new MediaRecorder(micStreamDestinationNode.stream);
                 // Temporary workaround for mimic stop event behavior, as for now on iOS 16 stop event doesn't fire.
                 mediaRecorder.ondataavailable = event => {
                     let blob = new Blob([event.data], { type: 'audio/webm' });
                     get().sendOverSocket(blob);
                 };
-                set({mediaRecorder: mediaRecorder});
+                set({
+                    mediaRecorder: mediaRecorder,
+                });
             })
             .catch(function (err) {
                 console.log('An error occurred: ' + err);
@@ -65,7 +73,7 @@ export const createRecorderSlice = (set, get) => ({
     speakingMaxGap: 500, //in ms
     delayedSpeakingTimeoutID: null,
     vadEventsCallback: (voiceStartCallback, voiceInterimCallback, voiceEndCallback) => {
-        let vadEvents = hark(get().micStream, { interval: 100, threshold: -55 });
+        let vadEvents = hark(get().micStream, { interval: 20, threshold: -50 });
         vadEvents.on('speaking', () => {
             voiceStartCallback();
             if (!get().isSpeaking) {

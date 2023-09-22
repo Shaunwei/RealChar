@@ -40,7 +40,7 @@ export default function LanguagePanel() {
           {languageList.map((item) => (
             <SelectItem key={item} textValue={item}
               classNames={{
-                base: 'data-[hover=true]:bg-default/40 data-[selectable=true]:focus:bg-default/40'
+                base: 'data-[hover=true]:bg-default/40 data-[selectable=true]:focus:bg-default/40 data-[selected=true]:pointer-events-none'
               }}
             >
               <div className="text-lg font-light">{item}</div>

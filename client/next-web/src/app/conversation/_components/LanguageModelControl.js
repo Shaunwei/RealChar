@@ -19,7 +19,7 @@ export default function LanguageModelControl() {
         labelPlacement="outside"
         aria-label="model select"
         selectedKeys={selectedModel}
-        disabledKeys={['locked']}
+        disabledKeys={['locked', models[0].id]}
         onChange={handleModelChange}
         radius="sm"
         classNames={{
@@ -78,7 +78,7 @@ export default function LanguageModelControl() {
         {models.map((item) => (
           <SelectItem key={item.id} textValue={item.name}
             classNames={{
-              base: 'data-[hover=true]:bg-default/40 data-[selectable=true]:focus:bg-default/40'
+              base: 'data-[hover=true]:bg-default/40 data-[selectable=true]:focus:bg-default/40 data-[selected=true]:pointer-events-none'
             }}
           >
             <div className="font-light flex flex-col">

@@ -301,6 +301,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 # 1. Whether client will send speech interim audio clip in the next message.
                 if msg_data.startswith('[&Speech]'):
                     speech_recognition_interim = True
+                    # stop the previous audio stream, if new transcript is received
+                    await stop_audio()
                     continue
 
                 # 2. If client finished speech, use the sentence as input.

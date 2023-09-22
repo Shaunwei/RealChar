@@ -2,10 +2,12 @@ import asyncio
 import os
 import types
 import httpx
+import base64
 
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Singleton, timed
 from realtime_ai_character.audio.text_to_speech.base import TextToSpeech
+from realtime_ai_character.audio.text_to_speech.utils import MP3ToUlaw
 
 logger = get_logger(__name__)
 
@@ -39,13 +41,15 @@ class ElevenLabs(Singleton, TextToSpeech):
         logger.info("Initializing [ElevenLabs Text To Speech] voices...")
 
     @timed
-    async def stream(self, text, websocket, tts_event: asyncio.Event, 
+    async def stream(self, text, websocket, tts_event: asyncio.Event,
                      voice_id="21m00Tcm4TlvDq8ikWAM",
-                     first_sentence=False, language='en-US', *args, **kwargs) -> None:
+                     first_sentence=False, language='en-US', sid="",
+                     platform="", *args, **kwargs) -> None:
         if DEBUG:
             return
         if voice_id == "":
-            logger.info("voice_id is not found in .env file, using ElevenLabs default voice")
+            logger.info(
+                "voice_id is not found in .env file, using ElevenLabs default voice")
             voice_id = "21m00Tcm4TlvDq8ikWAM"
         headers = config.headers
         if language != 'en-US':
@@ -67,13 +71,35 @@ class ElevenLabs(Singleton, TextToSpeech):
                 if tts_event.is_set():
                     # stop streaming audio
                     break
-                await websocket.send_bytes(chunk)
+                if platform != "twilio":
+                    await websocket.send_bytes(chunk)
+                else:
+                    audio_bytes = MP3ToUlaw(chunk)
+                    audio_b64 = base64.b64encode(audio_bytes).decode()
+                    media_response = {
+                        "event": "media",
+                        "streamSid": sid,
+                        "media": {
+                            "payload": audio_b64,
+                        },
+                    }
+                    # "done" marker is sent to twilio to track if the audio has been completed.
+                    await websocket.send_json(media_response)
+                    mark = {
+                        "event": "mark",
+                        "streamSid": sid,
+                        "mark": {
+                            "name": "done",
+                        },
+                    }
+                    await websocket.send_json(mark)
 
-    async def generate_audio(self, text, voice_id = "", language='en-US') -> bytes:
+    async def generate_audio(self, text, voice_id="", language='en-US') -> bytes:
         if DEBUG:
             return
         if voice_id == "":
-            logger.info("voice_id is not found in .env file, using ElevenLabs default voice")
+            logger.info(
+                "voice_id is not found in .env file, using ElevenLabs default voice")
             voice_id = "21m00Tcm4TlvDq8ikWAM"
         headers = config.headers
         if language != 'en-US':
@@ -87,6 +113,7 @@ class ElevenLabs(Singleton, TextToSpeech):
         async with httpx.AsyncClient() as client:
             response = await client.post(url, json=data, headers=headers)
             if response.status_code != 200:
-                logger.error(f"ElevenLabs returns response {response.status_code}")
+                logger.error(
+                    f"ElevenLabs returns response {response.status_code}")
             # Get audio/mpeg from the response and return it
             return response.content

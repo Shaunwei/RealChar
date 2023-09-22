@@ -91,6 +91,11 @@ async def characters(user=Depends(get_current_user)):
     } for character in catalog.characters.values()
             if character.author_id == uid or character.visibility == 'public']
 
+@router.get("/characters/{character_id}")
+async def get_character(character_id, user=Depends(get_current_user)):
+    from realtime_ai_character.character_catalog.catalog_manager import CatalogManager
+    catalog: CatalogManager = CatalogManager.get_instance()
+    return catalog.characters[character_id]
 
 @router.get("/configs")
 async def configs():

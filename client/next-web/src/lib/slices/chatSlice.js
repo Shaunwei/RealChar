@@ -30,6 +30,6 @@ export const createChatSlice = (set) => ({
       }));
   },
   clearChatContent: () => {
-      set({chatContent: []});
+      set({chatContent: [], interimChat: null});
   }
 })

@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { useMyCharacters } from '@/util/apiClient';
 
 export default function MyTab({ isDisplay }) {
-  const { characters } = useMyCharacters();
+  //const { characters } = useMyCharacters();
   const display = isDisplay ? 'flex' : 'hidden';
 
   return (

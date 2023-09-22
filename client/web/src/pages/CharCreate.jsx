@@ -4,7 +4,7 @@
  * created by kivinju on 8/7/23
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Avatar,
   Button,
@@ -19,13 +19,17 @@ import InfoIcon from '@mui/icons-material/Info';
 import {
   uploadfile,
   createCharacter,
+  editCharacter,
   generateSystemPrompt,
   cloneVoice,
 } from '../utils/apiUtils';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { analytics } from '../utils/firebase';
 import { logEvent } from 'firebase/analytics';
 import { GenerationEditor } from '@avatechai/avatars/react';
+import lz from 'lz-string';
+import queryString from 'query-string';
+import { getHostName } from '../utils/urlUtils';
 
 const user_prompt = `
 Context
@@ -42,7 +46,7 @@ Context
   {query}
 `;
 
-const CharCreate = ({ token }) => {
+const CharCreate = ({ token, setSelectedCharacter }) => {
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState();
@@ -63,6 +67,48 @@ const CharCreate = ({ token }) => {
   const [voiceCloneStatusMsg, setVoiceCloneStatusMsg] = useState('');
 
   const [background, setBackground] = useState('');
+
+  const { search } = useLocation();
+  const { character = '' } = queryString.parse(search);
+
+  useEffect(() => {
+    const selectedCharacter = JSON.parse(
+      lz.decompressFromEncodedURIComponent(character)
+    );
+    setSelectedCharacter(selectedCharacter);
+    console.log('selectedCharacter', selectedCharacter);
+    if (selectedCharacter) {
+      const fetchCharacterFormData = async () => {
+        try {
+          const scheme = window.location.protocol;
+          const url =
+            scheme +
+            '//' +
+            getHostName() +
+            `/characters/${selectedCharacter.character_id}`;
+          const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const data = await response.json();
+          setFormData({
+            name: data.name || '',
+            system_prompt: data.llm_system_prompt || '',
+            user_prompt: data.llm_user_prompt || user_prompt, // Use user_prompt from props or state if it doesn’t exist on selectedCharacter
+            tts: data.tts || 'ELEVEN_LABS',
+            voice_id: data.voice_id || 'EXAVITQu4vr4xnSDxMaL',
+            avatar_id: data?.avatar_id || '',
+            visibility: data.visibility || 'private',
+          });
+        } catch (error) {
+          console.error('There was an error fetching the data', error);
+        }
+      };
+      fetchCharacterFormData();
+    }
+  }, [setSelectedCharacter, character, navigate]);
 
   const handleFileSelect = event => {
     setWarningMsg('');
@@ -209,10 +255,14 @@ const CharCreate = ({ token }) => {
       }
     }
 
-    // call api to create character
+    // call api to create or edit character
     console.log(new_formData);
     try {
-      await createCharacter(new_formData, token);
+      if (character) {
+        await editCharacter(new_formData, token);
+      } else {
+        await createCharacter(new_formData, token);
+      }
       navigate('/');
     } catch (error) {
       console.error(error);

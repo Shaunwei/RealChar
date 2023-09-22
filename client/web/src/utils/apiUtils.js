@@ -47,6 +47,25 @@ async function createCharacter(characterRequest, accessToken) {
   }
 }
 
+async function editCharacter(characterRequest, accessToken) {
+  const url = scheme + '//' + getHostName() + '/edit_character';
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(characterRequest),
+  });
+
+  if (response.ok) {
+    const jsonResponse = await response.json();
+    return jsonResponse;
+  } else {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+}
+
 async function deleteCharacter(character_id, accessToken) {
   const url = scheme + '//' + getHostName() + '/delete_character';
   const response = await fetch(url, {
@@ -122,6 +141,7 @@ async function cloneVoice(files, accessToken) {
 export {
   uploadfile,
   createCharacter,
+  editCharacter,
   deleteCharacter,
   generateSystemPrompt,
   cloneVoice,

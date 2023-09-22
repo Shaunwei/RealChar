@@ -417,7 +417,15 @@ const App = () => {
             }
           />
           <Route path='/shared' element={<SharedConversation />} />
-          <Route path='/create' element={<CharCreate token={token} />} />
+          <Route
+            path='/create'
+            element={
+              <CharCreate
+                token={token}
+                setSelectedCharacter={setSelectedCharacter}
+              />
+            }
+          />
           <Route
             path='/delete'
             element={

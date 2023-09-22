@@ -463,7 +463,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                               user_input_template=user_input_template,
                               callback=AsyncCallbackTextHandler(
                                   on_new_token, token_buffer,
-                                  tts_task_done_call_back, tts_event),
+                                  tts_task_done_call_back),
                               audioCallback=AsyncCallbackAudioHandler(
                                   text_to_speech, websocket, tts_event,
                                   character.voice_id),

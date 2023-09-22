@@ -76,7 +76,6 @@ const CharCreate = ({ token, setSelectedCharacter }) => {
       lz.decompressFromEncodedURIComponent(character)
     );
     setSelectedCharacter(selectedCharacter);
-    console.log('selectedCharacter', selectedCharacter);
     if (selectedCharacter) {
       const fetchCharacterFormData = async () => {
         try {
@@ -105,6 +104,8 @@ const CharCreate = ({ token, setSelectedCharacter }) => {
         } catch (error) {
           console.error('There was an error fetching the data', error);
         }
+        // Set avatar image
+        setImage(selectedCharacter.image_url);
       };
       fetchCharacterFormData();
     }

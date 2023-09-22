@@ -8,7 +8,8 @@ function getProtocolAndHost() {
   }
   const protocol = match[1];
   const host = match[2];
-  return [protocol, host];
+  const port = match[3];
+  return [protocol, host, port];
 }
 
 export function getApiServerUrl() {
@@ -16,7 +17,7 @@ export function getApiServerUrl() {
 }
 
 export function getWsServerUrl(url) {
-  const [protocol, host] = getProtocolAndHost(url);
+  const [protocol, host, port] = getProtocolAndHost(url);
   const ws_scheme = protocol === 'https:' ? 'wss' : 'ws';
-  return `${ws_scheme}://${host}`;
+  return `${ws_scheme}://${host}${port ? `${port}`: ''}`;
 }

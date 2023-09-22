@@ -21,7 +21,7 @@ user: | # you don't need to change this for most cases
   ---
   {query}
 
-text_to_speech_use: GOOGLE_TTS
-voice_id: en-US-Studio-O
+text_to_speech_use: ELEVEN_LABS
+voice_id: js0ivhcOimy1lQJzbBXI
 visibility: public
 order: 0

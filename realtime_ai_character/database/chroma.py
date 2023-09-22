@@ -25,7 +25,7 @@ class Chroma(Singleton, Database):
         print("There are", self.db._collection.count(), "in the collection")
     
     def delete_collection(self):
-        self.db.delete_collection()
+        self.db._client.delete_collection('llm')
 
     def persist(self):
         self.db.persist()
@@ -34,4 +34,4 @@ class Chroma(Singleton, Database):
         self.db.add_documents(docs)
 
     def similarity_search(self, query):
-        self.db.similarity_search(query)
+        return self.db.similarity_search(query)

@@ -29,12 +29,13 @@ class CatalogManager(Singleton):
         self.sql_db = next(get_db())
         self.sql_load_interval = 30
         self.sql_load_lock = rwlock.RWLockFair()
-
+        
         if overwrite:
             logger.info('Overwriting existing data in the chroma.')
             self.db.delete_collection()
+            self.db.clear_instance()
             self.db = get_database()
-
+            
         self.characters = {}
         self.author_name_cache = {}
         self.load_characters_from_community(overwrite)
@@ -157,7 +158,6 @@ class CatalogManager(Singleton):
                 'id': d.id_,
             } for d in documents])
         self.db.add_documents(docs)
-        print("blahblah")
 
 
     def load_character_from_sql_database(self):

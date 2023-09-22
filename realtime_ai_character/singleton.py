@@ -13,3 +13,8 @@ class Singleton:
         """ Static access method. """
         if cls not in cls._instances:
             cls._instances[cls] = cls(*args, **kwargs)
+    
+    @classmethod
+    def clear_instance(cls):
+        if cls in cls._instances:
+            del cls._instances[cls]

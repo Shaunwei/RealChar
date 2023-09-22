@@ -79,7 +79,7 @@ export default function CharacterCard({
       </CardBody>
       <CardFooter className="mt-5">
         <Button
-          className="w-full font-light"
+          className="w-full font-light bg-default/40"
           onPress={() => {
             const compressedCharacter = lz.compressToEncodedURIComponent(
               JSON.stringify(character)

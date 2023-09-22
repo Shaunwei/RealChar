@@ -76,7 +76,6 @@ const CharCreate = ({ token, setSelectedCharacter }) => {
       lz.decompressFromEncodedURIComponent(character)
     );
     setSelectedCharacter(selectedCharacter);
-    console.log('selectedCharacter', selectedCharacter);
     if (selectedCharacter) {
       const fetchCharacterFormData = async () => {
         try {
@@ -107,6 +106,8 @@ const CharCreate = ({ token, setSelectedCharacter }) => {
         }
       };
       fetchCharacterFormData();
+      // Load avatar
+      setImage(selectedCharacter.image_url);
     }
   }, [setSelectedCharacter, character, navigate]);
 
@@ -232,7 +233,7 @@ const CharCreate = ({ token, setSelectedCharacter }) => {
       new_formData.data = {};
     }
     // upload image to gcs
-    if (image) {
+    if (image && selectedFile) {
       try {
         let res = await uploadfile(selectedFile, token);
         new_formData.data.avatar_filename = res.filename;

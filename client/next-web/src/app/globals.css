@@ -16,7 +16,7 @@
   }
 }
 
-main .react-input-emoji--container {
+.conversation_container .react-input-emoji--container {
   background: transparent;
   border: 0;
   font-size: 18px;
@@ -25,16 +25,17 @@ main .react-input-emoji--container {
   color: #fff;
 }
 
-main .react-emoji {
+.conversation_container .react-emoji {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
+  height: 42px;
 }
 
-main .react-input-emoji--button {
+.conversation_container .react-input-emoji--button {
   padding-left: 0;
   padding-right: 20px;
 }
 
-main .react-input-emoji--input {
+.conversation_container .react-input-emoji--input {
   font-weight: 300;
 }

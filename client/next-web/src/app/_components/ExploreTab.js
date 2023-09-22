@@ -23,9 +23,13 @@ export default function ExploreTab({ characters, isDisplay }) {
     }
   }
 
+  function handleEnded() {
+    setPlayingId('');
+  }
+
   return (
     <section className={`flex flex-row flex-wrap justify-center mt-10 gap-5 ${display}`}>
-      <audio ref={audioRef} preload="none">
+      <audio ref={audioRef} preload="none" onEnded={handleEnded}>
         Your browser does not support the audio tag.
       </audio>
       {

@@ -63,7 +63,7 @@ class WhisperX:
             reader = torchaudio.io.StreamReader(io.BytesIO(audio_bytes))
         reader.add_basic_audio_stream(1000, sample_rate=16000)
         audio = torch.concat([chunk[0] for chunk in reader.stream()])  # type: ignore
-        audio = audio.flatten().numpy().astype(np.float32)
+        audio = audio.mean(dim=1).flatten().numpy().astype(np.float32)
         language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, LANGUAGE)
 
         self.model.options = self.model.options._replace(

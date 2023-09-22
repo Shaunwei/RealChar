@@ -1,5 +1,3 @@
-`use client`
-
 import {
   Card,
   CardBody,
@@ -13,32 +11,16 @@ import audioSvg from '@/assets/svgs/audio.svg';
 import { useRouter } from 'next/navigation';
 import lz from 'lz-string';
 
-import { useState, useRef } from 'react';
-
 export default function CharacterCard({
-  character
+  character,
+  playingId,
+  handlePlay
 }) {
   const router = useRouter();
-  const [ isPlaying, setIsPlaying ] = useState(false);
-  const audioRef = useRef(null);
+  const isPlaying = playingId == character.character_id;
 
-  function handlePlay() {
-    let playPromise;
-    if (!isPlaying) {
-      //play
-      playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.then(_ => {
-          setIsPlaying(true);
-        })
-        .catch(error => {
-          setIsPlaying(false);
-        })
-      }
-    } else {
-      audioRef.current.load();
-    }
-
+  function handlePress() {
+    return handlePlay(character.character_id, character.audio_url);
   }
 
   return (
@@ -52,9 +34,6 @@ export default function CharacterCard({
         <div className="grow md:ml-0">
           <p className="name text-base text-center h-12 flex flex-row justify-center items-center"><span>{character.name}</span></p>
           <div className="flex justify-center mt-1 relative h-10">
-            <audio ref={audioRef} src={character.audio_url} preload="none">
-              Your browser does not support the audio tag.
-            </audio>
             <Image
               src={audioSvg}
               alt=""
@@ -66,7 +45,7 @@ export default function CharacterCard({
               radius="full"
               color="white"
               className="opacity-70 absolute"
-              onPress={handlePlay}
+              onPress={handlePress}
             >
             {!isPlaying ? (
               <FaPlay/>

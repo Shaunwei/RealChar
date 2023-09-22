@@ -1,5 +1,3 @@
-import { isIP } from 'is-ip';
-
 const apiHost = process.env.NEXT_PUBLIC_API_HOST;
 
 function getProtocolAndHost() {

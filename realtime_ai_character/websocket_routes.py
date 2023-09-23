@@ -395,6 +395,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     # Filter noises.
                     if not interim_transcript:
                         continue
+                    await manager.send_message(
+                        message=f'[+&]{interim_transcript}', websocket=websocket)
                     logger.info(f"Speech interim: {interim_transcript}")
                     current_speech = current_speech + ' ' + interim_transcript
                     continue

@@ -14,6 +14,5 @@ docker:
     python_version: "3.10"
     cuda_version: "11.7"
     system_packages:
-      - ffmpeg
       - git
       

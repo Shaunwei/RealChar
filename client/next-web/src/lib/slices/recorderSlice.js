@@ -20,10 +20,11 @@ export const createRecorderSlice = (set, get) => ({
                 let micStreamSourceNode = get().audioContext.createMediaStreamSource(stream);
                 let gainNode = get().audioContext.createGain();
                 gainNode.gain.setValueAtTime(1.5, get().audioContext.currentTime);
-                let delayNode = get().audioContext.createDelay(0.1);
+                let delayNode = get().audioContext.createDelay(0.5);
+                delayNode.delayTime.value = 0.1;
                 let micStreamDestinationNode = get().audioContext.createMediaStreamDestination();
-                micStreamSourceNode.connect(gainNode).connect(delayNode).connect(micStreamDestinationNode);
                 let mediaRecorder = new MediaRecorder(micStreamDestinationNode.stream);
+                micStreamSourceNode.connect(gainNode).connect(delayNode).connect(micStreamDestinationNode);
                 // Temporary workaround for mimic stop event behavior, as for now on iOS 16 stop event doesn't fire.
                 mediaRecorder.ondataavailable = event => {
                     let blob = new Blob([event.data], { type: 'audio/webm' });

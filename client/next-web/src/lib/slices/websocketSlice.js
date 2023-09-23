@@ -36,11 +36,15 @@ export const createWebsocketSlice = (set, get) => ({
                 get().setSender('user');
                 get().appendInterimChatContent(msg[1]);
                 get().appendChatContent();
+                get().clearSpeechInterim();
             } else if (
                 message.startsWith('[=]' || message.match(/\[=([a-zA-Z0-9]+)]/))
             ) {
                 // [=] or [=id] indicates the response is done
                 get().appendChatContent();
+            } else if (message.startsWith('[+&]')) {
+                let msg = message.split('[+&]');
+                get().appendSpeechInterim(msg[1]);
             } else {
                 get().setSender('character');
                 get().appendInterimChatContent(event.data);

@@ -1,4 +1,4 @@
-export const createChatSlice = (set) => ({
+export const createChatSlice = (set, get) => ({
   // interimChat = null means not in text streaming.
   interimChat: null,
   setSender: (sender) => {
@@ -31,5 +31,14 @@ export const createChatSlice = (set) => ({
   },
   clearChatContent: () => {
       set({chatContent: [], interimChat: null});
-  }
+  },
+
+  speechInterim: '',
+  appendSpeechInterim: (str) => {
+    set({speechInterim: get().speechInterim + str});
+    console.log(get().speechInterim);
+  },
+    clearSpeechInterim: (str) => {
+      set({speechInterim: ''});
+    }
 })

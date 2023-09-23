@@ -74,6 +74,12 @@ class WhisperX:
         if diarization:
             result = self._diarize(audio, result)
 
+        # console debug output
+        log(f"Received {reader.get_src_stream_info(0)}")
+        log(f"Audio length: {len(audio) / 16000:.2f} s")
+        text = " ".join([seg["text"].strip() for seg in result["segments"]])
+        log(f"Transcript: {text}")
+
         return result
 
     def _diarize(self, audio, result):

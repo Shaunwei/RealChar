@@ -3,6 +3,7 @@ import os
 import json
 import base64
 import collections
+import random
 
 from functools import reduce
 from fastapi import (
@@ -22,7 +23,6 @@ from realtime_ai_character.twilio.ulaw_util import is_mulaw_silence_bytes
 from realtime_ai_character.audio.speech_to_text import SpeechToText, get_speech_to_text
 from realtime_ai_character.audio.text_to_speech import TextToSpeech, get_text_to_speech
 from realtime_ai_character.character_catalog.catalog_manager import (
-    CatalogManager,
     get_catalog_manager,
     Character,
 )
@@ -43,6 +43,9 @@ logger = get_logger(__name__)
 twilio_router = APIRouter(
     prefix="/twilio",
 )
+
+character_list = ["elon_musk", "steve_jobs", "sam_altman", "bruce_wayne",
+                  "realchar", "helen_inhabitants_zone", "the_cat", "keanu_reeves"]
 
 manager = get_connection_manager()
 
@@ -111,7 +114,8 @@ class AudioBytesBuffer:
 @twilio_router.websocket("/ws")
 async def websocket_endpoint(
     websocket: WebSocket,
-    llm_model: str = Query(default=os.getenv("LLM_MODEL_USE", "gpt-3.5-turbo-16k")),
+    llm_model: str = Query(default=os.getenv(
+        "LLM_MODEL_USE", "gpt-3.5-turbo-16k")),
     language: str = Query(default="en-US"),
     catalog_manager=Depends(get_catalog_manager),
     speech_to_text=Depends(get_speech_to_text),
@@ -119,13 +123,13 @@ async def websocket_endpoint(
 ):
     llm = get_llm(model=llm_model)
     await manager.connect(websocket)
-    character = catalog_manager.get_character("elon_musk")
+    random_character = random.choice(character_list)
+    character = catalog_manager.get_character(random_character)
     try:
         main_task = asyncio.create_task(
             handle_receive(
                 websocket,
                 llm,
-                catalog_manager,
                 character,
                 language,
                 speech_to_text,
@@ -141,7 +145,6 @@ async def websocket_endpoint(
 async def handle_receive(
     websocket: WebSocket,
     llm: LLM,
-    catalog_manager: CatalogManager,
     character: Character,
     language: str,
     speech_to_text: SpeechToText,
@@ -183,7 +186,7 @@ async def handle_receive(
                 text_to_speech,
                 websocket,
                 tts_event,
-                "",
+                character.voice_id,
                 language,
                 sid,
                 platform="twilio",
@@ -231,7 +234,7 @@ async def handle_receive(
                     text=greeting_text,
                     websocket=websocket,
                     tts_event=tts_event,
-                    voice_id="",
+                    voice_id=character.voice_id,
                     first_sentence=True,
                     language=language,
                     sid=sid,

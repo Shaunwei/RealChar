@@ -80,11 +80,6 @@ class GoogleCloudTTS(Singleton, TextToSpeech):
             "input": {"text": text},
             **config.data,
         }
-        if voice_id:
-            logger.info("Override voice_id")
-            data["voice"]["name"] = voice_id
-            if voice_id == "en-US-Studio-O":
-                data["voice"]["ssmlGender"] = "FEMALE"
 
         # twilio expects g711 mulaw audio encoding
         # https://www.twilio.com/docs/voice/twiml/stream#websocket-messages-to-twilio

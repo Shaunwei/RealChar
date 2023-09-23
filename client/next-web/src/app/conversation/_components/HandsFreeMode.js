@@ -8,7 +8,7 @@ import {
 export default function HandsFreeMode({
   isDisplay
 }) {
-  const { character, isRecording } = useAppStore();
+  const { character, isRecording, speechInterim } = useAppStore();
   const display = isDisplay ? 'flex' : 'hidden';
 
   return (
@@ -21,7 +21,7 @@ export default function HandsFreeMode({
             exit={{opacity: 0}}
             className="font-light sm:text-lg text-center py-5"
           >
-            Listening...
+              {speechInterim?  speechInterim: 'Listening...'}
           </motion.div>
         )}
       </AnimatePresence>

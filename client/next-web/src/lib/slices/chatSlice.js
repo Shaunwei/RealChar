@@ -36,7 +36,6 @@ export const createChatSlice = (set, get) => ({
   speechInterim: '',
   appendSpeechInterim: (str) => {
     set({speechInterim: get().speechInterim + str});
-    console.log(get().speechInterim);
   },
     clearSpeechInterim: (str) => {
       set({speechInterim: ''});

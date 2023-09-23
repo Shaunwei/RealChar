@@ -13,15 +13,10 @@ RUN apt-get update && apt-get install -y \
     libx264-dev \
     libopus-dev
 
-# Compile and install FFmpeg 4.4 from source
-RUN mkdir -p ffmpeg && cd ffmpeg && \
-    curl -O https://ffmpeg.org/releases/ffmpeg-4.4.tar.bz2 && \
-    tar xvf ffmpeg-4.4.tar.bz2 && cd ffmpeg-4.4 && \
-    ./configure --enable-gpl --enable-nonfree --enable-libx264 --enable-libopus && \
-    make -j$(nproc) && \
-    make install && \
-    ldconfig && \
-    cd ../.. && rm -r ffmpeg
+RUN echo "deb http://deb.debian.org/debian/ bullseye main\ndeb-src http://deb.debian.org/debian/ bullseye main" | tee /etc/apt/sources.list.d/ffmpeg.list  &&\
+    apt-get update && \
+    apt-get install -y ffmpeg=7:4.3.5-0+deb11u1
+
 
 WORKDIR /realtime_ai_character
 

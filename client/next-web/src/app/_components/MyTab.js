@@ -1,23 +1,14 @@
-import { Card, CardBody, CardFooter } from '@nextui-org/card';
-import { BsPlusLg } from 'react-icons/bs';
-import { Avatar } from '@nextui-org/avatar';
-import Image from 'next/image';
-import audioSvg from '@/assets/svgs/audio.svg';
-import Link from 'next/link';
-
 import { useMyCharacters } from '@/util/apiClient';
+import CharacterCard from "@/app/_components/CharacterCard";
 
 export default function MyTab({ isDisplay }) {
-  //const { characters } = useMyCharacters();
+  const { characters } = useMyCharacters();
   const display = isDisplay ? 'flex' : 'hidden';
 
   return (
     <section
       className={`flex flex-row flex-wrap justify-center mt-10 gap-5 ${display} sm:h-[30vh]`}
     >
-      <div className="text-xl py-16 flex flex-row items-center gap-3">
-        <code>Coming soon...</code>
-      </div>
       {/* <Card className='hidden md:basis-52'>
         <CardBody className='flex justify-center'>
           <Link href='/'>
@@ -28,34 +19,17 @@ export default function MyTab({ isDisplay }) {
           </Link>
         </CardBody>
       </Card>
-      {characters?.map(character => (
-        <Card
-          key={character.character_id}
-          className='md:basis-52 p-2.5'
-        >
-          <CardBody className="p-0 text-center flex-row md:flex-col">
-            <Avatar
-              radius="sm"
-              src={character.image_url}
-              className="w-20 h-20 md:w-44 md:h-44 mx-auto mt-2"
-            />
-            <div className="ml-4 md:ml-0">
-              <p className="name text-base text-center mt-2 font-medium">{character.name}</p>
-              <p className="intro text-xs text-center mt-2 font-light">
-                &quot;I am burdened with glorious purpose.&quot;
-              </p>
-              <div className='flex justify-center mt-4'>
-                <Image priority src={audioSvg} alt='' />
-              </div>
-            </div>
-          </CardBody>
-          <CardFooter className="pt-4 mt-4 pb-2 border-t-2 border-real-silver-500/30 justify-center">
-            <Link href='/' className='text-xs leading-5 text-real-silver-500'>
-              View detail
-            </Link>
-          </CardFooter>
-        </Card>
-      ))} */}
+        */}
+      {characters?.map(character => {
+            return character.source === 'community' && character.is_author ? (
+                <CharacterCard
+                    character={character}
+                    playingId={''}
+                    handlePlay={()=>{}}
+                />
+            ) : null;
+          }
+      )}
     </section>
   );
 }

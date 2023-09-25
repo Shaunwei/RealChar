@@ -1,14 +1,17 @@
+from dotenv import load_dotenv
+
+load_dotenv()
+import os
 import requests
 import json
 from time import perf_counter
 
 
-url = "http://localhost:8002/transcribe"
-# url = "http://localhost:3000/transcribe"
-# url = "http://whisperx-server-0-org-realchar--aws-us-west-1.mt1.bentoml.ai/transcribe"
+api_key = os.getenv("API_KEY", "")
+api_url = os.getenv("API_URL", "")
+audio_file = os.getenv("AUDIO_FILE", "")
+platform = os.getenv("PLATFORM", "")
 
-# audio_file = "../reference.mp3"
-audio_file = "/home/yiguo/Downloads/addf8-mulaw-GW.wav"
 with open(audio_file, "rb") as f:
     audio_bytes = f.read()
 
@@ -16,8 +19,8 @@ with open(audio_file, "rb") as f:
 def test(verbose=True):
     files = {"audio_file": ("audio_file", audio_bytes)}
     metadata = {
-        "api_key": "YOUR_API_KEY_12345",
-        "platform": "twilio",
+        "api_key": api_key,
+        "platform": platform,
         "initial_prompt": "",
         "language": "en-US",
         "suppress_tokens": [-1],
@@ -27,7 +30,7 @@ def test(verbose=True):
     start = perf_counter()
     if verbose:
         print(f"Sent {len(audio_bytes)} bytes of audio data.")
-    response = requests.post(url, data=data, files=files)
+    response = requests.post(api_url, data=data, files=files)
 
     if response.status_code == 200:
         data = response.json()

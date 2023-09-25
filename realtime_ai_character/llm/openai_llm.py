@@ -52,7 +52,7 @@ class OpenaiLlm(LLM):
                     user_input: str,
                     user_input_template: str,
                     callback: AsyncCallbackTextHandler,
-                    audioCallback: AsyncCallbackAudioHandler,
+                    #audioCallback: AsyncCallbackAudioHandler,
                     character: Character,
                     useSearch: bool = False,
                     useQuivr: bool = False,
@@ -82,10 +82,10 @@ class OpenaiLlm(LLM):
         # 2. Add user input to history
         history.append(HumanMessage(content=user_input_template.format(
             context=context, query=user_input)))
-
+        #logger.info(f"xiangmin history : {history}")
         # 3. Generate response
         response = await self.chat_open_ai.agenerate(
-            [history], callbacks=[callback, audioCallback, StreamingStdOutCallbackHandler()],
+            [history], callbacks=[callback, StreamingStdOutCallbackHandler()],
             metadata=metadata)
         logger.info(f'Response: {response}')
         return response.generations[0][0].text

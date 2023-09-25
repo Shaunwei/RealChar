@@ -36,17 +36,17 @@ class CatalogManager(Singleton):
 
         self.characters = {}
         self.author_name_cache = {}
-        self.load_characters_from_community(overwrite)
+        # self.load_characters_from_community(overwrite)
         self.load_characters(overwrite)
         if overwrite:
             logger.info('Persisting data in the chroma.')
             self.db.persist()
         logger.info(
             f"Total document load: {self.db._client.get_collection('llm').count()}")
-        self.run_load_sql_db_thread = True
-        self.load_sql_db_thread = threading.Thread(target=self.load_sql_db_loop)
-        self.load_sql_db_thread.daemon = True
-        self.load_sql_db_thread.start()
+        # self.run_load_sql_db_thread = True
+        # self.load_sql_db_thread = threading.Thread(target=self.load_sql_db_loop)
+        # self.load_sql_db_thread.daemon = True
+        # self.load_sql_db_thread.start()
 
     def load_sql_db_loop(self):
         while self.run_load_sql_db_thread:
@@ -107,6 +107,7 @@ class CatalogManager(Singleton):
             if overwrite:
                 self.load_data(character_name, directory / 'data')
                 logger.info('Loaded data for character: ' + character_name)
+            break
         logger.info(
             f'Loaded {len(self.characters)} characters: IDs {list(self.characters.keys())}')
 
@@ -155,7 +156,7 @@ class CatalogManager(Singleton):
                 'character_name': character_name,
                 'id': d.id_,
             } for d in documents])
-        self.db.add_documents(docs)
+        #self.db.add_documents(docs)
 
 
     def load_character_from_sql_database(self):

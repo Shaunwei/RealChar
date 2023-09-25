@@ -38,3 +38,4 @@ typing
 uvicorn
 websockets
 google-auth
+nltk

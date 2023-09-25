@@ -24,6 +24,8 @@ from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.quivr_info import QuivrInfo
 from realtime_ai_character.utils import (ConversationHistory, build_history,
                                          get_connection_manager, get_timer)
+from realtime_ai_character.llm.nlp_identify import Identifier, get_nlp_identifier
+
 
 logger = get_logger(__name__)
 
@@ -226,17 +228,17 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
         token_buffer = []
 
         # Greet the user
-        greeting_text = GREETING_TXT_MAP[language]
-        await manager.send_message(message=greeting_text, websocket=websocket)
-        tts_task = asyncio.create_task(
-            text_to_speech.stream(
-                text=greeting_text,
-                websocket=websocket,
-                tts_event=tts_event,
-                voice_id=character.voice_id,
-                first_sentence=True,
-                language=language
-            ))
+        # greeting_text = GREETING_TXT_MAP[language]
+        # await manager.send_message(message=greeting_text, websocket=websocket)
+        # tts_task = asyncio.create_task(
+        #     text_to_speech.stream(
+        #         text=greeting_text,
+        #         websocket=websocket,
+        #         tts_event=tts_event,
+        #         voice_id=character.voice_id,
+        #         first_sentence=True,
+        #         language=language
+        #     ))
         # Send end of the greeting so the client knows when to start listening
         await manager.send_message(message='[end]\n', websocket=websocket)
 
@@ -260,7 +262,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
 
         speech_recognition_interim = False
         current_speech = ''
-
+        classifier = get_nlp_identifier()
         while True:
             data = await websocket.receive()
             if data['type'] != 'websocket.receive':
@@ -289,9 +291,10 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                             user_input=msg_data,
                             callback=AsyncCallbackTextHandler(
                                 on_new_token, []),
-                            audioCallback=AsyncCallbackAudioHandler(
-                                text_to_speech, websocket, tts_event,
-                                character.voice_id)))
+                            # audioCallback=AsyncCallbackAudioHandler(
+                            #     text_to_speech, websocket, tts_event,
+                            #     character.voice_id)
+                                ))
                     continue
                 # 1. Whether client will send speech interim audio clip in the next message.
                 if msg_data.startswith('[&Speech]'):
@@ -327,8 +330,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     user_input_template=user_input_template,
                     callback=AsyncCallbackTextHandler(on_new_token,
                                                       token_buffer),
-                    audioCallback=AsyncCallbackAudioHandler(
-                        text_to_speech, websocket, tts_event, character.voice_id),
+                    # audioCallback=AsyncCallbackAudioHandler(
+                    #     text_to_speech, websocket, tts_event, character.voice_id),
                     character=character,
                     useSearch=use_search,
                     useQuivr=use_quivr,
@@ -404,8 +407,14 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 await manager.send_message(
                     message=f'[+]You said: {transcript}', websocket=websocket)
 
+                if not classifier.isQuestion(transcript):
+                    await manager.send_message(
+                    message=f'[+] AI wont reply as it is not a question.', websocket=websocket)
+                    continue
+
                 # 3. stop the previous audio stream, if new transcript is received
                 await stop_audio()
+
 
                 previous_transcript = transcript
 
@@ -455,9 +464,9 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                               callback=AsyncCallbackTextHandler(
                                   on_new_token, token_buffer,
                                   tts_task_done_call_back),
-                              audioCallback=AsyncCallbackAudioHandler(
-                                  text_to_speech, websocket, tts_event,
-                                  character.voice_id),
+                            #   audioCallback=AsyncCallbackAudioHandler(
+                            #       text_to_speech, websocket, tts_event,
+                            #       character.voice_id),
                               character=character,
                               useSearch=use_search,
                               useQuivr=use_quivr,

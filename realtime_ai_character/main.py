@@ -14,6 +14,7 @@ from realtime_ai_character.memory.memory_manager import MemoryManager
 from realtime_ai_character.restful_routes import router as restful_router
 from realtime_ai_character.utils import ConnectionManager
 from realtime_ai_character.websocket_routes import router as websocket_router
+from realtime_ai_character.llm.nlp_identify import Identifier
 
 load_dotenv()
 
@@ -66,6 +67,8 @@ overwrite_chroma = os.getenv("OVERWRITE_CHROMA", 'True').lower() in ('true', '1'
 CatalogManager.initialize(overwrite=overwrite_chroma)
 ConnectionManager.initialize()
 MemoryManager.initialize()
+Identifier.initialize()
+
 get_text_to_speech()
 get_speech_to_text()
 

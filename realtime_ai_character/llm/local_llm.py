@@ -65,7 +65,7 @@ class LocalLlm(LLM):
         # 3. Generate response
         response = await self.chat_open_ai.agenerate(
             [history],
-            callbacks=[callback, audioCallback, StreamingStdOutCallbackHandler()],
+            callbacks=[callback, StreamingStdOutCallbackHandler()],
             metadata=metadata,
         )
         logger.info(f"Response: {response}")

@@ -161,23 +161,23 @@ async def upload_file(file: UploadFile = File(...), user = Depends(get_current_u
         "content-type": file.content_type
     }
 
-@router.post("/create_character")
-async def create_character(character_request: CharacterRequest,
-                           user = Depends(get_current_user),
-                           db: Session = Depends(get_db)):
-    if not user:
-        raise HTTPException(
-                status_code=http_status.HTTP_401_UNAUTHORIZED,
-                detail='Invalid authentication credentials',
-                headers={'WWW-Authenticate': 'Bearer'},
-            )
-    character = Character(**character_request.dict())
-    character.id = str(uuid.uuid4().hex)
-    character.author_id = user['uid']
-    now_time = datetime.datetime.now()
-    character.created_at = now_time
-    character.updated_at = now_time
-    await asyncio.to_thread(character.save, db)
+# @router.post("/create_character")
+# async def create_character(character_request: CharacterRequest,
+#                            user = Depends(get_current_user),
+#                            db: Session = Depends(get_db)):
+#     if not user:
+#         raise HTTPException(
+#                 status_code=http_status.HTTP_401_UNAUTHORIZED,
+#                 detail='Invalid authentication credentials',
+#                 headers={'WWW-Authenticate': 'Bearer'},
+#             )
+#     character = Character(**character_request.dict())
+#     character.id = str(uuid.uuid4().hex)
+#     character.author_id = user['uid']
+#     now_time = datetime.datetime.now()
+#     character.created_at = now_time
+#     character.updated_at = now_time
+#     await asyncio.to_thread(character.save, db)
 
 
 @router.post("/edit_character")

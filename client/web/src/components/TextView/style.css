@@ -3,7 +3,7 @@
   color: white;
   font-size: 17px;
   width: 100%;
-  height: 25vh;
+  height: 55vh;
   border: none;
   resize: none;
 }
@@ -30,6 +30,7 @@ input[type='text'] {
     sans-serif;
   color: white;
   width: 100%;
+  height: 15vh;
   box-sizing: border-box;
   letter-spacing: 1px;
 }

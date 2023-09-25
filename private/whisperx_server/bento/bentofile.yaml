@@ -12,3 +12,4 @@ python:
     - whisperx @ git+https://github.com/m-bain/whisperx.git@e94b9043085c32c365b2b60f23e73b2d03c2241c
 docker:
     base_image: "pytorch/pytorch:2.0.1-cuda11.7-cudnn8-runtime"
+    dockerfile_template: "./Dockerfile.template"

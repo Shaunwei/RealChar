@@ -22,6 +22,11 @@ config = types.SimpleNamespace(**{
         'max_alternatives': 1,
         'enable_automatic_punctuation': True,
     },
+    'twilio': {
+        'encoding': speech.RecognitionConfig.AudioEncoding.MULAW,
+        'sample_rate_hertz': 8000,
+        'language_code': 'en-uS',
+    }
 })
 
 

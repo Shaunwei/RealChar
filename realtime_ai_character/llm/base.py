@@ -41,7 +41,7 @@ class AsyncCallbackTextHandler(AsyncCallbackHandler):
 
 class AsyncCallbackAudioHandler(AsyncCallbackHandler):
     def __init__(self, text_to_speech=None, websocket=None, tts_event=None, voice_id="",
-                 language="en-US", *args, **kwargs):
+                 language="en-US", sid="", platform="", *args, **kwargs):
         super().__init__(*args, **kwargs)
         if text_to_speech is None:
             def text_to_speech(token): return print(
@@ -53,6 +53,8 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
         self.language = language
         self.is_reply = False  # the start of the reply. i.e. the substring after '>'
         self.tts_event = tts_event
+        self.twilio_stream_id = sid
+        self.platfrom = platform
         # optimization: trade off between latency and quality for the first sentence
         self.is_first_sentence = True
 
@@ -70,14 +72,17 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
                 self.current_sentence += token
             else:
                 if self.is_first_sentence:
-                    timer.log("LLM First Sentence", lambda: timer.start("TTS First Sentence"))
+                    timer.log("LLM First Sentence",
+                              lambda: timer.start("TTS First Sentence"))
                 await self.text_to_speech.stream(
                     self.current_sentence,
                     self.websocket,
                     self.tts_event,
                     self.voice_id,
                     self.is_first_sentence,
-                    self.language)
+                    self.language,
+                    self.twilio_stream_id,
+                    self.platform)
                 self.current_sentence = ""
                 if self.is_first_sentence:
                     self.is_first_sentence = False
@@ -93,6 +98,7 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
                 self.is_first_sentence,
                 self.language)
 
+
 class SearchAgent:
 
     def __init__(self):
@@ -103,10 +109,11 @@ class SearchAgent:
             self.search_wrapper = SerpAPIWrapper()
         elif os.getenv('GOOGLE_API_KEY') and os.getenv('GOOGLE_CSE_ID'):
             self.search_wrapper = GoogleSearchAPIWrapper()
-    
+
     def search(self, query: str) -> str:
         if self.search_wrapper is None:
-            logger.warning('Search is not enabled, please set SERPER_API_KEY to enable it.')
+            logger.warning(
+                'Search is not enabled, please set SERPER_API_KEY to enable it.')
         else:
             try:
                 search_result: str = self.search_wrapper.run(query)
@@ -123,6 +130,7 @@ class SearchAgent:
             except Exception as e:
                 logger.error(f'Error when searching: {e}')
         return ''
+
 
 class QuivrAgent:
 
@@ -155,6 +163,7 @@ class QuivrAgent:
             logger.error(f'Error when querying quivr: {e}')
         return ''
 
+
 class MultiOnAgent:
     def __init__(self):
         self.init = False
@@ -174,6 +183,7 @@ class MultiOnAgent:
             logger.error(f'Error when querying multion: {e}')
             return ("The query was attempted by a MutliOn agent, but failed. Inform user about "
                     "this failure.")
+
 
 class LLM(ABC):
     @abstractmethod

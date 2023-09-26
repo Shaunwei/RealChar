@@ -1,7 +1,7 @@
 FROM pytorch/pytorch:2.0.1-cuda11.7-cudnn8-runtime
 
 # Install system-level dependencies
-RUN apt-get update && apt-get install -y wget git build-essential && apt-get clean
+RUN apt-get update && apt-get install -y git && apt-get clean
 
 WORKDIR /whisperx_server
 

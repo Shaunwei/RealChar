@@ -109,7 +109,14 @@ Self hosted whisperX endpoint.
     bentoml push whisperx-server:latest
     ```
 
--   Note: Environment variables are set on deployment
+    Note: Environment variables are set on deployment
+
+1.  Containerize and test locally
+
+    ```bash
+    bentoml build --containerize
+    docker run --rm -dp 8000:3000 --gpus all --env-file /path/to/.env whisperx-server:xxxxxxxxxxx
+    ```
 
 ## Client Setup
 

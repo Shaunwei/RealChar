@@ -8,12 +8,8 @@ include:
   - "*.py"
   - "*.mp3"
 python:
-  requirements_txt: ./requirements.txt
+  packages:
+    - whisperx @ git+https://github.com/m-bain/whisperx.git@e94b9043085c32c365b2b60f23e73b2d03c2241c
 docker:
-    distro: debian
-    python_version: "3.10"
-    cuda_version: "11.7"
-    system_packages:
-      - ffmpeg
-      - git
-      
+    base_image: "pytorch/pytorch:2.0.1-cuda11.7-cudnn8-runtime"
+    dockerfile_template: "./Dockerfile.template"

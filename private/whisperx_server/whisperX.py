@@ -64,8 +64,8 @@ class WhisperX:
         else:
             reader = torchaudio.io.StreamReader(io.BytesIO(audio_bytes))
         reader.add_basic_audio_stream(1000, sample_rate=16000)
-        audio = torch.concat([chunk[0] for chunk in reader.stream()])  # type: ignore
-        audio = audio.mean(dim=1).flatten().numpy().astype(np.float32)
+        wav = torch.concat([chunk[0] for chunk in reader.stream()])  # type: ignore
+        audio = wav.mean(dim=1).flatten().numpy().astype(np.float32)
         language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, LANGUAGE)
 
         self.model.options = self.model.options._replace(
@@ -75,6 +75,13 @@ class WhisperX:
 
         if diarization:
             result = self._diarize(audio, result)
+
+        # console debug output
+        text = " ".join([seg["text"].strip() for seg in result["segments"]])
+        log(f"Transcript: {text}")
+        log(f"Wav Shape: {wav.shape}")
+        log(f"Audio length: {len(audio) / 16000:.2f} s")
+        log(f"Received {reader.get_src_stream_info(0)}")
 
         return result
 

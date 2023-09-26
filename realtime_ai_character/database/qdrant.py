@@ -7,6 +7,8 @@ from realtime_ai_character.singleton import Singleton
 from qdrant_client.http.models import Distance, VectorParams, Batch
 from qdrant_client import QdrantClient 
 from realtime_ai_character.utils import Character
+from itertools import islice
+import uuid
 
 load_dotenv()
 logger = get_logger(__name__)
@@ -36,29 +38,44 @@ class Qdrant(Singleton, Database):
         pass
     
     def add_documents(self, docs):
-        batch_size = 1536
-        num_batches = len(docs) // batch_size + (1 if len(docs) % batch_size != 0 else 0)
+        texts = [doc.page_content for doc in docs]
+        metadatas = [doc.metadata for doc in docs]
+        return self._add_texts(texts, metadatas)
     
-        for i in range(num_batches):
-            # Extract the current batch of docs
-            start_idx = i * batch_size
-            end_idx = min((i + 1) * batch_size, len(docs))
-            batch_docs = docs[start_idx:end_idx]
-            
-            # Extracting ids, vectors, and payloads from the batched docs
-            ids = [doc.metadata['id'] for doc in batch_docs]
-            
-            # Convert texts to vectors using the retriever
-            vectors = [embedding.embed_query(doc.page_content) for doc in batch_docs]
-            
-            # Extracting payloads based on the metadata
-            payloads = [doc for doc in batch_docs]
-            
-            # Upsert the current batch to Qdrant
-            self.db.upsert(
-                collection_name="llm",
-                points=Batch(ids=ids, vectors=vectors, payloads=payloads),
-            )
+    def _add_texts(self, texts, metadatas=None, ids=None, batch_size=64, **kwargs):
+        added_ids = []
+        for batch_ids, points in self._generate_rest_batches(texts, metadatas, ids, batch_size):
+            self.db.upsert(collection_name="llm", points=Batch(ids=batch_ids, vectors=[p.vector for p in points], payloads=[p.payload for p in points]), **kwargs)
+            added_ids.extend(batch_ids)
+        return added_ids
+
+    def _generate_rest_batches(self, texts, metadatas=None, ids=None, batch_size=64):
+        from qdrant_client.http import models as rest
+
+        texts_iterator = iter(texts)
+        metadatas_iterator = iter(metadatas or [])
+        ids_iterator = iter(ids or [uuid.uuid4().hex for _ in iter(texts)])
+        while (batch_texts := list(islice(texts_iterator, batch_size))):
+            batch_metadatas = list(islice(metadatas_iterator, batch_size)) or None
+            batch_ids = list(islice(ids_iterator, batch_size))
+            batch_embeddings = [embedding.embed_query(text) for text in batch_texts]
+            points = [
+                rest.PointStruct(
+                    id=point_id,
+                    vector=vector,
+                    payload=self._build_payloads(text, metadata)
+                )
+                for point_id, vector, text, metadata in zip(batch_ids, batch_embeddings, batch_texts, batch_metadatas or [None] * len(batch_texts))
+            ]
+            yield batch_ids, points
+
+    def _build_payloads(self, text, metadata):
+        if text is None:
+            raise ValueError("Text is None. Please ensure all texts are valid.")
+        return {
+            "page_content": text,
+            "metadata": metadata
+        }
 
     def similarity_search(self, query):
         embedded_query = embedding.embed_query(query)

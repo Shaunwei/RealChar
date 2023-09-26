@@ -41,7 +41,9 @@ class WhisperX:
             language_code=LANGUAGE, device=self.device
         )
         self.diarize_model = whisperx.DiarizationPipeline(
-            device=self.device, use_auth_token=HF_ACCESS_TOKEN
+            model_name="pyannote/speaker-diarization-2.1",
+            device=self.device,
+            use_auth_token=HF_ACCESS_TOKEN,
         )
 
     def transcribe(

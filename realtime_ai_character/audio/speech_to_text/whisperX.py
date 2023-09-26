@@ -60,6 +60,7 @@ class WhisperX(Singleton, SpeechToText):
                 language_code=config.language, device=self.device
             )
             self.diarize_model = whisperx.DiarizationPipeline(
+                model_name="pyannote/speaker-diarization-2.1",
                 device=self.device,
                 use_auth_token=os.getenv("HUGGING_FACE_ACCESS_TOKEN"),
             )

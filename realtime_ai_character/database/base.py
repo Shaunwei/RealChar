@@ -20,3 +20,6 @@ class Database(ABC):
     def similarity_search(self, query):
         pass
     
+    @abstractmethod
+    def generate_context(self, docs, character):
+        pass

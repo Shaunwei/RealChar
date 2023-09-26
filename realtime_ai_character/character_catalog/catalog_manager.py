@@ -43,8 +43,6 @@ class CatalogManager(Singleton):
         if overwrite:
             logger.info('Persisting data in the chroma.')
             self.db.persist()
-        logger.info(
-            f"Total document load: {self.db.db._client.get_collection('llm').count()}")
         self.run_load_sql_db_thread = True
         self.load_sql_db_thread = threading.Thread(target=self.load_sql_db_loop)
         self.load_sql_db_thread.daemon = True

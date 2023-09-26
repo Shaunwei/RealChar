@@ -5,6 +5,7 @@ from langchain.embeddings import OpenAIEmbeddings
 from realtime_ai_character.logger import get_logger
 from .base import Database
 from realtime_ai_character.singleton import Singleton
+from realtime_ai_character.utils import Character
 
 load_dotenv()
 logger = get_logger(__name__)
@@ -25,7 +26,7 @@ class Chroma(Singleton, Database):
         print("There are", self.db._collection.count(), "in the collection")
     
     def delete_collection(self):
-        self.db._client.delete_collection('llm')
+        self.db.delete_collection()
 
     def persist(self):
         self.db.persist()
@@ -35,3 +36,9 @@ class Chroma(Singleton, Database):
 
     def similarity_search(self, query):
         return self.db.similarity_search(query)
+    
+    def generate_context(self, docs, character: Character) -> str:
+        docs = [d for d in docs if d.metadata['character_name'] == character.name]
+        logger.info(f'Found {len(docs)} documents')
+        context = '\n'.join([d.page_content for d in docs])
+        return context

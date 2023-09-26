@@ -3,7 +3,7 @@ from realtime_ai_character.database.base import Database
 
 def get_database(db: str = None) -> Database:
     if not db:
-        db = os.getenv('DATABASE_USE', 'CHROMA')
+        db = os.getenv('DATABASE_USE', 'QDRANT')
     
     if db == 'QDRANT':
         from realtime_ai_character.database.qdrant import Qdrant

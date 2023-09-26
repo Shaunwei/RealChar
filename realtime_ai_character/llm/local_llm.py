@@ -73,8 +73,7 @@ class LocalLlm(LLM):
 
     def _generate_context(self, query, character: Character) -> str:
         docs = self.db.similarity_search(query)
-        docs = [d for d in docs if d.metadata["character_name"] == character.name]
-        logger.info(f"Found {len(docs)} documents")
+        
+        context = self.db.generate_context(docs, character)
 
-        context = "\n".join([d.page_content for d in docs])
         return context

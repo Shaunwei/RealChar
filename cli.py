@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 """A CLI for building an running RealChar project locally."""
-import click
 import os
 import subprocess
 import sys
+
+import click
 
 
 @click.group()

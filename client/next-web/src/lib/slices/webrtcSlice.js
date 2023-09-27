@@ -39,12 +39,16 @@ export const createWebRTCSlice = (set, get) => ({
         if (get().pc) {
             console.log('Should not call connectPeer if webrtc connection already established!');
         }
+        const response = await fetch(process.env.NEXT_PUBLIC_TURN_SERVER_API_ENDPOINT);
+        const iceServers = await response.json();
         let pc = new RTCPeerConnection({
             sdpSemantics: 'unified-plan',
+            iceServers: iceServers
         });
         // Setup local webrtc connection just for echo cancellation.
         let otherPC = new RTCPeerConnection({
             sdpSemantics: 'unified-plan',
+            iceServers: iceServers
         });
         pc.onicecandidate = e =>
             e.candidate &&
@@ -99,6 +103,7 @@ export const createWebRTCSlice = (set, get) => ({
         return new Promise(resolve => {
             pc.oniceconnectionstatechange = e => {
                 if (pc.iceConnectionState === 'connected') {
+                    console.log('WebRTC ICE Connected!');
                     set({rtcConnectionEstablished: true});
                     resolve();
                 }

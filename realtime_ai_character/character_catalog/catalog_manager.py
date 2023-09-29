@@ -108,6 +108,7 @@ class CatalogManager(Singleton):
         for directory in directories:
             character_name = self.load_character(directory)
             if overwrite:
+                logger.info('Loading data for character: ' + character_name)
                 self.load_data(character_name, directory / 'data')
                 logger.info('Loaded data for character: ' + character_name)
         logger.info(
@@ -125,13 +126,14 @@ class CatalogManager(Singleton):
                 yaml_content = yaml.safe_load(f_yaml)
             character_id = yaml_content['character_id']
             character_name = yaml_content['character_name']
+            logger.info('Loading data for character: ' + character_name)
             order = yaml_content.get('order', 10)
             self.characters[character_id] = Character(
                 character_id=character_id,
                 name=character_name,
                 llm_system_prompt=yaml_content["system"],
                 llm_user_prompt=yaml_content["user"],
-                voice_id=yaml_content["voice_id"],
+                voice_id=str(yaml_content["voice_id"]),
                 source='community',
                 location='repo',
                 author_name=yaml_content["author_name"],

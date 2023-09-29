@@ -1,10 +1,12 @@
 import asyncio
+import audioop
 import os
 import json
 import base64
 import collections
 import random
 
+from enum import Enum
 from functools import reduce
 from fastapi import (
     APIRouter,
@@ -15,11 +17,11 @@ from fastapi import (
     WebSocketDisconnect,
     Query,
 )
+import numpy as np
 from twilio.twiml.voice_response import VoiceResponse, Connect
-
+import torch
 from typing import Callable
 
-from realtime_ai_character.twilio.ulaw_util import is_mulaw_silence_bytes
 from realtime_ai_character.audio.speech_to_text import SpeechToText, get_speech_to_text
 from realtime_ai_character.audio.text_to_speech import TextToSpeech, get_text_to_speech
 from realtime_ai_character.character_catalog.catalog_manager import (
@@ -63,6 +65,11 @@ GREETING_TXT_MAP = {
     "ko-KR": "안녕, 내 친구, 오늘 여기 왜 왔어?",
 }
 
+MEDIA_SAMPLE_RATE = 8000  # 8000hz sample rate
+FRAME_INTERVAL_MS = 20    # 20 ms
+LEN_PER_FRAME = MEDIA_SAMPLE_RATE * \
+    FRAME_INTERVAL_MS / 1000  # each sample is 8 bit
+
 
 @twilio_router.get("/voice")
 async def get_websocket(request: Request):
@@ -80,10 +87,26 @@ async def get_websocket(request: Request):
 
 
 class AudioBytesBuffer:
+    class VAD_STATE(Enum):
+        INITIAL = 1
+        SILENCE = 2
+        TALKING = 3
+
+    TALKING_THRESHOLD = 0.8
+    SILENCE_THRESHOLD = 0.2
+
     def __init__(self):
-        self._buffer = collections.deque()
-        self._frame_count = 0
-        self._silence_count = 0
+        self._audio_buffer = bytes()
+        self._vad_buffer = collections.deque()
+        self._vad_buffer_size = 20
+        model, _ = torch.hub.load(repo_or_dir='snakers4/silero-vad',
+                                  model='silero_vad',
+                                  force_reload=False,
+                                  onnx=False)
+        self._vad_model = model
+        self._state = self.VAD_STATE.INITIAL
+        self._most_recent_silence_frame = 0
+        self._min_silence_ms = 1000
 
     def setStreamID(self, sid: str):
         self._sid = sid
@@ -92,23 +115,67 @@ class AudioBytesBuffer:
         self._callback = callback
 
     async def add_bytes(self, chunk: bytes):
-        if is_mulaw_silence_bytes(chunk):
-            self._silence_count += 1
-        else:
-            self._silence_count = 0  # reset
-            self._buffer.append(chunk)
-            self._frame_count += 1
+        self._vad_buffer.append(chunk)
+        if len(self._vad_buffer) > self._vad_buffer_size:
+            self._vad_buffer.popleft()
 
-        if len(self._buffer) > 25 and self._silence_count >= 50:
-            logger.info("going to invoke callback")
-            answer = reduce(lambda x, y: x + y, self._buffer)
-            self.reset()
-            # call the callback func
-            await self._callback(answer, self._sid)
+        speech_prob = None
+        if len(self._vad_buffer) % (self._vad_buffer_size/2) == 0:
+            vad_data = reduce(lambda x, y: x + y, list(self._vad_buffer))
+            decoded = audioop.ulaw2lin(vad_data, 2)
+            vad_16 = np.frombuffer(decoded, dtype=np.int16)
+            vad_32 = self._int2float(vad_16)
+            speech_prob = self._vad_model(
+                torch.from_numpy(vad_32), MEDIA_SAMPLE_RATE).item()
+
+        if self._state == self.VAD_STATE.INITIAL:
+            # transition to TALKING
+            if speech_prob is not None and speech_prob > self.TALKING_THRESHOLD:
+                logger.info("transitions from INITIAL to TALKING")
+                self._state = self.VAD_STATE.TALKING
+                self._audio_buffer += vad_data
+            return
+
+        if self._state == self.VAD_STATE.TALKING:
+            self._audio_buffer += chunk
+
+            # transition to SILENCE
+            if speech_prob is not None and speech_prob < self.SILENCE_THRESHOLD:
+                logger.info("transitions from TALKING to SILENCE")
+                self._state = self.VAD_STATE.SILENCE
+                # each frame len
+                self._most_recent_silence_frame = len(
+                    self._audio_buffer) / LEN_PER_FRAME
+            return
+
+        if self._state == self.VAD_STATE.SILENCE:
+            self._audio_buffer += chunk
+
+            if speech_prob is not None and speech_prob > self.TALKING_THRESHOLD:
+                logger.info("transitions from SILENCE to TALKING")
+                self._state = self.VAD_STATE.TALKING
+
+            diff = FRAME_INTERVAL_MS * (len(self._audio_buffer) / LEN_PER_FRAME -
+                                        self._most_recent_silence_frame)
+            if (speech_prob is not None and speech_prob < self.SILENCE_THRESHOLD
+                    and diff > self._min_silence_ms):
+                logger.info("User done talking, transition to INITIAL")
+                answer = self._audio_buffer
+                self.reset()
+                await self._callback(answer, self._sid)
 
     def reset(self):
-        self._buffer.clear()
-        self._frame_count = 0
+        self._audio_buffer = bytes()
+        self._state = self.VAD_STATE.INITIAL
+        self._most_recent_silence = -1
+
+    def _int2float(self, sound):
+        abs_max = np.abs(sound).max()
+        sound = sound.astype('float32')
+        if abs_max > 0:
+            sound *= 1/32768  # 2^15
+        sound = sound.squeeze()  # depends on the use case
+        return sound
 
 
 @twilio_router.websocket("/ws")

@@ -95,7 +95,7 @@ class AudioBytesBuffer:
     TALKING_THRESHOLD = 0.8
     SILENCE_THRESHOLD = 0.2
 
-    def __init__(self):
+    def __init__(self, websocket):
         self._audio_buffer = bytes()
         self._vad_buffer = collections.deque()
         self._vad_buffer_size = 20
@@ -107,6 +107,7 @@ class AudioBytesBuffer:
         self._state = self.VAD_STATE.INITIAL
         self._most_recent_silence_frame = 0
         self._min_silence_ms = 1000
+        self._websocket = websocket
 
     def setStreamID(self, sid: str):
         self._sid = sid
@@ -134,6 +135,7 @@ class AudioBytesBuffer:
                 logger.info("transitions from INITIAL to TALKING")
                 self._state = self.VAD_STATE.TALKING
                 self._audio_buffer += vad_data
+                await stop_twilio_voice(self._websocket, self._sid)
             return
 
         if self._state == self.VAD_STATE.TALKING:
@@ -154,6 +156,8 @@ class AudioBytesBuffer:
             if speech_prob is not None and speech_prob > self.TALKING_THRESHOLD:
                 logger.info("transitions from SILENCE to TALKING")
                 self._state = self.VAD_STATE.TALKING
+                await stop_twilio_voice(self._websocket, self._sid)
+                return
 
             diff = FRAME_INTERVAL_MS * (len(self._audio_buffer) / LEN_PER_FRAME -
                                         self._most_recent_silence_frame)
@@ -217,7 +221,7 @@ async def handle_receive(
     speech_to_text: SpeechToText,
     default_text_to_speech: TextToSpeech,
 ):
-    buffer = AudioBytesBuffer()
+    buffer = AudioBytesBuffer(websocket)
     conversation_history = ConversationHistory()
     conversation_history.system_prompt = character.llm_system_prompt
     user_input_template = character.llm_user_prompt
@@ -327,3 +331,11 @@ async def handle_receive(
 
         except WebSocketDisconnect:
             await manager.disconnect(websocket)
+
+
+async def stop_twilio_voice(websocket, sid):
+    data = {
+        "event": "clear",
+        "streamSid": sid,
+    }
+    await websocket.send_json(data)

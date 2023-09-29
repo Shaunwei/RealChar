@@ -34,7 +34,7 @@ export default function Footer() {
       <p className='copyright text-xs text-center my-7'>
         Copyright © 2023 RealChar. All rights reserved. Any AI character&apos;s
         statements are fictional and don&apos;t represent actual beliefs or
-        opinions. Ver: {process.env.REACT_APP_BUILD_NUMBER}
+        opinions.
       </p>
     </footer>
   )

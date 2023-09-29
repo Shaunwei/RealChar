@@ -29,6 +29,7 @@
     "swr": "^2.2.1",
     "tailwindcss": "3.3.3",
     "uuid": "^9.0.1",
+    "wavesurfer.js": "^7.3.2",
     "zustand": "^4.4.1"
   }
 }

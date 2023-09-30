@@ -1,3 +1,5 @@
+import {cloneVoice, createCharacter, generateSystemPrompt, uploadFile} from "@/util/apiClient";
+
 const user_prompt = `
 Context
   ---
@@ -12,6 +14,7 @@ Context
   ---
   {query}
 `;
+
 
 export const createCreateSlice = (set, get) => ({
   avatarURL: null,
@@ -116,7 +119,7 @@ export const createCreateSlice = (set, get) => ({
     set((state) => ({ backgroundFiles: [...state.backgroundFiles, ...fileArray] }));
   },
   handleDeleteFile: (name) => {
-    set((state) => ({ backgroundFiles: state.backgroundFiles.filter(file => file.name != name) }));
+    set((state) => ({ backgroundFiles: state.backgroundFiles.filter(file => file.name !== name) }));
   },
   handleVoiceFiles: (e) => {
     set({ voiceErrorMsg: '' });
@@ -145,16 +148,73 @@ export const createCreateSlice = (set, get) => ({
     set((state) => ({ voiceFiles: [...state.voiceFiles, ...fileArray] }));
   },
   handleDeleteVoiceFile: (name) => {
-    set((state) => ({ voiceFiles: state.voiceFiles.filter(file => file.name != name) }));
+    set((state) => ({ voiceFiles: state.voiceFiles.filter(file => file.name !== name) }));
   },
-  autoGenerate: () => {
-    //TODO
+  autoGenerate: async () => {
+    if (get().formData.name === '') {
+      alert('Please enter a name');
+      return;
+    }
+    let pre_prompt = get().formData.system_prompt;
+    try {
+      let formData = { ...get().formData, system_prompt: 'Generating...' };
+      let res = await generateSystemPrompt(get().formData.name, get().backgroundText, get().token);
+      get().setFormData({ ...formData, system_prompt: res.system_prompt });
+    } catch (error) {
+      console.error(error);
+      alert('Error generating system prompt');
+      get().setFormData({ ...get().formData, system_prompt: pre_prompt });
+    }
   },
   cloneVoice: () => {
-    //TODO
+    cloneVoice(get().voiceFiles, get().token).then((result)=>{
+      set({formData: {...get().formData, voice_id: result.voice_id}});
+      console.log("voice files uploaded.");
+    });
   },
-  handleSubmit: () => {
-    //TODO
-    console.log(get().formData);
+
+  submitForm: async () => {
+    if (!get().formData.name) {
+      alert('Please enter a name');
+      return;
+    }
+    let new_formData = { ...get().formData };
+    if (!new_formData.data) {
+      new_formData.data = {};
+    }
+    if (new_formData.voice_id === 'placeholder') {
+      new_formData.voice_id = await cloneVoice(get().voiceFiles, get().token);
+    }
+    // upload image to gcs
+    if (get().avatarURL) {
+      try {
+        let res = await uploadFile(get().avatarFile, get().token);
+        new_formData.data.avatar_filename = res.filename;
+      } catch (error) {
+        console.error(error);
+        alert('Error uploading image');
+      }
+    }
+    // upload background files to gcs
+    if (get().backgroundFiles.length > 0) {
+      for (let i = 0; i < get().backgroundFiles.length; i++) {
+        try {
+          let res = await uploadFile(get().backgroundFiles[i], get().token);
+          new_formData.data[get().backgroundFiles[i].name] = res.filename;
+        } catch (error) {
+          console.error(error);
+          alert('Error uploading files');
+        }
+      }
+    }
+
+    // call api to create character
+    console.log(new_formData);
+    try {
+      await createCharacter(new_formData, get().token);
+    } catch (error) {
+      console.error(error);
+      alert('Error creating character');
+    }
   },
 })

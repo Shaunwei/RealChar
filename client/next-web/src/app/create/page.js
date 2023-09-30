@@ -17,13 +17,22 @@ import SystemPrompt from './_components/SystemPrompt';
 import TTSVoice from './_components/TTSVoice';
 
 import { useAppStore } from '@/lib/store';
+import {useRouter} from "next/navigation";
 
 export default function Create() {
   const {
     formData,
     setFormData,
-    handleSubmit,
+    submitForm,
   } = useAppStore();
+  const router = useRouter();
+
+  const handleSubmit = ()=> {
+    submitForm().then(() => {
+      console.log("createCharacter form submitted.");
+      router.push('/');
+    })
+  };
 
   return (
     <>

@@ -50,6 +50,8 @@ spec:
           value: <YOUR_AI_VOICE_ID>
         - name: BRUCE_VOICE
           value: <YOUR_AI_VOICE_ID>
+        - name: BENTOML_EMBEDDING_ENDPOINT
+          value: bentoml-embedding-service.<YOUR_DEPLOYMENT_NAMESPACE>.svc.cluster.local
 ---
 apiVersion: v1
 kind: Service

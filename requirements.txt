@@ -39,3 +39,4 @@ typing
 uvicorn
 websockets
 google-auth
+litellm

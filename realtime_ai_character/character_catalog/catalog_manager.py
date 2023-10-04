@@ -127,7 +127,7 @@ class CatalogManager(Singleton):
                 name=character_name,
                 llm_system_prompt=yaml_content["system"],
                 llm_user_prompt=yaml_content["user"],
-                voice_id=yaml_content["voice_id"],
+                voice_id=str(yaml_content["voice_id"]),
                 source='community',
                 location='repo',
                 author_name=yaml_content["author_name"],

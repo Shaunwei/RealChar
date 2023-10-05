@@ -13,7 +13,7 @@ export default function Chat() {
   useEffect(() => {
     messageEndRef.current.scrollIntoView({
       behavior: "smooth",
-      block: 'start',
+      block: 'center',
       inline: 'nearest'
     })
   }, [chatContent])

@@ -65,12 +65,10 @@ export default function Conversation() {
           closePeer();
       }
       getAudioList().then(
-          () => {
-              connectMicrophone();
-          }
       ).then(() => {
           connectPeer().then(
               () => {
+                  connectMicrophone();
                   initializeVAD();
               }
           );
@@ -105,7 +103,6 @@ export default function Conversation() {
       if (!mediaRecorder || !socketIsOpen || !rtcConnectionEstablished) {
           return;
       }
-      closeVAD();
       closeSocket();
       clearChatContent();
       connectSocket();
@@ -118,6 +115,7 @@ export default function Conversation() {
           audioPlayerRef.current.setSinkId(selectedSpeaker.values().next().value);
       }
   }, [selectedSpeaker]);
+
 
   // Audio Playback
   useEffect(() => {
@@ -177,7 +175,7 @@ export default function Conversation() {
   }
 
   return (
-    <div className="relative h-screen">
+    <div className="relative h-screen conversation_container">
       <audio ref={audioPlayerRef} className='audio-player'>
         <source src='' type='audio/mp3' />
       </audio>
@@ -237,13 +235,13 @@ export default function Conversation() {
           />
         </div>
       </div>
-      <div className="h-full -mb-28">
+      <div className="h-full -mb-24">
         <div className="h-[154px] md:h-[178px]"></div>
         {!isTextMode && (<div className="h-[250px] md:h-[288px]"></div>)}
         <div className="w-full px-4 md:px-0 mx-auto md:w-unit-9xl lg:w-[892px]">
             <Chat />
         </div>
-        <div className="h-28"></div>
+        <div className="h-24"></div>
       </div>
       <div className="fixed bottom-0 w-full bg-background">
         <div className="px-4 md:px-0 mx-auto md:w-unit-9xl lg:w-[892px]">

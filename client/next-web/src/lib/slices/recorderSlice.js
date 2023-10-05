@@ -6,7 +6,6 @@ export const createRecorderSlice = (set, get) => ({
     setIsRecording: (v)=>{
         set({isRecording: v});
     },
-    chunks: [],
     mediaRecorder: null,
     connectMicrophone: () => {
         const deviceId = get().selectedMicrophone.values().next().value;
@@ -14,21 +13,26 @@ export const createRecorderSlice = (set, get) => ({
         navigator.mediaDevices
             .getUserMedia({
                 audio: {
-                    deviceId: deviceId ? { exact: deviceId } : undefined,
-                    echoCancellation: true,
+                    deviceId: deviceId ? deviceId  : undefined,
                 },
             })
             .then(stream => {
-                let mediaRecorder = new MediaRecorder(stream);
+                let micStreamSourceNode = get().audioContext.createMediaStreamSource(stream);
+                let gainNode = get().audioContext.createGain();
+                gainNode.gain.setValueAtTime(1.5, get().audioContext.currentTime);
+                let delayNode = get().audioContext.createDelay(0.5);
+                delayNode.delayTime.value = 0.1;
+                let micStreamDestinationNode = get().audioContext.createMediaStreamDestination();
+                let mediaRecorder = new MediaRecorder(micStreamDestinationNode.stream);
+                micStreamSourceNode.connect(gainNode).connect(delayNode).connect(micStreamDestinationNode);
+                // Temporary workaround for mimic stop event behavior, as for now on iOS 16 stop event doesn't fire.
                 mediaRecorder.ondataavailable = event => {
-                    set({chunks: [...get().chunks, event.data]});
-                };
-                mediaRecorder.onstop = () => {
-                    let blob = new Blob(get().chunks, { type: 'audio/webm' });
+                    let blob = new Blob([event.data], { type: 'audio/webm' });
                     get().sendOverSocket(blob);
-                    set({chunks: []});
                 };
-                set({mediaRecorder: mediaRecorder});
+                set({
+                    mediaRecorder: mediaRecorder,
+                });
             })
             .catch(function (err) {
                 console.log('An error occurred: ' + err);
@@ -62,7 +66,6 @@ export const createRecorderSlice = (set, get) => ({
         get().stopRecording();
         set({
             mediaRecorder: null,
-            chunks: []
         });
     },
     // VAD
@@ -71,29 +74,27 @@ export const createRecorderSlice = (set, get) => ({
     speakingMaxGap: 500, //in ms
     delayedSpeakingTimeoutID: null,
     vadEventsCallback: (voiceStartCallback, voiceInterimCallback, voiceEndCallback) => {
-        if (!get().vadEvents) {
-            let vadEvents = hark(get().micStream, { interval: 20 });
-            vadEvents.on('speaking', () => {
-                voiceStartCallback();
-                if (!get().isSpeaking) {
-                    set({isSpeaking: true});
-                } else {
-                    clearTimeout(get().delayedSpeakingTimeoutID);
-                }
-            });
-            vadEvents.on('stopped_speaking', () => {
-                if (get().isSpeaking) {
-                    const task = setTimeout(() => {
-                        voiceEndCallback();
-                        set({isSpeaking: false})
-                    }, get().speakingMaxGap);
-                    set({delayedSpeakingTimeoutID: task});
-                    voiceInterimCallback();
-                }
-            });
-            vadEvents.suspend();
-            set({vadEvents: vadEvents});
-        }
+        let vadEvents = hark(get().micStream, { interval: 20, threshold: -50 });
+        vadEvents.on('speaking', () => {
+            voiceStartCallback();
+            if (!get().isSpeaking) {
+                set({isSpeaking: true});
+            } else {
+                clearTimeout(get().delayedSpeakingTimeoutID);
+            }
+        });
+        vadEvents.on('stopped_speaking', () => {
+            if (get().isSpeaking) {
+                const task = setTimeout(() => {
+                    voiceEndCallback();
+                    set({isSpeaking: false})
+                }, get().speakingMaxGap);
+                set({delayedSpeakingTimeoutID: task});
+                voiceInterimCallback();
+            }
+        });
+        vadEvents.suspend();
+        set({vadEvents: vadEvents});
     },
     enableVAD: () =>{
         get().vadEvents?.resume();
@@ -104,7 +105,7 @@ export const createRecorderSlice = (set, get) => ({
         }
     },
     closeVAD: () => {
-        get().vadEvents.stop();
+        get().vadEvents?.stop();
         set({vadEvents: null,
             isSpeaking: false});
     }

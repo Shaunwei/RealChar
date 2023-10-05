@@ -207,7 +207,7 @@ export const createCreateSlice = (set, get) => ({
         }
       }
     }
-
+    new_formData.background_text = get().backgroundText;
     // call api to create character
     console.log(new_formData);
     try {

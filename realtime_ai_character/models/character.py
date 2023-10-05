@@ -22,6 +22,7 @@ class Character(Base):
     updated_at = Column(DateTime(), nullable=False)
     tts = Column(String(64), nullable=True)
     avatar_id = Column(String(100), nullable=True)
+    background_text = Column(String(262144), nullable=True)
 
     def to_dict(self):
         return {
@@ -46,6 +47,7 @@ class CharacterRequest(BaseModel):
     visibility: Optional[str] = None
     data: Optional[dict] = None
     avatar_id: Optional[str] = None
+    background_text: Optional[str] = None
 
 
 class EditCharacterRequest(BaseModel):

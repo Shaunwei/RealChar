@@ -178,7 +178,7 @@ async def create_character(character_request: CharacterRequest,
         )
     character = Character(**character_request.dict())
     character.id = str(uuid.uuid4().hex)
-    character.author_id = user['uid']
+    character.background_text = character_request.background_text
     now_time = datetime.datetime.now()
     character.created_at = now_time
     character.updated_at = now_time

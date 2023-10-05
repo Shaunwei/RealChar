@@ -1,4 +1,4 @@
-FROM python:slim
+FROM python:3.11-slim
 
 # Install dependencies necessary to build and run FFmpeg
 RUN apt-get update && apt-get install -y \

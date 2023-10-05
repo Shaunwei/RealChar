@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@nextui-org/avatar": "^2.0.21",
     "@nextui-org/react": "^2.1.7",
     "autoprefixer": "10.4.15",
     "encoding": "^0.1.13",
@@ -20,6 +21,7 @@
     "is-ip": "^5.0.1",
     "lz-string": "^1.5.0",
     "next": "^13.4.19",
+    "nextjs": "^0.0.3",
     "postcss": "8.4.28",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -28,6 +30,7 @@
     "swr": "^2.2.1",
     "tailwindcss": "3.3.3",
     "uuid": "^9.0.1",
+    "wavesurfer.js": "^7.3.2",
     "zustand": "^4.4.1"
   }
 }

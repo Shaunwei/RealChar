@@ -99,6 +99,7 @@ export const createWebRTCSlice = (set, get) => ({
         return new Promise(resolve => {
             pc.oniceconnectionstatechange = e => {
                 if (pc.iceConnectionState === 'connected') {
+                    console.log('WebRTC ICE Connected!');
                     set({rtcConnectionEstablished: true});
                     resolve();
                 }
@@ -110,7 +111,8 @@ export const createWebRTCSlice = (set, get) => ({
         get().otherPC.close();
         set({
             pc: null,
-            otherPC: null
+            otherPC: null,
+            rtcConnectionEstablished: false
         });
     }
 });

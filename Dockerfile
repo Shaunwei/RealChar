@@ -1,7 +1,22 @@
-FROM python:slim
+FROM python:3.11-slim
 
-# Install system-level dependencies
-RUN apt-get update && apt-get install -y build-essential portaudio19-dev libffi-dev libssl-dev ffmpeg
+# Install dependencies necessary to build and run FFmpeg
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    pkg-config \
+    yasm \
+    git \
+    curl \
+    portaudio19-dev \
+    libffi-dev \
+    libssl-dev \
+    libx264-dev \
+    libopus-dev
+
+RUN echo "deb http://deb.debian.org/debian/ bullseye main\ndeb-src http://deb.debian.org/debian/ bullseye main" | tee /etc/apt/sources.list.d/ffmpeg.list  &&\
+    apt-get update && \
+    apt-get install -y ffmpeg=7:4.3.5-0+deb11u1
+
 
 WORKDIR /realtime_ai_character
 

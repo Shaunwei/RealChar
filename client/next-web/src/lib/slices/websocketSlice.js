@@ -12,6 +12,8 @@ export const createWebsocketSlice = (set, get) => ({
         ) {
             get().socket.send(data);
             console.log('message sent to server');
+        } else {
+            console.log('tries to send message to server but socket not open.');
         }
     },
 
@@ -34,11 +36,15 @@ export const createWebsocketSlice = (set, get) => ({
                 get().setSender('user');
                 get().appendInterimChatContent(msg[1]);
                 get().appendChatContent();
+                get().clearSpeechInterim();
             } else if (
                 message.startsWith('[=]' || message.match(/\[=([a-zA-Z0-9]+)]/))
             ) {
                 // [=] or [=id] indicates the response is done
                 get().appendChatContent();
+            } else if (message.startsWith('[+&]')) {
+                let msg = message.split('[+&]');
+                get().appendSpeechInterim(msg[1]);
             } else {
                 get().setSender('character');
                 get().appendInterimChatContent(event.data);
@@ -77,7 +83,8 @@ export const createWebsocketSlice = (set, get) => ({
             };
             socket.onmessage = get().socketOnMessageHandler;
             socket.onerror = error => {
-                console.log(`WebSocket Error: ${error}`);
+                console.log(`WebSocket Error: `);
+                console.log(error);
             };
             socket.onclose = event => {
                 console.log('Socket closed');
@@ -88,7 +95,7 @@ export const createWebsocketSlice = (set, get) => ({
     },
     closeSocket: () => {
         get().socket.close();
-        set({ socket: null });
+        set({ socket: null, socketIsOpen: false});
     },
     sessionId: '',
     setSessionId: (id) => {

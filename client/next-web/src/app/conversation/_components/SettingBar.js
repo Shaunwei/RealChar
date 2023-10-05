@@ -41,7 +41,7 @@ export default function SettingBar({
         <SettingsButton />
       </div>
       {isTextMode && (
-      <div className="flex gap-6">
+      <div className="flex gap-2">
         <div className="flex gap-1 items-center">
           <Avatar
             name={character.name}

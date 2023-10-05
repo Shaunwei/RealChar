@@ -1,58 +1,49 @@
-import { Card, CardBody, CardFooter } from '@nextui-org/card';
-import { Avatar } from '@nextui-org/avatar';
-import { Button } from '@nextui-org/button';
-import Image from 'next/image';
-import audioSvg from '@/assets/svgs/audio.svg';
-import { useRouter } from 'next/navigation';
-import lz from 'lz-string';
+'use client'
+import CharacterCard from './CharacterCard';
+import { useState, useRef } from 'react';
 
 export default function ExploreTab({ characters, isDisplay }) {
   const display = isDisplay ? 'flex' : 'hidden';
-  const router = useRouter();
+  const [playingId, setPlayingId] = useState('');
+  const audioRef = useRef(null);
+
+  function handlePlay(id, audio_url) {
+    let playPromise;
+    audioRef.current.src = audio_url;
+    if (playingId == id) {
+      // Show stop
+      audioRef.current.load();
+      setPlayingId('');
+    } else {
+      // Play
+      playPromise = audioRef.current.play();
+      playPromise.then(_ => {
+        setPlayingId(id);
+      })
+    }
+  }
+
+  function handleEnded() {
+    setPlayingId('');
+  }
 
   return (
     <section className={`flex flex-row flex-wrap justify-center mt-10 gap-5 ${display}`}>
+      <audio ref={audioRef} preload="none" onEnded={handleEnded}>
+        Your browser does not support the audio tag.
+      </audio>
       {
         characters?.map(character => (
-          <Card
+          <div
             key={character.character_id}
-            className="basis-72 md:basis-52 p-2.5">
-            <CardBody className="p-0 text-center flex-row md:flex-col">
-              <Avatar
-                radius="sm"
-                src={character.image_url}
-                className="w-20 h-20 md:w-44 md:h-44 md:mx-auto mt-2"
-              />
-              <div className="grow md:ml-0">
-                <p className="name text-base text-center mt-2 font-medium">{character.name}</p>
-                {/* <p className="intro text-xs text-center mt-2 font-light">
-                  &quot;I am burdened with glorious purpose.&quot;
-                </p> */}
-                <div className="flex justify-center mt-4">
-                  <audio>
-                    <source src={character.demo} type='audio/mp3' />
-                    Your browser does not support the audio tag.
-                  </audio>
-                  <Image
-                    priority
-                    src={audioSvg}
-                    alt=""
-                  />
-                </div>
-              </div>
-            </CardBody>
-            <CardFooter>
-              <Button
-                className="w-full font-light"
-                onPress={() => {
-                  const compressedCharacter = lz.compressToEncodedURIComponent(
-                    JSON.stringify(character)
-                  );
-                  router.push(`/conversation?character=${compressedCharacter}`);
-                }}
-              >Chat with me</Button>
-            </CardFooter>
-          </Card>
+            className="basis-72 md:basis-52"
+          >
+            <CharacterCard
+              character={character}
+              playingId={playingId}
+              handlePlay={handlePlay}
+            />
+          </div>
         ))
       }
     </section>

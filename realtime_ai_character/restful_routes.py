@@ -577,3 +577,16 @@ async def edit_memory(edit_memory_request: EditMemoryRequest, user=Depends(get_c
 
     db.merge(memory)
     db.commit()
+
+@router.get('/get_character')
+async def get_character(character_id: str, db: Session = Depends(get_db), user=Depends(get_current_user)):
+    if not user:
+        raise HTTPException(
+            status_code=http_status.HTTP_401_UNAUTHORIZED,
+            detail='Invalid authentication credentials',
+            headers={'WWW-Authenticate': 'Bearer'},
+        )
+    character = await asyncio.to_thread(
+        db.query(Character).filter(Character.id == character_id).one)
+    character_json = character.to_dict()
+    return character_json

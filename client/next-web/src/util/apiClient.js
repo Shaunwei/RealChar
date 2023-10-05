@@ -143,3 +143,17 @@ export async function cloneVoice(files, accessToken) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
 }
+
+export async function getCharacter(character_id, accessToken) {
+    const url = getApiServerUrl() + '/get_character?character_id=' + character_id;
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        }
+    });
+    if (response.ok) {
+        return await response.json();
+    }
+    throw new Error(response.toString());
+}

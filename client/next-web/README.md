@@ -21,6 +21,7 @@ Open `.env` file created above, add your api host in the file. It should look li
 ```bash
 # for example http://127.0.0.1:8000
 API_HOST=your-api-host
+NEXT_PUBLIC_API_HOST=your-api-host
 ```
 
 ## Getting Started

@@ -104,9 +104,9 @@ class OpenaiLlm(LLM):
         return context
 
     async def _generate_memory_context(self, user_id: str, query: str) -> str:
-        logger.info('Getting memory for ' + user_id)
         if not user_id or not query:
             return None
+        logger.info('Getting memory for ' + user_id)
         if os.getenv('USE_MEMORY_CONTEXT', ''):
             memory_results = await self.memory_manager.similarity_search(user_id, query)
             logger.info(f'Found {len(memory_results)} memories')

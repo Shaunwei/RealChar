@@ -1,5 +1,5 @@
 import { useMyCharacters } from '@/util/apiClient';
-import CharacterCard from "@/app/_components/CharacterCard";
+import MyCharacterCard from "@/app/_components/MyCharacterCard";
 import {Card, CardBody} from "@nextui-org/react";
 import Link from "next/link";
 import {BsPlusLg} from "react-icons/bs";
@@ -10,7 +10,7 @@ export default function MyTab({ isDisplay }) {
 
   return (
     <section
-      className={`flex flex-row flex-wrap justify-center mt-10 gap-5 ${display} sm:h-[30vh]`}
+      className={`flex flex-row flex-wrap justify-center mt-10 gap-5 ${display}`}
     >
       <Card className='md:basis-52'>
         <CardBody className='flex justify-center'>
@@ -24,7 +24,7 @@ export default function MyTab({ isDisplay }) {
       </Card>
       {characters?.map(character => {
             return character.source === 'community' && character.is_author ? (
-                <CharacterCard
+                <MyCharacterCard
                     character={character}
                     playingId={''}
                     handlePlay={()=>{}}

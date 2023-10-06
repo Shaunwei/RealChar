@@ -28,3 +28,4 @@ chromadb==0.4.13
 SpeechRecognition==3.10.0
 alembic==1.11.1
 psycopg2-binary==2.9.9
+pypdf==3.16.2

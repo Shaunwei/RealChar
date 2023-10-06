@@ -13,7 +13,7 @@ import {
 import { RxHamburgerMenu, RxCross2 } from 'react-icons/rx';
 import { BiSolidLockAlt } from 'react-icons/bi';
 import styles from './HamburgerMenu.module.css';
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 import { useAuthContext } from '@/context/AuthContext';
 
 export default function HamburgerMenu() {

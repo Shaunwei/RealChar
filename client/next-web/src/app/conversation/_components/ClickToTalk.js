@@ -3,7 +3,7 @@ import Image from 'next/image';
 import micSvg from '@/assets/svgs/microphone.svg';
 import pauseSvg from '@/assets/svgs/pause.svg';
 import { useState } from 'react';
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 import AudioWave from './AudioWave'
 
 export default function ClickToTalk({

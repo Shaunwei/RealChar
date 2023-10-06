@@ -2,10 +2,10 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { createSettingSlice } from './slices/settingSlice';
 import { createChatSlice } from './slices/chatSlice';
-import {createWebsocketSlice} from "@/lib/slices/websocketSlice";
-import {createRecorderSlice} from "@/lib/slices/recorderSlice";
-import {createWebRTCSlice} from "@/lib/slices/webrtcSlice";
-import { createCharacterSlice } from '@/lib/slices/characterSlice';
+import {createWebsocketSlice} from "@/zustand/slices/websocketSlice";
+import {createRecorderSlice} from "@/zustand/slices/recorderSlice";
+import {createWebRTCSlice} from "@/zustand/slices/webrtcSlice";
+import { createCharacterSlice } from '@/zustand/slices/characterSlice';
 
 export const useAppStore = create((...a) => ({
   ...createSettingSlice(...a),

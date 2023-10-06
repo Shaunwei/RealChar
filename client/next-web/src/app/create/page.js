@@ -17,7 +17,7 @@ import SystemPrompt from './_components/SystemPrompt';
 import TTSVoice from './_components/TTSVoice';
 
 import { useEffect } from 'react';
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 import {useRouter} from "next/navigation";
 
 export default function Create() {

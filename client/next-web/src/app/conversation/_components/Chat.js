@@ -3,7 +3,7 @@ import {
   RiThumbDownLine
 } from 'react-icons/ri';
 import { Button } from '@nextui-org/button';
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 import { useRef, useEffect } from 'react';
 
 export default function Chat() {

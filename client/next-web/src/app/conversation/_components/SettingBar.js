@@ -4,7 +4,7 @@ import LanguageModelControl from './LanguageModelControl';
 import ShareButton from './ShareButton';
 import SettingsButton from './SettingsButton';
 import { Avatar } from '@nextui-org/avatar';
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 
 export default function SettingBar({
   isTextMode,

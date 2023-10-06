@@ -15,7 +15,7 @@ import microphoneSVG from '@/assets/svgs/microphone.svg';
 import arrowSVG from '@/assets/svgs/arrowdown.svg';
 import micOffSVG from '@/assets/svgs/mic_off.svg';
 
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 
 export default function MicrophoneControl({
   isDisabled,

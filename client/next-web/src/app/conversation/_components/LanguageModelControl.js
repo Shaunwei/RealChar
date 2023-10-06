@@ -5,7 +5,7 @@ import {
 } from '@nextui-org/select';
 import { BiSolidLockAlt } from 'react-icons/bi';
 
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 import { useAuthContext } from '@/context/AuthContext';
 
 export default function LanguageModelControl() {

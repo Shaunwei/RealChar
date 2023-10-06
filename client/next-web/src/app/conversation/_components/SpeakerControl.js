@@ -15,7 +15,7 @@ import speakerSVG from '@/assets/svgs/speaker.svg';
 import muteSVG from '@/assets/svgs/mute.svg';
 import arrowSVG from '@/assets/svgs/arrowdown.svg';
 
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 
 export default function SpeakerControl({
   isMute,

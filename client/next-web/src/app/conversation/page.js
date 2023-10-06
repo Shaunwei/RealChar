@@ -15,7 +15,7 @@ import exitIcon from '@/assets/svgs/exit.svg';
 import { BsChatRightText, BsTelephone } from 'react-icons/bs';
 import {useEffect, useRef, useState} from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 import lz from 'lz-string';
 import {playAudios} from "@/util/audioUtils";
 

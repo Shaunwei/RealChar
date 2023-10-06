@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { getWsServerUrl } from "@/util/urlUtil";
-import { languageCode } from "@/lib/languageCode";
+import { languageCode } from "@/zustand/languageCode";
 
 export const createWebsocketSlice = (set, get) => ({
     socket: null,

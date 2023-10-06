@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import {getApiServerUrl} from './urlUtil';
-import {useAppStore} from "@/lib/store";
+import {useAppStore} from "@/zustand/store";
 
 const fileUrlMap= new Map();
 const fetcher = ([url, token]) => {

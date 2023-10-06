@@ -15,7 +15,7 @@ import AvatarUploader from '../create/_components/AvatarUploader';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 import lz from 'lz-string';
 
 export default function EditCharacter() {

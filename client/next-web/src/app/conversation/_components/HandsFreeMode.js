@@ -1,5 +1,5 @@
 import Chat from './Chat';
-import { useAppStore } from '@/lib/store'
+import { useAppStore } from '@/zustand/store'
 import {
   motion,
   AnimatePresence

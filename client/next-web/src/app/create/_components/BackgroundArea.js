@@ -1,7 +1,7 @@
 import { Button, Textarea } from '@nextui-org/react';
 import { TbTrash } from 'react-icons/tb';
 import { useRef } from 'react';
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 
 export default function BackgroundArea() {
   const uploaderRef = useRef(null);

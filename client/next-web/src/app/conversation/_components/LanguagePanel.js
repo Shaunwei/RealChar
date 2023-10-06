@@ -5,7 +5,7 @@ import {
 } from '@nextui-org/react';
 import { MdInfo } from 'react-icons/md';
 
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 
 export default function LanguagePanel() {
   const {

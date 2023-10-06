@@ -11,7 +11,7 @@ import {
 import Slider from '@/components/Slider';
 
 import { useState } from 'react';
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 
 export default function AudioPanel() {
   const {

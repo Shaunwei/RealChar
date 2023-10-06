@@ -7,7 +7,7 @@ import { FaRegKeyboard } from 'react-icons/fa';
 import Image from 'next/image';
 import talkSvg from '@/assets/svgs/talk.svg';
 import ClickToTalk from './ClickToTalk';
-import {useAppStore} from "@/lib/store";
+import {useAppStore} from "@/zustand/store";
 
 export default function InputField() {
   const [text, setText] = useState('');

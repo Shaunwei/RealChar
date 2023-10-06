@@ -4,7 +4,7 @@ import {
   Button,
 } from '@nextui-org/react';
 import { MdInfoOutline } from 'react-icons/md';
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 
 export default function EnhancePanel() {
   const {

@@ -5,7 +5,7 @@ import { createChatSlice } from './slices/chatSlice';
 import {createWebsocketSlice} from "@/lib/slices/websocketSlice";
 import {createRecorderSlice} from "@/lib/slices/recorderSlice";
 import {createWebRTCSlice} from "@/lib/slices/webrtcSlice";
-import { createCreateSlice } from '@/lib/slices/createSlice';
+import { createCharacterSlice } from '@/lib/slices/characterSlice';
 
 export const useAppStore = create((...a) => ({
   ...createSettingSlice(...a),
@@ -13,5 +13,5 @@ export const useAppStore = create((...a) => ({
   ...createWebsocketSlice(...a),
   ...createRecorderSlice(...a),
   ...createWebRTCSlice(...a),
-  ...createCreateSlice(...a),
+  ...createCharacterSlice(...a),
 }));

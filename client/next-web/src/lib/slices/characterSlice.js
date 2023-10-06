@@ -1,4 +1,4 @@
-import {cloneVoice, createCharacter, generateSystemPrompt, uploadFile} from "@/util/apiClient";
+import {cloneVoice, createCharacter, generateSystemPrompt, uploadFile, getCharacter, deleteCharacter} from "@/util/apiClient";
 
 const user_prompt = `
 Context
@@ -16,7 +16,7 @@ Context
 `;
 
 
-export const createCreateSlice = (set, get) => ({
+export const createCharacterSlice = (set, get) => ({
   avatarURL: null,
   avatarFile: null,
   formData: {
@@ -158,6 +158,7 @@ export const createCreateSlice = (set, get) => ({
     let pre_prompt = get().formData.system_prompt;
     try {
       let formData = { ...get().formData, system_prompt: 'Generating...' };
+      get().setFormData({...formData, system_prompt: 'Generating...'});
       let res = await generateSystemPrompt(get().formData.name, get().backgroundText, get().token);
       get().setFormData({ ...formData, system_prompt: res.system_prompt });
     } catch (error) {
@@ -217,4 +218,60 @@ export const createCreateSlice = (set, get) => ({
       alert('Error creating character');
     }
   },
+  clearData: () => {
+    set({
+      avatarURL: null,
+      avatarFile: null,
+      formData: {
+        name: '',
+        system_prompt: '',
+        user_prompt: user_prompt,
+        tts: 'ELEVEN_LABS',
+        voice_id: 'EXAVITQu4vr4xnSDxMaL', // Male: ErXwobaYiN019PkySvjV Female:
+        visibility: 'private',
+      },
+      backgroundText: '',
+      backgroundFiles: [],
+      errorMsg: '',
+      voiceErrorMsg: '',
+      voiceFiles: [],
+    })
+  },
+  getCharacterForEdit: async (character) => {
+    try {
+      let res = await getCharacter(character.character_id, get().token);
+      set({
+        avatarURL: character.image_url,
+        avatarFile: null,
+        formData: {
+          name: res.name,
+          system_prompt: res.system_prompt,
+          user_prompt: res.user_prompt,
+          tts: res.tts,
+          voice_id: res.voice_id,
+          visibility: res.visibility,
+        },
+        backgroundText: res.background_text,
+        backgroundFiles: [],
+        errorMsg: '',
+        voiceErrorMsg: '',
+        voiceFiles: [],
+      })
+    } catch (err) {
+      console.error(err);
+      alert('Error getting character data');
+    }
+  },
+  submitEdit: async () => {
+    // TODO
+    console.log("TODO");
+  },
+  deleteCharacter: async (character) => {
+    try {
+      let res = await deleteCharacter(character.character_id, get().token);
+    } catch (err) {
+      console.error(err);
+      alert('Something Error, fail to delete');
+    }
+  }
 })

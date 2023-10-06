@@ -24,11 +24,16 @@ export default function MyTab({ isDisplay }) {
       </Card>
       {characters?.map(character => {
             return character.source === 'community' && character.is_author ? (
+              <div
+                key={character.character_id}
+                className="basis-72 md:basis-52"
+              >
                 <MyCharacterCard
                     character={character}
                     playingId={''}
                     handlePlay={()=>{}}
                 />
+              </div>
             ) : null;
           }
       )}

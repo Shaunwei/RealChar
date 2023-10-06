@@ -39,7 +39,7 @@ export default function EditCharacter() {
   }, []);
 
   function handleEdit() {
-    submitEdit().then(() => {
+    submitEdit(characterRef.current.character_id).then(() => {
       console.log('submit the changes');
       router.push('/');
     });

@@ -1,4 +1,12 @@
-import {cloneVoice, createCharacter, generateSystemPrompt, uploadFile, getCharacter, deleteCharacter} from "@/util/apiClient";
+import {
+  cloneVoice,
+  createCharacter,
+  generateSystemPrompt,
+  uploadFile,
+  getCharacter,
+  deleteCharacter,
+  editCharacter
+} from "@/util/apiClient";
 
 const user_prompt = `
 Context
@@ -15,6 +23,43 @@ Context
   {query}
 `;
 
+const constructForm = async (get) => {
+  if (!get().formData.name) {
+    alert('Please enter a name');
+    return;
+  }
+  let new_formData = { ...get().formData };
+  if (!new_formData.data) {
+    new_formData.data = {};
+  }
+  if (new_formData.voice_id === 'placeholder') {
+    new_formData.voice_id = await cloneVoice(get().voiceFiles, get().token);
+  }
+  // upload image to gcs
+  if (get().avatarFile) {
+    try {
+      let res = await uploadFile(get().avatarFile, get().token);
+      new_formData.data.avatar_filename = res.filename;
+    } catch (error) {
+      console.error(error);
+      alert('Error uploading image');
+    }
+  }
+  // upload background files to gcs
+  if (get().backgroundFiles.length > 0) {
+    for (let i = 0; i < get().backgroundFiles.length; i++) {
+      try {
+        let res = await uploadFile(get().backgroundFiles[i], get().token);
+        new_formData.data[get().backgroundFiles[i].name] = res.filename;
+      } catch (error) {
+        console.error(error);
+        alert('Error uploading files');
+      }
+    }
+  }
+  new_formData.background_text = get().backgroundText;
+  return new_formData;
+};
 
 export const createCharacterSlice = (set, get) => ({
   avatarURL: null,
@@ -175,40 +220,7 @@ export const createCharacterSlice = (set, get) => ({
   },
 
   submitForm: async () => {
-    if (!get().formData.name) {
-      alert('Please enter a name');
-      return;
-    }
-    let new_formData = { ...get().formData };
-    if (!new_formData.data) {
-      new_formData.data = {};
-    }
-    if (new_formData.voice_id === 'placeholder') {
-      new_formData.voice_id = await cloneVoice(get().voiceFiles, get().token);
-    }
-    // upload image to gcs
-    if (get().avatarURL) {
-      try {
-        let res = await uploadFile(get().avatarFile, get().token);
-        new_formData.data.avatar_filename = res.filename;
-      } catch (error) {
-        console.error(error);
-        alert('Error uploading image');
-      }
-    }
-    // upload background files to gcs
-    if (get().backgroundFiles.length > 0) {
-      for (let i = 0; i < get().backgroundFiles.length; i++) {
-        try {
-          let res = await uploadFile(get().backgroundFiles[i], get().token);
-          new_formData.data[get().backgroundFiles[i].name] = res.filename;
-        } catch (error) {
-          console.error(error);
-          alert('Error uploading files');
-        }
-      }
-    }
-    new_formData.background_text = get().backgroundText;
+    let new_formData = await constructForm(get);
     // call api to create character
     console.log(new_formData);
     try {
@@ -262,9 +274,16 @@ export const createCharacterSlice = (set, get) => ({
       alert('Error getting character data');
     }
   },
-  submitEdit: async () => {
-    // TODO
-    console.log("TODO");
+  submitEdit: async (character_id) => {
+    const new_formData = await constructForm(get);
+    new_formData.id = character_id;
+    console.log(new_formData);
+    try {
+      await editCharacter(new_formData, get().token);
+    } catch (error) {
+      console.error(error);
+      alert('Error creating character');
+    }
   },
   deleteCharacter: async (character) => {
     try {

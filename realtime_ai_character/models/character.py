@@ -55,11 +55,12 @@ class EditCharacterRequest(BaseModel):
     name: Optional[str] = None
     system_prompt: Optional[str] = None
     user_prompt: Optional[str] = None
-    text_to_speech_use: Optional[str] = None
+    tts: Optional[str] = None
     voice_id: Optional[str] = None
     visibility: Optional[str] = None
     data: Optional[dict] = None
     avatar_id: Optional[str] = None
+    background_text: Optional[str] = None
 
 
 class DeleteCharacterRequest(BaseModel):

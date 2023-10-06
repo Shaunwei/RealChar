@@ -157,3 +157,21 @@ export async function getCharacter(character_id, accessToken) {
     }
     throw new Error(response.toString());
 }
+
+export async function editCharacter(editCharacterRequest, accessToken) {
+    const url = getApiServerUrl() + '/edit_character';
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(editCharacterRequest),
+    });
+
+    if (response.ok) {
+        return await response.json();
+    } else {
+        throw new Error(await response.text());
+    }
+}

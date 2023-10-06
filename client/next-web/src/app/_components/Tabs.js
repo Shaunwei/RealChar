@@ -4,11 +4,24 @@ import MyTab from './MyTab';
 import TabButton from '@/components/TabButton';
 
 import { useAuthContext } from '@/context/AuthContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 
-export default function Tabs({ defaultCharacters }) {
+export default function Tabs({
+  defaultCharacters,
+}) {
   const { user } = useAuthContext();
-  const [ tabNow, setTabNow ] = useState('explore');
+  const [ tabNow, setTabNow ] = useState('');
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab) {
+      setTabNow(tab);
+    } else {
+      setTabNow('explore');
+    }
+  }, []);
 
   let exploreTabDisplay = true;
   let myTabDisplay = false;
@@ -34,7 +47,7 @@ export default function Tabs({ defaultCharacters }) {
           <TabButton
             isSelected={myTabDisplay}
             isDisabled={user==null}
-            handlePress={() => setTabNow('myCharacter')}
+            handlePress={() => setTabNow('myCharacters')}
           >
             My Characters
           </TabButton>

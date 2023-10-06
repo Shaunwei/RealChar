@@ -7,8 +7,10 @@ import {
   Radio,
   RadioGroup,
   Tooltip,
+  Link,
 } from '@nextui-org/react';
-import { MdInfoOutline } from 'react-icons/md';
+import { MdInfoOutline, MdArrowBack } from 'react-icons/md';
+import NextLink from 'next/link'
 import Header from '../_components/Header';
 import Footer from '../_components/Footer';
 import AvatarUploader from '../create/_components/AvatarUploader';
@@ -30,6 +32,7 @@ export default function EditCharacter() {
     setBackgroundText,
     deleteCharacter,
     submitEdit,
+    autoGenerate,
   } = useAppStore();
 
   useEffect(() => {
@@ -58,6 +61,18 @@ export default function EditCharacter() {
       <form
         className="py-5 px-4 flex flex-col justify-center gap-5 md:w-unit-9xl md:mx-auto lg:w-[892px] lg:gap-8"
       >
+        <p>
+          <Link
+            color="foreground"
+            as={NextLink}
+            href={{
+              pathname: '/',
+              query: { tab: 'myCharacters' }
+            }}
+          >
+            <MdArrowBack className="mr-2"/>Back
+          </Link>
+        </p>
         <h1 className="text-center text-2xl font-medium">{formData.name}</h1>
         <AvatarUploader />
         <div>
@@ -99,9 +114,21 @@ export default function EditCharacter() {
             onValueChange={setBackgroundText}
           />
         </div>
-        <div>
+        <div className="flex flex-col gap-3">
+          <h4 className="font-medium">System Prompt(required)</h4>
+          <p className="text-small">You can auto-generate the prompt based on character name and background</p>
+          <div className="flex flex-col w-fit">
+            <Button
+              onPress={autoGenerate}
+              isLoading={formData.system_prompt === 'Generating...'}
+              className="bg-real-contrastBlue"
+            >
+              Auto generate
+            </Button>
+            <span className="text-tiny text-warning">* It may take ~1 minute</span>
+          </div>
           <Textarea
-            label="System Prompt(required)"
+            label=""
             labelPlacement="outside"
             placeholder="Write your own prompt"
             classNames={{

@@ -254,7 +254,6 @@ export const createCharacterSlice = (set, get) => ({
       let res = await getCharacter(character.character_id, get().token);
       set({
         avatarURL: character.image_url,
-        avatarFile: null,
         formData: {
           name: res.name,
           system_prompt: res.system_prompt,

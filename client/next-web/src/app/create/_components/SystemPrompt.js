@@ -18,6 +18,7 @@ export default function SystemPrompt() {
       <div className="flex flex-col w-fit">
         <Button
           onPress={autoGenerate}
+          isLoading={formData.system_prompt === 'Generating...'}
           className="bg-real-contrastBlue"
         >
           Auto generate

@@ -7,8 +7,10 @@ import {
   Radio,
   RadioGroup,
   Tooltip,
+  Link,
 } from '@nextui-org/react';
-import { MdInfoOutline } from 'react-icons/md';
+import { MdInfoOutline, MdArrowBack } from 'react-icons/md';
+import NextLink from 'next/link';
 import Header from '../_components/Header';
 import Footer from '../_components/Footer';
 import AvatarUploader from './_components/AvatarUploader';
@@ -46,6 +48,18 @@ export default function Create() {
       <form
         className="py-5 px-4 flex flex-col justify-center gap-5 md:w-unit-9xl md:mx-auto lg:w-[892px] lg:gap-8"
       >
+        <p>
+          <Link
+            color="foreground"
+            as={NextLink}
+            href={{
+              pathname: '/',
+              query: { tab: 'myCharacters' }
+            }}
+          >
+            <MdArrowBack className="mr-2" />Back
+          </Link>
+        </p>
         <h1 className="text-center text-2xl font-medium">Create a character</h1>
         <AvatarUploader/>
         <div>

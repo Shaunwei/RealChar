@@ -29,7 +29,7 @@ class WhisperX_Runner(bentoml.Runnable):
         now = time()
         self.latency.append(elapsed)
         self.timestamp.append(now)
-        if self.timestamp[0] < now - 86400:
+        while self.timestamp[0] < now - 86400:
             self.latency.pop(0)
             self.timestamp.pop(0)
         return result

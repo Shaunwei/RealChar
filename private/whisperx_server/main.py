@@ -57,7 +57,7 @@ async def transcribe(audio_file: UploadFile = File(...), metadata: str = Form(de
         now = time()
         latency.append(elapsed)
         timestamp.append(now)
-        if timestamp[0] < now - 86400:
+        while timestamp[0] < now - 86400:
             latency.pop(0)
             timestamp.pop(0)
         return result

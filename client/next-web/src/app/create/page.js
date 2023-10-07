@@ -75,12 +75,13 @@ export default function Create() {
               })
             }
             classNames={{
-              label: "text-base",
+              label: 'text-lg',
               inputWrapper: [
                 'bg-white/10',
                 'data-[hover=true]:bg-white/10',
                 'group-data-[focus=true]:bg-white/10'
-              ]
+              ],
+              input: 'text-base',
             }}
           />
         </div>
@@ -92,12 +93,13 @@ export default function Create() {
             labelPlacement="outside"
             placeholder=""
             classNames={{
-              label: "text-base",
+              label: 'text-lg',
               inputWrapper: [
                 'bg-white/10',
                 'data-[hover=true]:bg-white/10',
                 'group-data-[focus=true]:bg-white/10'
-              ]
+              ],
+              input: 'text-base',
             }}
             value={formData.user_prompt}
             onValueChange={(value) =>

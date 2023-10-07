@@ -65,14 +65,14 @@ export default function TTSVoice() {
                   onPress={handleClick}
                   className="bg-real-contrastBlue"
                 >
-                  Choose File
+                  Choose file
                 </Button>
                 <Button
                   isDisabled={voiceFiles.length==0}
                   onPress={cloneVoice}
                   className="bg-real-contrastBlue"
                 >
-                  Clone Voice
+                  Clone voice
                 </Button>
               </div>
               <input

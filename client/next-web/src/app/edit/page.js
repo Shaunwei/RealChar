@@ -88,12 +88,13 @@ export default function EditCharacter() {
               })
             }
             classNames={{
-              label: "text-base",
+              label: 'text-lg',
               inputWrapper: [
                 'bg-white/10',
                 'data-[hover=true]:bg-white/10',
                 'group-data-[focus=true]:bg-white/10'
-              ]
+              ],
+              input: 'text-base',
             }}
           />
         </div>
@@ -103,19 +104,20 @@ export default function EditCharacter() {
             labelPlacement="outside"
             placeholder="Provide some background information about your character"
             classNames={{
-              label: "text-base",
+              label: 'text-lg',
               inputWrapper: [
                 'bg-white/10',
                 'data-[hover=true]:bg-white/10',
                 'group-data-[focus=true]:bg-white/10'
-              ]
+              ],
+              input: 'text-base',
             }}
             value={backgroundText}
             onValueChange={setBackgroundText}
           />
         </div>
         <div className="flex flex-col gap-3">
-          <h4 className="font-medium">System Prompt(required)</h4>
+          <h4 className="font-medium text-lg">System Prompt(required)</h4>
           <p className="text-small">You can auto-generate the prompt based on character name and background</p>
           <div className="flex flex-col w-fit">
             <Button
@@ -132,12 +134,13 @@ export default function EditCharacter() {
             labelPlacement="outside"
             placeholder="Write your own prompt"
             classNames={{
-              label: "text-base",
+              label: 'text-lg',
               inputWrapper: [
                 'bg-white/10',
                 'data-[hover=true]:bg-white/10',
                 'group-data-[focus=true]:bg-white/10'
-              ]
+              ],
+              input: 'text-base',
             }}
             value={formData.system_prompt}
             onValueChange={(value) =>
@@ -153,12 +156,13 @@ export default function EditCharacter() {
             labelPlacement="outside"
             placeholder=""
             classNames={{
-              label: "text-base",
+              label: 'text-lg',
               inputWrapper: [
                 'bg-white/10',
                 'data-[hover=true]:bg-white/10',
                 'group-data-[focus=true]:bg-white/10'
-              ]
+              ],
+              input: 'text-base',
             }}
             value={formData.user_prompt}
             onValueChange={(value) =>

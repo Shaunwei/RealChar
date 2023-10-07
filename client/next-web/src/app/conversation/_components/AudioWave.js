@@ -32,8 +32,8 @@ function useWsRecord(containerRef, options) {
 export default function AudioWave({ isTalking }) {
   const containerRef = useRef();
   const wsRecord = useWsRecord(containerRef, {
-    height: 64,
-    waveColor: "#22c55e",
+    height: 40,
+    waveColor: "#6785D3",
     barWidth: 3,
     barGap: 2,
     barRadius: 4,

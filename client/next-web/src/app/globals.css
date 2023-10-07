@@ -19,23 +19,29 @@
 .conversation_container .react-input-emoji--container {
   background: transparent;
   border: 0;
-  font-size: 18px;
+  margin-left: 0;
+  font-size: 16px;
   font-weight: 300;
   font-family: inherit;
   color: #fff;
 }
 
 .conversation_container .react-emoji {
-  background: rgba(255, 255, 255, 0.1);
+  background: transparent;
   border-radius: 12px;
   height: 42px;
 }
 
 .conversation_container .react-input-emoji--button {
-  padding-left: 0;
-  padding-right: 20px;
+  position:absolute;
+  top: 50px;
+  left: 8px;
 }
 
 .conversation_container .react-input-emoji--input {
   font-weight: 300;
+}
+
+.conversation_container .react-emoji-picker--wrapper {
+  left: 0;
 }

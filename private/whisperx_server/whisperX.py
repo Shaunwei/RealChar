@@ -22,8 +22,37 @@ WHISPER_LANGUAGE_CODE_MAPPING = {
     "ko-KR": "ko",
 }
 
+ALIGN_MODEL_LANGUAGE_CODE = [
+    "en",
+    "fr",
+    "de",
+    "es",
+    "it",
+    "ja",
+    "zh",
+    "nl",
+    "uk",
+    "pt",
+    "ar",
+    "cs",
+    "ru",
+    "pl",
+    "hu",
+    "fi",
+    "fa",
+    "el",
+    "tr",
+    "da",
+    "he",
+    "vi",
+    "ko",
+    "ur",
+    "te",
+    "hi",
+]
+
 MODEL = os.getenv("MODEL", "base")
-LANGUAGE = os.getenv("LANGUAGE", "en")
+LANGUAGE = os.getenv("LANGUAGE", None)
 HF_ACCESS_TOKEN = os.getenv("HF_ACCESS_TOKEN", "")
 
 
@@ -37,9 +66,10 @@ class WhisperX:
         compute_type = "float16" if self.device.startswith("cuda") else "default"
         log(f"Loading [WhisperX Server] model: [{MODEL}]({self.device}) ...")
         self.model = whisperx.load_model(MODEL, self.device, compute_type=compute_type)
-        self.model_a, self.metadata = whisperx.load_align_model(
-            language_code=LANGUAGE, device=self.device
-        )
+        self.align = [
+            whisperx.load_align_model(language_code=language_code, device=self.device)
+            for language_code in ALIGN_MODEL_LANGUAGE_CODE
+        ]
         self.diarize_model = whisperx.DiarizationPipeline(
             model_name="pyannote/speaker-diarization",
             device=self.device,
@@ -51,7 +81,7 @@ class WhisperX:
         audio_bytes,
         platform="web",
         prompt="",
-        language="en-US",
+        language="auto",
         suppress_tokens=[-1],
         diarization=False,
     ):
@@ -73,8 +103,8 @@ class WhisperX:
         )
         result = self.model.transcribe(audio, batch_size=1, language=language)
 
-        if diarization:
-            result = self._diarize(audio, result)
+        if diarization and result["language"] in ALIGN_MODEL_LANGUAGE_CODE:
+            result = self._diarize(audio, result, result["language"])
 
         # console debug output
         text = " ".join([seg["text"].strip() for seg in result["segments"]])
@@ -85,11 +115,12 @@ class WhisperX:
 
         return result
 
-    def _diarize(self, audio, result):
+    def _diarize(self, audio, result, language):
+        model_a, metadata = self.align[language]
         result = whisperx.align(
             result["segments"],
-            self.model_a,
-            self.metadata,
+            model_a,
+            metadata,
             audio,
             self.device,
         )

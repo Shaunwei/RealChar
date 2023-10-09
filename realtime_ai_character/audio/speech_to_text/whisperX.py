@@ -15,7 +15,6 @@ logger = get_logger(__name__)
 config = types.SimpleNamespace(
     **{
         "model": os.getenv("LOCAL_WHISPER_MODEL", "base"),
-        "language": "en",
         "api_key": os.getenv("WHISPER_X_API_KEY"),
         "url": os.getenv("WHISPER_X_API_URL"),
     }
@@ -37,6 +36,34 @@ WHISPER_LANGUAGE_CODE_MAPPING = {
     "ko-KR": "ko",
 }
 
+ALIGN_MODEL_LANGUAGE_CODE = [
+    "en",
+    "fr",
+    "de",
+    "es",
+    "it",
+    "ja",
+    "zh",
+    "nl",
+    "uk",
+    "pt",
+    "ar",
+    "cs",
+    "ru",
+    "pl",
+    "hu",
+    "fi",
+    "fa",
+    "el",
+    "tr",
+    "da",
+    "he",
+    "vi",
+    "ko",
+    "ur",
+    "te",
+    "hi",
+]
 
 class WhisperX(Singleton, SpeechToText):
     def __init__(self, use: str = "local"):
@@ -56,11 +83,12 @@ class WhisperX(Singleton, SpeechToText):
                 device_index=0,
                 compute_type=compute_type,
             )
-            self.model_a, self.metadata = whisperx.load_align_model(
-                language_code=config.language, device=self.device
-            )
+            self.align = [
+                whisperx.load_align_model(language_code=language_code, device=self.device)
+                for language_code in ALIGN_MODEL_LANGUAGE_CODE
+            ]
             self.diarize_model = whisperx.DiarizationPipeline(
-                model_name="pyannote/speaker-diarization-2.1",
+                model_name="pyannote/speaker-diarization",
                 device=self.device,
                 use_auth_token=os.getenv("HUGGING_FACE_ACCESS_TOKEN"),
             )
@@ -68,7 +96,7 @@ class WhisperX(Singleton, SpeechToText):
 
     @timed
     def transcribe(
-        self, audio_bytes, platform="web", prompt="", language="en-US", suppress_tokens=[-1]
+        self, audio_bytes, platform="web", prompt="", language="auto", suppress_tokens=[-1]
     ):
         logger.info("Transcribing audio...")
         if self.use == "local":
@@ -89,7 +117,7 @@ class WhisperX(Singleton, SpeechToText):
         audio_bytes,
         platform="web",
         prompt="",
-        language="en-US",
+        language="auto",
         suppress_tokens=[-1],
         diarization=False,
     ):
@@ -105,24 +133,25 @@ class WhisperX(Singleton, SpeechToText):
         reader.add_basic_audio_stream(1000, sample_rate=16000)
         audio = torch.concat([chunk[0] for chunk in reader.stream()])  # type: ignore
         audio = audio.mean(dim=1).flatten().numpy().astype(np.float32)
-        language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, config.language)
+        language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, None)
         self.model.options = self.model.options._replace(
             initial_prompt=prompt, suppress_tokens=suppress_tokens
         )
         result = self.model.transcribe(audio, batch_size=1, language=language)
 
-        if diarization:
-            result = self._diarize(audio, result)
+        if diarization and result["language"] in ALIGN_MODEL_LANGUAGE_CODE:
+            result = self._diarize(audio, result, result["language"])
 
         return result
 
-    def _diarize(self, audio, result):
+    def _diarize(self, audio, result, language):
         import whisperx
 
+        model_a, metadata = self.align[language]
         result = whisperx.align(
             result["segments"],
-            self.model_a,
-            self.metadata,
+            model_a,
+            metadata,
             audio,
             self.device,
         )
@@ -135,7 +164,7 @@ class WhisperX(Singleton, SpeechToText):
         audio_bytes,
         platform="web",
         prompt="",
-        language="en-US",
+        language="auto",
         suppress_tokens=[-1],
         diarization=False,
     ):

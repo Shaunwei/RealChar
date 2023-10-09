@@ -29,7 +29,7 @@ from realtime_ai_character.audio.speech_to_text import SpeechToText, get_speech_
 from realtime_ai_character.audio.text_to_speech import TextToSpeech, get_text_to_speech
 from realtime_ai_character.character_catalog.catalog_manager import (
     get_catalog_manager,
-    Character, CatalogManager,
+    CatalogManager,
 )
 from realtime_ai_character.llm import get_llm, LLM
 from realtime_ai_character.llm.base import (
@@ -98,7 +98,8 @@ async def call_websocket(request: Request, req: MakeTwilioOutgoingCallRequest):
     _ = client.calls.create(
         to=to,
         from_=from_,
-        url=f"https://{request.url.hostname}/twilio/voice" + "?character_id={}".format(character_id) if character_id else "",
+        url=f"https://{request.url.hostname}/twilio/voice" +
+            "?character_id={}".format(character_id) if character_id else "",
         method="GET"
     )
 
@@ -117,7 +118,7 @@ async def get_websocket(request: Request):
     return Response(content=str(resp), media_type="application/xml")
 
 
-class AudioBytesBuffer:
+class TwilioConversationEngine:
     class VAD_STATE(Enum):
         INITIAL = 1
         SILENCE = 2
@@ -126,7 +127,10 @@ class AudioBytesBuffer:
     TALKING_THRESHOLD = 0.8
     SILENCE_THRESHOLD = 0.2
 
-    def __init__(self, websocket):
+    def __init__(self, websocket, speech_to_text):
+        self._speech_to_text = speech_to_text
+        self._websocket = websocket
+        self._transcript_buffer = []  # streamed transcripts
         self._audio_buffer = bytes()
         self._vad_buffer = collections.deque()
         self._vad_buffer_size = 20
@@ -137,14 +141,19 @@ class AudioBytesBuffer:
         self._vad_model = model
         self._state = self.VAD_STATE.INITIAL
         self._most_recent_silence_frame = 0
-        self._min_silence_ms = 1000
-        self._websocket = websocket
+        self._min_silence_ms = 1000  # silence time for user speech to be considered completed
+        self._transcribe_tasks = []
 
     def setStreamID(self, sid: str):
         self._sid = sid
 
-    def register_callback(self, callback: Callable[[bytes], None]):
+    def register_callback(self, callback: Callable[[str], None]):
         self._callback = callback
+
+    def _transcribe_callback(self, task: asyncio.Task):
+        script = task.result()
+        self._transcript_buffer.append(script)
+        logger.info(f"Transcripting: {self._transcript_buffer}")
 
     async def add_bytes(self, chunk: bytes):
         self._vad_buffer.append(chunk)
@@ -176,9 +185,18 @@ class AudioBytesBuffer:
             if speech_prob is not None and speech_prob < self.SILENCE_THRESHOLD:
                 logger.info("transitions from TALKING to SILENCE")
                 self._state = self.VAD_STATE.SILENCE
-                # each frame len
+                # record the transition time from TALKING to SILENCE so that
+                # we can calculate silence time
                 self._most_recent_silence_frame = len(
                     self._audio_buffer) / LEN_PER_FRAME
+
+                coro = asyncio.to_thread(
+                    self._speech_to_text.transcribe, self._audio_buffer, platform="twilio")
+                transcribe_task = asyncio.create_task(coro)
+                transcribe_task.add_done_callback(self._transcribe_callback)
+                self._transcribe_tasks.append(transcribe_task)
+                # clear the audio buffer
+                self._audio_buffer = bytes()
             return
 
         if self._state == self.VAD_STATE.SILENCE:
@@ -192,12 +210,20 @@ class AudioBytesBuffer:
 
             diff = FRAME_INTERVAL_MS * (len(self._audio_buffer) / LEN_PER_FRAME -
                                         self._most_recent_silence_frame)
+
             if (speech_prob is not None and speech_prob < self.SILENCE_THRESHOLD
                     and diff > self._min_silence_ms):
                 logger.info("User done talking, transition to INITIAL")
-                answer = self._audio_buffer
                 self.reset()
-                await self._callback(answer, self._sid)
+
+                # wait for transcribe tasks to complete
+                await asyncio.gather(*self._transcribe_tasks)
+                self._transcribe_tasks.clear()
+
+                sentence = " ".join(self._transcript_buffer)
+                logger.info(f"send following to LLM:\n {sentence}")
+                self._transcript_buffer.clear()
+                await self._callback(sentence, self._sid)
 
     def reset(self):
         self._audio_buffer = bytes()
@@ -250,7 +276,7 @@ async def handle_receive(
     default_text_to_speech: TextToSpeech,
     catalog_manager: CatalogManager
 ):
-    buffer = AudioBytesBuffer(websocket)
+    buffer = TwilioConversationEngine(websocket, speech_to_text)
     conversation_history = ConversationHistory()
     random_character = random.choice(character_list)
     character = catalog_manager.get_character(random_character)
@@ -268,13 +294,7 @@ async def handle_receive(
         conversation_history.ai.append(response)
         token_buffer.clear()
 
-    async def audio_buffer_callback(binary_data: bytes, sid: str):
-        transcript: str = (
-            await asyncio.to_thread(
-                speech_to_text.transcribe, binary_data, platform="twilio"
-            )
-        ).strip()
-        logger.info(f"Receive transcription: {transcript}")
+    async def llm_callback(transcript: str, sid: str):
         conversation_history.user.append(transcript)
 
         await llm.achat(
@@ -301,8 +321,7 @@ async def handle_receive(
             quivrBrainId=None,
         )
 
-    buffer.register_callback(audio_buffer_callback)
-
+    buffer.register_callback(llm_callback)
     while True:
         try:
             # expect twilio to send connect event
@@ -332,9 +351,10 @@ async def handle_receive(
                 logger.info(obj)
                 if "character_id" in obj["start"]["customParameters"]:
                     character_id = obj["start"]["customParameters"]["character_id"]
-                    character = catalog_manager.get_character(character_id)
-                    conversation_history.system_prompt = character.llm_system_prompt
-                    user_input_template = character.llm_user_prompt
+                    if character_id != "":
+                        character = catalog_manager.get_character(character_id)
+                        conversation_history.system_prompt = character.llm_system_prompt
+                        user_input_template = character.llm_user_prompt
                 # greet the user when the stream starts
                 logger.info(f"Using character: {character.name}")
                 # Greet the user

@@ -116,12 +116,12 @@ export default function AudioPanel() {
         <div className="grid grid-cols-4 gap-3 text-base lg:text-lg text-white/50">
           <span>Output volume</span>
           <div className="col-span-3 flex flex-row gap-2 items-center">
-            <span className="text-real-navy/60"><MdOutlineVolumeMute size="1.25em"/></span>
+            <span className="text-real-blue-500/60"><MdOutlineVolumeMute size="1.25em"/></span>
             <Slider
               value={outputVolume}
               onValueChange={handleOutputVolume}
             />
-            <span className="text-real-navy/60"><MdOutlineVolumeUp size="1.25em"/></span>
+            <span className="text-real-blue-500/60"><MdOutlineVolumeUp size="1.25em"/></span>
           </div>
         </div>
       </section>
@@ -176,12 +176,12 @@ export default function AudioPanel() {
         <div className="grid grid-cols-4 gap-3 text-base lg:text-lg text-white/50">
           <span>Input volume</span>
           <div className="col-span-3 flex flex-row gap-2 items-center">
-            <span className="text-real-navy/60"><MdOutlineVolumeMute size="1.25em"/></span>
+            <span className="text-real-blue-500/60"><MdOutlineVolumeMute size="1.25em"/></span>
             <Slider
               value={inputVolume}
               onValueChange={handleInputVolume}
             />
-            <span className="text-real-navy/60"><MdOutlineVolumeUp size="1.25em"/></span>
+            <span className="text-real-blue-500/60"><MdOutlineVolumeUp size="1.25em"/></span>
           </div>
         </div>
       </section>

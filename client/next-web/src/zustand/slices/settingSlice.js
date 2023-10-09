@@ -8,6 +8,7 @@ export const createSettingSlice = (set) => ({
   enableQuivr: false,
   enableMultiOn: false,
   isMute: false,
+  isJournalMode: false,
   languageList: [
     'English',
     'Spanish',
@@ -90,5 +91,9 @@ export const createSettingSlice = (set) => ({
   },
   setIsMute: (v) => {
     set({isMute: v});
-  }
+  },
+  setIsJournalMode: (v) => {
+    set({isJournalMode: v});
+    // TODO
+  },
 })

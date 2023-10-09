@@ -44,7 +44,9 @@ export default function HamburgerMenu() {
     enableGoogle,
     enableQuivr,
     handleGoogle,
-    handleQuivr
+    handleQuivr,
+    isJournalMode,
+    setIsJournalMode,
   } = useAppStore();
   const { user } = useAuthContext();
 
@@ -189,6 +191,15 @@ export default function HamburgerMenu() {
                 size="sm"
                 isSelected={enableQuivr}
                 onValueChange={handleQuivr}
+                aria-label="google search"
+              />
+            </div>
+            <div className="flex flex-row gap-4 justify-between my-3">
+              <p>Journal Mode</p>
+              <Switch
+                size="sm"
+                isSelected={isJournalMode}
+                onValueChange={setIsJournalMode}
                 aria-label="google search"
               />
             </div>

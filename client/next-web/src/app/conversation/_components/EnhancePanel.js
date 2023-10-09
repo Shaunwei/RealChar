@@ -11,7 +11,9 @@ export default function EnhancePanel() {
     enableGoogle,
     enableQuivr,
     handleGoogle,
-    handleQuivr
+    handleQuivr,
+    isJournalMode,
+    setIsJournalMode,
   } = useAppStore();
 
   return (
@@ -46,6 +48,21 @@ export default function EnhancePanel() {
         <Switch
           isSelected={enableQuivr}
           onValueChange={handleQuivr}
+          aria-label="google search"
+        />
+      </div>
+      <div className="flex flex-row gap-6">
+        <div className="flex flex-row gap-2 items-center">
+          <p className="text-lg">Journal Mode</p>
+          {/* <Tooltip content="need content">
+            <Button isIconOnly size="sm" variant="light" className="p-0 min-w-unit-5 w-5 min-h-unit-5 h-5">
+              <MdInfoOutline size="1.5em" />
+            </Button>
+          </Tooltip> */}
+        </div>
+        <Switch
+          isSelected={isJournalMode}
+          onValueChange={setIsJournalMode}
           aria-label="google search"
         />
       </div>

@@ -2,7 +2,6 @@
 
 import { Button } from '@nextui-org/button';
 import { Tooltip } from '@nextui-org/tooltip';
-import { Avatar } from '@nextui-org/avatar';
 import SettingBar from './_components/SettingBar';
 import Chat from './_components/Chat';
 import HandsFreeMode from './_components/HandsFreeMode';
@@ -18,11 +17,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAppStore } from '@/zustand/store';
 import lz from 'lz-string';
 import {playAudios} from "@/util/audioUtils";
+import JournalMode from './_components/JournalMode';
 
 export default function Conversation() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [ isTextMode, setIsTextMode ] = useState(true);
+  const { isJournalMode } = useAppStore();
   const {character, getAudioList, setCharacter, clearChatContent } = useAppStore();
   // Websocket.
   const {socketIsOpen, sendOverSocket, connectSocket, closeSocket } = useAppStore();
@@ -179,6 +180,8 @@ export default function Conversation() {
       <audio ref={audioPlayerRef} className='audio-player'>
         <source src='' type='audio/mp3' />
       </audio>
+      {!isJournalMode ? (
+      <>
       <div className="fixed top-0 w-full bg-background z-10">
         <div className="grid grid-cols-4 gap-5 pt-4 md:pt-5 items-center">
           <div>
@@ -252,7 +255,11 @@ export default function Conversation() {
             isDisplay={isTextMode}
           />
         </div>
-        </div>
+      </div>
+      </>
+      ) : (
+      <JournalMode/>
+      )}
     </div>
   );
 }

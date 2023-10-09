@@ -33,8 +33,9 @@ module.exports = {
       'real-silver': {
         500: '#636A84',
       },
-      'real-navy': {
-        DEFAULT: '#6785D3',
+      'real-blue': {
+        500: '#6785D3',
+        300: '#C2D3FF',
       },
       'real-contrastBlue': {
         DEFAULT: '#1F4FCC',

@@ -16,7 +16,7 @@ import Transcript from './Transcript';
 import ActionChatPanel from './ActionChatPanel';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 
 export default function MeetingPage() {
   const router = useRouter();
@@ -121,7 +121,7 @@ export default function MeetingPage() {
         </div>
         <div className="h-3/6 relative flex flex-col lg:h-full lg:w-1/2">
           <ActionChatPanel/>
-          <div className="px-4 py-2 border-white/30 border-t-1 border-x-1 rounded-t-lg">
+          <div className="px-4 py-2 border-white/30 border-t-1 border-x-1 rounded-t-lg  journal_mode">
             <InputEmoji
               value={text}
               onChange={setText}

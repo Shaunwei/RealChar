@@ -38,6 +38,12 @@
   left: 8px;
 }
 
+.journal_mode .react-input-emoji--button {
+  position: relative;
+  top: auto;
+  left: auto;
+}
+
 .conversation_container .react-input-emoji--input {
   font-weight: 300;
 }

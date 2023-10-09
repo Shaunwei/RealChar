@@ -24,35 +24,34 @@ WHISPER_LANGUAGE_CODE_MAPPING = {
 
 ALIGN_MODEL_LANGUAGE_CODE = [
     "en",
-    "fr",
-    "de",
-    "es",
-    "it",
-    "ja",
+    # "fr",
+    # "de",
+    # "es",
+    # "it",
+    # "ja",
     "zh",
-    "nl",
-    "uk",
-    "pt",
-    "ar",
-    "cs",
-    "ru",
-    "pl",
-    "hu",
-    "fi",
-    "fa",
-    "el",
-    "tr",
-    "da",
-    "he",
-    "vi",
-    "ko",
-    "ur",
-    "te",
-    "hi",
+    # "nl",
+    # "uk",
+    # "pt",
+    # "ar",
+    # "cs",
+    # "ru",
+    # "pl",
+    # "hu",
+    # "fi",
+    # "fa",
+    # "el",
+    # "tr",
+    # "da",
+    # "he",
+    # "vi",
+    # "ko",
+    # "ur",
+    # "te",
+    # "hi",
 ]
 
 MODEL = os.getenv("MODEL", "base")
-LANGUAGE = os.getenv("LANGUAGE", None)
 HF_ACCESS_TOKEN = os.getenv("HF_ACCESS_TOKEN", "")
 
 
@@ -96,7 +95,7 @@ class WhisperX:
         reader.add_basic_audio_stream(1000, sample_rate=16000)
         wav = torch.concat([chunk[0] for chunk in reader.stream()])  # type: ignore
         audio = wav.mean(dim=1).flatten().numpy().astype(np.float32)
-        language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, LANGUAGE)
+        language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, None)
 
         self.model.options = self.model.options._replace(
             initial_prompt=prompt, suppress_tokens=suppress_tokens

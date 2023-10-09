@@ -6,6 +6,7 @@ import torchaudio
 import numpy as np
 
 import whisperx
+import opencc
 
 
 WHISPER_LANGUAGE_CODE_MAPPING = {
@@ -74,6 +75,7 @@ class WhisperX:
             device=self.device,
             use_auth_token=HF_ACCESS_TOKEN,
         )
+        self.chinese_t2s = opencc.OpenCC("t2s.json")
 
     def transcribe(
         self,
@@ -101,6 +103,11 @@ class WhisperX:
             initial_prompt=prompt, suppress_tokens=suppress_tokens
         )
         result = self.model.transcribe(audio, batch_size=1, language=language)
+
+        # convert traditional chinese to simplified chinese
+        if result["language"] == "zh":
+            for seg in result["segments"]:
+                seg["text"] = self.chinese_t2s.convert(seg["text"])
 
         if diarization and result["language"] in ALIGN_MODEL_LANGUAGE_CODE:
             result = self._diarize(audio, result, result["language"])

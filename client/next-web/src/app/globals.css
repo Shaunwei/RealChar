@@ -34,8 +34,16 @@
 
 .conversation_container .react-input-emoji--button {
   position:absolute;
-  top: 50px;
-  left: 8px;
+  top: 42px;
+  left: 52px;
+  height: 40px;
+  width: 40px;
+  padding: 0 8px;
+  border-radius: 20px;
+}
+
+.conversation_container .react-input-emoji--button:hover {
+  background: rgba(63,63,70,0.4);
 }
 
 .journal_mode .react-input-emoji--button {

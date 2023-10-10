@@ -39,6 +39,7 @@ export default function Chat() {
                 <p className="w-fit max-w-[450px] py-2 px-5 font-light flex-none rounded-3xl md:mr-3 rounded-bl-none bg-real-blue-500/20">{line.content}</p>
                 <div><Button
                   isIconOnly
+                  aria-label="thumb up"
                   radius="full"
                   variant="light"
                   className="text-white/50 hover:text-white hover:bg-button min-w-fit md:min-w-10 md:h-10"
@@ -47,6 +48,7 @@ export default function Chat() {
                 </Button>
                 <Button
                   isIconOnly
+                  aria-label="thumb down"
                   radius="full"
                   variant="light"
                   className="text-white/50 hover:text-white hover:bg-button min-w-fit md:min-w-10 md:h-10"

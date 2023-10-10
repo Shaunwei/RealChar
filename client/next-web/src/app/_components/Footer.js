@@ -11,6 +11,7 @@ export default function Footer() {
           href='https://github.com/Shaunwei/RealChar'
           target='_blank'
           rel='noreferrer'
+          aria-label="link to Github"
           color="foreground">
           <VscGithub size={24}/>
         </Link>
@@ -19,6 +20,7 @@ export default function Footer() {
           href='https://discord.gg/e4AYNnFg2F'
           target='_blank'
           rel='noreferrer'
+          aria-label="link to Discord"
           color="foreground">
           <FaDiscord size={24}/>
         </Link>
@@ -27,6 +29,7 @@ export default function Footer() {
           href='https://twitter.com/agishaun'
           target='_blank'
           rel='noreferrer'
+          aria-label="link to Twitter"
           color="foreground">
           <FaTwitter size={24}/>
         </Link>

@@ -3,6 +3,7 @@ import { Button } from '@nextui-org/button';
 import InputEmoji from 'react-input-emoji';
 import { IoIosSend } from 'react-icons/io';
 import ClickToTalk from './ClickToTalk';
+import InputAddition from './InputAddition';
 import {useAppStore} from "@/zustand/store";
 
 export default function InputField() {
@@ -34,14 +35,16 @@ export default function InputField() {
           />
         </div>
         <div className="flex flex-row justify-between items-center">
-          <div className="pl-14 flex flex-row gap-1">
-
+          <div className="pl-2 flex flex-row gap-1">
+            <InputAddition/>
+            <div></div>
           </div>
           <div className="mr-4 h-10">
             {text === '' ? (
               <ClickToTalk className="" />
             ) : (
               <Button
+                aria-label="send"
                 size="md"
                 className="bg-real-blue-500 px-2 min-w-fit sm:min-w-16 sm:px-4 md:flex h-9 disabled:bg-transparent"
                 onPress={handleOnEnter}
@@ -65,11 +68,14 @@ export default function InputField() {
           />
         </div>
         <div className="flex flex-row justify-between items-center">
-          <div className="pl-14 flex flex-row gap-1">
+          <div className="pl-2 flex flex-row gap-1">
+            <InputAddition/>
+            <div className="w-10"></div>
             <ClickToTalk className="" />
           </div>
           <div className="mr-4 h-10">
             <Button
+              aria-label="send"
               size="md"
               isDisabled={text === ''}
               className="bg-real-blue-500 px-2 min-w-fit sm:min-w-16 sm:px-4 md:flex h-9 disabled:bg-transparent"

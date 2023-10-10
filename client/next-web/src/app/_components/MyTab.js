@@ -15,8 +15,8 @@ export default function MyTab({ isDisplay }) {
       <Card className='md:basis-52'>
         <CardBody className='flex justify-center'>
           <Link href='/create'>
-            <BsPlusLg className='w-7 h-7 block my-2.5 mx-auto fill-real-silver-500' />
-            <p className='text-xs leading-5 text-center text-real-silver-500 font-light'>
+            <BsPlusLg className='w-7 h-7 block my-2.5 mx-auto fill-real-blue-500' />
+            <p className='text-xs leading-5 text-center text-real-blue-500 font-light'>
               Create a character
             </p>
           </Link>

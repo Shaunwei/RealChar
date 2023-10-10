@@ -39,7 +39,10 @@ module.exports = {
       },
       'real-contrastBlue': {
         DEFAULT: '#1F4FCC',
-      }
+      },
+      'neutral': {
+        500: '#858585',
+      },
     }
   },
   darkMode: 'class',

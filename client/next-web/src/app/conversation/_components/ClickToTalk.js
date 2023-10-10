@@ -25,13 +25,13 @@ export default function ClickToTalk({
     <>
     {!isTalking ? (
       <div className={className}>
-        {/* <p className="font-light text-tiny absolute bottom-0 -ml-8">Click and start talking</p> */}
         <Button
           isIconOnly
+          aria-label="start talking"
           size="md"
           radius="full"
           variant="light"
-          className="text-[#858585]"
+          className="text-neutral-500"
           onPress={startTalk}
         >
             <BiMicrophone size="1.7em"/>
@@ -50,6 +50,7 @@ export default function ClickToTalk({
             </div>
             <Button
               isIconOnly
+              aria-label="stop talking"
               radius="full"
               size="md"
               onPress={stopTalk}
@@ -62,6 +63,7 @@ export default function ClickToTalk({
         <div className="hidden md:flex">
           <Button
             isIconOnly
+            aria-label="stop talking"
             radius="full"
             size="md"
             onPress={stopTalk}

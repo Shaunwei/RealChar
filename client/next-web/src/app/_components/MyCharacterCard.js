@@ -34,7 +34,7 @@ export default function CharacterCard({
               }}
               as={NextLink}
               underline="hover"
-              className="text-real-silver-500">
+              className="text-real-blue-500">
               <BiEdit size="1.2em" className="mr-1"/>
               Edit details
             </Link>

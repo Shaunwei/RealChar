@@ -6,6 +6,7 @@ import {createWebsocketSlice} from "@/zustand/slices/websocketSlice";
 import {createRecorderSlice} from "@/zustand/slices/recorderSlice";
 import {createWebRTCSlice} from "@/zustand/slices/webrtcSlice";
 import { createCharacterSlice } from '@/zustand/slices/characterSlice';
+import { createJournalSlice } from '@/zustand/slices/journalSlice';
 
 export const useAppStore = create((...a) => ({
   ...createSettingSlice(...a),
@@ -14,4 +15,5 @@ export const useAppStore = create((...a) => ({
   ...createRecorderSlice(...a),
   ...createWebRTCSlice(...a),
   ...createCharacterSlice(...a),
+  ...createJournalSlice(...a),
 }));

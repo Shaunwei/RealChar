@@ -18,7 +18,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/zustand/store';
 
-export default function MeetingPage() {
+export default function JournalPage() {
   const router = useRouter();
   const [text, setText] = useState('');
   const {
@@ -32,7 +32,8 @@ export default function MeetingPage() {
     clearChatContent,
     setCharacter,
     isRecording,
-    speechInterim
+    speechInterim,
+    appendUserRequest,
   } = useAppStore();
 
   useEffect(() => {
@@ -50,8 +51,7 @@ export default function MeetingPage() {
   }
 
   function handleOnEnter(text) {
-    console.log(text);
-    // TODO
+    appendUserRequest(text);
   }
 
   return (
@@ -115,13 +115,13 @@ export default function MeetingPage() {
           </div>
         </div>
       </div>
-      <div className="h-full w-full px-4 mx-auto md:px-10 flex flex-col lg:flex-row lg:gap-3">
-        <div className="h-3/6 relative flex flex-col text-small lg:h-full lg:w-1/2">
+      <div className="h-full w-full px-4 mx-auto md:px-10 md:pb-4 flex flex-col lg:flex-row lg:gap-3">
+        <div className="h-3/6 relative flex flex-col text-small lg:h-full lg:w-1/2 lg:border-b-1 border-real-blue-500/50 lg:border-x-1">
           <Transcript/>
         </div>
-        <div className="h-3/6 relative flex flex-col lg:h-full lg:w-1/2">
+        <div className="h-3/6 relative flex flex-col lg:h-full lg:w-1/2 lg:border-x-1 border-real-blue-500/50 lg:border-b-1">
           <ActionChatPanel/>
-          <div className="px-4 py-2 border-white/30 border-t-1 border-x-1 rounded-t-lg  journal_mode">
+          <div className="px-1 py-1 border-white/30 border-t-1 border-x-1 rounded-t-lg  journal_mode md:border-b-1 md:rounded-b-lg md:mx-2 md:mb-2">
             <InputEmoji
               value={text}
               onChange={setText}

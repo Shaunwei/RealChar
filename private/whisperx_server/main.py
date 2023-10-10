@@ -61,5 +61,5 @@ async def transcribe(audio_file: UploadFile = File(...), metadata: str = Form(de
             latency.pop(0)
             timestamp.pop(0)
         return result
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except:
+        raise

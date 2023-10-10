@@ -66,10 +66,12 @@ class WhisperX:
         compute_type = "float16" if self.device.startswith("cuda") else "default"
         log(f"Loading [WhisperX Server] model: [{MODEL}]({self.device}) ...")
         self.model = whisperx.load_model(MODEL, self.device, compute_type=compute_type)
-        self.align = [
-            whisperx.load_align_model(language_code=language_code, device=self.device)
+        self.align = {
+            language_code: whisperx.load_align_model(
+                language_code=language_code, device=self.device
+            )
             for language_code in ALIGN_MODEL_LANGUAGE_CODE
-        ]
+        }
         self.diarize_model = whisperx.DiarizationPipeline(
             model_name="pyannote/speaker-diarization",
             device=self.device,

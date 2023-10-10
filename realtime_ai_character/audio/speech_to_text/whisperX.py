@@ -84,10 +84,12 @@ class WhisperX(Singleton, SpeechToText):
                 device_index=0,
                 compute_type=compute_type,
             )
-            self.align = [
-                whisperx.load_align_model(language_code=language_code, device=self.device)
+            self.align = {
+                language_code: whisperx.load_align_model(
+                    language_code=language_code, device=self.device
+                )
                 for language_code in ALIGN_MODEL_LANGUAGE_CODE
-            ]
+            }
             self.diarize_model = whisperx.DiarizationPipeline(
                 model_name="pyannote/speaker-diarization",
                 device=self.device,

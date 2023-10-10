@@ -10,15 +10,18 @@ from enum import Enum
 from functools import reduce
 from fastapi import (
     APIRouter,
+    HTTPException,
     Depends,
     Request,
     Response,
     WebSocket,
     WebSocketDisconnect,
     Query,
+    status as http_status,
 )
 import numpy as np
 from twilio.twiml.voice_response import VoiceResponse, Connect
+from twilio.rest import Client
 import torch
 from typing import Callable
 
@@ -34,6 +37,8 @@ from realtime_ai_character.llm.base import (
     AsyncCallbackTextHandler,
 )
 from realtime_ai_character.logger import get_logger
+from realtime_ai_character.twilio.twilio_outgoing_call import MakeTwilioOutgoingCallRequest
+from realtime_ai_character.twilio.utils import is_valid_e164
 from realtime_ai_character.utils import (
     ConversationHistory,
     build_history,
@@ -69,6 +74,30 @@ MEDIA_SAMPLE_RATE = 8000  # 8000hz sample rate
 FRAME_INTERVAL_MS = 20    # 20 ms
 LEN_PER_FRAME = MEDIA_SAMPLE_RATE * \
     FRAME_INTERVAL_MS / 1000  # each sample is 8 bit
+
+
+@twilio_router.post("/call")
+async def call_websocket(request: Request, req: MakeTwilioOutgoingCallRequest):
+    client = Client(os.getenv("TWILIO_ACCOUNT_SID", ""),
+                    os.getenv("TWILIO_ACCESS_TOKEN", ""))
+
+    to = req.target_number
+    from_ = req.source_number
+
+    if not is_valid_e164(to):
+        raise HTTPException(status_code=http_status.HTTP_400_BAD_REQUEST,
+                            detail="target_number must be of e.164 format")
+
+    if not is_valid_e164(from_):
+        raise HTTPException(status_code=http_status.HTTP_400_BAD_REQUEST,
+                            detail="target_number must be of e.164 format")
+
+    _ = client.calls.create(
+        to=to,
+        from_=from_,
+        url=f"https://{request.url.hostname}/twilio/voice",
+        method="GET"
+    )
 
 
 @twilio_router.get("/voice")

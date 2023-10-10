@@ -67,6 +67,15 @@ export default function Chat() {
                 <p className="w-fit max-w-[450px] py-2 px-5 font-light flex-none rounded-3xl rounded-br-none bg-real-blue-500/50">{line.content}</p>
               </div>
             )
+          } else if (line && line.hasOwnProperty('from') && line.from === 'message') {
+            return (
+              <div
+                key={line.timestamp}
+                className="self-center"
+              >
+                <p className="text-tiny text-real-silver-500">{line.content}</p>
+              </div>
+            )
           }
         })
       }

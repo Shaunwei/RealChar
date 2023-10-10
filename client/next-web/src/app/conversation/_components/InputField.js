@@ -4,18 +4,49 @@ import InputEmoji from 'react-input-emoji';
 import { IoIosSend } from 'react-icons/io';
 import ClickToTalk from './ClickToTalk';
 import InputAddition from './InputAddition';
-import {useAppStore} from "@/zustand/store";
+
+import { useAppStore } from "@/zustand/store";
+import { handleCommand } from '@/util/stringUtil.js';
 
 export default function InputField() {
   const [text, setText] = useState('');
-  const {sendOverSocket, appendUserChat} = useAppStore();
+  const {
+    sendOverSocket,
+    appendUserChat,
+    appendChatMsg,
+    callOutgoing,
+  } = useAppStore();
   const {stopAudioPlayback} = useAppStore();
 
   function handleOnEnter() {
     if (text) {
       stopAudioPlayback();
       appendUserChat(text);
-      sendOverSocket(text);
+      if (text.startsWith('/')) {
+        // command
+        const command = handleCommand(text);
+        switch(command.action) {
+          case 'call':
+            if (command.options.hasOwnProperty('number') &&
+              command.options.number.match(/^\d+$/g)
+            ) {
+              // call endpoint
+              callOutgoing(command.options.number);
+            } else {
+              setTimeout(() => {
+                appendChatMsg('Please provide correct number option');
+              }, 100);
+            }
+            break;
+          default:
+            setTimeout(() => {
+              appendChatMsg('Unknown command');
+            }, 100);
+            break;
+        }
+      } else {
+        sendOverSocket(text);
+      }
       setText('');
     }
   }
@@ -36,7 +67,7 @@ export default function InputField() {
         </div>
         <div className="flex flex-row justify-between items-center">
           <div className="pl-2 flex flex-row gap-1">
-            <InputAddition/>
+            <InputAddition setText={setText}/>
             <div></div>
           </div>
           <div className="mr-4 h-10">

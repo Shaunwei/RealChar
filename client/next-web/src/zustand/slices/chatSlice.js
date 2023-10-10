@@ -29,6 +29,11 @@ export const createChatSlice = (set, get) => ({
           chatContent: [...state.chatContent, {timestamp: `${Date.now()}`, from: 'user', content: chat}]
       }));
   },
+  appendChatMsg: (chat) => {
+    set((state) => ({
+      chatContent: [...state.chatContent, { timestamp: `${Date.now()}`, from: 'message', content: chat }]
+    }));
+  },
   clearChatContent: () => {
       set({chatContent: [], interimChat: null});
   },

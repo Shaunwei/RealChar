@@ -10,13 +10,14 @@ import { AiOutlinePlusCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 import { FiPhoneCall } from 'react-icons/fi';
 import { useAppStore } from "@/zustand/store";
 
-export default function InputAddition() {
+export default function InputAddition({
+  setText
+}) {
   const { sendOverSocket, appendUserChat } = useAppStore();
   async function handleMenuClick(key) {
     switch(key) {
       case 'call':
-        appendUserChat('/call');
-        sendOverSocket('/call');
+        setText('/call number:');
         return;
       default:
         return;

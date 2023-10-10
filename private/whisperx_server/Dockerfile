@@ -13,7 +13,7 @@ COPY *.mp3 /whisperx_server/
 # RUN bash -i /whisperx_server/setup.sh
 RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
-RUN pip install git+https://github.com/m-bain/whisperx.git@e94b9043085c32c365b2b60f23e73b2d03c2241c
+RUN pip install git+https://github.com/m-bain/whisperx.git@051047bb25b740fed2ea93ca737499c37e8dc9d4
 RUN pip install opencc
 RUN pip install "fastapi[all]"
 RUN pip cache purge

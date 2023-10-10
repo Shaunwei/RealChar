@@ -92,7 +92,6 @@ class WhisperX(Singleton, SpeechToText):
                 for language_code in ALIGN_MODEL_LANGUAGE_CODE
             }
             self.diarize_model = whisperx.DiarizationPipeline(
-                model_name="pyannote/speaker-diarization",
                 device=self.device,
                 use_auth_token=os.getenv("HUGGING_FACE_ACCESS_TOKEN"),
             )
@@ -128,17 +127,17 @@ class WhisperX(Singleton, SpeechToText):
             )
         else:
             result = self._transcribe_api(
-                audio_bytes, platform, prompt, language, suppress_tokens, diarization=False
+                audio_bytes, platform, prompt, language, suppress_tokens, diarization=True
             )
-        try:
-            transcript = [
-                # (int(seg['speaker'].split('_')[1]), seg["text"].strip())
-                (2, seg["text"].strip())
-                for seg in cast(dict, result)["segments"]
-            ]
-            return transcript
-        except:
-            return []
+        transcript = []
+        if result:
+            for seg in cast(dict, result)["segments"]:
+                if "speaker" in seg:
+                    speaker_id = int(seg["speaker"].split('_')[1]) + 1
+                else:
+                    speaker_id = 0
+                transcript.append((speaker_id, seg["text"].strip()))
+        return transcript
 
     def _transcribe(
         self,

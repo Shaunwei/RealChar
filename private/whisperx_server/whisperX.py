@@ -73,7 +73,6 @@ class WhisperX:
             for language_code in ALIGN_MODEL_LANGUAGE_CODE
         }
         self.diarize_model = whisperx.DiarizationPipeline(
-            model_name="pyannote/speaker-diarization",
             device=self.device,
             use_auth_token=HF_ACCESS_TOKEN,
         )

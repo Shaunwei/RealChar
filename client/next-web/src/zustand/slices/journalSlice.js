@@ -199,8 +199,8 @@ export const createJournalSlice = (set, get) => ({
     set({transcriptContent: [
       ...get().transcriptContent,
       {
-        name: 'Speaker ' + speakerId,
-        color_id: 1 + Number(speakerId),
+        name: speakerId == '0' ? "Unknown Speaker" : 'Speaker ' + speakerId,
+        color_id: Number(speakerId),
         content: text,
         timestamp: Date.now(),
       }

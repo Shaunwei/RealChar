@@ -399,7 +399,12 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 print(f"\033[36mreceived binary_data: {len(binary_data)} bytes\033[0m")
                 # Handle journal mode
                 if journal_mode:
-                    for speaker_id, text in speech_to_text.transcribe_diarize(binary_data):
+                    prompt = " ".join(text for _, text in journal_history)
+                    for speaker_id, text in speech_to_text.transcribe_diarize(
+                        binary_data,
+                        platform=platform,
+                        prompt=prompt,
+                    ):
                         await manager.send_message(
                             message=f'[+transcript]?speakerId={speaker_id}&text={text}',
                             websocket=websocket

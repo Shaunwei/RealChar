@@ -2,6 +2,7 @@ import io
 import os
 import types
 import json
+from typing import cast
 
 import requests
 import numpy as np
@@ -123,17 +124,21 @@ class WhisperX(Singleton, SpeechToText):
         logger.info("Transcribing audio...")
         if self.use == "local":
             result = self._transcribe(
-                audio_bytes, platform, prompt, language, suppress_tokens
+                audio_bytes, platform, prompt, language, suppress_tokens, diarization=True
             )
         else:
             result = self._transcribe_api(
-                audio_bytes, platform, prompt, language, suppress_tokens
+                audio_bytes, platform, prompt, language, suppress_tokens, diarization=False
             )
-        if result is None:
-            return ""
-        # transcript = [(seg["speaker"], seg["text"].strip()) for seg in result["segments"]]
-        transcript = [("0", seg["text"].strip()) for seg in result["segments"]]
-        return transcript
+        try:
+            transcript = [
+                # (int(seg['speaker'].split('_')[1]), seg["text"].strip())
+                (2, seg["text"].strip())
+                for seg in cast(dict, result)["segments"]
+            ]
+            return transcript
+        except:
+            return []
 
     def _transcribe(
         self,

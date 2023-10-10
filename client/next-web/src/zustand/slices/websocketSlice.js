@@ -45,6 +45,9 @@ export const createWebsocketSlice = (set, get) => ({
             } else if (message.startsWith('[+&]')) {
                 let msg = message.split('[+&]');
                 get().appendSpeechInterim(msg[1]);
+            } else if (message.startsWith('[+transcript]')) {
+                let msg = message.split('?speakerId=')[1].split('&text=');
+                get().appendTranscriptContent(msg[0], msg[1]);
             } else {
                 get().setSender('character');
                 get().appendInterimChatContent(event.data);

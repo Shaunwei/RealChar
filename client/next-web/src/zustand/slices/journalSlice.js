@@ -195,8 +195,16 @@ export const createJournalSlice = (set, get) => ({
     });
   },
   transcriptContent: demoMeeting,
-  appendTranscriptContent: () => {
-    // TODO
+  appendTranscriptContent: (speakerId, text) => {
+    set({transcriptContent: [
+      ...get().transcriptContent,
+      {
+        name: 'Speaker' + speakerId,
+        color_id: 1 + Number(speakerId),
+        content: text,
+        timestamp: Date.now(),
+      }
+    ]})
   },
   actionContent: demoActions,
   appendUserRequest: (text) => {

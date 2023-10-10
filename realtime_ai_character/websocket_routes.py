@@ -397,6 +397,17 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
             elif 'bytes' in data:
                 binary_data = data['bytes']
                 print(f"\033[36mreceived binary_data: {len(binary_data)} bytes\033[0m")
+                # Handle journal mode
+                if journal_mode:
+                    for speaker_id, text in speech_to_text.transcribe_diarize(binary_data):
+                        await manager.send_message(
+                            message=f'[+transcript]?speakerId={speaker_id}&text={text}',
+                            websocket=websocket
+                        )
+                        journal_history.append((speaker_id, text))
+                        print(f"\033[36mjournal_history: {journal_history}\033[0m")
+                    continue
+
                 # 0. Handle interim speech.
                 if speech_recognition_interim:
                     interim_transcript: str = (

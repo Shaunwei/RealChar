@@ -113,6 +113,25 @@ class WhisperX(Singleton, SpeechToText):
             return ""
         text = " ".join([seg["text"].strip() for seg in result["segments"]])
         return text
+    
+    @timed
+    def transcribe_diarize(
+        self, audio_bytes, platform="web", prompt="", language="auto", suppress_tokens=[-1]
+    ):
+        logger.info("Transcribing audio...")
+        if self.use == "local":
+            result = self._transcribe(
+                audio_bytes, platform, prompt, language, suppress_tokens
+            )
+        else:
+            result = self._transcribe_api(
+                audio_bytes, platform, prompt, language, suppress_tokens
+            )
+        if result is None:
+            return ""
+        # transcript = [(seg["speaker"], seg["text"].strip()) for seg in result["segments"]]
+        transcript = [("0", seg["text"].strip()) for seg in result["segments"]]
+        return transcript
 
     def _transcribe(
         self,

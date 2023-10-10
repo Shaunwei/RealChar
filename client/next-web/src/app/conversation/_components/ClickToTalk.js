@@ -53,7 +53,7 @@ export default function ClickToTalk({
               radius="full"
               size="md"
               onPress={stopTalk}
-              className="bg-real-navy"
+              className="bg-real-blue-500"
             >
               <BsCheckLg size="1.5em" />
             </Button>
@@ -65,7 +65,7 @@ export default function ClickToTalk({
             radius="full"
             size="md"
             onPress={stopTalk}
-            className="bg-real-navy z-10"
+            className="bg-real-blue-500 z-10"
           >
             <BsCheckLg size="1.5em"/>
           </Button>

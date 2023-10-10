@@ -43,7 +43,7 @@ export default function InputField() {
             ) : (
               <Button
                 size="md"
-                className="bg-real-navy px-2 min-w-fit sm:min-w-16 sm:px-4 md:flex h-9 disabled:bg-transparent"
+                className="bg-real-blue-500 px-2 min-w-fit sm:min-w-16 sm:px-4 md:flex h-9 disabled:bg-transparent"
                 onPress={handleOnEnter}
               >
                 <IoIosSend size="2em" />
@@ -72,7 +72,7 @@ export default function InputField() {
             <Button
               size="md"
               isDisabled={text === ''}
-              className="bg-real-navy px-2 min-w-fit sm:min-w-16 sm:px-4 md:flex h-9 disabled:bg-transparent"
+              className="bg-real-blue-500 px-2 min-w-fit sm:min-w-16 sm:px-4 md:flex h-9 disabled:bg-transparent"
               onPress={handleOnEnter}
             >
               <IoIosSend size="2em" />

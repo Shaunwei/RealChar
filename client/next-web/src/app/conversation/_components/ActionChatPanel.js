@@ -18,7 +18,7 @@ export default function ActionPanel() {
 
   return (
     <>
-      <h2 className="py-1 px-4 bg-real-blue-500/90 text-small md:text-base font-medium sticky top-0 lg:top-24 z-10">Highlights and Actions</h2>
+      <h2 className="py-1 px-4 bg-real-blue-500/90 text-small md:text-base font-medium sticky top-0 lg:top-24 z-[1]">Highlights and Actions</h2>
       <div className="grow overflow-y-auto">
         <div className="hidden h-[90px] lg:flex"></div>
         <ul className="flex flex-col gap-2 p-4 text-tiny">

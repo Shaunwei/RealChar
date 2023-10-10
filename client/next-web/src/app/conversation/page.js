@@ -175,6 +175,15 @@ export default function Conversation() {
       setCharacter({});
   }
 
+  // for journal mode
+  useEffect(() => {
+    if (isJournalMode) {
+      enableVAD();
+    } else {
+      disableVAD();
+    }
+  }, [isJournalMode])
+
   return (
     <div className="relative h-screen conversation_container">
       <audio ref={audioPlayerRef} className='audio-player'>

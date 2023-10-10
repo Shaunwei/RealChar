@@ -117,6 +117,7 @@ async def websocket_endpoint(websocket: WebSocket,
                              use_search: bool = Query(default=False),
                              use_quivr: bool = Query(default=False),
                              use_multion: bool = Query(default=False),
+                             journal_mode: bool = Query(default=False),
                              db: Session = Depends(get_db),
                              catalog_manager=Depends(get_catalog_manager),
                              memory_manager=Depends(get_memory_manager),
@@ -148,7 +149,7 @@ async def websocket_endpoint(websocket: WebSocket,
         main_task = asyncio.create_task(
             handle_receive(websocket, session_id, user_id, db, llm, catalog_manager,
                            memory_manager, character_id, platform, use_search, use_quivr,
-                           use_multion, speech_to_text, default_text_to_speech, language,
+                           use_multion, journal_mode, speech_to_text, default_text_to_speech, language,
                            session_auth_result.is_existing_session))
 
         await asyncio.gather(main_task)
@@ -161,7 +162,7 @@ async def websocket_endpoint(websocket: WebSocket,
 async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db: Session,
                          llm: LLM, catalog_manager: CatalogManager, memory_manager: MemoryManager,
                          character_id: str, platform: str, use_search: bool, use_quivr: bool,
-                         use_multion: bool, speech_to_text: SpeechToText,
+                         use_multion: bool, journal_mode: bool, speech_to_text: SpeechToText,
                          default_text_to_speech: TextToSpeech,
                          language: str, load_from_existing_session: bool = False):
     try:
@@ -266,14 +267,24 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
         speech_recognition_interim = False
         current_speech = ''
 
+        journal_mode = False
+        journal_history = []
+
         while True:
             data = await websocket.receive()
             if data['type'] != 'websocket.receive':
                 raise WebSocketDisconnect('disconnected')
+            
+            # Handle journal mode text-to-speech
+            _text_to_speech = None if journal_mode else text_to_speech
+            print(f"\033[36mjournal_mode: {journal_mode}\033[0m")
+            print(f"\033[36m_text_to_speech: {repr(_text_to_speech)}\033[0m")
+
             # handle text message
             if 'text' in data:
                 timer.start("LLM First Token")
                 msg_data = data['text']
+                print(f"\033[36mreceived msg_data: {msg_data}\033[0m")
                 # Handle client side commands
                 if msg_data.startswith('[!'):
                     command_end = msg_data.find(']')
@@ -281,7 +292,11 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     command_content = msg_data[command_end + 1:]
                     if command == 'USE_SEARCH':
                         use_search = (command_content == 'true')
+                    elif command == "JOURNAL_MODE":
+                        journal_mode = (command_content == 'true')
+                        print(f"\033[36mcontent: {command_content}\033[0m")
                     continue
+                
                 # 0. itermidiate transcript starts with [&]
                 if msg_data.startswith('[&]'):
                     logger.info(f'intermediate transcript: {msg_data}')
@@ -295,9 +310,10 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                             callback=AsyncCallbackTextHandler(
                                 on_new_token, []),
                             audioCallback=AsyncCallbackAudioHandler(
-                                text_to_speech, websocket, tts_event,
+                                _text_to_speech, websocket, tts_event,
                                 character.voice_id)))
                     continue
+
                 # 1. Whether client will send speech interim audio clip in the next message.
                 if msg_data.startswith('[&Speech]'):
                     speech_recognition_interim = True
@@ -338,7 +354,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     callback=AsyncCallbackTextHandler(on_new_token,
                                                       token_buffer),
                     audioCallback=AsyncCallbackAudioHandler(
-                        text_to_speech, websocket, tts_event, character.voice_id),
+                        _text_to_speech, websocket, tts_event, character.voice_id),
                     character=character,
                     useSearch=use_search,
                     useQuivr=use_quivr,
@@ -380,6 +396,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
             # handle binary message(audio)
             elif 'bytes' in data:
                 binary_data = data['bytes']
+                print(f"\033[36mreceived binary_data: {len(binary_data)} bytes\033[0m")
                 # 0. Handle interim speech.
                 if speech_recognition_interim:
                     interim_transcript: str = (
@@ -469,7 +486,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                                   on_new_token, token_buffer,
                                   tts_task_done_call_back),
                               audioCallback=AsyncCallbackAudioHandler(
-                                  text_to_speech, websocket, tts_event,
+                                  _text_to_speech, websocket, tts_event,
                                   character.voice_id),
                               character=character,
                               useSearch=use_search,

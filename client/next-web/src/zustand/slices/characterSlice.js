@@ -5,8 +5,8 @@ import {
   uploadFile,
   getCharacter,
   deleteCharacter,
-  editCharacter
-} from "@/util/apiClient";
+  editCharacter,
+} from '@/util/apiClient';
 
 const user_prompt = `
 Context
@@ -80,44 +80,49 @@ export const createCharacterSlice = (set, get) => ({
   ttsOptions: [
     {
       value: 'ELEVEN_LABS',
-      text: 'Eleven Labs'
-    }, {
+      text: 'Eleven Labs',
+    },
+    {
       value: 'GOOGLE_TTS',
-      text: 'Google TTS'
-    }, {
+      text: 'Google TTS',
+    },
+    {
       value: 'UNREAL_SPEECH',
-      text: 'Unreal Speech'
-    }, {
+      text: 'Unreal Speech',
+    },
+    {
       value: 'EDGE_TTS',
-      text: 'Edge TTS'
-    }
+      text: 'Edge TTS',
+    },
   ],
   voiceOptions: {
     ELEVEN_LABS: [
       {
         label: 'Female',
-        voice_id: 'EXAVITQu4vr4xnSDxMaL'
-      }, {
+        voice_id: 'EXAVITQu4vr4xnSDxMaL',
+      },
+      {
         label: 'Male',
-        voice_id: 'ErXwobaYiN019PkySvjV'
-      }
+        voice_id: 'ErXwobaYiN019PkySvjV',
+      },
     ],
     GOOGLE_TTS: [
       {
         label: 'Female',
-        voice_id: 'en-US-Studio-O'
-      }, {
+        voice_id: 'en-US-Studio-O',
+      },
+      {
         label: 'Male',
-        voice_id: 'en-US-Studio-M'
-      }
-    ]
+        voice_id: 'en-US-Studio-M',
+      },
+    ],
   },
   setFormData: (newData) => {
     set((state) => ({
       formData: {
         ...state.formData,
-        ...newData
-      }
+        ...newData,
+      },
     }));
   },
   setBackgroundText: (value) => {
@@ -129,8 +134,8 @@ export const createCharacterSlice = (set, get) => ({
   setErrorMsg: (text) => {
     set({ errorMsg: text });
   },
-  setVoiceFiles: (files) => {
-    set({ voiceFiles: files });
+  addVoiceFile: (file) => {
+    set({ voiceFiles: [...get().voiceFiles, file] });
   },
   handleAvatarChange: (e) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -141,11 +146,7 @@ export const createCharacterSlice = (set, get) => ({
   handleBackgroundFiles: (e) => {
     set({ errorMsg: '' });
     const fileArray = Array.from(e.target.files);
-    const typeAllowed = [
-      'text/plain',
-      'text/csv',
-      'application/pdf'
-    ];
+    const typeAllowed = ['text/plain', 'text/csv', 'application/pdf'];
 
     for (let i = 0; i < fileArray.length; i++) {
       if (!typeAllowed.includes(fileArray[i].type)) {
@@ -161,24 +162,25 @@ export const createCharacterSlice = (set, get) => ({
       set({ errorMsg: '* Max 5 files are allowed.' });
       return;
     }
-    set((state) => ({ backgroundFiles: [...state.backgroundFiles, ...fileArray] }));
+    set((state) => ({
+      backgroundFiles: [...state.backgroundFiles, ...fileArray],
+    }));
   },
   handleDeleteFile: (name) => {
-    set((state) => ({ backgroundFiles: state.backgroundFiles.filter(file => file.name !== name) }));
+    set((state) => ({
+      backgroundFiles: state.backgroundFiles.filter(
+        (file) => file.name !== name
+      ),
+    }));
   },
   handleVoiceFiles: (e) => {
     set({ voiceErrorMsg: '' });
     const fileArray = Array.from(e.target.files);
-    const typeAllowed = [
-      'audio/wav',
-      'audio/mpeg',
-      'audio/mp3',
-      'audio/x-m4a',
-    ];
+    const typeAllowed = ['audio/wav', 'audio/mpeg', 'audio/mp3', 'audio/x-m4a'];
 
     for (let i = 0; i < fileArray.length; i++) {
       if (!typeAllowed.includes(fileArray[i].type)) {
-        set({ voiceErrorMsg: '* Only .wav, .mp3, .m4a files are allowed'});
+        set({ voiceErrorMsg: '* Only .wav, .mp3, .m4a files are allowed' });
         return;
       }
       if (fileArray[i].size > 5000000) {
@@ -193,7 +195,9 @@ export const createCharacterSlice = (set, get) => ({
     set((state) => ({ voiceFiles: [...state.voiceFiles, ...fileArray] }));
   },
   handleDeleteVoiceFile: (name) => {
-    set((state) => ({ voiceFiles: state.voiceFiles.filter(file => file.name !== name) }));
+    set((state) => ({
+      voiceFiles: state.voiceFiles.filter((file) => file.name !== name),
+    }));
   },
   autoGenerate: async () => {
     if (get().formData.name === '') {
@@ -203,8 +207,12 @@ export const createCharacterSlice = (set, get) => ({
     let pre_prompt = get().formData.system_prompt;
     try {
       let formData = { ...get().formData, system_prompt: 'Generating...' };
-      get().setFormData({...formData, system_prompt: 'Generating...'});
-      let res = await generateSystemPrompt(get().formData.name, get().backgroundText, get().token);
+      get().setFormData({ ...formData, system_prompt: 'Generating...' });
+      let res = await generateSystemPrompt(
+        get().formData.name,
+        get().backgroundText,
+        get().token
+      );
       get().setFormData({ ...formData, system_prompt: res.system_prompt });
     } catch (error) {
       console.error(error);
@@ -213,9 +221,9 @@ export const createCharacterSlice = (set, get) => ({
     }
   },
   cloneVoice: () => {
-    cloneVoice(get().voiceFiles, get().token).then((result)=>{
-      set({formData: {...get().formData, voice_id: result.voice_id}});
-      console.log("voice files uploaded.");
+    cloneVoice(get().voiceFiles, get().token).then((result) => {
+      set({ formData: { ...get().formData, voice_id: result.voice_id } });
+      console.log('voice files uploaded.');
     });
   },
 
@@ -247,7 +255,7 @@ export const createCharacterSlice = (set, get) => ({
       errorMsg: '',
       voiceErrorMsg: '',
       voiceFiles: [],
-    })
+    });
   },
   getCharacterForEdit: async (character) => {
     try {
@@ -267,7 +275,7 @@ export const createCharacterSlice = (set, get) => ({
         errorMsg: '',
         voiceErrorMsg: '',
         voiceFiles: [],
-      })
+      });
     } catch (err) {
       console.error(err);
       alert('Error getting character data');
@@ -291,5 +299,5 @@ export const createCharacterSlice = (set, get) => ({
       console.error(err);
       alert('Something Error, fail to delete');
     }
-  }
-})
+  },
+});

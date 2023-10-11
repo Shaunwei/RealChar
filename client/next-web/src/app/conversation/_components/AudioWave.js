@@ -3,41 +3,35 @@ import WaveSurfer from 'wavesurfer.js/dist/wavesurfer.esm';
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.esm';
 
 // WaveSurfer hook
-function useWsRecord(containerRef, options) {
+function useWsRecord(containerRef) {
   const [wsRecord, setWsRecord] = useState(null);
   // Initialize wavesurfer when the container mounts
   // or any of the props change
   useEffect(() => {
-    if (!containerRef.current) return
-
+    if (!containerRef.current) return;
     const ws = WaveSurfer.create({
-      ...options,
+      height: 40,
+      waveColor: '#6785D3',
+      barWidth: 3,
+      barGap: 2,
+      barRadius: 4,
       container: containerRef.current,
-    })
-
+    });
     // Initialize the Record Plugin
     const record = ws.registerPlugin(RecordPlugin.create());
-
     // use record plugin
-    setWsRecord(record)
-
+    setWsRecord(record);
     return () => {
-      ws.destroy()
-    }
-  }, [])
+      ws.destroy();
+    };
+  }, [containerRef]);
 
-  return wsRecord
+  return wsRecord;
 }
 
 export default function AudioWave({ isTalking }) {
   const containerRef = useRef();
-  const wsRecord = useWsRecord(containerRef, {
-    height: 40,
-    waveColor: "#6785D3",
-    barWidth: 3,
-    barGap: 2,
-    barRadius: 4,
-  });
+  const wsRecord = useWsRecord(containerRef);
   useEffect(() => {
     if (!wsRecord) return;
 
@@ -48,7 +42,5 @@ export default function AudioWave({ isTalking }) {
     }
   }, [wsRecord]);
 
-  return (
-    <div ref={containerRef}></div>
-  )
+  return <div ref={containerRef}></div>;
 }

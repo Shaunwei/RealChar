@@ -1,11 +1,9 @@
-import {
-  Button,
-  Radio,
-  RadioGroup
-} from '@nextui-org/react';
+import { Button, Radio, RadioGroup } from '@nextui-org/react';
 import { TbTrash } from 'react-icons/tb';
 import { useRef } from 'react';
 import { useAppStore } from '@/zustand/store';
+import { BsUpload } from 'react-icons/bs';
+import RecordButton from './RecordButton';
 
 export default function TTSVoice() {
   const uploaderRef = useRef(null);
@@ -18,7 +16,7 @@ export default function TTSVoice() {
     voiceFiles,
     cloneVoice,
     voiceErrorMsg,
-    handleDeleteVoiceFile
+    handleDeleteVoiceFile,
   } = useAppStore();
 
   function handleClick() {
@@ -32,12 +30,15 @@ export default function TTSVoice() {
         <RadioGroup
           orientation="horizontal"
           value={formData.tts}
-          onValueChange={(value) =>
-            setFormData({ tts: value })
-          }
+          onValueChange={(value) => setFormData({ tts: value })}
         >
-          {ttsOptions.map(option => (
-            <Radio key={option.value} value={option.value}>{option.text}</Radio>
+          {ttsOptions.map((option) => (
+            <Radio
+              key={option.value}
+              value={option.value}
+            >
+              {option.text}
+            </Radio>
           ))}
         </RadioGroup>
       </div>
@@ -47,32 +48,33 @@ export default function TTSVoice() {
           <RadioGroup
             orientation="horizontal"
             value={formData.voice_id}
-            onValueChange={(value) =>
-              setFormData({ voice_id: value })
-            }
+            onValueChange={(value) => setFormData({ voice_id: value })}
           >
-            {voiceOptions[formData.tts].map(voice => (
-              <Radio key={voice.label} value={voice.voice_id}>{voice.label}</Radio>
+            {voiceOptions[formData.tts].map((voice) => (
+              <Radio
+                key={voice.label}
+                value={voice.voice_id}
+              >
+                {voice.label}
+              </Radio>
             ))}
             {formData.tts === 'ELEVEN_LABS' && (
               <Radio value="placeholder">Clone a new voice</Radio>
             )}
           </RadioGroup>
-          <div className={formData.voice_id === 'placeholder' ? 'flex' : 'hidden'}>
+          <div
+            className={formData.voice_id === 'placeholder' ? 'flex' : 'hidden'}
+          >
             <div className="flex flex-col">
-              <div className="flex flex-row gap-10 mt-3">
+              <div className="flex flex-row gap-5 mt-3 items-center">
+                <RecordButton />
+                <span className="font-light">or</span>
                 <Button
                   onPress={handleClick}
                   className="bg-real-contrastBlue"
+                  startContent={<BsUpload />}
                 >
-                  Choose file
-                </Button>
-                <Button
-                  isDisabled={voiceFiles.length==0}
-                  onPress={cloneVoice}
-                  className="bg-real-contrastBlue"
-                >
-                  Clone voice
+                  Upload
                 </Button>
               </div>
               <input
@@ -83,9 +85,9 @@ export default function TTSVoice() {
                 className="hidden"
               />
               <p className="text-tiny text-danger">{voiceErrorMsg}</p>
-              {voiceFiles.length>0 && (
+              {voiceFiles.length > 0 && (
                 <ul className="mt-3">
-                  {voiceFiles.map(file => (
+                  {voiceFiles.map((file) => (
                     <li key={file.name}>
                       <p className="text-small flex flex-row gap-2">
                         <span>{file.name}</span>
@@ -102,6 +104,17 @@ export default function TTSVoice() {
                     </li>
                   ))}
                 </ul>
+              )}
+              {voiceFiles.length > 0 && (
+                <div className="mt-2">
+                  <Button
+                    isDisabled={voiceFiles.length == 0}
+                    onPress={cloneVoice}
+                    className="bg-real-contrastBlue"
+                  >
+                    Clone voice
+                  </Button>
+                </div>
               )}
             </div>
           </div>

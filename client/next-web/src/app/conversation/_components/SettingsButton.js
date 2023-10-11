@@ -18,6 +18,7 @@ export default function SettingsButton() {
     <Button
       isBlock
       isIconOnly
+      aria-label="settings"
       radius="full"
       variant="light"
       className="opacity-50 hover:bg-button"

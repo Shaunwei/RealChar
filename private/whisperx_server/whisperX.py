@@ -87,10 +87,11 @@ class WhisperX:
         suppress_tokens=[-1],
         diarization=False,
         speaker_audio_samples={},
+        additional_audio_bytes = [],
     ):
         log(f"Received {len(audio_bytes)} bytes of audio data. Language: {language}")
 
-        def get_audio(audio_bytes: bytes, verbose: bool = False):
+        def get_audio(audio_bytes: bytes, platform: str = "web", verbose: bool = False):
             if platform == "twilio":
                 reader = torchaudio.io.StreamReader(
                     io.BytesIO(audio_bytes), format="mulaw", option={"sample_rate": "8000"}
@@ -107,8 +108,10 @@ class WhisperX:
             return audio
         
         # prepare audio
-        gap = 4  # seconds between audio slices
-        audio = get_audio(audio_bytes, verbose=True)
+        gap = 2  # seconds between audio slices
+        audio = get_audio(audio_bytes, platform, verbose=True)
+        for _audio_bytes in additional_audio_bytes:
+            audio = np.concatenate([audio, get_audio(_audio_bytes, platform, verbose=True)])
         audio_end = len(audio) / 16000 + gap / 2
         speaker_mid = {}
         if diarization:
@@ -116,6 +119,9 @@ class WhisperX:
                 speaker_audio = get_audio(speaker_audio_sample)
                 audio = np.concatenate([audio, np.zeros(16000 * gap, np.float32), speaker_audio])
                 speaker_mid[id] = (len(audio) - len(speaker_audio) / 2) / 16000
+        print(f"audio length: {len(audio) / 16000:.2f} s")
+        # save audio for debug
+        torchaudio.save(f"/home/yiguo/Downloads/{time.time():.0f}.wav", torch.from_numpy(audio[None, :]), 16000)
         
         # transcribe
         language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, None)
@@ -126,6 +132,7 @@ class WhisperX:
         if not result["segments"]:
             return result
         language = result["language"]
+        print(f"result segments: {[(seg['text'], '{:.2f}'.format(seg['start']), '{:.2f}'.format(seg['end'])) for seg in result['segments']]}")
 
         # convert traditional chinese to simplified chinese
         if language == "zh":
@@ -154,16 +161,27 @@ class WhisperX:
 
         # truncate results and map speaker id
         transcript = {"segments": [], "language": language}
-        first_speaker_mid = min(speaker_mid.values(), default=float('inf'))
         for seg in result["segments"]:
+            seg_text = []
             seg_start = seg["start"]
             seg_end = seg["end"]
             if "words" in seg and seg["words"]:
-                seg_start = seg["words"][0]["start"]
-                seg_end = seg["words"][-1]["end"]
-            if seg_start < audio_end and seg_end < first_speaker_mid:
+                start_set = False
+                for word_seg in seg["words"]:
+                    if "start" in word_seg and "end" in word_seg:
+                        if word_seg["start"] > audio_end:
+                            break
+                        if not start_set:
+                            seg_start = word_seg["start"]
+                            start_set = True
+                        if word_seg["end"] > word_seg["start"] + gap / 2:
+                            seg_end = min(audio_end, word_seg["start"] + 0.5)
+                        else:
+                            seg_end = word_seg["end"]
+                        seg_text.append(word_seg["word"])
+            if seg_text:
                 _seg = {
-                    "text": seg["text"].strip(),
+                    "text": "".join(seg_text) if language == "zh" else " ".join(seg_text),
                     "start": seg_start,
                     "end": seg_end,
                 }

@@ -195,7 +195,7 @@ export const createJournalSlice = (set, get) => ({
     });
   },
   transcriptContent: demoMeeting,
-  transcriptSpeakers: [""],
+  transcriptSpeakers: [''],
   appendTranscriptContent: (speakerId, text) => {
     if (!get().transcriptSpeakers.includes(speakerId)) {
       set({ transcriptSpeakers: [...get().transcriptSpeakers, speakerId] });
@@ -205,7 +205,7 @@ export const createJournalSlice = (set, get) => ({
       transcriptContent: [
         ...get().transcriptContent,
         {
-          name: speakerId == "" ? "Unknown Speaker" : "Speaker " + speakerId,
+          name: speakerId == '' ? 'Unknown Speaker' : 'Speaker ' + speakerId,
           color_id: color_id,
           content: text,
           timestamp: Date.now(),
@@ -215,18 +215,16 @@ export const createJournalSlice = (set, get) => ({
   },
   actionContent: demoActions,
   appendUserRequest: (text) => {
-    set({
-      actionContent: [
-        ...get().actionContent,
-        {
-          type: 'user',
-          timestamp: `${Date.now()}`,
-          content: text,
-        },
-      ],
-    });
+    set({actionContent: [
+      ...get().actionContent,
+      {
+        type: 'user',
+        timestamp: `${Date.now()}`,
+        content: text,
+      }
+    ]})
   },
-  appendCharacterResponse: (text) => {
+  appendCharacterResponse: text => {
     set({
       actionContent: [
         ...get().actionContent,

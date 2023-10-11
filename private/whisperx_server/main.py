@@ -53,6 +53,10 @@ async def transcribe(request: Request, metadata: str = Form(...)):
     # parse audio
     data = await request.form()
     audio_bytes = await cast(UploadFile, data.get("audio_file")).read()
+    idx = sorted([key for key in data.keys() if key.startswith("additional_audio_file_")])
+    additional_audio_bytes = [
+        await cast(UploadFile, data.get(key)).read() for key in idx
+    ]
     speaker_audio_samples = {
         key.split("speaker_audio_sample_")[1]: await cast(UploadFile, file).read()
         for key, file in data.items()
@@ -63,7 +67,7 @@ async def transcribe(request: Request, metadata: str = Form(...)):
 
     # transcribe
     result = whisperx.transcribe(
-        audio_bytes, platform, initial_prompt, language, suppress_tokens, diarization, speaker_audio_samples
+        audio_bytes, platform, initial_prompt, language, suppress_tokens, diarization, speaker_audio_samples, additional_audio_bytes
     )
 
     elapsed = perf_counter() - start

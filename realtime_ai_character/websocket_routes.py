@@ -269,6 +269,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
 
         journal_mode = False
         journal_history = []
+        audio_bytes_buffer = []
+        audio_bytes_buffer_duration = 0
         speaker_audio_samples = {}
 
         while True:
@@ -280,6 +282,9 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
             _text_to_speech = None if journal_mode else text_to_speech
             print(f"\033[36mjournal_mode: {journal_mode}\033[0m")
             print(f"\033[36m_text_to_speech: {repr(_text_to_speech)}\033[0m")
+
+            # show latency info
+            timer.report()
 
             # handle text message
             if 'text' in data:
@@ -400,24 +405,77 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 print(f"\033[36mreceived binary_data: {len(binary_data)} bytes\033[0m")
                 # Handle journal mode
                 if journal_mode:
-                    print(f"\033[36mregistered speakers: {[(key, len(value)) for key, value in speaker_audio_samples.items()]}\033[0m")
-                    prompt = " ".join(text for _, text in journal_history[-10:])
+                    # accumulate audio bytes long enough before transcription
+                    try:
+                        probe = ffmpeg.probe("pipe:0", input=binary_data)
+                        duration = float(probe['streams'][0]['duration'])
+                    except Exception as e:
+                        print(f"\033[36mfailed to probe audio duration: {e.stderr.decode('utf8')}\033[0m")
+                        raise
+                    print(f"\033[36maudio duration: {duration:.2f} s\033[0m")
+                    if audio_bytes_buffer_duration < 5:
+                        audio_bytes_buffer.append(binary_data)
+                        audio_bytes_buffer_duration += duration
+                        continue
+                    if len(audio_bytes_buffer) > 1:
+                        inputs = [ffmpeg.input('pipe:0') for _ in audio_bytes_buffer]
+                        audio_bytes, _ = (
+                            ffmpeg.concat(*inputs, v=0, a=1)
+                            .output('pipe:1')
+                            .run(input=b''.join(audio_bytes_buffer), capture_stdout=True, capture_stderr=True)
+                        )
+                    else:
+                        audio_bytes = audio_bytes_buffer[0]
+                    audio_bytes_buffer.clear()
+                    audio_bytes_buffer_duration = 0
+                    # get transcript
+                    prompt = " ".join(text for _, text in journal_history[-5:])
                     segments = speech_to_text.transcribe_diarize(
-                        binary_data,
+                        audio_bytes,
                         platform=platform,
                         prompt=prompt,
                         speaker_audio_samples=speaker_audio_samples,
                     )
-                    for speaker_id, text, seg_start, seg_end in segments:
-                        print(f"\033[36msegment:\nspeaker = {speaker_id}\ntext = {text}\nstart, end = {seg_start}, {seg_end}\033[0m")
+                    # join adjacent segments with the same speaker
+                    joined_speaker, joined_text, joined_start, joined_end = "", "", 0, 0
+                    while segments:
+                        seg_speaker, seg_text, seg_start, seg_end = segments.pop(0)
+                        print(f"\033[36msegment:\nspeaker = {seg_speaker}\ntext = {seg_text}\nstart, end = {seg_start}, {seg_end}\033[0m")
+                        if not joined_text:
+                            joined_speaker = seg_speaker
+                            joined_text = seg_text
+                            joined_start = seg_start
+                            joined_end = seg_end
+                            if segments:
+                                continue
+                        elif seg_speaker == joined_speaker:
+                            joined_text += ' ' + seg_text
+                            joined_end = seg_end
+                            if segments:
+                                continue
+                        # register new speaker
+                        if joined_speaker not in speaker_audio_samples and joined_end - joined_start > 4:
+                            duration = min(joined_end - joined_start, 6)
+                            in_stream = ffmpeg.input('pipe:0')
+                            out_stream = (
+                                in_stream
+                                .output('pipe:1', format='mp3', ss=joined_start, t=duration)
+                                .run(capture_stdout=True, capture_stderr=True, input=audio_bytes)
+                            )
+                            speaker_audio_samples[joined_speaker] = out_stream[0]
+                        if joined_speaker not in speaker_audio_samples:
+                            joined_speaker = ""
+                        # send transcript and advance
                         await manager.send_message(
-                            message=f'[+transcript]?speakerId={speaker_id}&text={text}',
+                            message=f"[+transcript]?speakerId={joined_speaker}&text={joined_text}",
                             websocket=websocket
                         )
-                        journal_history.append((speaker_id, text))
-                        # register new speaker
-                        if speaker_id not in speaker_audio_samples and len(segments) == 1 and 2 < seg_end - seg_start < 5:
-                            speaker_audio_samples[speaker_id] = binary_data
+                        journal_history.append((joined_speaker, joined_text))
+                        joined_speaker = seg_speaker
+                        joined_text = seg_text
+                        joined_start = seg_start
+                        joined_end = seg_end
+                    print(f"\033[36mregistered speakers: {[(key, len(value)) for key, value in speaker_audio_samples.items()]}\033[0m")
                     print(f"\033[36mjournal_history: {journal_history}\033[0m")
                     continue
 
@@ -519,8 +577,6 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                               quivrApiKey=quivr_info.quivr_api_key if quivr_info else None,
                               quivrBrainId=quivr_info.quivr_brain_id if quivr_info else None,
                               user_id=user_id if user_id != session_id else None))
-            # log latency info
-            timer.report()
 
     except WebSocketDisconnect:
         logger.info(f"User #{user_id} closed the connection")

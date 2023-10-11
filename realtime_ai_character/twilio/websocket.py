@@ -83,6 +83,8 @@ async def call_websocket(request: Request, req: MakeTwilioOutgoingCallRequest):
 
     to = req.target_number
     from_ = req.source_number
+    if from_ is None:
+        from_ = os.getenv("DEFAULT_CALLOUT_NUMBER", "")
 
     if not is_valid_e164(to):
         raise HTTPException(status_code=http_status.HTTP_400_BAD_REQUEST,

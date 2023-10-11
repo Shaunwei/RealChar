@@ -17,14 +17,14 @@ with open(audio_file, "rb") as f:
 
 
 def test(verbose=True):
-    files = {"audio_file": ("audio_file", audio_bytes)}
+    files = {"audio_file": ("", audio_bytes)}
     metadata = {
         "api_key": api_key,
         "platform": platform,
         "initial_prompt": "",
         "language": "en-US",
         "suppress_tokens": [-1],
-        "diarization": False,
+        "diarization": True,
     }
     data = {"metadata": json.dumps(metadata)}
     start = perf_counter()

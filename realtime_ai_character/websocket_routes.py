@@ -269,6 +269,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
 
         journal_mode = False
         journal_history = []
+        speaker_audio_samples = {}
 
         while True:
             data = await websocket.receive()
@@ -399,18 +400,25 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 print(f"\033[36mreceived binary_data: {len(binary_data)} bytes\033[0m")
                 # Handle journal mode
                 if journal_mode:
-                    prompt = " ".join(text for _, text in journal_history)
-                    for speaker_id, text in speech_to_text.transcribe_diarize(
+                    print(f"\033[36mregistered speakers: {[(key, len(value)) for key, value in speaker_audio_samples.items()]}\033[0m")
+                    prompt = " ".join(text for _, text in journal_history[-10:])
+                    segments = speech_to_text.transcribe_diarize(
                         binary_data,
                         platform=platform,
                         prompt=prompt,
-                    ):
+                        speaker_audio_samples=speaker_audio_samples,
+                    )
+                    for speaker_id, text, seg_start, seg_end in segments:
+                        print(f"\033[36msegment:\nspeaker = {speaker_id}\ntext = {text}\nstart, end = {seg_start}, {seg_end}\033[0m")
                         await manager.send_message(
                             message=f'[+transcript]?speakerId={speaker_id}&text={text}',
                             websocket=websocket
                         )
                         journal_history.append((speaker_id, text))
-                        print(f"\033[36mjournal_history: {journal_history}\033[0m")
+                        # register new speaker
+                        if speaker_id not in speaker_audio_samples and len(segments) == 1 and 2 < seg_end - seg_start < 5:
+                            speaker_audio_samples[speaker_id] = binary_data
+                    print(f"\033[36mjournal_history: {journal_history}\033[0m")
                     continue
 
                 # 0. Handle interim speech.

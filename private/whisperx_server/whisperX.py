@@ -86,51 +86,105 @@ class WhisperX:
         language="auto",
         suppress_tokens=[-1],
         diarization=False,
+        speaker_audio_samples={},
     ):
         log(f"Received {len(audio_bytes)} bytes of audio data. Language: {language}")
 
-        if platform == "twilio":
-            reader = torchaudio.io.StreamReader(
-                io.BytesIO(audio_bytes), format="mulaw", option={"sample_rate": "8000"}
-            )
-        else:
-            reader = torchaudio.io.StreamReader(io.BytesIO(audio_bytes))
-        reader.add_basic_audio_stream(1000, sample_rate=16000)
-        wav = torch.concat([chunk[0] for chunk in reader.stream()])  # type: ignore
-        audio = wav.mean(dim=1).flatten().numpy().astype(np.float32)
+        def get_audio(audio_bytes: bytes, verbose: bool = False):
+            if platform == "twilio":
+                reader = torchaudio.io.StreamReader(
+                    io.BytesIO(audio_bytes), format="mulaw", option={"sample_rate": "8000"}
+                )
+            else:
+                reader = torchaudio.io.StreamReader(io.BytesIO(audio_bytes))
+            reader.add_basic_audio_stream(1000, sample_rate=16000)
+            wav = torch.concat([chunk[0] for chunk in reader.stream()])  # type: ignore
+            audio = wav.mean(dim=1).flatten().numpy().astype(np.float32)
+            if verbose:
+                log(f"Wav Shape: {wav.shape}")
+                log(f"Audio length: {len(audio) / 16000:.2f} s")
+                log(f"Received {reader.get_src_stream_info(0)}")
+            return audio
+        
+        # prepare audio
+        gap = 4  # seconds between audio slices
+        audio = get_audio(audio_bytes, verbose=True)
+        audio_end = len(audio) / 16000 + gap / 2
+        speaker_mid = {}
+        if diarization:
+            for id, speaker_audio_sample in speaker_audio_samples.items():
+                speaker_audio = get_audio(speaker_audio_sample)
+                audio = np.concatenate([audio, np.zeros(16000 * gap, np.float32), speaker_audio])
+                speaker_mid[id] = (len(audio) - len(speaker_audio) / 2) / 16000
+        
+        # transcribe
         language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, None)
-
         self.model.options = self.model.options._replace(
             initial_prompt=prompt, suppress_tokens=suppress_tokens
         )
         result = self.model.transcribe(audio, batch_size=1, language=language)
+        if not result["segments"]:
+            return result
+        language = result["language"]
 
         # convert traditional chinese to simplified chinese
-        if result["language"] == "zh":
+        if language == "zh":
             for seg in result["segments"]:
                 seg["text"] = self.chinese_t2s.convert(seg["text"])
 
-        if diarization and result["language"] in ALIGN_MODEL_LANGUAGE_CODE:
-            result = self._diarize(audio, result, result["language"])
+        # diarization
+        speaker_id = {}
+        if diarization and language in ALIGN_MODEL_LANGUAGE_CODE:
+            model_a, metadata = self.align[language]
+            result = whisperx.align(
+                result["segments"],
+                model_a,
+                metadata,
+                audio,
+                self.device,
+            )
+            diarize_segments = self.diarize_model(audio)
+            result = whisperx.assign_word_speakers(diarize_segments, result)
+            # figure out speaker id map
+            for id, mid in speaker_mid.items():
+                for seg in result["segments"]:
+                    if seg["start"] < mid < seg["end"]:
+                        speaker_id[seg["speaker"]] = id
+                        break
+
+        # truncate results and map speaker id
+        transcript = {"segments": [], "language": language}
+        first_speaker_mid = min(speaker_mid.values(), default=float('inf'))
+        for seg in result["segments"]:
+            seg_start = seg["start"]
+            seg_end = seg["end"]
+            if "words" in seg and seg["words"]:
+                seg_start = seg["words"][0]["start"]
+                seg_end = seg["words"][-1]["end"]
+            if seg_start < audio_end and seg_end < first_speaker_mid:
+                _seg = {
+                    "text": seg["text"].strip(),
+                    "start": seg_start,
+                    "end": seg_end,
+                }
+                if "speaker" in seg:
+                    if seg["speaker"] not in speaker_id:
+                        speaker_id[seg["speaker"]] = str(len(speaker_id))
+                    _seg["speaker"] = speaker_id[seg["speaker"]]
+                transcript["segments"].append(_seg)
+
+        print(f"result segments: {[(seg.get('speaker'), seg['text'], '{:.2f}'.format(seg['start']), '{:.2f}'.format(seg['end'])) for seg in result['segments']]}")
+        print("word segments:")
+        if "word_segments" in result:
+            for seg in result["word_segments"]:
+                print(seg)
+        print(f"audio_end: {audio_end:.2f}")
+        for id, mid in speaker_mid.items():
+            print(f"speaker {id}, mid: {mid:.2f}")
+        print(f"transcript: {transcript['segments']}")
 
         # console debug output
-        text = " ".join([seg["text"].strip() for seg in result["segments"]])
+        text = " ".join([seg["text"].strip() for seg in transcript["segments"]])
         log(f"Transcript: {text}")
-        log(f"Wav Shape: {wav.shape}")
-        log(f"Audio length: {len(audio) / 16000:.2f} s")
-        log(f"Received {reader.get_src_stream_info(0)}")
 
-        return result
-
-    def _diarize(self, audio, result, language):
-        model_a, metadata = self.align[language]
-        result = whisperx.align(
-            result["segments"],
-            model_a,
-            metadata,
-            audio,
-            self.device,
-        )
-        diarize_segments = self.diarize_model(audio)
-        result = whisperx.assign_word_speakers(diarize_segments, result)
-        return result
+        return transcript

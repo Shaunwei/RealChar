@@ -195,16 +195,23 @@ export const createJournalSlice = (set, get) => ({
     });
   },
   transcriptContent: demoMeeting,
+  transcriptSpeakers: [""],
   appendTranscriptContent: (speakerId, text) => {
-    set({transcriptContent: [
-      ...get().transcriptContent,
-      {
-        name: speakerId == '0' ? "Unknown Speaker" : 'Speaker ' + speakerId,
-        color_id: Number(speakerId),
-        content: text,
-        timestamp: Date.now(),
-      }
-    ]})
+    if (!get().transcriptSpeakers.includes(speakerId)) {
+      set({ transcriptSpeakers: [...get().transcriptSpeakers, speakerId] });
+    }
+    const color_id = get().transcriptSpeakers.indexOf(speakerId);
+    set({
+      transcriptContent: [
+        ...get().transcriptContent,
+        {
+          name: speakerId == "" ? "Unknown Speaker" : "Speaker " + speakerId,
+          color_id: color_id,
+          content: text,
+          timestamp: Date.now(),
+        },
+      ],
+    });
   },
   actionContent: demoActions,
   appendUserRequest: (text) => {

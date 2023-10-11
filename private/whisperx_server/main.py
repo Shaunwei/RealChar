@@ -3,8 +3,7 @@ import json
 from dotenv import load_dotenv
 from time import perf_counter, time
 from typing import cast
-from fastapi import FastAPI, HTTPException, Form, UploadFile
-from fastapi.param_functions import File
+from fastapi import FastAPI, HTTPException, UploadFile, Request, Form
 
 load_dotenv()
 from whisperX import WhisperX
@@ -37,29 +36,41 @@ async def stats():
 
 
 @app.post("/transcribe")
-async def transcribe(audio_file: UploadFile = File(...), metadata: str = Form(default="")):
-    metadict = cast(dict, json.loads(metadata))
-    api_key = metadict.get("api_key", "")
-    platform = metadict.get("platform", "web")
-    initial_prompt = metadict.get("initial_prompt", "")
-    language = metadict.get("language", "en-US")
-    suppress_tokens = metadict.get("suppress_tokens", [-1])
-    diarization = metadict.get("diarization", False)
+async def transcribe(request: Request, metadata: str = Form(...)):
+    start = perf_counter()
+
+    # parse metadata
+    metadata_dict = cast(dict, json.loads(metadata))
+    api_key = metadata_dict.get("api_key", "")
     if api_key != API_KEY:
         raise HTTPException(status_code=401, detail="Invalid API key.")
-    try:
-        start = perf_counter()
-        audio_bytes = await audio_file.read()
-        result = whisperx.transcribe(
-            audio_bytes, platform, initial_prompt, language, suppress_tokens, diarization
-        )
-        elapsed = perf_counter() - start
-        now = time()
-        latency.append(elapsed)
-        timestamp.append(now)
-        while timestamp[0] < now - 86400:
-            latency.pop(0)
-            timestamp.pop(0)
-        return result
-    except:
-        raise
+    platform = metadata_dict.get("platform", "web")
+    initial_prompt = metadata_dict.get("initial_prompt", "")
+    language = metadata_dict.get("language", "en-US")
+    suppress_tokens = metadata_dict.get("suppress_tokens", [-1])
+    diarization = metadata_dict.get("diarization", False)
+
+    # parse audio
+    data = await request.form()
+    audio_bytes = await cast(UploadFile, data.get("audio_file")).read()
+    speaker_audio_samples = {
+        key.split("speaker_audio_sample_")[1]: await cast(UploadFile, file).read()
+        for key, file in data.items()
+        if key.startswith("speaker_audio_sample_")
+    }
+    for key, value in speaker_audio_samples.items():
+        print(f"\033[36mspeaker_audio_sample_{key}: {len(value)}\033[0m")
+
+    # transcribe
+    result = whisperx.transcribe(
+        audio_bytes, platform, initial_prompt, language, suppress_tokens, diarization, speaker_audio_samples
+    )
+
+    elapsed = perf_counter() - start
+    now = time()
+    latency.append(elapsed)
+    timestamp.append(now)
+    while timestamp[0] < now - 86400:
+        latency.pop(0)
+        timestamp.pop(0)
+    return result

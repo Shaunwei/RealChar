@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN echo "deb http://deb.debian.org/debian/ bullseye main\ndeb-src http://deb.debian.org/debian/ bullseye main" | tee /etc/apt/sources.list.d/ffmpeg.list  &&\
     apt-get update && \
-    apt-get install -y ffmpeg=7:4.3.5-0+deb11u1
+    apt-get install -y ffmpeg=7:4.3.6-0+deb11u1
 
 
 WORKDIR /realtime_ai_character

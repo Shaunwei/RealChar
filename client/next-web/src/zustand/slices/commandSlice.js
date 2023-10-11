@@ -1,6 +1,7 @@
+import { makeTwilioCall } from '@/util/apiClient';
+
 export const createCommandSlice = (set, get) => ({
-  callOutgoing: (number) => {
-    // TODO
-    console.log('making a call to ' + number);
-  }
-})
+  callOutgoing: number => {
+    makeTwilioCall(number);
+  },
+});

@@ -6,7 +6,11 @@ on:
 
 jobs:
   build:
+    # runs-on: self-hosted
     runs-on: self-hosted
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Check out code

@@ -40,8 +40,33 @@ jobs:
             API_HOST=https://api.dev.realchar.ai
             NEXT_PUBLIC_API_HOST=https://api.dev.realchar.ai
             NEXT_PUBLIC_TURN_SERVER_API_ENDPOINT=https://testrtcturn.metered.live/api/v1/turn/credentials?apiKey=1061f118b12c30023acb17aafcf8c224c8f1
-      - name: Deploy to Kubernetes
-        run: |
-          echo "${{ secrets.KUBECONFIG }}" | base64 --decode > ./kubeconfig.yaml
-          export KUBECONFIG=./kubeconfig.yaml
-          kubectl rollout restart deployment react-next-deployment
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS_REBYTE }}'
+
+      - id: 'get-credentials'
+        uses: 'google-github-actions/get-gke-credentials@v1'
+        with:
+          cluster_name: 're-dev'
+          location: 'us-west3'
+
+      - id: 'deploy-to-cluster'
+        run: 'kubectl rollout restart deployment deployment-rc-frontend'
+
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_COLOR: '#fb5c05'
+          SLACK_MESSAGE: new version has been updated for realchar frontend in dev env
+          SLACK_TITLE: dev realchar frontend update
+          SLACK_WEBHOOK: https://hooks.slack.com/services/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
+
+
+      # - name: Deploy to Kubernetes
+      #   run: |
+      #     echo "${{ secrets.KUBECONFIG }}" | base64 --decode > ./kubeconfig.yaml
+      #     export KUBECONFIG=./kubeconfig.yaml
+      #     kubectl rollout restart deployment react-next-deployment

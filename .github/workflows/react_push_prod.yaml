@@ -51,3 +51,11 @@ jobs:
           echo "${{ secrets.KUBECONFIG }}" | base64 --decode > ./kubeconfig.yaml
           export KUBECONFIG=./kubeconfig.yaml
           kubectl rollout restart deployment ${{ env.K8S_DEPLOYMENT_NAME }}
+
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_COLOR: '#335c05'
+          SLACK_MESSAGE: new version has started to update for realchar frontend in prod env
+          SLACK_TITLE: prod realchar frontend update
+          SLACK_WEBHOOK: https://hooks.slack.com/services/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

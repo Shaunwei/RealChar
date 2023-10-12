@@ -1,17 +1,8 @@
-import {
-  Button,
-  Tooltip,
-  Avatar,
-  Chip,
-  Input
-} from '@nextui-org/react';
+import { Button, Tooltip, Avatar, Chip, Input } from '@nextui-org/react';
 import { IoIosSend } from 'react-icons/io';
 import InputEmoji from 'react-input-emoji';
-import {
-  motion,
-  AnimatePresence
-} from 'framer-motion';
-import HamburgerMenu from './HamburgerMenu';
+import { motion, AnimatePresence } from 'framer-motion';
+import HamburgerMenu from '../HamburgerMenu';
 import Image from 'next/image';
 import exitIcon from '@/assets/svgs/exit.svg';
 import Transcript from './Transcript';
@@ -46,11 +37,11 @@ export default function JournalPage() {
     closeSocket();
     clearChatContent();
     setCharacter({});
-  }
+  };
 
   function handleOnEnter() {
     appendUserRequest(text);
-    setText("");
+    setText('');
   }
 
   return (
@@ -87,7 +78,11 @@ export default function JournalPage() {
                 src={character.image_url}
               />
               <span className="pl-2">{character.name}</span>
-              <Chip size="sm" color="primary" className="text-tiny">
+              <Chip
+                size="sm"
+                color="primary"
+                className="text-tiny"
+              >
                 <span className="hidden md:flex">Journal Mode</span>
                 <span className="flex md:hidden">JM</span>
               </Chip>
@@ -116,10 +111,10 @@ export default function JournalPage() {
       </div>
       <div className="h-full w-full px-4 mx-auto md:px-10 md:pb-4 flex flex-col lg:flex-row lg:gap-3">
         <div className="h-3/6 relative flex flex-col text-small lg:h-full lg:w-1/2 lg:border-b-1 border-real-blue-500/50 lg:border-x-1">
-          <Transcript/>
+          <Transcript />
         </div>
         <div className="h-3/6 relative flex flex-col lg:h-full lg:w-1/2 lg:border-x-1 border-real-blue-500/50 lg:border-b-1">
-          <ActionChatPanel/>
+          <ActionChatPanel />
           <div className="px-1 py-1 border-white/30 border-t-1 border-x-1 rounded-t-lg  journal_mode md:border-b-1 md:rounded-b-lg md:mx-2 md:mb-2">
             {/* <InputEmoji
               value={text}
@@ -142,7 +137,7 @@ export default function JournalPage() {
                   'bg-transparent',
                   'hover:bg-transparent',
                   'data-[hover=true]:bg-transparent',
-                  'group-data-[focus=true]:bg-transparent'
+                  'group-data-[focus=true]:bg-transparent',
                 ],
               }}
             />

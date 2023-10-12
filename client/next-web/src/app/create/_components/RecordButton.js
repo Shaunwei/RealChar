@@ -7,22 +7,18 @@ import {
   useDisclosure,
 } from '@nextui-org/react';
 import { BsRecordCircle } from 'react-icons/bs';
-import WsRecord from './WsRecord';
-import WsPlayer from './WsPlayer';
-import { useState, useEffect } from 'react';
+import Recorder from '@/components/Recorder';
+import { useAppStore } from '@/zustand/store';
 
 export default function RecordButton() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [showRecorder, setShowRecorder] = useState(true);
-  const [blob, setBlob] = useState(null);
+  const { addRecording } = useAppStore();
 
-  function handleRetry() {
-    setShowRecorder(true);
+  function handleConfirm(file) {
+    console.log(file);
+    addRecording(file);
+    onClose();
   }
-
-  useEffect(() => {
-    setShowRecorder(true);
-  }, [isOpen]);
 
   return (
     <>
@@ -58,18 +54,7 @@ export default function RecordButton() {
               heading home.
             </div>
             <div className="mb-4 h-24">
-              {showRecorder ? (
-                <WsRecord
-                  setBlob={setBlob}
-                  setShowRecorder={setShowRecorder}
-                />
-              ) : (
-                <WsPlayer
-                  blob={blob}
-                  handleRetry={handleRetry}
-                  onClose={onClose}
-                />
-              )}
+              <Recorder handleConfirm={handleConfirm} />
             </div>
           </ModalBody>
         </ModalContent>

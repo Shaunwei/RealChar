@@ -134,8 +134,13 @@ export const createCharacterSlice = (set, get) => ({
   setErrorMsg: (text) => {
     set({ errorMsg: text });
   },
-  addVoiceFile: (file) => {
-    set({ voiceFiles: [...get().voiceFiles, file] });
+  addRecording: (recording) => {
+    set({
+      voiceFiles: [
+        ...get().voiceFiles.filter((file) => file.name !== recording.name),
+        recording,
+      ],
+    });
   },
   handleAvatarChange: (e) => {
     if (e.target.files && e.target.files.length > 0) {

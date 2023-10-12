@@ -1,8 +1,7 @@
 import { Button } from '@nextui-org/react';
 import { BsPlayFill, BsPauseFill } from 'react-icons/bs';
-import { useState, useRef, useEffect } from 'react';
 import WaveSurfer from 'wavesurfer.js/dist/wavesurfer.esm';
-import { useAppStore } from '@/zustand/store';
+import { useState, useRef, useEffect } from 'react';
 
 // WaveSurfer hook
 function useWs(containerRef, recordedUrl) {
@@ -29,12 +28,11 @@ function useWs(containerRef, recordedUrl) {
   return wavesurfer;
 }
 
-export default function WsPlayer({ blob, handleRetry, onClose }) {
+export default function WsPlayer({ blob, handleRetry, handleConfirm }) {
   const containerRef = useRef();
   const [isPlaying, setIsPlaying] = useState(false);
   const recordedUrl = URL.createObjectURL(blob);
   const ws = useWs(containerRef, recordedUrl);
-  const { addVoiceFile } = useAppStore();
 
   function handlePlayPause() {
     ws.playPause();
@@ -42,9 +40,7 @@ export default function WsPlayer({ blob, handleRetry, onClose }) {
 
   function handleUpload() {
     const file = new File([blob], 'recording.wav');
-    console.log(file);
-    addVoiceFile(file);
-    onClose();
+    handleConfirm(file);
   }
 
   useEffect(() => {

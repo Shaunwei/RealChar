@@ -6,7 +6,11 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    # runs-on: self-hosted
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
     - name: Set up Docker Buildx

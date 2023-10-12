@@ -49,67 +49,67 @@ export default function InputField() {
   }
 
   return (
-    <div className='flex justify-center md:mx-auto md:w-unit-9xl lg:w-[892px]'>
-      <div className='flex md:hidden flex-col justify-center w-full pb-1'>
-        <div className='mobile_conversation'>
+    <div className="flex justify-center md:mx-auto md:w-unit-9xl lg:w-[892px]">
+      <div className="flex md:hidden flex-col justify-center w-full pb-1">
+        <div className="mobile_conversation">
           <InputEmoji
             value={text}
             onChange={setText}
             cleanOnEnter
             onEnter={handleOnEnter}
-            placeholder='Your turn'
+            placeholder="Your turn"
             fontSize={16}
-            fontFamily=''
+            fontFamily=""
           />
         </div>
-        <div className='flex flex-row justify-between items-center'>
-          <div className='pl-2 flex flex-row gap-1'>
+        <div className="flex flex-row justify-between items-center">
+          <div className="pl-2 flex flex-row gap-1">
             <InputAddition setText={setText} />
             <div></div>
           </div>
-          <div className='mr-4 h-10'>
+          <div className="mr-4 h-10">
             {text === '' ? (
-              <ClickToTalk className='' />
+              <ClickToTalk className="" />
             ) : (
               <Button
-                aria-label='send'
-                size='md'
-                className='bg-real-blue-500 px-2 min-w-fit sm:min-w-16 sm:px-4 md:flex h-9 disabled:bg-transparent'
+                aria-label="send"
+                size="md"
+                className="bg-real-blue-500 px-2 min-w-fit sm:min-w-16 sm:px-4 md:flex h-9 disabled:bg-transparent"
                 onPress={handleOnEnter}
               >
-                <IoIosSend size='2em' />
+                <IoIosSend size="2em" />
               </Button>
             )}
           </div>
         </div>
       </div>
-      <div className='hidden md:flex flex-col justify-center w-full pb-1'>
+      <div className="hidden md:flex flex-col justify-center w-full pb-1">
         <div>
           <InputEmoji
             value={text}
             onChange={setText}
             cleanOnEnter
             onEnter={handleOnEnter}
-            placeholder='Your turn'
+            placeholder="Your turn"
             fontSize={16}
-            fontFamily=''
+            fontFamily=""
           />
         </div>
-        <div className='flex flex-row justify-between items-center'>
-          <div className='pl-2 flex flex-row gap-1'>
+        <div className="flex flex-row justify-between items-center">
+          <div className="pl-2 flex flex-row gap-1">
             <InputAddition />
-            <div className='w-10'></div>
-            <ClickToTalk className='' />
+            <div className="w-10"></div>
+            <ClickToTalk className="" />
           </div>
-          <div className='mr-4 h-10'>
+          <div className="mr-4 h-10">
             <Button
-              aria-label='send'
-              size='md'
+              aria-label="send"
+              size="md"
               isDisabled={text === ''}
-              className='bg-real-blue-500 px-2 min-w-fit sm:min-w-16 sm:px-4 md:flex h-9 disabled:bg-transparent'
+              className="bg-real-blue-500 px-2 min-w-fit sm:min-w-16 sm:px-4 md:flex h-9 disabled:bg-transparent"
               onPress={handleOnEnter}
             >
-              <IoIosSend size='2em' />
+              <IoIosSend size="2em" />
             </Button>
           </div>
         </div>

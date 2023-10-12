@@ -113,7 +113,9 @@ export default function SpeakerEditModal({ colors, onClose }) {
         <Button
           onPress={handleAdd}
           className="bg-real-contrastBlue w-full"
-          isDisabled={name === '' || Array.from(selectedColor).length === 0}
+          isDisabled={
+            name === '' || Array.from(selectedColor).length === 0 || !voiceFile
+          }
         >
           Confirm
         </Button>

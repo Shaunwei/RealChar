@@ -1,8 +1,6 @@
 import InputField from './InputField';
 
-export default function TextMode({
-  isDisplay,
-}) {
+export default function TextMode({ isDisplay }) {
   const display = isDisplay ? 'flex' : 'hidden';
 
   return (

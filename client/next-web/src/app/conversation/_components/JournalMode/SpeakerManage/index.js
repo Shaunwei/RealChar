@@ -1,24 +1,16 @@
 import {
   Button,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
   Listbox,
   ListboxItem,
   Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   useDisclosure,
-  Input,
 } from '@nextui-org/react';
 import { FiSettings, FiPlus } from 'react-icons/fi';
 import { TiMicrophone } from 'react-icons/ti';
 import { useAppStore } from '@/zustand/store';
 import { useState } from 'react';
-import SpeakerEditModal from './SpeakerEditModal';
-import SpeakerAddModal from './SpeakerAddModal';
+import EditModal from './EditModal';
+import AddModal from './AddModal';
 
 export default function SpeakerManage({ colors }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -106,13 +98,13 @@ export default function SpeakerManage({ colors }) {
         }}
       >
         {modalType === 'edit' ? (
-          <SpeakerEditModal
+          <EditModal
             speakerContent={speakerContent}
             colors={colors}
             onClose={onClose}
           />
         ) : (
-          <SpeakerAddModal
+          <AddModal
             colors={colors}
             onClose={onClose}
           />

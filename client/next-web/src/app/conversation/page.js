@@ -7,7 +7,7 @@ import Chat from './_components/Chat';
 import HandsFreeMode from './_components/HandsFreeMode';
 import TextMode from './_components/TextMode';
 import HamburgerMenu from './_components/HamburgerMenu';
-import ShareButton from './_components/ShareButton';
+import ShareButton from './_components/SettingBar/ShareButton';
 import TabButton from '@/components/TabButton';
 import Image from 'next/image';
 import exitIcon from '@/assets/svgs/exit.svg';

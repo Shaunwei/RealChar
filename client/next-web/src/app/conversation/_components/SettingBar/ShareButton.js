@@ -2,14 +2,14 @@ import {
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
 } from '@nextui-org/dropdown';
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
-  ModalFooter
+  ModalFooter,
 } from '@nextui-org/modal';
 import { Button } from '@nextui-org/button';
 import { useDisclosure } from '@nextui-org/react';
@@ -22,7 +22,7 @@ import ChatPreview from './ChatPreview';
 import { useState } from 'react';
 
 export default function ShareButton() {
-  const {isOpen, onOpen, onClose} = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [shareContent, setShareContent] = useState('');
   const [isCopied, setIsCopied] = useState(false);
 
@@ -33,7 +33,7 @@ export default function ShareButton() {
   }
 
   function copyLink(keyword) {
-    switch(keyword) {
+    switch (keyword) {
       case 'character':
         navigator.clipboard.writeText(window.location.href);
         break;
@@ -52,7 +52,7 @@ export default function ShareButton() {
       <Dropdown
         placement="bottom"
         classNames={{
-          base: "bg-dropdown p-0"
+          base: 'bg-dropdown p-0',
         }}
       >
         <DropdownTrigger aria-label="Dropdown trigger">
@@ -74,7 +74,7 @@ export default function ShareButton() {
           variant="flat"
           onAction={handleOpen}
           itemClasses={{
-            base:"font-light py-3 pl-5 data-[hover=true]:bg-dropdownHover"
+            base: 'font-light py-3 pl-5 data-[hover=true]:bg-dropdownHover',
           }}
         >
           <DropdownItem key="character">Share character</DropdownItem>
@@ -90,54 +90,59 @@ export default function ShareButton() {
           base: 'rounded-none font-light border-modalBorder bg-modalBG border-2 md:max-w-3xl md:py-16 md:px-28',
           header: 'text-center font-light justify-center md:text-3xl',
           body: 'md:text-xl py-6',
-          footer: 'justify-center'
+          footer: 'justify-center',
         }}
       >
         <ModalContent>
           {shareContent === 'character' && (
             <>
-            <ModalHeader>
-              Share Character
-            </ModalHeader>
-            <ModalBody>
-              Invite your friends to chat with this character as well! Sharing the character won&apos;t reveal your conversation history.
-            </ModalBody>
-            <ModalFooter>
-              {!isCopied ? (
-                <Button
-                  radius="none"
-                  className="w-full bg-real-contrastBlue"
-                  onPress={() => copyLink('character')}
-                >
-                  <AiOutlineLink/>Copy link
-                </Button>
-              ) : (
-                <p className="flex flex-row text-success"><BsCheckLg size="1.5em"/>Copied shared conversation URL to clipboard!</p>
-              )}
-            </ModalFooter>
+              <ModalHeader>Share Character</ModalHeader>
+              <ModalBody>
+                Invite your friends to chat with this character as well! Sharing
+                the character won&apos;t reveal your conversation history.
+              </ModalBody>
+              <ModalFooter>
+                {!isCopied ? (
+                  <Button
+                    radius="none"
+                    className="w-full bg-real-contrastBlue"
+                    onPress={() => copyLink('character')}
+                  >
+                    <AiOutlineLink />
+                    Copy link
+                  </Button>
+                ) : (
+                  <p className="flex flex-row text-success">
+                    <BsCheckLg size="1.5em" />
+                    Copied shared conversation URL to clipboard!
+                  </p>
+                )}
+              </ModalFooter>
             </>
           )}
           {shareContent === 'chat' && (
             <>
-            <ModalHeader>
-              Share Chat
-            </ModalHeader>
-            <ModalBody>
-              <ChatPreview/>
-            </ModalBody>
-            <ModalFooter>
-              {!isCopied ? (
-                <Button
-                  radius="none"
-                  className="w-full bg-real-contrastBlue"
-                  onPress={() => copyLink('chat')}
-                >
-                  <AiOutlineLink />Copy link
-                </Button>
-              ) : (
-                <p className="flex flex-row text-success gap-2"><BsCheckLg size="1.5em"/>Copied shared conversation URL to clipboard!</p>
-              )}
-            </ModalFooter>
+              <ModalHeader>Share Chat</ModalHeader>
+              <ModalBody>
+                <ChatPreview />
+              </ModalBody>
+              <ModalFooter>
+                {!isCopied ? (
+                  <Button
+                    radius="none"
+                    className="w-full bg-real-contrastBlue"
+                    onPress={() => copyLink('chat')}
+                  >
+                    <AiOutlineLink />
+                    Copy link
+                  </Button>
+                ) : (
+                  <p className="flex flex-row text-success gap-2">
+                    <BsCheckLg size="1.5em" />
+                    Copied shared conversation URL to clipboard!
+                  </p>
+                )}
+              </ModalFooter>
             </>
           )}
         </ModalContent>

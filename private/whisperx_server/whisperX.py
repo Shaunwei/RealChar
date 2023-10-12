@@ -87,11 +87,10 @@ class WhisperX:
         suppress_tokens=[-1],
         diarization=False,
         speaker_audio_samples={},
-        additional_audio_bytes = [],
     ):
         log(f"Received {len(audio_bytes)} bytes of audio data. Language: {language}")
 
-        def get_audio(audio_bytes: bytes, platform: str = "web", verbose: bool = False):
+        def get_audio(audio_bytes: bytes, verbose: bool = False):
             if platform == "twilio":
                 reader = torchaudio.io.StreamReader(
                     io.BytesIO(audio_bytes), format="mulaw", option={"sample_rate": "8000"}
@@ -108,10 +107,8 @@ class WhisperX:
             return audio
         
         # prepare audio
-        gap = 2  # seconds between audio slices
-        audio = get_audio(audio_bytes, platform, verbose=True)
-        for _audio_bytes in additional_audio_bytes:
-            audio = np.concatenate([audio, get_audio(_audio_bytes, platform, verbose=True)])
+        gap = 4  # seconds between audio slices
+        audio = get_audio(audio_bytes, verbose=True)
         audio_end = len(audio) / 16000 + gap / 2
         speaker_mid = {}
         if diarization:
@@ -119,7 +116,7 @@ class WhisperX:
                 speaker_audio = get_audio(speaker_audio_sample)
                 audio = np.concatenate([audio, np.zeros(16000 * gap, np.float32), speaker_audio])
                 speaker_mid[id] = (len(audio) - len(speaker_audio) / 2) / 16000
-        print(f"audio length: {len(audio) / 16000:.2f} s")
+        log(f"Full audio length: {len(audio) / 16000:.2f} s")
         # save audio for debug
         torchaudio.save(f"/home/yiguo/Downloads/{time.time():.0f}.wav", torch.from_numpy(audio[None, :]), 16000)
         
@@ -132,7 +129,7 @@ class WhisperX:
         if not result["segments"]:
             return result
         language = result["language"]
-        print(f"result segments: {[(seg['text'], '{:.2f}'.format(seg['start']), '{:.2f}'.format(seg['end'])) for seg in result['segments']]}")
+        log(f"transcribe result: {[(seg['text'], '{:.2f}'.format(seg['start']), '{:.2f}'.format(seg['end'])) for seg in result['segments']]}")
 
         # convert traditional chinese to simplified chinese
         if language == "zh":
@@ -150,14 +147,18 @@ class WhisperX:
                 audio,
                 self.device,
             )
-            diarize_segments = self.diarize_model(audio)
+            num_speakers = len(speaker_audio_samples)
+            diarize_segments = self.diarize_model(audio, min_speakers=0, max_speakers=num_speakers)
+            log(f"diarize result:\n{diarize_segments}")
             result = whisperx.assign_word_speakers(diarize_segments, result)
+            log(f"aligned result: {[(seg['text'], '{:.2f}'.format(seg['start']), '{:.2f}'.format(seg['end'])) for seg in result['segments']]}")
             # figure out speaker id map
             for id, mid in speaker_mid.items():
                 for seg in result["segments"]:
                     if seg["start"] < mid < seg["end"]:
                         speaker_id[seg["speaker"]] = id
                         break
+        log(f"speaker id map: {speaker_id}")
 
         # truncate results and map speaker id
         transcript = {"segments": [], "language": language}
@@ -191,15 +192,15 @@ class WhisperX:
                     _seg["speaker"] = speaker_id[seg["speaker"]]
                 transcript["segments"].append(_seg)
 
-        print(f"result segments: {[(seg.get('speaker'), seg['text'], '{:.2f}'.format(seg['start']), '{:.2f}'.format(seg['end'])) for seg in result['segments']]}")
-        print("word segments:")
+        log(f"truncated aligned result: {[(seg.get('speaker'), seg['text'], '{:.2f}'.format(seg['start']), '{:.2f}'.format(seg['end'])) for seg in result['segments']]}")
+        log("word segments:")
         if "word_segments" in result:
             for seg in result["word_segments"]:
                 print(seg)
-        print(f"audio_end: {audio_end:.2f}")
+        log(f"audio_end: {audio_end:.2f}")
         for id, mid in speaker_mid.items():
-            print(f"speaker {id}, mid: {mid:.2f}")
-        print(f"transcript: {transcript['segments']}")
+            log(f"speaker {id}, mid: {mid:.2f}")
+        log(f"transcript: {transcript['segments']}")
 
         # console debug output
         text = " ".join([seg["text"].strip() for seg in transcript["segments"]])

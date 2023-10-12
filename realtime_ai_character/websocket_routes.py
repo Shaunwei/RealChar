@@ -269,9 +269,11 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
 
         journal_mode = False
         journal_history = []
-        audio_bytes_buffer = []
-        audio_bytes_buffer_duration = 0
         speaker_audio_samples = {}
+        with open("/home/yiguo/Downloads/speaker0.wav", "rb") as f:
+            speaker_audio_samples["0"] = f.read()
+        with open("/home/yiguo/Downloads/speaker2.mp3", "rb") as f:
+            speaker_audio_samples["1"] = f.read()
 
         while True:
             data = await websocket.receive()
@@ -405,76 +407,20 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 print(f"\033[36mreceived binary_data: {len(binary_data)} bytes\033[0m")
                 # Handle journal mode
                 if journal_mode:
-                    # accumulate audio bytes long enough before transcription
-                    try:
-                        probe = ffmpeg.probe("pipe:0", input=binary_data)
-                        duration = float(probe['streams'][0]['duration'])
-                    except Exception as e:
-                        print(f"\033[36mfailed to probe audio duration: {e.stderr.decode('utf8')}\033[0m")
-                        raise
-                    print(f"\033[36maudio duration: {duration:.2f} s\033[0m")
-                    if audio_bytes_buffer_duration < 5:
-                        audio_bytes_buffer.append(binary_data)
-                        audio_bytes_buffer_duration += duration
-                        continue
-                    if len(audio_bytes_buffer) > 1:
-                        inputs = [ffmpeg.input('pipe:0') for _ in audio_bytes_buffer]
-                        audio_bytes, _ = (
-                            ffmpeg.concat(*inputs, v=0, a=1)
-                            .output('pipe:1')
-                            .run(input=b''.join(audio_bytes_buffer), capture_stdout=True, capture_stderr=True)
-                        )
-                    else:
-                        audio_bytes = audio_bytes_buffer[0]
-                    audio_bytes_buffer.clear()
-                    audio_bytes_buffer_duration = 0
-                    # get transcript
                     prompt = " ".join(text for _, text in journal_history[-5:])
                     segments = speech_to_text.transcribe_diarize(
-                        audio_bytes,
+                        binary_data,
                         platform=platform,
                         prompt=prompt,
                         speaker_audio_samples=speaker_audio_samples,
                     )
-                    # join adjacent segments with the same speaker
-                    joined_speaker, joined_text, joined_start, joined_end = "", "", 0, 0
-                    while segments:
-                        seg_speaker, seg_text, seg_start, seg_end = segments.pop(0)
-                        print(f"\033[36msegment:\nspeaker = {seg_speaker}\ntext = {seg_text}\nstart, end = {seg_start}, {seg_end}\033[0m")
-                        if not joined_text:
-                            joined_speaker = seg_speaker
-                            joined_text = seg_text
-                            joined_start = seg_start
-                            joined_end = seg_end
-                            if segments:
-                                continue
-                        elif seg_speaker == joined_speaker:
-                            joined_text += ' ' + seg_text
-                            joined_end = seg_end
-                            if segments:
-                                continue
-                        # register new speaker
-                        if joined_speaker not in speaker_audio_samples and joined_end - joined_start > 4:
-                            duration = min(joined_end - joined_start, 6)
-                            in_stream = ffmpeg.input('pipe:0')
-                            out_stream = (
-                                in_stream
-                                .output('pipe:1', format='mp3', ss=joined_start, t=duration)
-                                .run(capture_stdout=True, capture_stderr=True, input=audio_bytes)
-                            )
-                            speaker_audio_samples[joined_speaker] = out_stream[0]
-                        if joined_speaker not in speaker_audio_samples:
-                            joined_speaker = ""
-                        # send transcript and advance
+                    for speaker_id, text in segments:
+                        print(f"\033[36msegment:\nspeaker = {speaker_id}\ntext = {text}\033[0m")
                         await manager.send_message(
-                            message=f"[+transcript]?speakerId={joined_speaker}&text={joined_text}",
+                            message=f"[+transcript]?speakerId={speaker_id}&text={text}",
                             websocket=websocket
                         )
-                        journal_history.append((joined_speaker, joined_text))
-                        joined_speaker = seg_speaker
-                        joined_text = seg_text
-                        joined_start = seg_start
-                        joined_end = seg_end
+                        journal_history.append((speaker_id, text))
                     print(f"\033[36mregistered speakers: {[(key, len(value)) for key, value in speaker_audio_samples.items()]}\033[0m")
                     print(f"\033[36mjournal_history: {journal_history}\033[0m")
                     continue

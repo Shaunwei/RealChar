@@ -4,7 +4,6 @@ import types
 import json
 
 import requests
-import ffmpeg
 import numpy as np
 
 from realtime_ai_character.audio.speech_to_text.base import SpeechToText
@@ -145,7 +144,7 @@ class WhisperX(Singleton, SpeechToText):
         transcript = []
         if result:
             for seg in result["segments"]:
-                transcript.append((seg.get("speaker", ""), seg["text"].strip(), seg["start"], seg["end"]))
+                transcript.append((seg.get("speaker", ""), seg["text"].strip()))
         return transcript
 
     def _transcribe(
@@ -283,13 +282,3 @@ class WhisperX(Singleton, SpeechToText):
             logger.error(f"Could not parse response from whisperX server: {e}")
         except Exception as e:
             logger.error(f"Unknown error from whisperX server: {e}")
-
-    def get_duration(self, audio_bytes: bytes):
-        import torch
-        import torchaudio
-
-        with tempfile.NamedTemporaryFile(suffix=".wav") as f:
-            f.write(audio_bytes)
-            f.flush()
-            probe = ffmpeg.probe(f.name)
-            return float(probe["format"]["duration"])

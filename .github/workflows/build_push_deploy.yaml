@@ -25,11 +25,11 @@ jobs:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-    # - name: Build and push Docker image
-    #   uses: docker/build-push-action@v4
-    #   with:
-    #     push: true
-    #     tags: shaunly/real_char:latest
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        push: true
+        tags: shaunly/real_char:latest
 
     - id: 'auth'
       name: 'Authenticate to Google Cloud'

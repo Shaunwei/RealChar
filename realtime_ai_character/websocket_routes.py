@@ -272,7 +272,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
         speaker_audio_samples = {}
         with open("/home/yiguo/Downloads/speaker0.wav", "rb") as f:
             speaker_audio_samples["0"] = f.read()
-        with open("/home/yiguo/Downloads/speaker2.mp3", "rb") as f:
+        with open("/home/yiguo/Downloads/speaker1.wav", "rb") as f:
             speaker_audio_samples["1"] = f.read()
 
         while True:

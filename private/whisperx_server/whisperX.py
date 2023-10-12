@@ -52,7 +52,8 @@ ALIGN_MODEL_LANGUAGE_CODE = [
     # "hi",
 ]
 
-MODEL = os.getenv("MODEL", "base")
+# MODEL = os.getenv("MODEL", "base")
+MODEL = "large-v2"
 HF_ACCESS_TOKEN = os.getenv("HF_ACCESS_TOKEN", "")
 
 
@@ -107,38 +108,50 @@ class WhisperX:
             return audio
         
         # prepare audio
-        gap = 4  # seconds between audio slices
         audio = get_audio(audio_bytes, verbose=True)
-        audio_end = len(audio) / 16000 + gap / 2
-        speaker_mid = {}
-        if diarization:
-            for id, speaker_audio_sample in speaker_audio_samples.items():
-                speaker_audio = get_audio(speaker_audio_sample)
-                audio = np.concatenate([audio, np.zeros(16000 * gap, np.float32), speaker_audio])
-                speaker_mid[id] = (len(audio) - len(speaker_audio) / 2) / 16000
-        log(f"Full audio length: {len(audio) / 16000:.2f} s")
-        # save audio for debug
-        torchaudio.save(f"/home/yiguo/Downloads/{time.time():.0f}.wav", torch.from_numpy(audio[None, :]), 16000)
         
         # transcribe
         language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, None)
         self.model.options = self.model.options._replace(
             initial_prompt=prompt, suppress_tokens=suppress_tokens
         )
+        _ = time.perf_counter()
         result = self.model.transcribe(audio, batch_size=1, language=language)
+        log(f"transcribe time: {(time.perf_counter() - _) * 1000:.0f} ms, model: {MODEL}")
         if not result["segments"]:
             return result
-        language = result["language"]
         log(f"transcribe result: {[(seg['text'], '{:.2f}'.format(seg['start']), '{:.2f}'.format(seg['end'])) for seg in result['segments']]}")
 
         # convert traditional chinese to simplified chinese
-        if language == "zh":
+        if result["language"] == "zh":
             for seg in result["segments"]:
                 seg["text"] = self.chinese_t2s.convert(seg["text"])
 
+        # console debug output
+        text = " ".join([seg["text"].strip() for seg in result["segments"]])
+        log(f"Transcript: {text}")
+
         # diarization
-        speaker_id = {}
-        if diarization and language in ALIGN_MODEL_LANGUAGE_CODE:
+        if diarization and speaker_audio_samples:
+            speaker_audios = {id: get_audio(ab) for id, ab in speaker_audio_samples.items()}
+            result = self.diarize(result, audio, speaker_audios)
+
+        return result
+
+    def diarize(self, result, audio: np.ndarray, speaker_audios: dict[str, np.ndarray]):
+        gap = 2  # seconds between audio slices
+        audio_end = len(audio) / 16000 + gap / 2
+        speaker_mid = {}
+        ext_audio = audio.copy()
+        for id, speaker_audio in speaker_audios.items():
+            ext_audio = np.concatenate([ext_audio, np.zeros(16000 * gap, np.float32), speaker_audio])
+            speaker_mid[id] = (len(ext_audio) - len(speaker_audio) / 2) / 16000
+        log(f"Full audio length: {len(ext_audio) / 16000:.2f} s")
+        # save audio for debug
+        torchaudio.save(f"/home/yiguo/Downloads/{time.time():.0f}.wav", torch.from_numpy(ext_audio[None, :]), 16000)
+        language = result["language"]
+        # align audio with wav2vec2
+        if language in ALIGN_MODEL_LANGUAGE_CODE:
             model_a, metadata = self.align[language]
             result = whisperx.align(
                 result["segments"],
@@ -147,63 +160,74 @@ class WhisperX:
                 audio,
                 self.device,
             )
-            num_speakers = len(speaker_audio_samples)
-            diarize_segments = self.diarize_model(audio, min_speakers=0, max_speakers=num_speakers)
-            log(f"diarize result:\n{diarize_segments}")
-            result = whisperx.assign_word_speakers(diarize_segments, result)
-            log(f"aligned result: {[(seg['text'], '{:.2f}'.format(seg['start']), '{:.2f}'.format(seg['end'])) for seg in result['segments']]}")
-            # figure out speaker id map
-            for id, mid in speaker_mid.items():
-                for seg in result["segments"]:
-                    if seg["start"] < mid < seg["end"]:
-                        speaker_id[seg["speaker"]] = id
-                        break
-        log(f"speaker id map: {speaker_id}")
-
-        # truncate results and map speaker id
-        transcript = {"segments": [], "language": language}
-        for seg in result["segments"]:
-            seg_text = []
-            seg_start = seg["start"]
-            seg_end = seg["end"]
-            if "words" in seg and seg["words"]:
-                start_set = False
-                for word_seg in seg["words"]:
-                    if "start" in word_seg and "end" in word_seg:
-                        if word_seg["start"] > audio_end:
-                            break
-                        if not start_set:
-                            seg_start = word_seg["start"]
-                            start_set = True
-                        if word_seg["end"] > word_seg["start"] + gap / 2:
-                            seg_end = min(audio_end, word_seg["start"] + 0.5)
-                        else:
-                            seg_end = word_seg["end"]
-                        seg_text.append(word_seg["word"])
-            if seg_text:
-                _seg = {
-                    "text": "".join(seg_text) if language == "zh" else " ".join(seg_text),
-                    "start": seg_start,
-                    "end": seg_end,
+            word_segments = result["word_segments"]
+        else:
+            word_segments = [
+                {
+                    "start": seg["start"],
+                    "end": seg["end"],
+                    "word": seg["text"],
                 }
-                if "speaker" in seg:
-                    if seg["speaker"] not in speaker_id:
-                        speaker_id[seg["speaker"]] = str(len(speaker_id))
-                    _seg["speaker"] = speaker_id[seg["speaker"]]
-                transcript["segments"].append(_seg)
+                for seg in result["segments"]
+            ]
+        log("aligned result:")
+        for seg in word_segments:
+            log(f"  {seg}")
+        # diarize
+        num_speakers = len(speaker_audios)
+        diarize_segments = self.diarize_model(ext_audio, min_speakers=0, max_speakers=num_speakers)
+        log(f"diarize result:\n{diarize_segments}\nnum_speakers: {num_speakers}")
+        # figure out speaker id map
+        speaker_id = {}
+        counter = {}
+        for _, row in diarize_segments.iterrows():
+            speaker = row["speaker"]
+            if speaker not in counter:
+                counter[speaker] = set()
+            for id, mid in speaker_mid.items():
+                if row["start"] < mid < row["end"]:
+                    counter[speaker].add(id)
+        for speaker, ids in counter.items():
+            if len(ids) == 1:
+                speaker_id[speaker] = ids.pop()
+            else:
+                speaker_id[speaker] = ""
+        log(f"speaker_id: {speaker_id}")
+        # align results with mapped speaker id
+        result = {
+            "segments": [
+                {
+                    "start": row["start"],
+                    "end": row["end"],
+                    "speaker": speaker_id[row["speaker"]],
+                }
+                for _, row in diarize_segments.iterrows() if row["end"] < audio_end
+            ],
+            "language": language
+        }
+        idx = 0
+        for seg in result["segments"]:
+            words = []
+            while idx < len(word_segments):
+                if "start" in word_segments[idx]:
+                    start = word_segments[idx]["start"]
+                elif idx > 0:
+                    start = word_segments[idx - 1]["end"] + 0.01
+                else:
+                    start = 0
+                if start > seg["end"]:
+                    break
+                words.append(word_segments[idx]["word"])
+                idx += 1
+            spacer = "" if language == "zh" else " "
+            seg["text"] = spacer.join(words)
+        # filter out empty segments
+        result["segments"] = [seg for seg in result["segments"] if seg["text"]]
 
-        log(f"truncated aligned result: {[(seg.get('speaker'), seg['text'], '{:.2f}'.format(seg['start']), '{:.2f}'.format(seg['end'])) for seg in result['segments']]}")
-        log("word segments:")
-        if "word_segments" in result:
-            for seg in result["word_segments"]:
-                print(seg)
         log(f"audio_end: {audio_end:.2f}")
         for id, mid in speaker_mid.items():
             log(f"speaker {id}, mid: {mid:.2f}")
-        log(f"transcript: {transcript['segments']}")
 
-        # console debug output
-        text = " ".join([seg["text"].strip() for seg in transcript["segments"]])
-        log(f"Transcript: {text}")
+        log(f"diarized transcript: {[(seg.get('speaker'), seg['text'], '{:.2f}'.format(seg['start']), '{:.2f}'.format(seg['end'])) for seg in result['segments']]}")
 
-        return transcript
+        return result

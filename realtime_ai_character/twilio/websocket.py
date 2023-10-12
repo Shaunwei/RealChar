@@ -29,7 +29,7 @@ from realtime_ai_character.audio.speech_to_text import SpeechToText, get_speech_
 from realtime_ai_character.audio.text_to_speech import TextToSpeech, get_text_to_speech
 from realtime_ai_character.character_catalog.catalog_manager import (
     get_catalog_manager,
-    Character,
+    Character, CatalogManager,
 )
 from realtime_ai_character.llm import get_llm, LLM
 from realtime_ai_character.llm.base import (
@@ -83,6 +83,7 @@ async def call_websocket(request: Request, req: MakeTwilioOutgoingCallRequest):
 
     to = req.target_number
     from_ = req.source_number
+    character_id = req.character_id
     if from_ is None:
         from_ = os.getenv("DEFAULT_CALLOUT_NUMBER", "")
 
@@ -97,7 +98,7 @@ async def call_websocket(request: Request, req: MakeTwilioOutgoingCallRequest):
     _ = client.calls.create(
         to=to,
         from_=from_,
-        url=f"https://{request.url.hostname}/twilio/voice",
+        url=f"https://{request.url.hostname}/twilio/voice" + "?character_id={}".format(character_id) if character_id else "",
         method="GET"
     )
 
@@ -107,13 +108,12 @@ async def get_websocket(request: Request):
     # Start our TwiML response
     resp = VoiceResponse()
 
-    request.url.hostname
+    character_id = request.query_params.get("character_id")
     connect = Connect()
     connect.stream(
-        name="RealChar Endpoint", url=f"wss://{request.url.hostname}/twilio/ws"
-    )
+        name=character_id if character_id else "RealChar Endpoint", url=f"wss://{request.url.hostname}/twilio/ws"
+    ).parameter(name="character_id", value=character_id)
     resp.append(connect)
-
     return Response(content=str(resp), media_type="application/xml")
 
 
@@ -225,17 +225,15 @@ async def websocket_endpoint(
 ):
     llm = get_llm(model=llm_model)
     await manager.connect(websocket)
-    random_character = random.choice(character_list)
-    character = catalog_manager.get_character(random_character)
     try:
         main_task = asyncio.create_task(
             handle_receive(
                 websocket,
                 llm,
-                character,
                 language,
                 speech_to_text,
                 default_text_to_speech,
+                catalog_manager
             )
         )
         await asyncio.gather(main_task)
@@ -247,13 +245,15 @@ async def websocket_endpoint(
 async def handle_receive(
     websocket: WebSocket,
     llm: LLM,
-    character: Character,
     language: str,
     speech_to_text: SpeechToText,
     default_text_to_speech: TextToSpeech,
+    catalog_manager: CatalogManager
 ):
     buffer = AudioBytesBuffer(websocket)
     conversation_history = ConversationHistory()
+    random_character = random.choice(character_list)
+    character = catalog_manager.get_character(random_character)
     conversation_history.system_prompt = character.llm_system_prompt
     user_input_template = character.llm_user_prompt
     tts_event = asyncio.Event()
@@ -328,6 +328,13 @@ async def handle_receive(
                 logger.info("Receive twilio start event")
                 sid = obj["start"]["streamSid"]
                 buffer.setStreamID(sid)
+                # Get character.
+                logger.info(obj)
+                if "character_id" in obj["start"]["customParameters"]:
+                    character_id = obj["start"]["customParameters"]["character_id"]
+                    character = catalog_manager.get_character(character_id)
+                    conversation_history.system_prompt = character.llm_system_prompt
+                    user_input_template = character.llm_user_prompt
                 # greet the user when the stream starts
                 logger.info(f"Using character: {character.name}")
                 # Greet the user

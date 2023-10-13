@@ -186,20 +186,20 @@ export const createJournalSlice = (set, get) => ({
         },
       ],
     });
-    get().sendOverSocket("[!ADD_SPEAKER]" + speaker_id)
-    get().sendOverSocket(voiceFile)
+    get().sendOverSocket('[!ADD_SPEAKER]' + speaker_id);
+    get().sendOverSocket(voiceFile);
   },
-  deleteSpeaker: (speaker_id) => {
+  deleteSpeaker: speaker_id => {
     set({
       speakersList: get().speakersList.filter(
-        (speaker) => speaker.id !== speaker_id
+        speaker => speaker.id !== speaker_id
       ),
     });
-    get().sendOverSocket("[!DELETE_SPEAKER]" + speaker_id)
+    get().sendOverSocket('[!DELETE_SPEAKER]' + speaker_id);
   },
   updateSpeaker: (speaker_id, new_name, new_color_id) => {
     set({
-      speakersList: get().speakersList.map((speaker) => {
+      speakersList: get().speakersList.map(speaker => {
         if (speaker.id === speaker_id) {
           return {
             id: speaker_id,
@@ -214,9 +214,14 @@ export const createJournalSlice = (set, get) => ({
   },
   transcriptContent: demoMeeting,
   appendTranscriptContent: (speaker_id, text) => {
-    const speaker = get().speakersList.find((speaker) => speaker.id === speaker_id)
+    const speaker = get().speakersList.find(
+      speaker => speaker.id === speaker_id
+    );
     const length = get().transcriptContent.length;
-    if (length > 0 && get().transcriptContent[length - 1].speaker_id === speaker_id) {
+    if (
+      length > 0 &&
+      get().transcriptContent[length - 1].speaker_id === speaker_id
+    ) {
       set({
         transcriptContent: get().transcriptContent.map((item, index) => {
           if (index === get().transcriptContent.length - 1) {
@@ -245,15 +250,17 @@ export const createJournalSlice = (set, get) => ({
     }
   },
   actionContent: demoActions,
-  appendUserRequest: (text) => {
-    set({actionContent: [
-      ...get().actionContent,
-      {
-        type: 'user',
-        timestamp: `${Date.now()}`,
-        content: text,
-      }
-    ]})
+  appendUserRequest: text => {
+    set({
+      actionContent: [
+        ...get().actionContent,
+        {
+          type: 'user',
+          timestamp: `${Date.now()}`,
+          content: text,
+        },
+      ],
+    });
   },
   appendCharacterResponse: text => {
     set({

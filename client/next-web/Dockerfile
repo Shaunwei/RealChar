@@ -47,7 +47,7 @@ RUN npm run build
 FROM node:alpine
 
 # Install Nginx
-RUN apk add --no-cache nginx
+RUN apk add --no-cache curl nginx
 
 WORKDIR /app
 
@@ -67,4 +67,3 @@ EXPOSE 80
 
 # Start command will start both Nginx and the Next.js app
 CMD ["sh", "-c", "nginx && npm start"]
-

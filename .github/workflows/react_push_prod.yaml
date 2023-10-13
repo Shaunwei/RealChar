@@ -9,7 +9,10 @@ env:
 
 jobs:
   docker-push:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Docker login
@@ -40,7 +43,10 @@ jobs:
  
   k8s-deployment:
     needs: [docker-push]
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Set up Kubectl
         uses: azure/setup-kubectl@v1

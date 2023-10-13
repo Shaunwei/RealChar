@@ -48,20 +48,25 @@ jobs:
       contents: read
       packages: write
     steps:
-      - name: Set up Kubectl
-        uses: azure/setup-kubectl@v1
-        id: install
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS_ASSISTLY}}'
 
-      - name: Deploy to Kubernetes
-        run: |
-          echo "${{ secrets.KUBECONFIG }}" | base64 --decode > ./kubeconfig.yaml
-          export KUBECONFIG=./kubeconfig.yaml
-          kubectl rollout restart deployment ${{ env.K8S_DEPLOYMENT_NAME }}
+    - id: 'get-credentials'
+      uses: 'google-github-actions/get-gke-credentials@v1'
+      with:
+        cluster_name: 'cluster-1'
+        location: 'us-central1-c'
 
-      - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_COLOR: '#335c05'
-          SLACK_MESSAGE: new version has started to update for realchar frontend in prod env
-          SLACK_TITLE: prod realchar frontend update
-          SLACK_WEBHOOK: https://hooks.slack.com/services/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
+    - name: Deploy to Kubernetes
+      run: kubectl rollout restart deployment ${{ env.K8S_DEPLOYMENT_NAME }}
+
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_COLOR: '#335c05'
+        SLACK_MESSAGE: new version has started to update for realchar frontend in prod env
+        SLACK_TITLE: prod realchar frontend update
+        SLACK_WEBHOOK: https://hooks.slack.com/services/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

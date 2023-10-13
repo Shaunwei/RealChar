@@ -1,5 +1,6 @@
 const demoMeeting = [
   {
+    speaker_id: '2',
     name: 'Alex',
     color_id: 1,
     content:
@@ -7,6 +8,7 @@ const demoMeeting = [
     timestamp: 1695965752196,
   },
   {
+    speaker_id: '1',
     name: 'Emma',
     color_id: 3,
     content:
@@ -14,6 +16,7 @@ const demoMeeting = [
     timestamp: 1695965752197,
   },
   {
+    speaker_id: '2',
     name: 'Alex',
     color_id: 1,
     content:
@@ -21,6 +24,7 @@ const demoMeeting = [
     timestamp: 1695965752199,
   },
   {
+    speaker_id: '1',
     name: 'Emma',
     color_id: 3,
     content:
@@ -28,12 +32,14 @@ const demoMeeting = [
     timestamp: 1695965752299,
   },
   {
+    speaker_id: '2',
     name: 'Alex',
     color_id: 1,
     content: 'I see.Are there any major blockers causing the delay ?',
     timestamp: 1695965752399,
   },
   {
+    speaker_id: '1',
     name: 'Emma',
     color_id: 3,
     content:
@@ -41,6 +47,7 @@ const demoMeeting = [
     timestamp: 1695965752499,
   },
   {
+    speaker_id: '2',
     name: 'Alex',
     color_id: 1,
     content:
@@ -48,6 +55,7 @@ const demoMeeting = [
     timestamp: 1695965752599,
   },
   {
+    speaker_id: '1',
     name: 'Emma',
     color_id: 3,
     content:
@@ -55,6 +63,7 @@ const demoMeeting = [
     timestamp: 1695965752699,
   },
   {
+    speaker_id: '2',
     name: 'Alex',
     color_id: 1,
     content:
@@ -62,6 +71,7 @@ const demoMeeting = [
     timestamp: 1695965752799,
   },
   {
+    speaker_id: '1',
     name: 'Emma',
     color_id: 3,
     content:
@@ -69,6 +79,7 @@ const demoMeeting = [
     timestamp: 1695965752899,
   },
   {
+    speaker_id: '2',
     name: 'Alex',
     color_id: 1,
     content:
@@ -76,6 +87,7 @@ const demoMeeting = [
     timestamp: 1695965752999,
   },
   {
+    speaker_id: '1',
     name: 'Emma',
     color_id: 3,
     content:
@@ -83,6 +95,7 @@ const demoMeeting = [
     timestamp: 1695965753399,
   },
   {
+    speaker_id: '2',
     name: 'Alex',
     color_id: 1,
     content:
@@ -90,6 +103,7 @@ const demoMeeting = [
     timestamp: 1695965754399,
   },
   {
+    speaker_id: '1',
     name: 'Emma',
     color_id: 3,
     content:
@@ -97,6 +111,7 @@ const demoMeeting = [
     timestamp: 1695965755399,
   },
   {
+    speaker_id: '2',
     name: 'Alex',
     color_id: 1,
     content: 'I have no doubts.Let’s get to work!',
@@ -146,12 +161,12 @@ const demoActions = [
 
 const demoSpeakersList = [
   {
-    id: 1,
+    id: '1',
     name: 'Emma',
     color_id: 3,
   },
   {
-    id: 2,
+    id: '2',
     name: 'Alex',
     color_id: 1,
   },
@@ -195,23 +210,38 @@ export const createJournalSlice = (set, get) => ({
     });
   },
   transcriptContent: demoMeeting,
-  transcriptSpeakers: [''],
-  appendTranscriptContent: (speakerId, text) => {
-    if (!get().transcriptSpeakers.includes(speakerId)) {
-      set({ transcriptSpeakers: [...get().transcriptSpeakers, speakerId] });
+  appendTranscriptContent: (speaker_id, text) => {
+    console.log('speaker_id', speaker_id)
+    console.log('text', text)
+    const speaker = get().speakersList.find((speaker) => speaker.id === speaker_id)
+    const length = get().transcriptContent.length;
+    if (length > 0 && get().transcriptContent[length - 1].speaker_id === speaker_id) {
+      set({
+        transcriptContent: get().transcriptContent.map((item, index) => {
+          if (index === get().transcriptContent.length - 1) {
+            return {
+              ...item,
+              content: item.content + ' ' + text,
+            };
+          } else {
+            return item;
+          }
+        }),
+      });
+    } else {
+      set({
+        transcriptContent: [
+          ...get().transcriptContent,
+          {
+            speaker_id: speaker ? speaker.id : null,
+            name: speaker ? speaker.name : 'Unknown Speaker',
+            color_id: speaker ? speaker.color_id : 0,
+            content: text,
+            timestamp: Date.now(),
+          },
+        ],
+      });
     }
-    const color_id = get().transcriptSpeakers.indexOf(speakerId);
-    set({
-      transcriptContent: [
-        ...get().transcriptContent,
-        {
-          name: speakerId == '' ? 'Unknown Speaker' : 'Speaker ' + speakerId,
-          color_id: color_id,
-          content: text,
-          timestamp: Date.now(),
-        },
-      ],
-    });
   },
   actionContent: demoActions,
   appendUserRequest: (text) => {

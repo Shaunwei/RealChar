@@ -3,6 +3,7 @@ import { useRef, useEffect } from 'react';
 import SpeakerManage from './SpeakerManage';
 
 const transcriptColors = [
+  'text-white-300',
   'text-blue-300',
   'text-purple-300',
   'text-green-300',

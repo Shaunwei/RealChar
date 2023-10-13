@@ -23,7 +23,12 @@ export default function Conversation() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isTextMode, setIsTextMode] = useState(true);
-  const { isJournalMode, setIsJournalMode } = useAppStore();
+  const {
+    isJournalMode,
+    setIsJournalMode,
+    resetTranscript,
+    resetSpeakersList,
+  } = useAppStore();
   const { character, getAudioList, setCharacter, clearChatContent } =
     useAppStore();
   // Websocket.
@@ -69,6 +74,8 @@ export default function Conversation() {
     );
     setCharacter(character);
     setIsJournalMode(false);
+    resetTranscript();
+    resetSpeakersList();
   }, []);
 
   // Bind current audio player to state ref.
@@ -207,7 +214,7 @@ export default function Conversation() {
     setCharacter({});
   };
 
-  // for journal mode
+  // For journal mode
   useEffect(() => {
     if (isJournalMode) {
       enableVAD();

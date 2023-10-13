@@ -38,44 +38,61 @@ export default function SpeakerManage({ colors }) {
 
   return (
     <>
-      <Button
-        onPress={() => setShowList(!showList)}
-        isIconOnly
-        variant='light'
-        aria-label='speaker setting'
-        size='sm'
-        className='h-5 w-10 data-[hover=true]:opacity-60 data-[hover=true]:bg-transparent'
-      >
-        <FiSettings size='1.75em' />
-      </Button>
+      {speakersList.length < 1 ? (
+        <Button
+          onPress={handleAddModal}
+          isIconOnly
+          variant="light"
+          aria-label="add speaker"
+          size="sm"
+          className="h-6 data-[hover=true]:opacity-60 data-[hover=true]:bg-transparent"
+        >
+          <FiPlus size="1.75em" />
+        </Button>
+      ) : (
+        <Button
+          onPress={() => setShowList(!showList)}
+          isIconOnly
+          variant="light"
+          aria-label="speaker setting"
+          size="sm"
+          className="h-6 w-10 data-[hover=true]:opacity-60 data-[hover=true]:bg-transparent"
+        >
+          <FiSettings size="1.75em" />
+        </Button>
+      )}
+
       {showList && (
         <div
-          className='flex flex-col items-start bg-real-blue-700 rounded-md px-2 py-3 w-36 absolute right-0 top-7'
-          aria-label='popover content'
+          className="flex flex-col items-start bg-real-blue-700 rounded-md px-2 py-3 w-36 absolute right-0 top-7"
+          aria-label="popover content"
         >
           <div>
             <Button
               onPress={handleAddModal}
               isIconOnly
-              variant='light'
-              aria-label='add speaker'
-              className='h-8 data-[hover=true]:bg-white/20'
+              variant="light"
+              aria-label="add speaker"
+              className="h-8 data-[hover=true]:bg-white/20"
             >
-              <FiPlus size='1.5em' />
+              <FiPlus size="1.5em" />
             </Button>
           </div>
-          <Listbox variant='flat' aria-label='speaker list'>
-            {speakersList?.map(speaker => (
+          <Listbox
+            variant="flat"
+            aria-label="speaker list"
+          >
+            {speakersList?.map((speaker) => (
               <ListboxItem
                 onPress={() => handleEditModal(speaker)}
-                aria-label='speaker'
+                aria-label="speaker"
                 key={speaker.id}
                 startContent={
                   <span className={`${colors[speaker.color_id]}`}>
-                    <TiMicrophone size='1.2em' />
+                    <TiMicrophone size="1.2em" />
                   </span>
                 }
-                className='data-[hover=true]:bg-white/20'
+                className="data-[hover=true]:bg-white/20"
               >
                 {speaker.name}
               </ListboxItem>
@@ -86,7 +103,7 @@ export default function SpeakerManage({ colors }) {
       <Modal
         isOpen={isOpen}
         onClose={onClose}
-        size='xl'
+        size="xl"
         classNames={{
           base: 'rounded-none font-light border-modalBorder bg-modalBG border-2 md:max-w-3xl md:py-16 md:px-28',
           header: 'text-center font-light justify-center md:text-3xl',
@@ -101,7 +118,10 @@ export default function SpeakerManage({ colors }) {
             onClose={onClose}
           />
         ) : (
-          <AddModal colors={colors} onClose={onClose} />
+          <AddModal
+            colors={colors}
+            onClose={onClose}
+          />
         )}
       </Modal>
     </>

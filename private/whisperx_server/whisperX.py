@@ -214,8 +214,7 @@ class WhisperX:
                     break
                 words.append(word_segments[idx]["word"])
                 idx += 1
-            # spacer = "" if language == "zh" else " "
-            spacer = " "
+            spacer = "" if language == "zh" else " "
             seg["text"] = spacer.join(words)
         # filter out empty segments
         result["segments"] = [seg for seg in result["segments"] if seg["text"]]

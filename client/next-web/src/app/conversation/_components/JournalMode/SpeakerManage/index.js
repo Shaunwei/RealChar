@@ -14,6 +14,7 @@ import AddModal from './AddModal';
 
 export default function SpeakerManage({ colors }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { enableVAD, disableVAD } = useAppStore();
   const { speakersList } = useAppStore();
   const [showList, setShowList] = useState(false);
   const [speakerContent, setSpeakerContent] = useState({
@@ -23,22 +24,32 @@ export default function SpeakerManage({ colors }) {
   });
   const [modalType, setModalType] = useState('');
 
+  const customOnOpen = () => {
+    disableVAD();
+    onOpen();
+  };
+
+  const customOnClose = () => {
+    enableVAD();
+    onClose();
+  };
+
   function handleEditModal(speaker) {
     setSpeakerContent(speaker);
     setModalType('edit');
     setShowList(false);
-    onOpen();
+    customOnOpen();
   }
 
   function handleAddModal() {
     setModalType('add');
     setShowList(false);
-    onOpen();
+    customOnOpen();
   }
 
   return (
     <>
-      {speakersList.length < 1 ? (
+      {speakersList.filter((speaker) => speaker.alive).length < 1 ? (
         <Button
           onPress={handleAddModal}
           isIconOnly
@@ -82,7 +93,7 @@ export default function SpeakerManage({ colors }) {
             variant="flat"
             aria-label="speaker list"
           >
-            {speakersList?.map((speaker) => (
+            {speakersList.filter((speaker) => speaker.alive).map((speaker) => (
               <ListboxItem
                 onPress={() => handleEditModal(speaker)}
                 aria-label="speaker"
@@ -102,7 +113,7 @@ export default function SpeakerManage({ colors }) {
       )}
       <Modal
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={customOnClose}
         size="xl"
         classNames={{
           base: 'rounded-none font-light border-modalBorder bg-modalBG border-2 md:max-w-3xl md:py-16 md:px-28',
@@ -115,12 +126,12 @@ export default function SpeakerManage({ colors }) {
           <EditModal
             speakerContent={speakerContent}
             colors={colors}
-            onClose={onClose}
+            onClose={customOnClose}
           />
         ) : (
           <AddModal
             colors={colors}
-            onClose={onClose}
+            onClose={customOnClose}
           />
         )}
       </Modal>

@@ -34,15 +34,20 @@ jobs:
       contents: read
       packages: write
     steps:
-    - name: Set up Kubectl
-      uses: azure/setup-kubectl@v1
-      id: install
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS_ASSISTLY}}'
+
+    - id: 'get-credentials'
+      uses: 'google-github-actions/get-gke-credentials@v1'
+      with:
+        cluster_name: 'cluster-1'
+        location: 'us-central1-c'
 
     - name: Deploy to Kubernetes
-      run: |
-        echo "${{ secrets.KUBECONFIG }}" | base64 --decode > ./kubeconfig.yaml
-        export KUBECONFIG=./kubeconfig.yaml
-        kubectl rollout restart deployment ${{ env.K8S_DEPLOYMENT_NAME }}
+      run: kubectl rollout restart deployment ${{ env.K8S_DEPLOYMENT_NAME }}
 
     - name: Slack Notification
       uses: rtCamp/action-slack-notify@v2

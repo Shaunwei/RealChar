@@ -3,7 +3,6 @@ import { useRef, useEffect } from 'react';
 import SpeakerManage from './SpeakerManage';
 
 const transcriptColors = [
-  'text-white-300',
   'text-blue-300',
   'text-purple-300',
   'text-green-300',
@@ -36,7 +35,7 @@ export default function Transcript() {
         <ul className="flex flex-col gap-3 p-4">
           {transcriptContent.map((line) => (
             <li key={line.timestamp}>
-              <span className={`${transcriptColors[line.color_id]}`}>
+              <span className={`${line.color_id ? transcriptColors[line.color_id] : 'text-white-300'}`}>
                 {line.name}: {line.content}
               </span>
             </li>

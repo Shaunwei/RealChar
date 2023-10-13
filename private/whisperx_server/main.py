@@ -58,12 +58,16 @@ async def transcribe(request: Request, metadata: str = Form(...)):
         for key, file in data.items()
         if key.startswith("speaker_audio_sample_")
     }
-    for key, value in speaker_audio_samples.items():
-        print(f"\033[36mspeaker_audio_sample_{key}: {len(value)}\033[0m")
 
     # transcribe
     result = whisperx.transcribe(
-        audio_bytes, platform, initial_prompt, language, suppress_tokens, diarization, speaker_audio_samples
+        audio_bytes,
+        platform,
+        initial_prompt,
+        language,
+        suppress_tokens,
+        diarization,
+        speaker_audio_samples,
     )
 
     elapsed = perf_counter() - start

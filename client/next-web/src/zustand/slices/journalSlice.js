@@ -175,17 +175,19 @@ const demoSpeakersList = [
 export const createJournalSlice = (set, get) => ({
   speakersList: demoSpeakersList,
   addSpeaker: (name, color_id, voiceFile) => {
-    // TODO
+    const speaker_id = self.crypto.randomUUID();
     set({
       speakersList: [
         ...get().speakersList,
         {
-          id: self.crypto.randomUUID(),
+          id: speaker_id,
           name: name,
           color_id: color_id,
         },
       ],
     });
+    get().sendOverSocket("[!ADD_SPEAKER]" + speaker_id)
+    get().sendOverSocket(voiceFile)
   },
   deleteSpeaker: (speaker_id) => {
     set({
@@ -193,6 +195,7 @@ export const createJournalSlice = (set, get) => ({
         (speaker) => speaker.id !== speaker_id
       ),
     });
+    get().sendOverSocket("[!DELETE_SPEAKER]" + speaker_id)
   },
   updateSpeaker: (speaker_id, new_name, new_color_id) => {
     set({
@@ -211,8 +214,6 @@ export const createJournalSlice = (set, get) => ({
   },
   transcriptContent: demoMeeting,
   appendTranscriptContent: (speaker_id, text) => {
-    console.log('speaker_id', speaker_id)
-    console.log('text', text)
     const speaker = get().speakersList.find((speaker) => speaker.id === speaker_id)
     const length = get().transcriptContent.length;
     if (length > 0 && get().transcriptContent[length - 1].speaker_id === speaker_id) {

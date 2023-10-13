@@ -100,12 +100,12 @@ export default function SpeakerManage({ colors }) {
         {modalType === 'edit' ? (
           <EditModal
             speakerContent={speakerContent}
-            colors={colors.slice(1)} // first color is reserved for unknown speaker
+            colors={colors}
             onClose={onClose}
           />
         ) : (
           <AddModal
-            colors={colors.slice(1)} // first color is reserved for unknown speaker
+            colors={colors}
             onClose={onClose}
           />
         )}

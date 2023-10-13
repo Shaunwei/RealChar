@@ -14,8 +14,7 @@ def benchmark(whisperx: WhisperX):
     estimate = perf_counter() - start
 
     max_duration = 100  # seconds
-    # max_num_runs = 100  # runs
-    max_num_runs = 1  # runs
+    max_num_runs = 100  # runs
     num_runs = min(int(max_duration / estimate) + 1, max_num_runs)
 
     print("Benchmarking...")

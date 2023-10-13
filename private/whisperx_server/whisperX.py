@@ -52,8 +52,7 @@ ALIGN_MODEL_LANGUAGE_CODE = [
     # "hi",
 ]
 
-# MODEL = os.getenv("MODEL", "base")
-MODEL = "large-v2"
+MODEL = os.getenv("MODEL", "base")
 HF_ACCESS_TOKEN = os.getenv("HF_ACCESS_TOKEN", "")
 
 
@@ -89,7 +88,11 @@ class WhisperX:
         diarization=False,
         speaker_audio_samples={},
     ):
-        log(f"Received {len(audio_bytes)} bytes of audio data. Language: {language}")
+        log(
+            f"Received {len(audio_bytes)} bytes of audio data. Language: {language}. "
+            f"Platform: {platform}. Diarization: {diarization}. "
+            f"Speaker audio samples: {[(id, len(ab)) for id, ab in speaker_audio_samples.items()]}."
+        )
 
         def get_audio(audio_bytes: bytes, verbose: bool = False):
             if platform == "twilio":
@@ -106,21 +109,18 @@ class WhisperX:
                 log(f"Audio length: {len(audio) / 16000:.2f} s")
                 log(f"Received {reader.get_src_stream_info(0)}")
             return audio
-        
+
         # prepare audio
         audio = get_audio(audio_bytes, verbose=True)
-        
+
         # transcribe
         language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, None)
         self.model.options = self.model.options._replace(
             initial_prompt=prompt, suppress_tokens=suppress_tokens
         )
-        _ = time.perf_counter()
         result = self.model.transcribe(audio, batch_size=1, language=language)
-        log(f"transcribe time: {(time.perf_counter() - _) * 1000:.0f} ms, model: {MODEL}")
         if not result["segments"]:
             return result
-        log(f"transcribe result: {[(seg['text'], '{:.2f}'.format(seg['start']), '{:.2f}'.format(seg['end'])) for seg in result['segments']]}")
 
         # convert traditional chinese to simplified chinese
         if result["language"] == "zh":
@@ -144,11 +144,10 @@ class WhisperX:
         speaker_mid = {}
         ext_audio = audio.copy()
         for id, speaker_audio in speaker_audios.items():
-            ext_audio = np.concatenate([ext_audio, np.zeros(16000 * gap, np.float32), speaker_audio])
+            ext_audio = np.concatenate(
+                [ext_audio, np.zeros(16000 * gap, np.float32), speaker_audio]
+            )
             speaker_mid[id] = (len(ext_audio) - len(speaker_audio) / 2) / 16000
-        log(f"Full audio length: {len(ext_audio) / 16000:.2f} s")
-        # save audio for debug
-        torchaudio.save(f"/home/yiguo/Downloads/{time.time():.0f}.wav", torch.from_numpy(ext_audio[None, :]), 16000)
         language = result["language"]
         # align audio with wav2vec2
         if language in ALIGN_MODEL_LANGUAGE_CODE:
@@ -170,13 +169,9 @@ class WhisperX:
                 }
                 for seg in result["segments"]
             ]
-        log("aligned result:")
-        for seg in word_segments:
-            log(f"  {seg}")
         # diarize
         num_speakers = len(speaker_audios)
         diarize_segments = self.diarize_model(ext_audio, min_speakers=0, max_speakers=num_speakers)
-        log(f"diarize result:\n{diarize_segments}\nnum_speakers: {num_speakers}")
         # figure out speaker id map
         speaker_id = {}
         counter = {}
@@ -192,7 +187,6 @@ class WhisperX:
                 speaker_id[speaker] = ids.pop()
             else:
                 speaker_id[speaker] = ""
-        log(f"speaker_id: {speaker_id}")
         # align results with mapped speaker id
         result = {
             "segments": [
@@ -201,9 +195,10 @@ class WhisperX:
                     "end": row["end"],
                     "speaker": speaker_id[row["speaker"]],
                 }
-                for _, row in diarize_segments.iterrows() if row["end"] < audio_end
+                for _, row in diarize_segments.iterrows()
+                if row["end"] < audio_end
             ],
-            "language": language
+            "language": language,
         }
         idx = 0
         for seg in result["segments"]:
@@ -225,10 +220,15 @@ class WhisperX:
         # filter out empty segments
         result["segments"] = [seg for seg in result["segments"] if seg["text"]]
 
-        log(f"audio_end: {audio_end:.2f}")
-        for id, mid in speaker_mid.items():
-            log(f"speaker {id}, mid: {mid:.2f}")
-
-        log(f"diarized transcript: {[(seg.get('speaker'), seg['text'], '{:.2f}'.format(seg['start']), '{:.2f}'.format(seg['end'])) for seg in result['segments']]}")
+        message = [
+            (
+                seg["speaker"],
+                seg["text"],
+                "{:.2f}".format(seg["start"]),
+                "{:.2f}".format(seg["end"]),
+            )
+            for seg in result["segments"]
+        ]
+        log(f"diarized transcript: {message}")
 
         return result

@@ -149,8 +149,8 @@ async def websocket_endpoint(websocket: WebSocket,
         main_task = asyncio.create_task(
             handle_receive(websocket, session_id, user_id, db, llm, catalog_manager,
                            memory_manager, character_id, platform, use_search, use_quivr,
-                           use_multion, journal_mode, speech_to_text, default_text_to_speech, language,
-                           session_auth_result.is_existing_session))
+                           use_multion, journal_mode, speech_to_text, default_text_to_speech, 
+                           language, session_auth_result.is_existing_session))
 
         await asyncio.gather(main_task)
 
@@ -270,10 +270,6 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
         journal_mode = False
         journal_history = []
         speaker_audio_samples = {}
-        with open("/home/yiguo/Downloads/speaker0.wav", "rb") as f:
-            speaker_audio_samples["2"] = f.read()
-        with open("/home/yiguo/Downloads/speaker1.wav", "rb") as f:
-            speaker_audio_samples["1"] = f.read()
 
         while True:
             data = await websocket.receive()
@@ -282,8 +278,6 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
             
             # Handle journal mode text-to-speech
             _text_to_speech = None if journal_mode else text_to_speech
-            print(f"\033[36mjournal_mode: {journal_mode}\033[0m")
-            print(f"\033[36m_text_to_speech: {repr(_text_to_speech)}\033[0m")
 
             # show latency info
             timer.report()
@@ -292,7 +286,6 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
             if 'text' in data:
                 timer.start("LLM First Token")
                 msg_data = data['text']
-                print(f"\033[36mreceived msg_data: {msg_data}\033[0m")
                 # Handle client side commands
                 if msg_data.startswith('[!'):
                     command_end = msg_data.find(']')
@@ -302,7 +295,12 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                         use_search = (command_content == 'true')
                     elif command == "JOURNAL_MODE":
                         journal_mode = (command_content == 'true')
-                        print(f"\033[36mcontent: {command_content}\033[0m")
+                    elif command == "ADD_SPEAKER":
+                        speaker_audio_samples[command_content] = None
+                    elif command == "DELETE_SPEAKER":
+                        if command_content in speaker_audio_samples:
+                            del speaker_audio_samples[command_content]
+                            logger.info(f"Deleted speaker: {command_content}")
                     continue
                 
                 # 0. itermidiate transcript starts with [&]
@@ -404,9 +402,19 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
             # handle binary message(audio)
             elif 'bytes' in data:
                 binary_data = data['bytes']
-                print(f"\033[36mreceived binary_data: {len(binary_data)} bytes\033[0m")
                 # Handle journal mode
                 if journal_mode:
+                    # check whether adding new speaker
+                    did_add_speaker = False
+                    for speaker_id, sample in speaker_audio_samples.items():
+                        if not sample:
+                            speaker_audio_samples[speaker_id] = binary_data
+                            logger.info(f"Added speaker: {speaker_id}")
+                            did_add_speaker = True
+                            break
+                    if did_add_speaker:
+                        continue
+                    # transcribe
                     prompt = " ".join(text for _, text in journal_history[-5:])
                     segments = speech_to_text.transcribe_diarize(
                         binary_data,
@@ -415,14 +423,14 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                         speaker_audio_samples=speaker_audio_samples,
                     )
                     for speaker_id, text in segments:
-                        print(f"\033[36msegment:\nspeaker = {speaker_id}\ntext = {text}\033[0m")
                         await manager.send_message(
                             message=f"[+transcript]?speakerId={speaker_id}&text={text}",
                             websocket=websocket
                         )
+                        logger.info(
+                            f"Message sent to client: speaker = {speaker_id}, text = {text}"
+                        )
                         journal_history.append((speaker_id, text))
-                    print(f"\033[36mregistered speakers: {[(key, len(value)) for key, value in speaker_audio_samples.items()]}\033[0m")
-                    print(f"\033[36mjournal_history: {journal_history}\033[0m")
                     continue
 
                 # 0. Handle interim speech.

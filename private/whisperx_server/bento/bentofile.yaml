@@ -9,7 +9,7 @@ include:
   - "*.mp3"
 python:
   packages:
-    - whisperx @ git+https://github.com/m-bain/whisperx.git@e94b9043085c32c365b2b60f23e73b2d03c2241c
+    - whisperx @ git+https://github.com/m-bain/whisperx.git@051047bb25b740fed2ea93ca737499c37e8dc9d4
     - opencc
 docker:
     base_image: "pytorch/pytorch:2.0.1-cuda11.7-cudnn8-runtime"

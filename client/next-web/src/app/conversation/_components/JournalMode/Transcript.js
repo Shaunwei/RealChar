@@ -26,16 +26,22 @@ export default function Transcript() {
 
   return (
     <>
-      <h2 className="py-1 pl-4 bg-real-blue-500/90 text-small md:text-base font-medium sticky top-24 flex flex-row justify-between">
+      <h2 className='py-1 pl-4 bg-real-blue-500/90 text-small md:text-base font-medium sticky top-24 flex flex-row justify-between'>
         Transcript
         <SpeakerManage colors={transcriptColors} />
       </h2>
-      <div className="grow overflow-y-auto">
-        <div className="h-[90px]"></div>
-        <ul className="flex flex-col gap-3 p-4">
-          {transcriptContent.map((line) => (
+      <div className='grow overflow-y-auto'>
+        <div className='h-[90px]'></div>
+        <ul className='flex flex-col gap-3 p-4'>
+          {transcriptContent.map(line => (
             <li key={line.timestamp}>
-              <span className={`${transcriptColors[line.color_id]}`}>
+              <span
+                className={`${
+                  line.color_id
+                    ? transcriptColors[line.color_id]
+                    : 'text-white-300'
+                }`}
+              >
                 {line.name}: {line.content}
               </span>
             </li>

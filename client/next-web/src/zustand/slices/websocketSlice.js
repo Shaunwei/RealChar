@@ -45,6 +45,9 @@ export const createWebsocketSlice = (set, get) => ({
             } else if (message.startsWith('[+&]')) {
                 let msg = message.split('[+&]');
                 get().appendSpeechInterim(msg[1]);
+            } else if (message.startsWith('[+transcript]')) {
+                let msg = message.split('?speakerId=')[1].split('&text=');
+                get().appendTranscriptContent(msg[0], msg[1]);
             } else {
                 get().setSender('character');
                 get().appendInterimChatContent(event.data);
@@ -75,7 +78,7 @@ export const createWebsocketSlice = (set, get) => ({
             const ws_url = getWsServerUrl(window.location.origin);
             const language = languageCode[get().preferredLanguage.values().next().value];
             const ws_path = ws_url +
-                `/ws/${sessionId}?llm_model=${get().selectedModel.values().next().value}&platform=web&use_search=${get().enableGoogle}&use_quivr=${get().enableQuivr}&use_multion=${get().enableMultiOn}&character_id=${get().character.character_id}&language=${language}&token=${get().token}`;
+                `/ws/${sessionId}?llm_model=${get().selectedModel.values().next().value}&platform=web&use_search=${get().enableGoogle}&use_quivr=${get().enableQuivr}&use_multion=${get().enableMultiOn}&isJournalMode=${get().isJournalMode}&character_id=${get().character.character_id}&language=${language}&token=${get().token}`;
             let socket = new WebSocket(ws_path);
             socket.binaryType = 'arraybuffer';
             socket.onopen = () => {

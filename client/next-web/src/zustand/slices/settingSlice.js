@@ -1,4 +1,4 @@
-export const createSettingSlice = (set) => ({
+export const createSettingSlice = (set, get) => ({
   character: {},
   preferredLanguage: new Set(['English']),
   selectedSpeaker: new Set(['default']),
@@ -94,6 +94,6 @@ export const createSettingSlice = (set) => ({
   },
   setIsJournalMode: (v) => {
     set({isJournalMode: v});
-    // TODO
+    get().sendOverSocket("[!JOURNAL_MODE]" + v)
   },
 })

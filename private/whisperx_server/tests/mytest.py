@@ -14,17 +14,24 @@ platform = os.getenv("PLATFORM", "")
 
 with open(audio_file, "rb") as f:
     audio_bytes = f.read()
-
+with open("/home/yiguo/Downloads/speaker0.wav", "rb") as f:
+    speaker0 = f.read()
+with open("/home/yiguo/Downloads/speaker2.mp3", "rb") as f:
+    speaker1 = f.read()
 
 def test(verbose=True):
-    files = {"audio_file": ("audio_file", audio_bytes)}
+    files = {
+        "audio_file": ("", audio_bytes),
+        "speaker_audio_sample_0": ("", speaker0),
+        "speaker_audio_sample_1": ("", speaker1),
+    }
     metadata = {
         "api_key": api_key,
         "platform": platform,
         "initial_prompt": "",
         "language": "en-US",
         "suppress_tokens": [-1],
-        "diarization": False,
+        "diarization": True,
     }
     data = {"metadata": json.dumps(metadata)}
     start = perf_counter()

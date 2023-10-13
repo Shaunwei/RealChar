@@ -52,6 +52,7 @@ export const createJournalSlice = (set, get) => ({
           id: speaker_id,
           name: name,
           color_id: color_id,
+          alive: true,
         },
       ],
     });
@@ -60,8 +61,8 @@ export const createJournalSlice = (set, get) => ({
   },
   deleteSpeaker: (speaker_id) => {
     set({
-      speakersList: get().speakersList.filter(
-        (speaker) => speaker.id !== speaker_id
+      speakersList: get().speakersList.map((speaker) =>
+        speaker.id === speaker_id ? { ...speaker, alive: false } : speaker
       ),
     });
     get().sendOverSocket('[!DELETE_SPEAKER]' + speaker_id);
@@ -74,6 +75,7 @@ export const createJournalSlice = (set, get) => ({
             id: speaker_id,
             name: new_name,
             color_id: new_color_id,
+            alive: true,
           };
         } else {
           return speaker;
@@ -103,10 +105,12 @@ export const createJournalSlice = (set, get) => ({
     const speaker = get().speakersList.find(
       (speaker) => speaker.id === speaker_id
     );
+    const known_speaker_id = speaker ? speaker.id : null;
     const length = get().transcriptContent.length;
     if (
       length > 0 &&
-      get().transcriptContent[length - 1].speaker_id === speaker_id
+      get().transcriptContent[length - 1].speaker_id === known_speaker_id &&
+      Date.now() - get().transcriptContent[length - 1].timestamp < 5000
     ) {
       set({
         transcriptContent: get().transcriptContent.map((item, index) => {
@@ -114,6 +118,7 @@ export const createJournalSlice = (set, get) => ({
             return {
               ...item,
               content: item.content + ' ' + text,
+              timestamp: Date.now(),
             };
           } else {
             return item;
@@ -125,7 +130,7 @@ export const createJournalSlice = (set, get) => ({
         transcriptContent: [
           ...get().transcriptContent,
           {
-            speaker_id: speaker ? speaker.id : null,
+            speaker_id: known_speaker_id,
             content: text,
             timestamp: Date.now(),
           },

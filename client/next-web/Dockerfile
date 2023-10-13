@@ -47,7 +47,7 @@ RUN npm run build
 FROM node:alpine
 
 # Install Nginx
-RUN apk add --no-cache curl nginx
+RUN apk add --no-cache curl nginx procps
 
 WORKDIR /app
 

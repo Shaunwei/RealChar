@@ -189,17 +189,17 @@ export const createJournalSlice = (set, get) => ({
     get().sendOverSocket('[!ADD_SPEAKER]' + speaker_id);
     get().sendOverSocket(voiceFile);
   },
-  deleteSpeaker: speaker_id => {
+  deleteSpeaker: (speaker_id) => {
     set({
       speakersList: get().speakersList.filter(
-        speaker => speaker.id !== speaker_id
+        (speaker) => speaker.id !== speaker_id
       ),
     });
     get().sendOverSocket('[!DELETE_SPEAKER]' + speaker_id);
   },
   updateSpeaker: (speaker_id, new_name, new_color_id) => {
     set({
-      speakersList: get().speakersList.map(speaker => {
+      speakersList: get().speakersList.map((speaker) => {
         if (speaker.id === speaker_id) {
           return {
             id: speaker_id,
@@ -212,10 +212,24 @@ export const createJournalSlice = (set, get) => ({
       }),
     });
   },
+  getSpeakerName: (speaker_id) => {
+    const target = get().speakersList.find(
+      (speaker) => speaker.id === speaker_id
+    );
+    if (!target) return 'Unknown Speaker';
+    return target.name;
+  },
+  getSpeakerColor: (speaker_id) => {
+    const target = get().speakersList.find(
+      (speaker) => speaker.id === speaker_id
+    );
+    if (!target) return -1;
+    return target.color_id;
+  },
   transcriptContent: demoMeeting,
   appendTranscriptContent: (speaker_id, text) => {
     const speaker = get().speakersList.find(
-      speaker => speaker.id === speaker_id
+      (speaker) => speaker.id === speaker_id
     );
     const length = get().transcriptContent.length;
     if (
@@ -240,8 +254,6 @@ export const createJournalSlice = (set, get) => ({
           ...get().transcriptContent,
           {
             speaker_id: speaker ? speaker.id : null,
-            name: speaker ? speaker.name : 'Unknown Speaker',
-            color_id: speaker ? speaker.color_id : 0,
             content: text,
             timestamp: Date.now(),
           },
@@ -250,7 +262,7 @@ export const createJournalSlice = (set, get) => ({
     }
   },
   actionContent: demoActions,
-  appendUserRequest: text => {
+  appendUserRequest: (text) => {
     set({
       actionContent: [
         ...get().actionContent,
@@ -262,7 +274,7 @@ export const createJournalSlice = (set, get) => ({
       ],
     });
   },
-  appendCharacterResponse: text => {
+  appendCharacterResponse: (text) => {
     set({
       actionContent: [
         ...get().actionContent,

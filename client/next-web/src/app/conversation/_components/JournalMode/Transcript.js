@@ -14,7 +14,7 @@ const transcriptColors = [
 
 export default function Transcript() {
   const msgEndRef = useRef();
-  const { transcriptContent } = useAppStore();
+  const { transcriptContent, getSpeakerName, getSpeakerColor } = useAppStore();
 
   useEffect(() => {
     msgEndRef.current.scrollIntoView({
@@ -26,23 +26,23 @@ export default function Transcript() {
 
   return (
     <>
-      <h2 className='py-1 pl-4 bg-real-blue-500/90 text-small md:text-base font-medium sticky top-24 flex flex-row justify-between'>
+      <h2 className="py-1 pl-4 bg-real-blue-500/90 text-small md:text-base font-medium sticky top-24 flex flex-row justify-between">
         Transcript
         <SpeakerManage colors={transcriptColors} />
       </h2>
-      <div className='grow overflow-y-auto'>
-        <div className='h-[90px]'></div>
-        <ul className='flex flex-col gap-3 p-4'>
-          {transcriptContent.map(line => (
+      <div className="grow overflow-y-auto">
+        <div className="h-[90px]"></div>
+        <ul className="flex flex-col gap-3 p-4">
+          {transcriptContent.map((line) => (
             <li key={line.timestamp}>
               <span
                 className={`${
-                  line.color_id
-                    ? transcriptColors[line.color_id]
+                  getSpeakerColor(line.speaker_id) !== -1
+                    ? transcriptColors[getSpeakerColor(line.speaker_id)]
                     : 'text-white-300'
                 }`}
               >
-                {line.name}: {line.content}
+                {getSpeakerName(line.speaker_id)}: {line.content}
               </span>
             </li>
           ))}

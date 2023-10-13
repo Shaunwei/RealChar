@@ -81,16 +81,16 @@ export default function SpeakerEditModal({ speakerContent, colors, onClose }) {
       </ModalBody>
       <ModalFooter className="justify-between">
         <Button
-          onPress={handleUpdate}
-          className="bg-real-contrastBlue"
-        >
-          Confirm
-        </Button>
-        <Button
           onPress={handleDelete}
           className="bg-danger"
         >
           Delete
+        </Button>
+        <Button
+          onPress={handleUpdate}
+          className="bg-real-contrastBlue"
+        >
+          Confirm
         </Button>
       </ModalFooter>
     </ModalContent>

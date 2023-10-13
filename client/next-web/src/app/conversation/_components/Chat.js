@@ -21,15 +21,7 @@ export default function Chat() {
   return (
     <div className={`flex flex-col gap-5 overflow-y-scroll min-h-25`}>
       {
-        [...chatContent, interimChat].sort((a, b) => {
-          if (!a) {
-            return 1;
-          } else if (!b) {
-            return -1;
-          } else {
-            return a.timestamp > b.timestamp ? 1 : -1;
-          }
-        })?.map((line) => {
+        [...chatContent, interimChat].map((line) => {
           if (line && line.hasOwnProperty('from') && line.from === 'character') {
             return (
               <div

@@ -33,6 +33,10 @@ export const createWebsocketSlice = (set, get) => ({
             } else if (message.startsWith('[+]You said: ')) {
                 // [+] indicates the transcription is done.
                 let msg = message.split('[+]You said: ');
+                // Interrupted message has no end signal, so manually clear it.
+                if (get().speechInterim != null) {
+                    get().appendChatContent();
+                }
                 get().setSender('user');
                 get().appendInterimChatContent(msg[1]);
                 get().appendChatContent();

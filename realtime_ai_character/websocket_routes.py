@@ -353,51 +353,56 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                 else:
                     quivr_info = None
                 message_id = str(uuid.uuid4().hex)[:16]
-                response = await llm.achat(
-                    history=build_history(conversation_history),
-                    user_input=msg_data,
-                    user_input_template=user_input_template,
-                    callback=AsyncCallbackTextHandler(on_new_token,
-                                                      token_buffer),
-                    audioCallback=AsyncCallbackAudioHandler(
-                        _text_to_speech, websocket, tts_event, character.voice_id),
-                    character=character,
-                    useSearch=use_search,
-                    useQuivr=use_quivr,
-                    quivrApiKey=quivr_info.quivr_api_key if quivr_info else None,
-                    quivrBrainId=quivr_info.quivr_brain_id if quivr_info else None,
-                    useMultiOn=use_multion,
-                    metadata={"message_id": message_id},
-                    user_id=user_id if user_id != session_id else None)
+                async def textmode_tts_task_done_call_back(response):
+                    # Send response to client, indicates the response is done
+                    await manager.send_message(message=f'[end={message_id}]\n',
+                                               websocket=websocket)
+                    # Update conversation history
+                    conversation_history.user.append(msg_data)
+                    conversation_history.ai.append(response)
+                    token_buffer.clear()
+                    # Persist interaction in the database
+                    tools = []
+                    if use_search:
+                        tools.append('search')
+                    if use_quivr:
+                        tools.append('quivr')
+                    if use_multion:
+                        tools.append('multion')
 
-                # 3. Send response to client
-                await manager.send_message(message=f'[end={message_id}]\n',
-                                           websocket=websocket)
+                    interaction = Interaction(user_id=user_id,
+                                              session_id=session_id,
+                                              client_message_unicode=msg_data,
+                                              server_message_unicode=response,
+                                              platform=platform,
+                                              action_type='text',
+                                              character_id=character_id,
+                                              tools=','.join(tools),
+                                              language=language,
+                                              message_id=message_id,
+                                              llm_config=llm.get_config())
+                    await asyncio.to_thread(interaction.save, db)
 
-                # 4. Update conversation history
-                conversation_history.user.append(msg_data)
-                conversation_history.ai.append(response)
-                token_buffer.clear()
+                tts_task = asyncio.create_task(
+                    llm.achat(
+                        history=build_history(conversation_history),
+                        user_input=msg_data,
+                        user_input_template=user_input_template,
+                        callback=AsyncCallbackTextHandler(on_new_token,
+                                                          token_buffer, textmode_tts_task_done_call_back),
+                        audioCallback=AsyncCallbackAudioHandler(
+                            _text_to_speech, websocket, tts_event, character.voice_id),
+                        character=character,
+                        useSearch=use_search,
+                        useQuivr=use_quivr,
+                        quivrApiKey=quivr_info.quivr_api_key if quivr_info else None,
+                        quivrBrainId=quivr_info.quivr_brain_id if quivr_info else None,
+                        useMultiOn=use_multion,
+                        metadata={"message_id": message_id},
+                        user_id=user_id if user_id != session_id else None)
+                )
+
                 # 5. Persist interaction in the database
-                tools = []
-                if use_search:
-                    tools.append('search')
-                if use_quivr:
-                    tools.append('quivr')
-                if use_multion:
-                    tools.append('multion')
-                interaction = Interaction(user_id=user_id,
-                                          session_id=session_id,
-                                          client_message_unicode=msg_data,
-                                          server_message_unicode=response,
-                                          platform=platform,
-                                          action_type='text',
-                                          character_id=character_id,
-                                          tools=','.join(tools),
-                                          language=language,
-                                          message_id=message_id,
-                                          llm_config=llm.get_config())
-                await asyncio.to_thread(interaction.save, db)
 
             # handle binary message(audio)
             elif 'bytes' in data:
@@ -475,7 +480,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
 
                 previous_transcript = transcript
 
-                async def tts_task_done_call_back(response):
+                async def audiomode_tts_task_done_call_back(response):
                     # Send response to client, [=] indicates the response is done
                     await manager.send_message(message='[=]',
                                                websocket=websocket)
@@ -520,7 +525,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                               user_input_template=user_input_template,
                               callback=AsyncCallbackTextHandler(
                                   on_new_token, token_buffer,
-                                  tts_task_done_call_back),
+                                  audiomode_tts_task_done_call_back),
                               audioCallback=AsyncCallbackAudioHandler(
                                   _text_to_speech, websocket, tts_event,
                                   character.voice_id),

@@ -61,6 +61,16 @@ const constructForm = async (get) => {
   return new_formData;
 };
 
+const isClonedVoice = (voice_id) => {
+  const array = [
+    'EXAVITQu4vr4xnSDxMaL',
+    'ErXwobaYiN019PkySvjV',
+    'en-US-Studio-O',
+    'en-US-Studio-M',
+  ];
+  return array.indexOf(voice_id) === -1;
+};
+
 export const createCharacterSlice = (set, get) => ({
   avatarURL: null,
   avatarFile: null,
@@ -76,6 +86,7 @@ export const createCharacterSlice = (set, get) => ({
   backgroundFiles: [],
   errorMsg: '',
   voiceErrorMsg: '',
+  clonedVoice: '',
   voiceFiles: [],
   ttsOptions: [
     {
@@ -226,8 +237,10 @@ export const createCharacterSlice = (set, get) => ({
     }
   },
   cloneVoice: () => {
+    set({ clonedVoice: 'isLoading' });
     cloneVoice(get().voiceFiles, get().token).then((result) => {
       set({ formData: { ...get().formData, voice_id: result.voice_id } });
+      set({ clonedVoice: result.voice_id });
       console.log('voice files uploaded.');
     });
   },
@@ -279,8 +292,12 @@ export const createCharacterSlice = (set, get) => ({
         backgroundFiles: [],
         errorMsg: '',
         voiceErrorMsg: '',
+        clonedVoice: '',
         voiceFiles: [],
       });
+      if (isClonedVoice(res.voice_id)) {
+        set({ clonedVoice: res.voice_id });
+      }
     } catch (err) {
       console.error(err);
       alert('Error getting character data');

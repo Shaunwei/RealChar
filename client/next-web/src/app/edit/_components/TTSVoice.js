@@ -3,7 +3,7 @@ import { TbTrash } from 'react-icons/tb';
 import { useRef } from 'react';
 import { useAppStore } from '@/zustand/store';
 import { BsUpload } from 'react-icons/bs';
-import RecordButton from './RecordButton';
+import RecordButton from '@/app/create/_components/RecordButton';
 
 export default function TTSVoice() {
   const uploaderRef = useRef(null);
@@ -59,14 +59,22 @@ export default function TTSVoice() {
                 {voice.label}
               </Radio>
             ))}
-            {formData.tts === 'ELEVEN_LABS' && clonedVoice === '' && (
-              <Radio value="placeholder">Clone a new voice</Radio>
-            )}
             {formData.tts === 'ELEVEN_LABS' &&
               clonedVoice !== '' &&
               clonedVoice !== 'isLoading' && (
-                <Radio value={clonedVoice}>Cloned voice</Radio>
+                <Radio value={clonedVoice}>
+                  Cloned voice-{clonedVoice.substring(0, 6)}
+                </Radio>
               )}
+            {formData.tts === 'ELEVEN_LABS' && (
+              <Radio value="placeholder">
+                {clonedVoice === '' ? (
+                  <span>Clone a new voice</span>
+                ) : (
+                  <span>Update cloned voice</span>
+                )}
+              </Radio>
+            )}
           </RadioGroup>
           <div
             className={formData.voice_id === 'placeholder' ? 'flex' : 'hidden'}

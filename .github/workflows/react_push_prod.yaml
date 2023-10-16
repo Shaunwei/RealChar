@@ -63,11 +63,11 @@ jobs:
     - id: 'get-credentials'
       uses: 'google-github-actions/get-gke-credentials@v1'
       with:
-        cluster_name: 'cluster-1'
-        location: 'us-central1-c'
+        cluster_name: 'rc-prod'
+        location: 'us-central1'
 
     - name: Deploy to Kubernetes
-      run: kubectl rollout restart deployment ${{ env.K8S_DEPLOYMENT_NAME }}
+      run: kubectl rollout restart deployment deployment-rc-frontend
 
     - name: Slack Notification
       uses: rtCamp/action-slack-notify@v2

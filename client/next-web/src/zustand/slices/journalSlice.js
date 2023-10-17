@@ -135,7 +135,15 @@ export const createJournalSlice = (set, get) => ({
       }
       const task = setTimeout(() => {
         const text = known_speaker_id + ": " + final_content;
-        get().generateNewHighlight(text, null);
+        if (text.length > 100) {
+          get().generateNewHighlight(text, null, (data) => {
+            let bullet_point_list = data['highlight'].split('-');
+            bullet_point_list.shift();
+            const bullet_points = '-' + bullet_point_list.join('\n- ');
+            console.log(bullet_points);
+            get().appendCharacterResponse(bullet_points)
+          });
+        }
       }, 5000);
       set({delayedSendHighlightTimeoutID: task});
     } else {
@@ -152,16 +160,14 @@ export const createJournalSlice = (set, get) => ({
     }
   },
   actionContent: [],
-  generateNewHighlight: (text, prompt) => {
+  generateNewHighlight: (text, prompt, callback) => {
     let generateHighlightRequest = {
       context: text,
     }
     if(prompt) {
       generateHighlightRequest['prompt'] = prompt
     }
-    generateHighlight(generateHighlightRequest, get().token).then((data) => {
-      get().appendCharacterResponse(data['highlight'])
-    });
+    generateHighlight(generateHighlightRequest, get().token).then(callback);
   },
   appendUserRequest: (text) => {
     set({

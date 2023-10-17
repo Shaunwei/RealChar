@@ -426,6 +426,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                         platform=platform,
                         prompt=prompt,
                         speaker_audio_samples=speaker_audio_samples,
+                        suppress_tokens=[0, 11, 13, 30]
                     )
                     for speaker_id, text in segments:
                         await manager.send_message(

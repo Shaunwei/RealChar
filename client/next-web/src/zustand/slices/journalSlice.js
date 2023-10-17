@@ -64,7 +64,7 @@ export const createJournalSlice = (set, get) => ({
   deleteSpeaker: (speaker_id) => {
     set({
       speakersList: get().speakersList.map((speaker) =>
-        speaker.id === speaker_id ? { ...speaker, alive: false } : speaker
+          speaker.id === speaker_id ? { ...speaker, alive: false } : speaker
       ),
     });
     get().sendOverSocket('[!DELETE_SPEAKER]' + speaker_id);
@@ -87,14 +87,14 @@ export const createJournalSlice = (set, get) => ({
   },
   getSpeakerName: (speaker_id) => {
     const target = get().speakersList.find(
-      (speaker) => speaker.id === speaker_id
+        (speaker) => speaker.id === speaker_id
     );
     if (!target) return 'Unknown Speaker';
     return target.name;
   },
   getSpeakerColor: (speaker_id) => {
     const target = get().speakersList.find(
-      (speaker) => speaker.id === speaker_id
+        (speaker) => speaker.id === speaker_id
     );
     if (!target) return -1;
     return target.color_id;
@@ -106,14 +106,14 @@ export const createJournalSlice = (set, get) => ({
   delayedSendHighlightTimeoutID: null,
   appendTranscriptContent: (speaker_id, text) => {
     const speaker = get().speakersList.find(
-      (speaker) => speaker.id === speaker_id
+        (speaker) => speaker.id === speaker_id
     );
     const known_speaker_id = speaker ? speaker.id : null;
     const length = get().transcriptContent.length;
     if (
-      length > 0 &&
-      get().transcriptContent[length - 1].speaker_id === known_speaker_id &&
-      Date.now() - get().transcriptContent[length - 1].timestamp < 5000
+        length > 0 &&
+        get().transcriptContent[length - 1].speaker_id === known_speaker_id &&
+        Date.now() - get().transcriptContent[length - 1].timestamp < 5000
     ) {
       let final_content = ''
       set({
@@ -138,10 +138,9 @@ export const createJournalSlice = (set, get) => ({
         if (text.length > 100) {
           get().generateNewHighlight(text, null, (data) => {
             let bullet_point_list = data['highlight'].split('-');
+            bullet_point_list = bullet_point_list.map((line) => line.trim());
             bullet_point_list.shift();
-            const bullet_points = '-' + bullet_point_list.join('\n- ');
-            console.log(bullet_points);
-            get().appendCharacterResponse(bullet_points)
+            get().appendHighlight(bullet_point_list);
           });
         }
       }, 5000);
@@ -191,6 +190,19 @@ export const createJournalSlice = (set, get) => ({
     }
     generateHighlight(generateHighlightRequest, get().token).then((data) => {
       get().appendCharacterResponse(data['highlight'])
+    });
+  },
+  appendHighlight: (bullet_point_list) => {
+    set({
+      actionContent: [
+        ...get().actionContent,
+        {
+          type: 'highlight',
+          timestamp: `${Date.now()}`,
+          detected: bullet_point_list,
+          suggested: [],
+        },
+      ]
     });
   },
   appendCharacterResponse: (text) => {

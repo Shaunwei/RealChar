@@ -3,7 +3,7 @@ from sqlalchemy.inspection import inspect
 import datetime
 from realtime_ai_character.database.base import Base
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 
 class Character(Base):
@@ -69,3 +69,7 @@ class DeleteCharacterRequest(BaseModel):
 class GeneratePromptRequest(BaseModel):
     name: str
     background: Optional[str] = None
+
+class GenerateHighlightRequest(BaseModel):
+    context: str
+    prompt: Optional[str] = None

@@ -1,3 +1,5 @@
+import {generateHighlight} from "@/util/apiClient";
+
 const demoActions = [
   {
     type: 'highlight',
@@ -101,6 +103,7 @@ export const createJournalSlice = (set, get) => ({
   resetTranscript: () => {
     set({ transcriptContent: [] });
   },
+  delayedSendHighlightTimeoutID: null,
   appendTranscriptContent: (speaker_id, text) => {
     const speaker = get().speakersList.find(
       (speaker) => speaker.id === speaker_id
@@ -112,9 +115,11 @@ export const createJournalSlice = (set, get) => ({
       get().transcriptContent[length - 1].speaker_id === known_speaker_id &&
       Date.now() - get().transcriptContent[length - 1].timestamp < 5000
     ) {
+      let final_content = ''
       set({
         transcriptContent: get().transcriptContent.map((item, index) => {
           if (index === get().transcriptContent.length - 1) {
+            final_content = item.content + ' ' + text;
             return {
               ...item,
               content: item.content + ' ' + text,
@@ -125,6 +130,14 @@ export const createJournalSlice = (set, get) => ({
           }
         }),
       });
+      if (get().delayedSendHighlightTimeoutID) {
+        clearTimeout(get().delayedSendHighlightTimeoutID);
+      }
+      const task = setTimeout(() => {
+        const text = known_speaker_id + ": " + final_content;
+        get().generateNewHighlight(text, null);
+      }, 5000);
+      set({delayedSendHighlightTimeoutID: task});
     } else {
       set({
         transcriptContent: [
@@ -138,7 +151,18 @@ export const createJournalSlice = (set, get) => ({
       });
     }
   },
-  actionContent: demoActions,
+  actionContent: [],
+  generateNewHighlight: (text, prompt) => {
+    let generateHighlightRequest = {
+      context: text,
+    }
+    if(prompt) {
+      generateHighlightRequest['prompt'] = prompt
+    }
+    generateHighlight(generateHighlightRequest, get().token).then((data) => {
+      get().appendCharacterResponse(data['highlight'])
+    });
+  },
   appendUserRequest: (text) => {
     set({
       actionContent: [
@@ -149,6 +173,18 @@ export const createJournalSlice = (set, get) => ({
           content: text,
         },
       ],
+    });
+    // Generate all transcriptions.
+    let all_context = ''
+    get().transcriptContent.map((content) => {
+      all_context = all_context + content.speaker_id + ': ' + content.content + '\n';
+    });
+    const generateHighlightRequest = {
+      'context': all_context,
+      'prompt': text
+    }
+    generateHighlight(generateHighlightRequest, get().token).then((data) => {
+      get().appendCharacterResponse(data['highlight'])
     });
   },
   appendCharacterResponse: (text) => {

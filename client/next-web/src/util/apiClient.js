@@ -198,3 +198,21 @@ export async function makeTwilioCall(number, character_id) {
     throw new Error(await response.text());
   }
 }
+
+export async function generateHighlight(generateHighlightRequest, accessToken) {
+  const url = getApiServerUrl() + '/generate_highlight';
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(generateHighlightRequest),
+  });
+
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw new Error(await response.text());
+  }
+}

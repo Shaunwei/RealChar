@@ -12,13 +12,16 @@ from firebase_admin import auth, credentials
 from firebase_admin.exceptions import FirebaseError
 from realtime_ai_character.audio.text_to_speech import get_text_to_speech
 from realtime_ai_character.database.connection import get_db
+from realtime_ai_character.llm.highlight_action_generator import generate_highlight_action, \
+    generate_highlight_based_on_prompt
 from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.feedback import Feedback, FeedbackRequest
 from realtime_ai_character.models.character import Character, CharacterRequest, \
-    EditCharacterRequest, DeleteCharacterRequest, GeneratePromptRequest
+    EditCharacterRequest, DeleteCharacterRequest, GeneratePromptRequest, GenerateHighlightRequest
 from realtime_ai_character.models.memory import Memory, EditMemoryRequest
 from realtime_ai_character.models.quivr_info import QuivrInfo, UpdateQuivrInfoRequest
 from realtime_ai_character.llm.system_prompt_generator import generate_system_prompt
+
 from requests import Session
 from sqlalchemy import func
 
@@ -591,3 +594,24 @@ async def get_character(character_id: str, db: Session = Depends(get_db), user=D
         db.query(Character).filter(Character.id == character_id).one)
     character_json = character.to_dict()
     return character_json
+
+@router.post('/generate_highlight')
+async def generate_highlight(generate_highlight_request: GenerateHighlightRequest, user=Depends(get_current_user)):
+    # Only allow for authorized user.
+    if not user:
+        raise HTTPException(
+            status_code=http_status.HTTP_401_UNAUTHORIZED,
+            detail='Invalid authentication credentials',
+            headers={'WWW-Authenticate': 'Bearer'},
+        )
+    context = generate_highlight_request.context
+    prompt = generate_highlight_request.prompt
+    result = ''
+    if prompt:
+        result = await generate_highlight_based_on_prompt(context, prompt)
+    else:
+        result = await generate_highlight_action(context)
+
+    return {
+        'highlight': result
+    }

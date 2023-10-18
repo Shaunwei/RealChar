@@ -3,26 +3,21 @@ import io
 import torch
 import torchaudio
 
-from realtime_ai_character.logger import get_logger
-
-logger = get_logger(__name__)
-
-
 def MP3ToUlaw(src: bytes) -> bytes:
-    reader = torchaudio.io.StreamReader(io.BytesIO(src))
-    logger.info(f"MP3ToUlaw stream: {reader.get_src_stream_info(0)}")
-    reader.add_basic_audio_stream(-1, decoder="mp3float", sample_rate=8000)
-    audio = torch.concat([chunk[0] for chunk in reader.stream()])
+    waveform, sample_rate = torchaudio.load(io.BytesIO(src), normalize=True)
+    waveform = torchaudio.functional.resample(waveform, sample_rate, 8000)
+    waveform = torchaudio.functional.highpass_biquad(waveform, sample_rate=8000, cutoff_freq=325)
+    waveform = torchaudio.functional.lowpass_biquad(waveform, sample_rate=8000, cutoff_freq=3500)
 
     # ulaw encoding
-    ulaw_encoding = torchaudio.transforms.MuLawEncoding()
-    ulaw_wave = ulaw_encoding(audio).to(torch.uint8)
+    ulaw_encoding = torchaudio.transforms.MuLawEncoding(quantization_channels=256)
+    ulaw_waveform = ulaw_encoding(waveform).to(torch.uint8)
 
     buffer = io.BytesIO()
     writer = torchaudio.io.StreamWriter(dst=buffer, format="mulaw")
     writer.add_audio_stream(sample_rate=8000, num_channels=1, format="u8")
 
     with writer.open():
-        writer.write_audio_chunk(0, ulaw_wave)
+        writer.write_audio_chunk(0, torch.transpose(ulaw_waveform, 0, 1))
 
     return buffer.getvalue()

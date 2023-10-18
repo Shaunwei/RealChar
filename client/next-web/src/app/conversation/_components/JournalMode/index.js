@@ -44,6 +44,12 @@ export default function JournalPage() {
     setText('');
   }
 
+  function handleOnEnterPress(e) {
+    if (e.key === 'Enter') {
+      handleOnEnter();
+    }
+  }
+
   return (
     <>
       <div className="fixed top-0 w-full bg-background z-10 h-24">
@@ -128,6 +134,7 @@ export default function JournalPage() {
             <Input
               value={text}
               onValueChange={setText}
+              onKeyDown={handleOnEnterPress}
               placeholder=""
               label=""
               labelPlacement="outside"

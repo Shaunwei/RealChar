@@ -17,6 +17,7 @@ config = types.SimpleNamespace(
         "model": os.getenv("LOCAL_WHISPER_MODEL", "base"),
         "api_key": os.getenv("WHISPER_X_API_KEY"),
         "url": os.getenv("WHISPER_X_API_URL"),
+        "url_journal": os.getenv("WHISPER_X_API_URL_JOURNAL"),
     }
 )
 
@@ -105,9 +106,10 @@ class WhisperX(Singleton, SpeechToText):
             result = self._transcribe(audio_bytes, platform, prompt, language, suppress_tokens)
         else:
             result = self._transcribe_api(audio_bytes, platform, prompt, language, suppress_tokens)
-        if result is None:
-            return ""
-        text = " ".join([seg["text"].strip() for seg in result["segments"]])
+        text = ""
+        if isinstance(result, dict):
+            segments = result.get("segments", [])
+            text = " ".join([seg.get("text", "").strip() for seg in segments])
         return text
 
     @timed
@@ -143,8 +145,8 @@ class WhisperX(Singleton, SpeechToText):
             )
         transcript = []
         if result:
-            for seg in result["segments"]:
-                transcript.append((seg.get("speaker", ""), seg["text"].strip()))
+            for seg in result.get("segments", []):
+                transcript.append((seg.get("speaker", ""), seg.get("text", "").strip()))
         return transcript
 
     def _transcribe(
@@ -328,15 +330,16 @@ class WhisperX(Singleton, SpeechToText):
             "diarization": diarization,
         }
         data = {"metadata": json.dumps(metadata)}
+        url = config.url_journal if diarization else config.url
         try:
-            logger.info(f"Sent request to whisperX server: {len(audio_bytes)} bytes")
-            response = requests.post(config.url, data=data, files=files, timeout=10)
+            logger.info(f"Sent request to whisperX server {url}: {len(audio_bytes)} bytes")
+            response = requests.post(url, data=data, files=files, timeout=60)
             return response.json()
         except requests.exceptions.Timeout as e:
-            logger.error(f"WhisperX server timed out: {e}")
+            logger.error(f"WhisperX server {url} timed out: {e}")
         except requests.exceptions.RequestException as e:
-            logger.error(f"Could not connect to whisperX server: {e}")
+            logger.error(f"Could not connect to whisperX server {url}: {e}")
         except KeyError as e:
-            logger.error(f"Could not parse response from whisperX server: {e}")
+            logger.error(f"Could not parse response from whisperX server {url}: {e}")
         except Exception as e:
-            logger.error(f"Unknown error from whisperX server: {e}")
+            logger.error(f"Unknown error from whisperX server {url}: {e}")

@@ -36,7 +36,7 @@ Self hosted whisperX endpoint.
 1. Install opencc
 
     ```bash
-    pip install opencc
+    pip install opencc==1.1.6
     ```
 
 1.  Copy `.env.example` to `.env` and configure

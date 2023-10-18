@@ -421,12 +421,12 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                         continue
                     # transcribe
                     prompt = " ".join(text for _, text in journal_history[-5:])
-                    segments = speech_to_text.transcribe_diarize(
+                    segments: list[tuple[str, str]] = await asyncio.to_thread(
+                        speech_to_text.transcribe_diarize,
                         binary_data,
                         platform=platform,
                         prompt=prompt,
                         speaker_audio_samples=speaker_audio_samples,
-                        suppress_tokens=[0, 11, 13, 30]
                     )
                     for speaker_id, text in segments:
                         await manager.send_message(

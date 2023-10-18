@@ -14,7 +14,7 @@ COPY *.mp3 /whisperx_server/
 RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
 RUN pip install git+https://github.com/m-bain/whisperx.git@051047bb25b740fed2ea93ca737499c37e8dc9d4
-RUN pip install opencc
+RUN pip install opencc==1.1.6
 RUN pip install "fastapi[all]"
 RUN pip cache purge
 

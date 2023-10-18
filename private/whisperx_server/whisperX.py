@@ -53,6 +53,7 @@ ALIGN_MODEL_LANGUAGE_CODE = [
 ]
 
 MODEL = os.getenv("MODEL", "base")
+DIARIZATION = os.getenv("DIARIZATION", "false").lower() == "true"
 HF_ACCESS_TOKEN = os.getenv("HF_ACCESS_TOKEN", "")
 
 
@@ -66,17 +67,18 @@ class WhisperX:
         compute_type = "float16" if self.device.startswith("cuda") else "default"
         log(f"Loading [WhisperX Server] model: [{MODEL}]({self.device}) ...")
         self.model = whisperx.load_model(MODEL, self.device, compute_type=compute_type)
-        self.align = {
-            language_code: whisperx.load_align_model(
-                language_code=language_code, device=self.device
-            )
-            for language_code in ALIGN_MODEL_LANGUAGE_CODE
-        }
-        self.diarize_model = whisperx.DiarizationPipeline(
-            device=self.device,
-            use_auth_token=HF_ACCESS_TOKEN,
-        )
         self.chinese_t2s = opencc.OpenCC("t2s.json")
+        if DIARIZATION:
+            self.align = {
+                language_code: whisperx.load_align_model(
+                    language_code=language_code, device=self.device
+                )
+                for language_code in ALIGN_MODEL_LANGUAGE_CODE
+            }
+            self.diarize_model = whisperx.DiarizationPipeline(
+                device=self.device,
+                use_auth_token=HF_ACCESS_TOKEN,
+            )
 
     def transcribe(
         self,
@@ -88,6 +90,7 @@ class WhisperX:
         diarization=False,
         speaker_audio_samples={},
     ):
+        method_start = time.perf_counter()
         log(
             f"Received {len(audio_bytes)} bytes of audio data. Language: {language}. "
             f"Platform: {platform}. Diarization: {diarization}. "
@@ -130,15 +133,17 @@ class WhisperX:
         # console debug output
         text = " ".join([seg["text"].strip() for seg in result["segments"]])
         log(f"Transcript: {text}")
+        log(f"Transcription took {(time.perf_counter() - method_start) * 1000:.0f} ms")
 
         # diarization
-        if diarization and speaker_audio_samples:
+        if DIARIZATION and diarization and speaker_audio_samples:
             speaker_audios = {id: get_audio(ab) for id, ab in speaker_audio_samples.items()}
             result = self.diarize(result, audio, speaker_audios)
 
         return result
 
     def diarize(self, result, audio: np.ndarray, speaker_audios: dict[str, np.ndarray]):
+        method_start = time.perf_counter()
         gap = 2  # seconds between audio slices
         audio_end = len(audio) / 16000 + gap / 2
         speaker_mid = {}
@@ -163,15 +168,17 @@ class WhisperX:
         else:
             word_segments = [
                 {
-                    "start": seg["start"],
-                    "end": seg["end"],
+                    "start": seg.get("start"),
+                    "end": seg.get("end"),
                     "word": seg["text"],
                 }
                 for seg in result["segments"]
             ]
+        log(f"Elapsed till align: {(time.perf_counter() - method_start) * 1000:.0f} ms")
         # diarize
         num_speakers = len(speaker_audios)
         diarize_segments = self.diarize_model(ext_audio, min_speakers=0, max_speakers=num_speakers)
+        log(f"Elapsed till diarize: {(time.perf_counter() - method_start) * 1000:.0f} ms")
         # figure out speaker id map
         speaker_id = {}
         counter = {}
@@ -204,9 +211,9 @@ class WhisperX:
         for seg in result["segments"]:
             words = []
             while idx < len(word_segments):
-                if "start" in word_segments[idx]:
+                if "start" in word_segments[idx] and word_segments[idx]["start"] is not None:
                     start = word_segments[idx]["start"]
-                elif idx > 0:
+                elif idx > 0 and "end" in word_segments[idx - 1] and word_segments[idx - 1]["end"]:
                     start = word_segments[idx - 1]["end"] + 0.01
                 else:
                     start = 0
@@ -228,6 +235,7 @@ class WhisperX:
             )
             for seg in result["segments"]
         ]
-        log(f"diarized transcript: {message}")
+        log(f"Diarized transcript: {message}")
+        log(f"Diarization took {(time.perf_counter() - method_start) * 1000:.0f} ms")
 
         return result

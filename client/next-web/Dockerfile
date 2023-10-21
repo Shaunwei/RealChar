@@ -1,5 +1,5 @@
 # We are using a Node.js base image
-FROM node:alpine as build
+FROM node:lts-alpine as build
 
 # Working directory be app
 WORKDIR /app
@@ -44,7 +44,7 @@ COPY ./ ./
 RUN npm run build
 
 # Run phase
-FROM node:alpine
+FROM node:lts-alpine
 
 # Install Nginx
 RUN apk add --no-cache curl nginx procps

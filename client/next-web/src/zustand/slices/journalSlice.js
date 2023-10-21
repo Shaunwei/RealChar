@@ -260,7 +260,7 @@ export const createJournalSlice = (set, get) => ({
       ],
     });
     const generateHighlightRequest = {
-      context: generateTranscriptContext(transcriptContent),
+      context: get().generateTranscriptContext(get().transcriptContent),
       prompt: text,
     };
     generateHighlight(generateHighlightRequest, get().token).then(data => {

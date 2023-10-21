@@ -61,6 +61,24 @@ def build_history(conversation_history: ConversationHistory) -> List[BaseMessage
     return history
 
 
+@dataclass
+class TranscriptSlice:
+    id: str
+    audio_id: str
+    start: float
+    end: float
+    speaker_id: str
+    text: str
+
+
+@dataclass
+class Transcript:
+    id: str
+    audio_bytes: bytes
+    slices: list[TranscriptSlice]
+    timestamp: float
+
+
 class Singleton:
     _instances = {}
 

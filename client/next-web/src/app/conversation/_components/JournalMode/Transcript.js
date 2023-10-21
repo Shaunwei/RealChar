@@ -1,5 +1,5 @@
 import { useAppStore } from '@/zustand/store';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import SpeakerManage from './SpeakerManage';
 
 const transcriptColors = [
@@ -14,7 +14,8 @@ const transcriptColors = [
 
 export default function Transcript() {
   const msgEndRef = useRef();
-  const { transcriptContent, getSpeakerName, getSpeakerColor } = useAppStore();
+  const { mergedTranscriptContent, getSpeakerName, getSpeakerColor } =
+    useAppStore();
 
   useEffect(() => {
     msgEndRef.current.scrollIntoView({
@@ -22,19 +23,19 @@ export default function Transcript() {
       block: 'center',
       inline: 'nearest',
     });
-  }, [transcriptContent]);
+  }, [mergedTranscriptContent]);
 
   return (
     <>
-      <h2 className="py-1 pl-4 bg-real-blue-500/90 text-small md:text-base font-medium sticky top-24 flex flex-row justify-between">
+      <h2 className='py-1 pl-4 bg-real-blue-500/90 text-small md:text-base font-medium sticky top-24 flex flex-row justify-between'>
         Transcript
         <SpeakerManage colors={transcriptColors} />
       </h2>
-      <div className="grow overflow-y-auto">
-        <div className="h-[90px]"></div>
-        <ul className="flex flex-col gap-3 p-4">
-          {transcriptContent.map((line) => (
-            <li key={line.timestamp}>
+      <div className='grow overflow-y-auto'>
+        <div className='h-[90px]'></div>
+        <ul className='flex flex-col gap-3 p-4'>
+          {mergedTranscriptContent.map(line => (
+            <li key={line.id}>
               <span
                 className={`${
                   getSpeakerColor(line.speaker_id) !== -1

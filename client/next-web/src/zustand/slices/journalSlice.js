@@ -1,4 +1,5 @@
-import {generateHighlight} from "@/util/apiClient";
+import { generateHighlight } from '@/util/apiClient';
+import { RiTodoFill } from 'react-icons/ri';
 
 const demoActions = [
   {
@@ -61,23 +62,22 @@ export const createJournalSlice = (set, get) => ({
     get().sendOverSocket('[!ADD_SPEAKER]' + speaker_id);
     get().sendOverSocket(voiceFile);
   },
-  deleteSpeaker: (speaker_id) => {
+  deleteSpeaker: speaker_id => {
     set({
-      speakersList: get().speakersList.map((speaker) =>
-          speaker.id === speaker_id ? { ...speaker, alive: false } : speaker
+      speakersList: get().speakersList.map(speaker =>
+        speaker.id === speaker_id ? { ...speaker, alive: false } : speaker
       ),
     });
     get().sendOverSocket('[!DELETE_SPEAKER]' + speaker_id);
   },
   updateSpeaker: (speaker_id, new_name, new_color_id) => {
     set({
-      speakersList: get().speakersList.map((speaker) => {
+      speakersList: get().speakersList.map(speaker => {
         if (speaker.id === speaker_id) {
           return {
-            id: speaker_id,
+            ...speaker,
             name: new_name,
             color_id: new_color_id,
-            alive: true,
           };
         } else {
           return speaker;
@@ -85,16 +85,16 @@ export const createJournalSlice = (set, get) => ({
       }),
     });
   },
-  getSpeakerName: (speaker_id) => {
+  getSpeakerName: speaker_id => {
     const target = get().speakersList.find(
-        (speaker) => speaker.id === speaker_id
+      speaker => speaker.id === speaker_id
     );
     if (!target) return 'Unknown Speaker';
     return target.name;
   },
-  getSpeakerColor: (speaker_id) => {
+  getSpeakerColor: speaker_id => {
     const target = get().speakersList.find(
-        (speaker) => speaker.id === speaker_id
+      speaker => speaker.id === speaker_id
     );
     if (!target) return -1;
     return target.color_id;
@@ -104,71 +104,151 @@ export const createJournalSlice = (set, get) => ({
     set({ transcriptContent: [] });
   },
   delayedSendHighlightTimeoutID: null,
-  appendTranscriptContent: (speaker_id, text) => {
+  delayedSendLastHighLightTimeoutID: null,
+  highlightedTranscriptIndex: -1,
+  appendTranscriptContent: (id, speaker_id, text, timestamp, duration) => {
     const speaker = get().speakersList.find(
-        (speaker) => speaker.id === speaker_id
+      speaker => speaker.id === speaker_id
     );
     const known_speaker_id = speaker ? speaker.id : null;
-    const length = get().transcriptContent.length;
-    if (
-        length > 0 &&
-        get().transcriptContent[length - 1].speaker_id === known_speaker_id &&
-        Date.now() - get().transcriptContent[length - 1].timestamp < 5000
-    ) {
-      let final_content = ''
-      set({
-        transcriptContent: get().transcriptContent.map((item, index) => {
-          if (index === get().transcriptContent.length - 1) {
-            final_content = item.content + ' ' + text;
-            return {
-              ...item,
-              content: item.content + ' ' + text,
-              timestamp: Date.now(),
-            };
-          } else {
-            return item;
-          }
-        }),
-      });
-      if (get().delayedSendHighlightTimeoutID) {
-        clearTimeout(get().delayedSendHighlightTimeoutID);
-      }
-      const task = setTimeout(() => {
-        const text = known_speaker_id + ": " + final_content;
-        if (text.length > 100) {
-          get().generateNewHighlight(text, null, (data) => {
-            let bullet_point_list = data['highlight'].split('-');
-            bullet_point_list = bullet_point_list.map((line) => line.trim());
-            bullet_point_list.shift();
-            get().appendHighlight(bullet_point_list);
-          });
-        }
-      }, 5000);
-      set({delayedSendHighlightTimeoutID: task});
-    } else {
+    const index = get().transcriptContent.findIndex(item => item.id === id);
+    if (index === -1) {
+      // New transcript slice
       set({
         transcriptContent: [
           ...get().transcriptContent,
           {
+            id: id,
             speaker_id: known_speaker_id,
             content: text,
-            timestamp: Date.now(),
+            timestamp: Number(timestamp),
+            duration: Number(duration),
+            alternatives: [text],
           },
         ],
       });
+      get().updateMergedTranscriptContent();
+      console.log(get().transcriptContent);
+    } else {
+      // Append to alternatives
+      set({
+        transcriptContent: [
+          ...get().transcriptContent.slice(0, index),
+          {
+            ...get().transcriptContent[index],
+            alternatives: [
+              ...get().transcriptContent[index].alternatives,
+              text,
+            ],
+          },
+          ...get().transcriptContent.slice(index + 1),
+        ],
+      });
+    }
+    // Auto bullet points
+    if (index === -1) {
+      if (get().delayedSendHighlightTimeoutID) {
+        clearTimeout(get().delayedSendHighlightTimeoutID);
+      }
+      if (get().delayedSendLastHighLightTimeoutID) {
+        clearTimeout(get().delayedSendLastHighLightTimeoutID);
+      }
+      set({
+        delayedSendHighlightTimeoutID: setTimeout(() => {
+          const slice = get().transcriptContent.slice(
+            get().highlightedTranscriptIndex + 1
+          );
+          const duration = slice.reduce((acc, item) => acc + item.duration, 0);
+          console.log(
+            'duration check before generating bullet point:',
+            duration,
+            'sec'
+          );
+          if (duration > 60) {
+            get().appendBulletPoint(slice);
+          }
+        }, 5000),
+        delayedSendLastHighLightTimeoutID: setTimeout(() => {
+          const slice = get().transcriptContent.slice(
+            get().highlightedTranscriptIndex + 1
+          );
+          if (slice.length > 0) {
+            get().appendBulletPoint(slice);
+          }
+        }, 60000),
+      });
     }
   },
-  actionContent: [],
+  // temporary use
+  mergedTranscriptContent: [],
+  updateMergedTranscriptContent: () => {
+    console.log('rendered updateMergedTranscriptContent');
+    const merged = [];
+    get().transcriptContent.forEach(line => {
+      const lastLine = merged[merged.length - 1];
+      if (
+        merged.length &&
+        line.speaker_id === lastLine.speaker_id &&
+        line.timestamp - lastLine.timestamp - lastLine.duration < 5
+      ) {
+        lastLine.content += ' ' + line.content;
+      } else {
+        merged.push({
+          ...line,
+          alternatives: [...line.alternatives],
+        });
+      }
+    });
+    console.log('mergedTranscriptContent:', merged);
+    set({ mergedTranscriptContent: merged });
+  },
+  generateTranscriptContext: transcriptContent => {
+    let context = '';
+    let lastSpeakerId = null;
+    transcriptContent.map(item => {
+      if (item.speaker_id === lastSpeakerId) {
+        context += ' ' + item.content;
+      } else {
+        lastSpeakerId = item.speaker_id;
+        const speakerName = get().getSpeakerName(item.speaker_id);
+        context += '\n' + speakerName + ' said: ' + item.content;
+      }
+    });
+    return context;
+  },
   generateNewHighlight: (text, prompt, callback) => {
     let generateHighlightRequest = {
       context: text,
-    }
-    if(prompt) {
-      generateHighlightRequest['prompt'] = prompt
+    };
+    if (prompt) {
+      generateHighlightRequest['prompt'] = prompt;
     }
     generateHighlight(generateHighlightRequest, get().token).then(callback);
   },
-  appendUserRequest: (text) => {
+  actionContent: [],
+  appendBulletPoint: transcriptContent => {
+    const text = get().generateTranscriptContext(transcriptContent);
+    get().generateNewHighlight(text, null, data => {
+      console.log('context: ' + text);
+      console.log('highlight: ' + data['highlight']);
+      let bullet_point_list = data['highlight'].split('- ');
+      bullet_point_list = bullet_point_list.map(line => line.trim());
+      bullet_point_list.shift();
+      set({
+        actionContent: [
+          ...get().actionContent,
+          {
+            type: 'highlight',
+            timestamp: `${Date.now()}`,
+            detected: bullet_point_list,
+            suggested: [],
+          },
+        ],
+      });
+      set({ highlightedTranscriptIndex: get().transcriptContent.length - 1 });
+    });
+  },
+  appendUserRequest: text => {
     set({
       actionContent: [
         ...get().actionContent,
@@ -179,33 +259,15 @@ export const createJournalSlice = (set, get) => ({
         },
       ],
     });
-    // Generate all transcriptions.
-    let all_context = ''
-    get().transcriptContent.map((content) => {
-      all_context = all_context + content.speaker_id + ': ' + content.content + '\n';
-    });
     const generateHighlightRequest = {
-      'context': all_context,
-      'prompt': text
-    }
-    generateHighlight(generateHighlightRequest, get().token).then((data) => {
-      get().appendCharacterResponse(data['highlight'])
+      context: generateTranscriptContext(transcriptContent),
+      prompt: text,
+    };
+    generateHighlight(generateHighlightRequest, get().token).then(data => {
+      get().appendCharacterResponse(data['highlight']);
     });
   },
-  appendHighlight: (bullet_point_list) => {
-    set({
-      actionContent: [
-        ...get().actionContent,
-        {
-          type: 'highlight',
-          timestamp: `${Date.now()}`,
-          detected: bullet_point_list,
-          suggested: [],
-        },
-      ]
-    });
-  },
-  appendCharacterResponse: (text) => {
+  appendCharacterResponse: text => {
     set({
       actionContent: [
         ...get().actionContent,

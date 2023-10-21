@@ -23,7 +23,7 @@ from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, AsyncCallb
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.quivr_info import QuivrInfo
-from realtime_ai_character.utils import (ConversationHistory, build_history,
+from realtime_ai_character.utils import (ConversationHistory, Transcript, build_history,
                                          get_connection_manager, get_timer)
 
 logger = get_logger(__name__)
@@ -268,7 +268,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
         current_speech = ''
 
         journal_mode = False
-        journal_history = []
+        journal_history: list[Transcript] = []
         speaker_audio_samples = {}
 
         while True:
@@ -388,8 +388,8 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                         history=build_history(conversation_history),
                         user_input=msg_data,
                         user_input_template=user_input_template,
-                        callback=AsyncCallbackTextHandler(on_new_token,
-                                                          token_buffer, textmode_tts_task_done_call_back),
+                        callback=AsyncCallbackTextHandler(
+                            on_new_token, token_buffer, textmode_tts_task_done_call_back),
                         audioCallback=AsyncCallbackAudioHandler(
                             _text_to_speech, websocket, tts_event, character.voice_id),
                         character=character,
@@ -420,23 +420,32 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     if did_add_speaker:
                         continue
                     # transcribe
-                    prompt = " ".join(text for _, text in journal_history[-5:])
-                    segments: list[tuple[str, str]] = await asyncio.to_thread(
-                        speech_to_text.transcribe_diarize,
+                    transcripts: list[Transcript] = await asyncio.to_thread(
+                        speech_to_text.transcribe_diarize,  # type: ignore
                         binary_data,
                         platform=platform,
-                        prompt=prompt,
                         speaker_audio_samples=speaker_audio_samples,
+                        prompt_transcripts=journal_history[-2:],
                     )
-                    for speaker_id, text in segments:
-                        await manager.send_message(
-                            message=f"[+transcript]?speakerId={speaker_id}&text={text}",
-                            websocket=websocket
-                        )
-                        logger.info(
-                            f"Message sent to client: speaker = {speaker_id}, text = {text}"
-                        )
-                        journal_history.append((speaker_id, text))
+                    for transcript_obj in transcripts:
+                        for transcript_slice in transcript_obj.slices:
+                            timestamp = transcript_obj.timestamp + transcript_slice.start
+                            duration = transcript_slice.end - transcript_slice.start
+                            await manager.send_message(
+                                message=f"[+transcript]?id={transcript_slice.id}"
+                                        f"&speakerId={transcript_slice.speaker_id}"
+                                        f"&text={transcript_slice.text}"
+                                        f"&timestamp={timestamp}"
+                                        f"&duration={duration}",
+                                websocket=websocket
+                            )
+                            logger.info(
+                                f"Message sent to client: transcript_id = {transcript_slice.id}, "
+                                f"speaker_id = {transcript_slice.speaker_id}, "
+                                f"text = {transcript_slice.text}"
+                            )
+                        if all([transcript_obj.id != _.id for _ in journal_history]):
+                            journal_history.append(transcript_obj)
                     continue
 
                 # 0. Handle interim speech.

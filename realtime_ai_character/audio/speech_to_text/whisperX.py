@@ -2,13 +2,16 @@ import io
 import os
 import types
 import json
+import uuid
+import time
+from copy import deepcopy
 
 import requests
 import numpy as np
 
 from realtime_ai_character.audio.speech_to_text.base import SpeechToText
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Singleton, timed
+from realtime_ai_character.utils import Singleton, Transcript, TranscriptSlice, timed
 
 logger = get_logger(__name__)
 
@@ -121,8 +124,10 @@ class WhisperX(Singleton, SpeechToText):
         language="auto",
         suppress_tokens=[-1],
         speaker_audio_samples={},
+        prompt_transcripts: list[Transcript] = [],
     ):
         logger.info("Transcribing audio...")
+        timestamp = time.time()
         if self.use == "local":
             result = self._transcribe(
                 audio_bytes,
@@ -143,11 +148,36 @@ class WhisperX(Singleton, SpeechToText):
                 diarization=True,
                 speaker_audio_samples=speaker_audio_samples,
             )
-        transcript = []
-        if result:
-            for seg in result.get("segments", []):
-                transcript.append((seg.get("speaker", ""), seg.get("text", "").strip()))
-        return transcript
+        transcripts: list[Transcript] = []
+        if isinstance(result, dict) and result.get("segments"):
+            audio_id = str(uuid.uuid4())
+            slices = []
+            for seg in result["segments"]:
+                slices.append(
+                    TranscriptSlice(
+                        id=str(uuid.uuid4()),
+                        audio_id=audio_id,
+                        speaker_id=seg.get("speaker", ""),
+                        text=seg.get("text", "").strip(),
+                        start=seg.get("start", 0),
+                        end=seg.get("end", 0),
+                    )
+                )
+            transcripts.append(
+                Transcript(
+                    id=audio_id,
+                    audio_bytes=audio_bytes,
+                    slices=slices,
+                    timestamp=timestamp,
+                )
+            )
+            transcripts.append(deepcopy(transcripts[-1]))
+            for transcript_slice in transcripts[-1].slices:
+                transcript_slice.text = "sample text 1"
+            transcripts.append(deepcopy(transcripts[-1]))
+            for transcript_slice in transcripts[-1].slices:
+                transcript_slice.text = "sample text 2"
+        return transcripts
 
     def _transcribe(
         self,

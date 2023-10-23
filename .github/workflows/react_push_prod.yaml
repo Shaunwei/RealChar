@@ -73,6 +73,8 @@ jobs:
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_COLOR: '#335c05'
-        SLACK_MESSAGE: new version has started to update for realchar frontend in prod env
-        SLACK_TITLE: prod realchar frontend update
+        SLACK_MESSAGE: realchar.ai -- ${{ github.event.head_commit.message }}
+        SLACK_TITLE: frontend update
+        SLACK_FOOTER: realchar.ai
+        MSG_MINIMAL: true
         SLACK_WEBHOOK: https://hooks.slack.com/services/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

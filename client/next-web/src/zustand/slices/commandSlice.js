@@ -1,7 +1,7 @@
 import { makeTwilioCall } from '@/util/apiClient';
 
 export const createCommandSlice = (set, get) => ({
-  callOutgoing: (number) => {
-    makeTwilioCall(number, get().character.character_id);
+  callOutgoing: (number, vad_threshold) => {
+    makeTwilioCall(number, vad_threshold, get().character.character_id);
   },
 });

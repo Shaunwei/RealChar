@@ -27,8 +27,12 @@ export default function InputField() {
               command.options.hasOwnProperty('number') &&
               command.options.number.match(/^\+?[1-9]\d{1,14}$/g)
             ) {
+              let vad_threshold = 0.8;
+              if (command.options.hasOwnProperty('vad_threshold')) {
+                vad_threshold = command.options.vad_threshold;
+              }
               // call endpoint
-              callOutgoing(command.options.number);
+              callOutgoing(command.options.number, vad_threshold);
             } else {
               setTimeout(() => {
                 appendChatMsg('Please provide correct number option');

@@ -179,7 +179,7 @@ export async function editCharacter(editCharacterRequest, accessToken) {
   }
 }
 
-export async function makeTwilioCall(number, character_id) {
+export async function makeTwilioCall(number, vad_threshold, character_id) {
   const url = getApiServerUrl() + '/twilio/call';
   const response = await fetch(url, {
     method: 'POST',
@@ -189,6 +189,7 @@ export async function makeTwilioCall(number, character_id) {
     body: JSON.stringify({
       target_number: number,
       character_id: character_id,
+      vad_threshold: vad_threshold
     }),
   });
 

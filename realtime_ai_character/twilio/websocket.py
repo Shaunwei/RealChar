@@ -84,6 +84,7 @@ async def call_websocket(request: Request, req: MakeTwilioOutgoingCallRequest):
     to = req.target_number
     from_ = req.source_number
     character_id = req.character_id
+    vad_threshold = req.vad_threshold
     if from_ is None:
         from_ = os.getenv("DEFAULT_CALLOUT_NUMBER", "")
 
@@ -99,7 +100,7 @@ async def call_websocket(request: Request, req: MakeTwilioOutgoingCallRequest):
         to=to,
         from_=from_,
         url=f"https://{request.url.hostname}/twilio/voice" +
-            "?character_id={}".format(character_id) if character_id else "",
+            ("?character_id={}".format(character_id) if character_id else "") + ("&vad_threshold={}".format(vad_threshold) if vad_threshold else ""),
         method="GET"
     )
 
@@ -110,10 +111,14 @@ async def get_websocket(request: Request):
     resp = VoiceResponse()
 
     character_id = request.query_params.get("character_id")
+    vad_threshold = request.query_params.get("vad_threshold")
     connect = Connect()
-    connect.stream(
+    stream = connect.stream(
         name=character_id if character_id else "RealChar Endpoint", url=f"wss://{request.url.hostname}/twilio/ws"
-    ).parameter(name="character_id", value=character_id)
+    )
+    stream.parameter(name="character_id", value=character_id)
+    stream.parameter(name="vad_threshold", value=vad_threshold)
+    logger.info(connect)
     resp.append(connect)
     return Response(content=str(resp), media_type="application/xml")
 
@@ -124,7 +129,6 @@ class TwilioConversationEngine:
         SILENCE = 2
         TALKING = 3
 
-    TALKING_THRESHOLD = 0.8
     SILENCE_THRESHOLD = 0.2
 
     def __init__(self, websocket, speech_to_text):
@@ -134,6 +138,7 @@ class TwilioConversationEngine:
         self._audio_buffer = bytes()
         self._vad_buffer = collections.deque()
         self._vad_buffer_size = 20
+        self._talking_threshold = 0.8
         model, _ = torch.hub.load(repo_or_dir='snakers4/silero-vad',
                                   model='silero_vad',
                                   force_reload=False,
@@ -143,6 +148,9 @@ class TwilioConversationEngine:
         self._most_recent_silence_frame = 0
         self._min_silence_ms = 1000  # silence time for user speech to be considered completed
         self._transcribe_tasks = []
+
+    def setTalkingThreshold(self, talking_threshold: float):
+        self._talking_threshold = talking_threshold
 
     def setStreamID(self, sid: str):
         self._sid = sid
@@ -175,7 +183,7 @@ class TwilioConversationEngine:
                 logger.info("transitions from INITIAL to TALKING")
                 self._state = self.VAD_STATE.TALKING
                 self._audio_buffer += vad_data
-                # await stop_twilio_voice(self._websocket, self._sid)
+                await stop_twilio_voice(self._websocket, self._sid)
             return
 
         if self._state == self.VAD_STATE.TALKING:
@@ -205,7 +213,7 @@ class TwilioConversationEngine:
             if speech_prob is not None and speech_prob > self.TALKING_THRESHOLD:
                 logger.info("transitions from SILENCE to TALKING")
                 self._state = self.VAD_STATE.TALKING
-                #await stop_twilio_voice(self._websocket, self._sid)
+                await stop_twilio_voice(self._websocket, self._sid)
                 return
 
             diff = FRAME_INTERVAL_MS * (len(self._audio_buffer) / LEN_PER_FRAME -
@@ -274,7 +282,7 @@ async def handle_receive(
     language: str,
     speech_to_text: SpeechToText,
     default_text_to_speech: TextToSpeech,
-    catalog_manager: CatalogManager
+    catalog_manager: CatalogManager,
 ):
     buffer = TwilioConversationEngine(websocket, speech_to_text)
     conversation_history = ConversationHistory()
@@ -355,8 +363,11 @@ async def handle_receive(
                         character = catalog_manager.get_character(character_id)
                         conversation_history.system_prompt = character.llm_system_prompt
                         user_input_template = character.llm_user_prompt
+                vad_threshold = obj["start"]["customParameters"]["vad_threshold"]
+                buffer.setTalkingThreshold(float(vad_threshold))
                 # greet the user when the stream starts
                 logger.info(f"Using character: {character.name}")
+                logger.info(f"Using talking threshold: {vad_threshold}")
                 # Greet the user
                 greeting_text = GREETING_TXT_MAP[language]
                 await text_to_speech.stream(

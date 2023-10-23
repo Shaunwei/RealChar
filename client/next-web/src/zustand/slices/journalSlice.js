@@ -1,45 +1,4 @@
 import { generateHighlight } from '@/util/apiClient';
-import { RiTodoFill } from 'react-icons/ri';
-
-const demoActions = [
-  {
-    type: 'highlight',
-    timestamp: 1,
-    detected:
-      'Schedule a meeting with the payment gateway provtimestamper for clarification.',
-    suggested: ['calender', 'meeting'],
-  },
-  {
-    type: 'user',
-    timestamp: 7,
-    content: 'show me some tips',
-  },
-  {
-    type: 'highlight',
-    timestamp: 2,
-    detected:
-      'Reassign some developers to focus primarily on the payment gateway integration.',
-    suggested: ['meeting'],
-  },
-  {
-    type: 'character',
-    timestamp: 9,
-    content: 'bla bla bla just for demo :P',
-  },
-  {
-    type: 'highlight',
-    timestamp: 3,
-    detected:
-      "Keep the client updated on the project's progress and the plan to introduce some features post-launch.",
-    suggested: ['email'],
-  },
-  {
-    type: 'highlight',
-    timestamp: 4,
-    detected: "Provide daily updates to Alex on the project's status.",
-    suggested: ['calendar'],
-  },
-];
 
 export const createJournalSlice = (set, get) => ({
   speakersList: [],
@@ -127,7 +86,7 @@ export const createJournalSlice = (set, get) => ({
           },
         ],
       });
-      get().updateMergedTranscriptContent();
+      get().updateTranscriptParagraph();
       console.log(get().transcriptContent);
     } else {
       // Append to alternatives
@@ -179,28 +138,54 @@ export const createJournalSlice = (set, get) => ({
       });
     }
   },
-  // temporary use
-  mergedTranscriptContent: [],
-  updateMergedTranscriptContent: () => {
-    console.log('rendered updateMergedTranscriptContent');
-    const merged = [];
+  updateTranscriptContent: (id, new_content) => {
+    set({
+      transcriptContent: get().transcriptContent.map(line => {
+        if (line.id === id) {
+          return {
+            ...line,
+            content: new_content,
+          };
+        } else {
+          return line;
+          e;
+        }
+      }),
+    });
+    get().updateTranscriptParagraph();
+  },
+  // temporary use for showing
+  /**
+   * id: id of lines[0]
+   * speaker_id
+   * lines: [] - array of lines
+   */
+  transcriptParagraph: [],
+  updateTranscriptParagraph: () => {
+    console.log('rendered updateTranscriptParagraph');
+    const paragraphs = [];
     get().transcriptContent.forEach(line => {
-      const lastLine = merged[merged.length - 1];
+      const lastParagraph = paragraphs[paragraphs.length - 1];
       if (
-        merged.length &&
-        line.speaker_id === lastLine.speaker_id &&
-        line.timestamp - lastLine.timestamp - lastLine.duration < 5
+        paragraphs.length &&
+        line.speaker_id === lastParagraph.speaker_id &&
+        line.timestamp - lastParagraph.timestamp - lastParagraph.duration < 5
       ) {
-        lastLine.content += ' ' + line.content;
+        lastParagraph.lines.push(line);
+        lastParagraph.duration =
+          line.timestamp + line.duration - lastParagraph.lines[0].timestamp;
       } else {
-        merged.push({
-          ...line,
-          alternatives: [...line.alternatives],
+        paragraphs.push({
+          id: line.id,
+          speaker_id: line.speaker_id,
+          timestamp: line.timestamp,
+          duration: line.duration,
+          lines: [line],
         });
       }
     });
-    console.log('mergedTranscriptContent:', merged);
-    set({ mergedTranscriptContent: merged });
+    console.log('transcriptParagraph:', paragraphs);
+    set({ transcriptParagraph: paragraphs });
   },
   generateTranscriptContext: transcriptContent => {
     let context = '';

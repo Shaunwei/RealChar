@@ -1,6 +1,7 @@
 import { useAppStore } from '@/zustand/store';
 import { useRef, useEffect, useState } from 'react';
 import SpeakerManage from './SpeakerManage';
+import EditableText from './EditableText';
 
 const transcriptColors = [
   'text-blue-300',
@@ -14,7 +15,7 @@ const transcriptColors = [
 
 export default function Transcript() {
   const msgEndRef = useRef();
-  const { mergedTranscriptContent, getSpeakerName, getSpeakerColor } =
+  const { transcriptParagraph, getSpeakerName, getSpeakerColor } =
     useAppStore();
 
   useEffect(() => {
@@ -23,28 +24,43 @@ export default function Transcript() {
       block: 'center',
       inline: 'nearest',
     });
-  }, [mergedTranscriptContent]);
+  }, [transcriptParagraph]);
 
   return (
     <>
-      <h2 className='py-1 pl-4 bg-real-blue-500/90 text-small md:text-base font-medium sticky top-24 flex flex-row justify-between'>
+      <h2 className='py-1 pl-4 bg-real-blue-500/90 text-small md:text-base font-medium sticky top-24 flex flex-row justify-between z-[1]'>
         Transcript
         <SpeakerManage colors={transcriptColors} />
       </h2>
       <div className='grow overflow-y-auto'>
         <div className='h-[90px]'></div>
         <ul className='flex flex-col gap-3 p-4'>
-          {mergedTranscriptContent.map(line => (
-            <li key={line.id}>
-              <span
+          {transcriptParagraph.map(paragraph => (
+            <li key={paragraph.id}>
+              <div
                 className={`${
-                  getSpeakerColor(line.speaker_id) !== -1
-                    ? transcriptColors[getSpeakerColor(line.speaker_id)]
+                  getSpeakerColor(paragraph.speaker_id) !== -1
+                    ? transcriptColors[getSpeakerColor(paragraph.speaker_id)]
                     : 'text-white-300'
-                }`}
+                } flex flex-row gap-2`}
               >
-                {getSpeakerName(line.speaker_id)}: {line.content}
-              </span>
+                <span>{getSpeakerName(paragraph.speaker_id)}:</span>
+                <p className='inline-flex flex-row gap-1 flex-wrap'>
+                  {paragraph.lines.map(line => (
+                    <EditableText
+                      key={line.id}
+                      line={line}
+                      color={
+                        getSpeakerColor(paragraph.speaker_id) !== -1
+                          ? transcriptColors[
+                              getSpeakerColor(paragraph.speaker_id)
+                            ]
+                          : 'text-white-300'
+                      }
+                    />
+                  ))}
+                </p>
+              </div>
             </li>
           ))}
           <li ref={msgEndRef}></li>

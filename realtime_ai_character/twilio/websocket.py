@@ -179,7 +179,7 @@ class TwilioConversationEngine:
 
         if self._state == self.VAD_STATE.INITIAL:
             # transition to TALKING
-            if speech_prob is not None and speech_prob > self.TALKING_THRESHOLD:
+            if speech_prob is not None and speech_prob > self._talking_threshold:
                 logger.info("transitions from INITIAL to TALKING")
                 self._state = self.VAD_STATE.TALKING
                 self._audio_buffer += vad_data
@@ -210,7 +210,7 @@ class TwilioConversationEngine:
         if self._state == self.VAD_STATE.SILENCE:
             self._audio_buffer += chunk
 
-            if speech_prob is not None and speech_prob > self.TALKING_THRESHOLD:
+            if speech_prob is not None and speech_prob > self._talking_threshold:
                 logger.info("transitions from SILENCE to TALKING")
                 self._state = self.VAD_STATE.TALKING
                 await stop_twilio_voice(self._websocket, self._sid)

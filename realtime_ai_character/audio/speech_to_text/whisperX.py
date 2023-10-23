@@ -4,14 +4,21 @@ import types
 import json
 import uuid
 import time
-from copy import deepcopy
 
 import requests
 import numpy as np
+import torch
+import torchaudio
 
 from realtime_ai_character.audio.speech_to_text.base import SpeechToText
 from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Singleton, Transcript, TranscriptSlice, timed
+from realtime_ai_character.utils import (
+    Singleton,
+    Transcript,
+    TranscriptSlice,
+    WhisperXResponse,
+    timed,
+)
 
 logger = get_logger(__name__)
 
@@ -118,66 +125,102 @@ class WhisperX(Singleton, SpeechToText):
     @timed
     def transcribe_diarize(
         self,
-        audio_bytes,
+        transcripts: list[Transcript],
         platform="web",
         prompt="",
         language="auto",
         suppress_tokens=[-1],
         speaker_audio_samples={},
-        prompt_transcripts: list[Transcript] = [],
     ):
         logger.info("Transcribing audio...")
-        timestamp = time.time()
-        if self.use == "local":
-            result = self._transcribe(
-                audio_bytes,
+        transcribe = self._transcribe if self.use == "local" else self._transcribe_api
+
+        # initial attempt, transcribe with diarization
+        if len(transcripts) == 1 and transcripts[0].id == "":
+            transcript = transcripts[0]
+            timestamp = time.time()
+            response = transcribe(
+                transcript.audio_bytes,
                 platform,
                 prompt,
                 language,
                 suppress_tokens,
-                diarization=True,
-                speaker_audio_samples=speaker_audio_samples,
+                True,
+                speaker_audio_samples,
             )
-        else:
-            result = self._transcribe_api(
-                audio_bytes,
-                platform,
-                prompt,
-                language,
-                suppress_tokens,
-                diarization=True,
-                speaker_audio_samples=speaker_audio_samples,
-            )
-        transcripts: list[Transcript] = []
-        if isinstance(result, dict) and result.get("segments"):
-            audio_id = str(uuid.uuid4())
-            slices = []
-            for seg in result["segments"]:
-                slices.append(
+            if not response or not response["segments"]:  # empty transcript not allowed
+                return []
+            transcript.id = str(uuid.uuid4().hex)
+            transcript.timestamp = timestamp
+            audio = self.get_audio(transcript.audio_bytes, platform)
+            transcript.duration = len(audio) / 16000
+            for seg in response["segments"]:
+                transcript.slices.append(
                     TranscriptSlice(
-                        id=str(uuid.uuid4()),
-                        audio_id=audio_id,
+                        id=str(uuid.uuid4().hex),
+                        audio_id=transcript.id,
                         speaker_id=seg.get("speaker", ""),
                         text=seg.get("text", "").strip(),
                         start=seg.get("start", 0),
                         end=seg.get("end", 0),
                     )
                 )
-            transcripts.append(
-                Transcript(
-                    id=audio_id,
-                    audio_bytes=audio_bytes,
-                    slices=slices,
-                    timestamp=timestamp,
-                )
-            )
-            transcripts.append(deepcopy(transcripts[-1]))
-            for transcript_slice in transcripts[-1].slices:
-                transcript_slice.text = "sample text 1"
-            transcripts.append(deepcopy(transcripts[-1]))
-            for transcript_slice in transcripts[-1].slices:
-                transcript_slice.text = "sample text 2"
+            return transcripts
+
+        # non-initial attempts, transcribe with alignment, no diarization
+        if any([transcript.id == "" for transcript in transcripts]) or not transcripts:
+            return []
+        # prepare audio
+        gap = 2  # seconds between audio slices
+        start_times = [0.0]
+        audio = self.get_audio(transcripts[0].audio_bytes, platform)
+        for transcript in transcripts[1:]:
+            start_times.append(len(audio) / 16000 + gap + 0.5)
+            audio_slice = self.get_audio(transcript.audio_bytes, platform)
+            audio = np.concatenate([audio, np.zeros(16000 * gap, np.float32), audio_slice])
+        buffer = io.BytesIO()
+        wav = torch.from_numpy(audio[None, :])
+        torchaudio.save(buffer, wav, 16000, format="wav")  # type: ignore
+        audio_bytes = buffer.getvalue()
+        # transcribe
+        response = transcribe(audio_bytes, platform, prompt, language, suppress_tokens, True)
+        if not response:
+            return []
+        word_segments = response["word_segments"]
+        idx = 0
+        for transcript, start_time in zip(transcripts, start_times):
+            for slice in transcript.slices:
+                words = []
+                while idx < len(word_segments):
+                    if word_segments[idx].get("start") is not None:
+                        start = word_segments[idx]["start"]
+                    elif idx > 0 and word_segments[idx - 1].get("end"):
+                        start = word_segments[idx - 1]["end"] + 0.01
+                    else:
+                        start = 0
+                    if start > start_time + slice.end:
+                        break
+                    words.append(word_segments[idx]["word"])
+                    idx += 1
+                spacer = "" if response["language"] == "zh" else " "
+                slice.text = spacer.join(words)
         return transcripts
+
+    def get_audio(self, audio_bytes: bytes, platform: str, verbose: bool = False):
+        if platform == "twilio":
+            reader = torchaudio.io.StreamReader(
+                io.BytesIO(audio_bytes), format="mulaw", option={"sample_rate": "8000"}
+            )
+        else:
+            reader = torchaudio.io.StreamReader(io.BytesIO(audio_bytes))
+        reader.add_basic_audio_stream(1000, sample_rate=16000)
+        wav = torch.concat([chunk[0] for chunk in reader.stream()])  # type: ignore
+        audio: np.ndarray = wav.mean(dim=1).flatten().numpy().astype(np.float32)
+        if verbose:
+            logger.info(f"Wav Shape: {wav.shape}")
+            logger.info(f"Audio length: {len(audio) / 16000:.2f} s")
+            logger.info(f"Received {reader.get_src_stream_info(0)}")
+        return audio
 
     def _transcribe(
         self,
@@ -188,10 +231,7 @@ class WhisperX(Singleton, SpeechToText):
         suppress_tokens=[-1],
         diarization=False,
         speaker_audio_samples={},
-    ):
-        import torch
-        import torchaudio
-
+    ) -> WhisperXResponse:
         logger.info(
             f"Received {len(audio_bytes)} bytes of audio data. Language: {language}. "
             f"Platform: {platform}. Diarization: {diarization}. "
@@ -363,8 +403,8 @@ class WhisperX(Singleton, SpeechToText):
         url = config.url_journal if diarization else config.url
         try:
             logger.info(f"Sent request to whisperX server {url}: {len(audio_bytes)} bytes")
-            response = requests.post(url, data=data, files=files, timeout=60)
-            return response.json()
+            response = requests.post(url, data=data, files=files)
+            return WhisperXResponse(**response.json())
         except requests.exceptions.Timeout as e:
             logger.error(f"WhisperX server {url} timed out: {e}")
         except requests.exceptions.RequestException as e:

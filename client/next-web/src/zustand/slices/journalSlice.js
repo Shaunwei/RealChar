@@ -95,10 +95,11 @@ export const createJournalSlice = (set, get) => ({
           ...get().transcriptContent.slice(0, index),
           {
             ...get().transcriptContent[index],
-            alternatives: [
-              ...get().transcriptContent[index].alternatives,
-              text,
-            ],
+            content: text,
+            // alternatives elements are unique
+            alternatives: Array.from(
+              new Set([...get().transcriptContent[index].alternatives, text])
+            ),
           },
           ...get().transcriptContent.slice(index + 1),
         ],

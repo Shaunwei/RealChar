@@ -1,7 +1,7 @@
 import asyncio
 from dataclasses import field
 from time import perf_counter
-from typing import List, Optional, Callable
+from typing import List, Optional, Callable, TypedDict
 
 from langchain.schema import AIMessage, BaseMessage, HumanMessage, SystemMessage
 from pydantic.dataclasses import dataclass
@@ -77,6 +77,27 @@ class Transcript:
     audio_bytes: bytes
     slices: list[TranscriptSlice]
     timestamp: float
+    duration: float
+
+
+class DiarizedSingleSegment(TypedDict):
+    start: float
+    end: float
+    text: str
+    speaker: str
+
+
+class SingleWordSegment(TypedDict):
+    word: str
+    start: float
+    end: float
+    score: float
+
+
+class WhisperXResponse(TypedDict):
+    segments: List[DiarizedSingleSegment]
+    language: str
+    word_segments: List[SingleWordSegment]
 
 
 class Singleton:

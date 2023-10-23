@@ -5,10 +5,10 @@ from time import perf_counter, time
 from typing import cast
 from fastapi import FastAPI, HTTPException, UploadFile, Request, Form
 
-load_dotenv()
 from whisperX import WhisperX
 from monitor import benchmark
 
+load_dotenv()
 API_KEY = os.getenv("API_KEY", "")
 
 app = FastAPI()

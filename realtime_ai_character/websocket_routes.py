@@ -1,6 +1,7 @@
 import asyncio
 import os
 import uuid
+import time
 
 from dataclasses import dataclass
 from fastapi import APIRouter, Depends, HTTPException, Path, WebSocket, WebSocketDisconnect, Query
@@ -269,6 +270,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
 
         journal_mode = False
         journal_history: list[Transcript] = []
+        audio_cache: list[Transcript] = []
         speaker_audio_samples = {}
 
         while True:
@@ -419,33 +421,44 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                             break
                     if did_add_speaker:
                         continue
+                    async def journal_transcribe(transcripts: list[Transcript], prompt: str = ''):
+                        result: list[Transcript] = await asyncio.to_thread(
+                            speech_to_text.transcribe_diarize,  # type: ignore
+                            transcripts,
+                            platform=platform,
+                            prompt=prompt,
+                            speaker_audio_samples=speaker_audio_samples,
+                        )
+                        for transcript in result:
+                            for slice in transcript.slices:
+                                timestamp = transcript.timestamp + slice.start
+                                duration = slice.end - slice.start
+                                await manager.send_message(
+                                    message=f"[+transcript]?id={slice.id}"
+                                            f"&speakerId={slice.speaker_id}"
+                                            f"&text={slice.text}"
+                                            f"&timestamp={timestamp}"
+                                            f"&duration={duration}",
+                                    websocket=websocket
+                                )
+                                logger.info(
+                                    f"Message sent to client: transcript_id = {slice.id}, "
+                                    f"speaker_id = {slice.speaker_id}, "
+                                    f"text = {slice.text}"
+                                )
+                        return result
                     # transcribe
-                    transcripts: list[Transcript] = await asyncio.to_thread(
-                        speech_to_text.transcribe_diarize,  # type: ignore
-                        binary_data,
-                        platform=platform,
-                        speaker_audio_samples=speaker_audio_samples,
-                        prompt_transcripts=journal_history[-2:],
-                    )
-                    for transcript_obj in transcripts:
-                        for transcript_slice in transcript_obj.slices:
-                            timestamp = transcript_obj.timestamp + transcript_slice.start
-                            duration = transcript_slice.end - transcript_slice.start
-                            await manager.send_message(
-                                message=f"[+transcript]?id={transcript_slice.id}"
-                                        f"&speakerId={transcript_slice.speaker_id}"
-                                        f"&text={transcript_slice.text}"
-                                        f"&timestamp={timestamp}"
-                                        f"&duration={duration}",
-                                websocket=websocket
-                            )
-                            logger.info(
-                                f"Message sent to client: transcript_id = {transcript_slice.id}, "
-                                f"speaker_id = {transcript_slice.speaker_id}, "
-                                f"text = {transcript_slice.text}"
-                            )
-                        if all([transcript_obj.id != _.id for _ in journal_history]):
-                            journal_history.append(transcript_obj)
+                    transcripts = await journal_transcribe([Transcript(
+                        id="", audio_bytes=binary_data, slices=[], timestamp=0, duration=0
+                    )])
+                    if transcripts:
+                        audio_cache += transcripts
+                    cached_duration = sum([transcript.duration for transcript in audio_cache])
+                    cached_elapse = time.time() - audio_cache[0].timestamp if audio_cache else 0
+                    if cached_duration > 30 or cached_elapse > 60:
+                        audio_cache = await journal_transcribe(audio_cache)
+                        journal_history += audio_cache
+                        audio_cache = []
                     continue
 
                 # 0. Handle interim speech.

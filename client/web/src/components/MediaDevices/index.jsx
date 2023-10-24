@@ -35,7 +35,7 @@ const MediaDevices = ({ selectedDevice, setSelectedDevice }) => {
 
   return (
     <div className='devices-container'>
-      <label>Microphone</label>
+      <label>麦克风</label>
       <select
         id='audio-device-selection'
         value={selectedDevice}

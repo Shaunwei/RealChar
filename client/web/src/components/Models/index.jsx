@@ -73,11 +73,11 @@ const Models = ({ isMobile, selectedModel, setSelectedModel }) => {
                 sx={{
                   width: '100%',
                   backgroundColor:
-                    model.id === selectedModel ? '#35394A' : '#1B2134',
+                    model.id === selectedModel ? '#d5dae9' : '#d5dae9',
                   borderColor:
-                    model.id === selectedModel ? '#A7BFFF' : '#1B2134',
+                    model.id === selectedModel ? '#A7BFFF' : '#d5dae9',
                   '&:hover': {
-                    backgroundColor: '#35394A',
+                    backgroundColor: '#92B3FAFF',
                     borderColor: '#617CC2',
                   },
                   textTransform: 'none',

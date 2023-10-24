@@ -52,10 +52,10 @@ const CommunicationMethod = ({ commMethod, setCommMethod }) => {
               disabled={isUnsupportedBrowser && method === 'Call'}
               sx={{
                 width: '100%',
-                backgroundColor: method === commMethod ? '#35394A' : '#1B2134',
-                borderColor: method === commMethod ? '#A7BFFF' : '#1B2134',
+                backgroundColor: method === commMethod ? '#d5dae9' : '#d5dae9',
+                borderColor: method === commMethod ? '#A7BFFF' : '#d5dae9',
                 '&:hover': {
-                  backgroundColor: '#35394A',
+                  backgroundColor: '#92B3FAFF',
                   borderColor: '#617CC2',
                 },
                 textTransform: 'none',

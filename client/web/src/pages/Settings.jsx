@@ -17,6 +17,8 @@ import './styles.css';
 import CommunicationMethod from '../components/CommunicationMethod';
 import AdvancedOptions from '../components/AdvancedOptions';
 import lz from 'lz-string';
+import { useDropzone } from 'react-dropzone';
+import axios from 'axios';
 
 const Settings = ({
   setSelectedCharacter,
@@ -46,12 +48,16 @@ const Settings = ({
   connect,
   setIsCallView,
   shouldPlayAudio,
+  uploadFileResult,
+  setUploadFileResult,
+  interview,
 }) => {
   const navigate = useNavigate();
-  const [commMethod, setCommMethod] = useState('Text');
+  const [commMethod, setCommMethod] = useState('Call');
 
   const { search } = useLocation();
   const { character = '' } = queryString.parse(search);
+  const url = 'http://localhost:8089/web.php';
 
   useEffect(() => {
     const selectedCharacter = JSON.parse(
@@ -95,18 +101,54 @@ const Settings = ({
         '&useMultiOnParam=' +
         useMultiOn +
         '&useEchoCancellationParam=' +
-        useEchoCancellation
+        useEchoCancellation +
+        '&uploadFileResult=' +
+        uploadFileResult
     );
   };
 
+  const onDrop = async acceptedFiles => {
+    // 使用FormData来封装文件数据
+    const formData = new FormData();
+    acceptedFiles.forEach(file => {
+      formData.append('file', file);
+    });
+
+    try {
+      // const url = 'http://localhost:8089/web.php';
+      // url = ''
+      // 发起上传请求
+      const response = await axios.post(url + '/uploadresume', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: progressEvent => {
+          // 上传进度回调
+          const progress = Math.round(
+            (progressEvent.loaded / progressEvent.total) * 100
+          );
+          console.log(`Upload Progress: ${progress}%`);
+        },
+      });
+
+      const value = response.data;
+      console.log('response:', value);
+      // 上传成功后更新已上传文件列表
+      setUploadFileResult(value);
+      console.log('Upload Successful!');
+    } catch (error) {
+      console.error('Upload Error:', error);
+    }
+  };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
   return (
     <div className='settings'>
-      <h2 className='center'>Confirm your setting</h2>
+      <h2 className='center'>设置</h2>
 
-      <CommunicationMethod
+      {/*<CommunicationMethod
         commMethod={commMethod}
         setCommMethod={setCommMethod}
-      />
+      />*/}
 
       <Languages
         preferredLanguage={preferredLanguage}
@@ -118,31 +160,47 @@ const Settings = ({
         setSelectedDevice={setSelectedDevice}
       />
 
-      <Models
-        isMobile={isMobile}
-        selectedModel={selectedModel}
-        setSelectedModel={setSelectedModel}
-      />
+      {/*<Models*/}
+      {/*  isMobile={isMobile}*/}
+      {/*  selectedModel={selectedModel}*/}
+      {/*  setSelectedModel={setSelectedModel}*/}
+      {/*/>*/}
 
-      <AdvancedOptions
-        isLoggedIn={isLoggedIn}
-        token={token}
-        setToken={setToken}
-        useSearch={useSearch}
-        setUseSearch={setUseSearch}
-        useQuivr={useQuivr}
-        setUseQuivr={setUseQuivr}
-        quivrApiKey={quivrApiKey}
-        setQuivrApiKey={setQuivrApiKey}
-        quivrBrainId={quivrBrainId}
-        setQuivrBrainId={setQuivrBrainId}
-        useMultiOn={useMultiOn}
-        setUseMultiOn={setUseMultiOn}
-        useEchoCancellation={useEchoCancellation}
-        setUseEchoCancellation={setUseEchoCancellation}
-        send={send}
-      />
-
+      {/*<AdvancedOptions*/}
+      {/*  isLoggedIn={isLoggedIn}*/}
+      {/*  token={token}*/}
+      {/*  setToken={setToken}*/}
+      {/*  useSearch={useSearch}*/}
+      {/*  setUseSearch={setUseSearch}*/}
+      {/*  useQuivr={useQuivr}*/}
+      {/*  setUseQuivr={setUseQuivr}*/}
+      {/*  quivrApiKey={quivrApiKey}*/}
+      {/*  setQuivrApiKey={setQuivrApiKey}*/}
+      {/*  quivrBrainId={quivrBrainId}*/}
+      {/*  setQuivrBrainId={setQuivrBrainId}*/}
+      {/*  useMultiOn={useMultiOn}*/}
+      {/*  setUseMultiOn={setUseMultiOn}*/}
+      {/*  useEchoCancellation={useEchoCancellation}*/}
+      {/*  setUseEchoCancellation={setUseEchoCancellation}*/}
+      {/*  send={send}*/}
+      {/*/>*/}
+      {interview ? (
+        <>
+          <div {...getRootProps()} className='dropzone'>
+            <input {...getInputProps()} />
+            {isDragActive ? (
+              <p>拖放文件到此处以上传</p>
+            ) : (
+              <div>
+                将文件拖到此处，或
+                <em>点击上传</em>
+              </div>
+            )}
+          </div>
+        </>
+      ) : (
+        <></>
+      )}
       <Button
         variant='contained'
         onClick={handleStartClick}
@@ -152,7 +210,7 @@ const Settings = ({
           textTransform: 'none',
         }}
       >
-        Get Started
+        开始
       </Button>
     </div>
   );

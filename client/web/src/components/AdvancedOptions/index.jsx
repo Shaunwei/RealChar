@@ -246,8 +246,8 @@ const AdvancedOptions = ({
                 variant='outlined'
                 sx={{
                   width: '100%',
-                  backgroundColor: '#1B2134',
-                  borderColor: '#1B2134',
+                  backgroundColor: '#d5dae9',
+                  borderColor: '#d5dae9',
                   '&:hover': {
                     backgroundColor: '#373E58',
                     borderColor: '#A7BFFF',
@@ -266,8 +266,8 @@ const AdvancedOptions = ({
                 variant='outlined'
                 sx={{
                   width: '100%',
-                  backgroundColor: '#1B2134',
-                  borderColor: '#1B2134',
+                  backgroundColor: '#d5dae9',
+                  borderColor: '#d5dae9',
                   '&:hover': {
                     backgroundColor: '#373E58',
                     borderColor: '#A7BFFF',

@@ -14,12 +14,14 @@ const IconButton = ({
   onClick,
   bgcolor = 'default',
   disabled = false,
+  sp = false,
 }) => {
   return (
     <div
       className={`icon-button ${className} ${bgcolor} ${
         disabled ? 'disabled' : ''
       }`}
+      style={{ marginRight: sp ? '10px' : '0px' }}
       onClick={disabled ? null : onClick}
     >
       <Icon className='icon-instance-node-small' />

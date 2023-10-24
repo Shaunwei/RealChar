@@ -1,11 +1,11 @@
 label {
-  color: #e0e0e0;
+  color: black;
 }
 
 .select {
-  background-color: #1b2134;
+  background-color: #d5dae9;
   color: #ffffff;
-  border-color: #1b2134;
+  border-color: #d5dae9;
   width: 100%;
   padding: 10px;
   border-radius: 5px;

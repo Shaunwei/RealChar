@@ -30,18 +30,18 @@ app.add_middleware(
 app.include_router(restful_router)
 app.include_router(websocket_router)
 
-web_build_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
+web_build_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                               '..', 'client', 'web', 'build')
 
 if os.path.exists(web_build_path):
-    app.mount("/static/", 
-              StaticFiles(directory=os.path.join(web_build_path, 'static')), 
+    app.mount("/static/",
+              StaticFiles(directory=os.path.join(web_build_path, 'static')),
               name="static")
 
     @app.get("/", response_class=FileResponse)
     async def read_index():
         return FileResponse(os.path.join(web_build_path, 'index.html'))
-                            
+
     @app.get("/{catchall:path}", response_class=FileResponse)
     def read_static(request: Request):
         path = request.path_params["catchall"]
@@ -53,12 +53,13 @@ if os.path.exists(web_build_path):
         return RedirectResponse("/")
 else:
     # If the web app is not built, prompt the user to build it
-    static_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
-    app.mount("/static/", StaticFiles(directory=static_path), name="static")
+    static_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+    app.mount('/static', StaticFiles(directory=static_path), name='static')
 
     @app.get("/", response_class=FileResponse)
     async def read_index():
-        return FileResponse(os.path.join(static_path, '404.html'))
+        return FileResponse(os.path.join(static_path, 'index.html'))
+    # app.mount('/static', StaticFiles(directory=static_path), name='static')
 
 # initializations
 overwrite_chroma = os.getenv("OVERWRITE_CHROMA", 'True').lower() in ('true', '1')

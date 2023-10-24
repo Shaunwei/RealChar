@@ -35,7 +35,7 @@ import useHark from './hooks/useVAD';
 
 const App = () => {
   const [sessionId, setSessionId] = useState('');
-  const [preferredLanguage, setPreferredLanguage] = useState('English');
+  const [preferredLanguage, setPreferredLanguage] = useState('Chinese');
   const [selectedDevice, setSelectedDevice] = useState('');
   const [selectedModel, setSelectedModel] = useState('gpt-3.5-turbo-16k');
   const [useSearch, setUseSearch] = useState(false);
@@ -67,6 +67,8 @@ const App = () => {
   const isConnecting = useRef(false);
   const isConnected = useRef(false);
   const isMobile = window.innerWidth <= 768;
+  const [uploadFileResult, setUploadFileResult] = useState(undefined);
+  const [interview, setInterview] = useState(false);
 
   useEffect(() => {
     auth.onAuthStateChanged(async user => {
@@ -92,6 +94,9 @@ const App = () => {
 
   // Helper functions
   const handleSocketOnOpen = async event => {
+    if (interview) {
+      send(JSON.stringify(uploadFileResult));
+    }
     console.log('successfully connected');
     isConnected.current = true;
     await connectMicrophone(selectedDevice);
@@ -288,7 +293,7 @@ const App = () => {
       setIsCallView(false);
       setTextAreaValue('');
       setSelectedModel('gpt-3.5-turbo-16k');
-      setPreferredLanguage('English');
+      setPreferredLanguage('Chinese');
 
       // close web socket connection
       closeSocketWithState();
@@ -299,13 +304,16 @@ const App = () => {
   return (
     <Router>
       <div className='app'>
-        <Header
-          user={user}
-          isLoggedIn={isLoggedIn}
-          setToken={setToken}
-          handleDisconnect={handleDisconnect}
-        />
+        {/*<Header*/}
+        {/*  user={user}*/}
+        {/*  isLoggedIn={isLoggedIn}*/}
+        {/*  setToken={setToken}*/}
+        {/*  handleDisconnect={handleDisconnect}*/}
+        {/*/>*/}
 
+        <a href='/' style={{ textDecoration: 'none' }}>
+          <span className='header_title'>智谱AI</span>
+        </a>
         <Routes>
           <Route
             path='/'
@@ -322,6 +330,7 @@ const App = () => {
                 token={token}
                 setToken={setToken}
                 isLoggedIn={isLoggedIn}
+                setInterview={setInterview}
               />
             }
           />
@@ -356,6 +365,9 @@ const App = () => {
                 connect={connect}
                 setIsCallView={setIsCallView}
                 shouldPlayAudio={shouldPlayAudio}
+                uploadFileResult={uploadFileResult}
+                setUploadFileResult={setUploadFileResult}
+                interview={interview}
               />
             }
           />
@@ -403,6 +415,7 @@ const App = () => {
                 token={token}
                 isTextStreaming={isTextStreaming}
                 sessionId={sessionId}
+                setUploadFileResult={setUploadFileResult}
               />
             }
           />
@@ -422,7 +435,7 @@ const App = () => {
           <Route path='/support' element={<Support />} />
         </Routes>
 
-        <Footer />
+        {/*<Footer />*/}
       </div>
     </Router>
   );

@@ -3,7 +3,7 @@ h2,
 h4,
 li,
 p {
-  color: white;
+  color: black;
 }
 
 .home {
@@ -85,3 +85,38 @@ p {
   color: white;
   font-size: large;
 }
+
+.dropzone {
+  height: 100px;
+  margin-bottom: 10px;
+  border: 1px dashed #d9d9d9;
+  padding: 4px;
+  border-radius: 10px;
+}
+
+.dropzone > div {
+  color: #606266;
+  font-size: 14px;
+  text-align: center;
+  line-height: 100px;
+}
+
+.dropzone > div > em{
+  color: #409eff;
+  font-style: normal;
+}
+
+
+/*
+
+background-color: #fbfdff;
+border: 1px dashed #c0ccda;
+border-radius: 6px;
+box-sizing: border-box;
+width: 148px;
+height: 148px;
+cursor: pointer;
+line-height: 146px;
+vertical-align: top;
+
+*/

@@ -1,12 +1,12 @@
 label {
   margin-top: 8px;
   margin-bottom: 8px;
-  color: #e0e0e0;
+  color: black;
 }
 
 .advanced-options {
   display: inline-flex;
-  background-color: #1b2134;
+  background-color: #d5dae9;
   border-radius: 5px;
   margin-bottom: 30px;
   flex-direction: column;

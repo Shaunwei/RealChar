@@ -9,7 +9,7 @@ import { isIP } from 'is-ip';
 import { useNavigate } from 'react-router-dom';
 import lz from 'lz-string';
 
-import Characters from '../components/Characters';
+import Characters from '../components/Characters1';
 import Button from '@mui/material/Button';
 import { getHostName } from '../utils/urlUtils';
 import { signInWithGoogle } from '../components/Auth/SignIn';
@@ -26,6 +26,7 @@ const Home = ({
   token,
   setToken,
   isLoggedIn,
+  setInterview,
 }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -63,6 +64,7 @@ const Home = ({
     const compressedCharacter = lz.compressToEncodedURIComponent(
       JSON.stringify(selectedCharacter)
     );
+    setInterview(selectedCharacter.name.indexOf('面试') > -1);
     navigate('/settings?character=' + compressedCharacter);
   };
 
@@ -84,7 +86,7 @@ const Home = ({
         <h2>Loading...</h2>
       ) : (
         <>
-          <p className='header'>Choose Your Partner</p>
+          <p className='header'>请选择面试官</p>
 
           <Characters
             isMobile={isMobile}
@@ -94,14 +96,14 @@ const Home = ({
             isPlaying={isPlaying}
             characterConfirmed={characterConfirmed}
           />
-          <Button
+          {/*<Button
             variant='contained'
             color='primary'
             onClick={handleCreateCharacter}
             sx={{ marginBottom: '20px' }}
           >
             Create Your Character
-          </Button>
+          </Button>*/}
 
           <Button
             variant='contained'

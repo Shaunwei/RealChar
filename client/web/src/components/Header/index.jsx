@@ -26,25 +26,25 @@ const Header = ({ user, isLoggedIn, setToken, handleDisconnect }) => (
       </Navbar.Brand>
     </a>
 
-    <Navbar.Content
-      id='navbar'
-      css={{
-        '@xs': {
-          w: '19%',
-          jc: 'flex-end',
-        },
-      }}
-    >
-      {user ? (
-        <SignOut
-          isLoggedIn={isLoggedIn}
-          user={user}
-          handleDisconnect={handleDisconnect}
-        />
-      ) : (
-        <SignIn isLoggedIn={isLoggedIn} setToken={setToken} />
-      )}
-    </Navbar.Content>
+    {/*<Navbar.Content*/}
+    {/*  id='navbar'*/}
+    {/*  css={{*/}
+    {/*    '@xs': {*/}
+    {/*      w: '19%',*/}
+    {/*      jc: 'flex-end',*/}
+    {/*    },*/}
+    {/*  }}*/}
+    {/*>*/}
+    {/*  {user ? (*/}
+    {/*    <SignOut*/}
+    {/*      isLoggedIn={isLoggedIn}*/}
+    {/*      user={user}*/}
+    {/*      handleDisconnect={handleDisconnect}*/}
+    {/*    />*/}
+    {/*  ) : (*/}
+    {/*    <SignIn isLoggedIn={isLoggedIn} setToken={setToken} />*/}
+    {/*  )}*/}
+    {/*</Navbar.Content>*/}
   </Navbar>
 );
 

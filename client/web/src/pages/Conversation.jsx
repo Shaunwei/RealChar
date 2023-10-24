@@ -54,6 +54,7 @@ const Conversation = ({
   setSelectedDevice,
   setUseMultiOn,
   connect,
+  setUploadFileResult,
 }) => {
   const navigate = useNavigate();
   const { search } = useLocation();
@@ -64,6 +65,7 @@ const Conversation = ({
     isCallViewParam = '',
     preferredLanguage = '',
     useSearchParam = '',
+    uploadFileResult = '',
     useEchoCancellationParam = '',
     useMultiOnParam = '',
   } = queryString.parse(search);
@@ -114,6 +116,8 @@ const Conversation = ({
     setUseEchoCancellation(useEchoCancellation);
 
     setUseMultiOn(useMultiOn);
+
+    setUploadFileResult(uploadFileResult);
   }, []);
 
   useEffect(() => {
@@ -185,6 +189,10 @@ const Conversation = ({
           setIsCallView={setIsCallView}
           sessionId={sessionId}
           handleFirstInteractionAudio={handleFirstInteractionAudio}
+          isConnecting={isConnecting}
+          isConnected={isConnected}
+          isCallView={isCallView}
+          isThinking={isThinking}
         />
       </div>
 

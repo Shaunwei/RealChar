@@ -61,14 +61,27 @@ const CallView = ({
         <audio ref={audioPlayer} className='audio-player'>
           <source src='' type='audio/mp3' />
         </audio>
-        <div className={`sound-wave ${isRecording ? '' : 'stop-animation'}`}>
+        {/*<span*/}
+        {/*  id='recording'*/}
+        {/*  className='sound-wave recording'*/}
+        {/*  style={{ display: callActive ? 'none' : 'block' }}*/}
+        {/*></span>*/}
+        {/*<div className={`sound-wave ${isRecording ? '' : 'stop-animation'}`}>
           <span></span>
           <span></span>
           <span></span>
           <span></span>
           <span></span>
           <span></span>
-        </div>
+        </div>*/}
+      </div>
+      <div className='options-container'>
+        <IconButton
+          Icon={TbPower}
+          className='icon-red'
+          onClick={handlePowerOffClick}
+          sp={true}
+        />
         {isRecording ? (
           <IconButton
             Icon={MdCallEnd}
@@ -84,17 +97,11 @@ const CallView = ({
             onClick={handleContinueCall}
           />
         )}
-      </div>
-      <div className='options-container'>
-        <IconButton
-          Icon={TbPower}
-          className='icon-red'
-          onClick={handlePowerOffClick}
-        />
-        <IconButton
+        {/*<IconButton
           Icon={TbMessageChatbot}
           className='icon-green'
           onClick={() => setIsCallView(false)}
+          sp={true}
         />
         <IconButton
           Icon={TbShare2}
@@ -102,7 +109,7 @@ const CallView = ({
           onClick={() =>
             window.open(`/shared?session_id=${sessionId}`, '_blank')
           }
-        />
+        />*/}
       </div>
     </div>
   );

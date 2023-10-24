@@ -61,17 +61,18 @@ const Characters = ({
           ((!characterConfirmed && character.source === 'default') ||
             (selectedCharacter &&
               character.character_id === selectedCharacter.character_id)) && (
-            <Grid item xs={isMobile ? 12 : 6} key={index}>
+            <Grid item xs={isMobile ? 12 : 3} key={index}>
               <Button
                 variant='outlined'
                 onClick={() => handleCharacterSelection(character)}
                 sx={{
                   width: '100%',
+                  height: '192px',
                   backgroundColor:
                     selectedCharacter &&
                     character.character_id === selectedCharacter.character_id
                       ? '#d5dae9'
-                      : '#d5dae9',
+                      : '',
                   borderColor:
                     selectedCharacter &&
                     character.character_id === selectedCharacter.character_id
@@ -81,25 +82,27 @@ const Characters = ({
                     backgroundColor: '#92b3fa',
                     borderColor: '#617CC2',
                   },
-                  display: 'flex',
-                  justifyContent: 'left',
-                  textTransform: 'none',
+                  display: 'grid',
                 }}
               >
-                <Avatar
-                  alt={character.name}
-                  src={character.image_url}
-                  sx={{ marginRight: 1 }}
-                />
-                <Typography
-                  variant='body1'
-                  sx={{
-                    color: 'white',
-                    fontFamily: 'Prompt, sans-serif',
-                  }}
-                >
-                  {character.name}
-                </Typography>
+                <div style={{ justifySelf: 'center' }}>
+                  <Avatar
+                    alt={character.name}
+                    src={character.image_url}
+                    sx={{ marginRight: 1 }}
+                    style={{ width: '80px', height: '80px' }}
+                  />
+                </div>
+                <span>{character.name}</span>
+                {/*<Typography*/}
+                {/*  variant='body1'*/}
+                {/*  sx={{*/}
+                {/*    color: 'white',*/}
+                {/*    fontFamily: 'Prompt, sans-serif',*/}
+                {/*  }}*/}
+                {/*>*/}
+                {/*  {character.name}*/}
+                {/*</Typography>*/}
               </Button>
             </Grid>
           )

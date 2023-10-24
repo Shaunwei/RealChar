@@ -59,8 +59,12 @@ export const createJournalSlice = (set, get) => ({
     return target.color_id;
   },
   transcriptContent: [],
-  resetTranscript: () => {
-    set({ transcriptContent: [] });
+  resetJournal: () => {
+    set({
+      transcriptContent: [],
+      transcriptParagraph: [],
+      actionContent: [],
+    });
   },
   delayedSendHighlightTimeoutID: null,
   delayedSendLastHighLightTimeoutID: null,
@@ -97,9 +101,10 @@ export const createJournalSlice = (set, get) => ({
             ...get().transcriptContent[index],
             content: text,
             // alternatives elements are unique
-            alternatives: Array.from(
-              new Set([...get().transcriptContent[index].alternatives, text])
-            ),
+            alternatives: [
+              ...get().transcriptContent[index].alternatives,
+              text,
+            ],
           },
           ...get().transcriptContent.slice(index + 1),
         ],

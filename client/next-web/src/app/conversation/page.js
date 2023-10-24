@@ -23,12 +23,8 @@ export default function Conversation() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isTextMode, setIsTextMode] = useState(true);
-  const {
-    isJournalMode,
-    setIsJournalMode,
-    resetTranscript,
-    resetSpeakersList,
-  } = useAppStore();
+  const { isJournalMode, setIsJournalMode, resetJournal, resetSpeakersList } =
+    useAppStore();
   const { character, getAudioList, setCharacter, clearChatContent } =
     useAppStore();
   // Websocket.
@@ -62,7 +58,7 @@ export default function Conversation() {
   useEffect(
     () =>
       useAppStore.subscribe(
-        (state) => (audioQueueRef.current = state.audioQueue)
+        state => (audioQueueRef.current = state.audioQueue)
       ),
     []
   );
@@ -74,7 +70,7 @@ export default function Conversation() {
     );
     setCharacter(character);
     setIsJournalMode(false);
-    resetTranscript();
+    resetJournal();
     resetSpeakersList();
   }, []);
 

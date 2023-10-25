@@ -64,6 +64,8 @@ export const createJournalSlice = (set, get) => ({
       transcriptContent: [],
       transcriptParagraph: [],
       actionContent: [],
+      lineIdToBulletPointId: {},
+      bulletPointIdToSliceId: {},
     });
   },
   delayedSendHighlightTimeoutID: null,
@@ -109,6 +111,13 @@ export const createJournalSlice = (set, get) => ({
           ...get().transcriptContent.slice(index + 1),
         ],
       });
+      get().updateTranscriptParagraph();
+      const affected = get().lineIdToBulletPointId[id];
+      if (affected) {
+        Array.from(affected).map((bullet_point_id) => {
+          get().updateBulletPoint(bullet_point_id);
+        });
+      }
     }
     // Auto bullet points
     if (index === -1) {
@@ -130,7 +139,7 @@ export const createJournalSlice = (set, get) => ({
             'sec'
           );
           if (duration > 60) {
-            get().appendBulletPoint(slice);
+            get().appendBulletPoint(get().highlightedTranscriptIndex + 1, get().transcriptContent.length);
           }
         }, 5000),
         delayedSendLastHighLightTimeoutID: setTimeout(() => {
@@ -138,7 +147,7 @@ export const createJournalSlice = (set, get) => ({
             get().highlightedTranscriptIndex + 1
           );
           if (slice.length > 0) {
-            get().appendBulletPoint(slice);
+            get().appendBulletPoint(get().highlightedTranscriptIndex + 1, get().transcriptContent.length);
           }
         }, 60000),
       });
@@ -154,11 +163,15 @@ export const createJournalSlice = (set, get) => ({
           };
         } else {
           return line;
-          e;
         }
       }),
     });
     get().updateTranscriptParagraph();
+    // Get bullet points that are affected by update.
+    const affected = get().lineIdToBulletPointId[id];
+    Array.from(affected).map((bullet_point_id) => {
+      get().updateBulletPoint(bullet_point_id);
+    });
   },
   // temporary use for showing
   /**
@@ -217,19 +230,79 @@ export const createJournalSlice = (set, get) => ({
     generateHighlight(generateHighlightRequest, get().token).then(callback);
   },
   actionContent: [],
-  appendBulletPoint: transcriptContent => {
-    const text = get().generateTranscriptContext(transcriptContent);
+  lineIdToBulletPointId: {},
+  bulletPointIdToSliceId: {},
+  bulletPointIdToDebouncedUpdateId: {},
+  updateBulletPoint: (bullet_point_id) => {
+    const sliceId = get().bulletPointIdToSliceId[bullet_point_id];
+    const slice = get().transcriptContent.slice(sliceId.start, sliceId.end);
+    const text = get().generateTranscriptContext(slice);
+    // Find existing bullet point.
+    const target = get().actionContent.find(
+        action => action.id === bullet_point_id && action.type === 'highlight'
+    );
+    if (!target) {
+      console.log("No corresponding bullet point found for update");
+      return;
+    }
+    if (get().bulletPointIdToDebouncedUpdateId.hasOwnProperty(bullet_point_id) && get().bulletPointIdToDebouncedUpdateId[bullet_point_id] != null) {
+      clearTimeout(get().bulletPointIdToDebouncedUpdateId[bullet_point_id]);
+    }
+    const timeoutId = setTimeout(()=>{
+      // Get updated highlight.
+      get().generateNewHighlight(text, null, data => {
+        console.log('context: ' + text);
+        console.log('highlight: ' + data['highlight']);
+        let bullet_point_list = data['highlight'].split('- ');
+        bullet_point_list = bullet_point_list.map(line => line.trim());
+        bullet_point_list.shift();
+        // Update the bullet point.
+        set({
+          actionContent: get().actionContent.map((action) => {
+            if (action.id === bullet_point_id) {
+              return {
+                type: 'highlight',
+                id: action.id,
+                timestamp: action.timestamp,
+                detected: bullet_point_list,
+                suggested: [],
+              }
+            } else {
+              return action;
+            }
+          })
+        });
+      });
+      set({
+        bulletPointIdToDebouncedUpdateId: {
+          ...get().bulletPointIdToDebouncedUpdateId,
+          [bullet_point_id]: null
+        }
+      });
+    }, 30000);
+    set({
+      bulletPointIdToDebouncedUpdateId: {
+        ...get().bulletPointIdToDebouncedUpdateId,
+        [bullet_point_id]: timeoutId
+      }
+    });
+  },
+  appendBulletPoint: (start, end) => {
+    const slice = get().transcriptContent.slice(start, end);
+    const text = get().generateTranscriptContext(slice);
     get().generateNewHighlight(text, null, data => {
       console.log('context: ' + text);
       console.log('highlight: ' + data['highlight']);
       let bullet_point_list = data['highlight'].split('- ');
       bullet_point_list = bullet_point_list.map(line => line.trim());
       bullet_point_list.shift();
+      const highlight_id = self.crypto.randomUUID();
       set({
         actionContent: [
           ...get().actionContent,
           {
             type: 'highlight',
+            id: highlight_id,
             timestamp: `${Date.now()}`,
             detected: bullet_point_list,
             suggested: [],
@@ -237,6 +310,27 @@ export const createJournalSlice = (set, get) => ({
         ],
       });
       set({ highlightedTranscriptIndex: get().transcriptContent.length - 1 });
+      let current_mapping = get().lineIdToBulletPointId;
+      // Map every line id to affecting highlight.
+      get().transcriptContent.map(item=> {
+        if (current_mapping.hasOwnProperty(item.id)) {
+          current_mapping[item.id].add(highlight_id);
+        } else {
+          current_mapping[item.id] = new Set([highlight_id]);
+        }
+      });
+      set({
+        lineIdToBulletPointId: current_mapping
+      });
+      set({
+        bulletPointIdToSliceId: {
+          ...get().bulletPointIdToSliceId,
+          [highlight_id]: {
+            start: start,
+            end: end,
+          }
+        }
+      });
     });
   },
   appendUserRequest: text => {

@@ -21,6 +21,7 @@ export default function EditableText({ line, color }) {
     if (e.key === 'Enter') {
       e.preventDefault();
       onClose();
+      updateTranscriptContent(line.id, value);
     }
   };
   const handleOpenChange = isOpen => {

@@ -169,9 +169,11 @@ export const createJournalSlice = (set, get) => ({
     get().updateTranscriptParagraph();
     // Get bullet points that are affected by update.
     const affected = get().lineIdToBulletPointId[id];
-    Array.from(affected).map((bullet_point_id) => {
-      get().updateBulletPoint(bullet_point_id);
-    });
+    if (affected) {
+      Array.from(affected).map((bullet_point_id) => {
+        get().updateBulletPoint(bullet_point_id);
+      });
+    }
   },
   // temporary use for showing
   /**

@@ -22,5 +22,9 @@ def get_text_to_speech(tts: str = None) -> TextToSpeech:
         from realtime_ai_character.audio.text_to_speech.edge_tts import EdgeTTS
         EdgeTTS.initialize()
         return EdgeTTS.get_instance()
+    elif tts == 'XTTS':
+        from realtime_ai_character.audio.text_to_speech.xtts import XTTS
+        XTTS.initialize()
+        return XTTS.get_instance()
     else:
         raise NotImplementedError(f'Unknown text to speech engine: {tts}')

@@ -21,7 +21,7 @@ user: | # you don't need to change this for most cases
   ---
   {query}
 
-text_to_speech_use: ELEVEN_LABS
-voice_id: js0ivhcOimy1lQJzbBXI
+text_to_speech_use: XTTS
+voice_id: female
 visibility: public
 order: 0

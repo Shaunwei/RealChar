@@ -1,0 +1,6 @@
+# install torch torchaudio torchvision independently
+langid
+TTS==0.18.2
+deepspeed==0.8.3
+pydantic==1.*
+fastapi[all]

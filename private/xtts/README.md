@@ -12,15 +12,19 @@ Latency to first audio chunk: 204 milliseconds ([xtts-streaming](https://hugging
 
 ### Environment
 
-```bash
-conda create -n xtts python=3.11 -y
-conda activate xtts
-conda install -c "nvidia/label/cuda-11.8.0" cuda -y
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-pip install -r requirements.txt
-```
+1. CUDA Tool Kit
 
-or use Docker environment (recommended): [pytorch/pytorch:2.1.0-cuda11.8-cudnn8-devel](https://hub.docker.com/layers/pytorch/pytorch/2.1.0-cuda11.8-cudnn8-devel/images/sha256-558b78b9a624969d54af2f13bf03fbad27907dbb6f09973ef4415d6ea24c80d9?context=explore)
+    Install via NVIDIA official site or use Docker environment (recommended): [pytorch/pytorch:2.1.0-cuda11.8-cudnn8-devel](https://hub.docker.com/layers/pytorch/pytorch/2.1.0-cuda11.8-cudnn8-devel/images/sha256-558b78b9a624969d54af2f13bf03fbad27907dbb6f09973ef4415d6ea24c80d9?context=explore)
+
+1. Python environment
+
+    ```bash
+    conda create -n xtts python=3.11 -y
+    conda activate xtts
+    conda install -c "nvidia/label/cuda-11.8.0" cuda -y
+    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+    pip install -r requirements.txt
+    ```
 
 ### Notes
 

@@ -2,12 +2,13 @@ import os
 import io
 import time
 import torchaudio
+import re
 
 import langid
-from TTS.api import TTS
 from TTS.tts.configs.xtts_config import XttsConfig
 from TTS.tts.models.xtts import Xtts
 from TTS.utils.generic_utils import get_user_data_dir
+from TTS.utils.manage import ModelManager
 
 XTTS_LANGUAGE_CODE_MAPPING = {
     "en-US": "en",
@@ -28,14 +29,13 @@ def log(message: str):
 
 class XTTS:
     def __init__(self):
-        model_path = "models/tts_models--multilingual--multi-dataset--xtts_v1.1"
+        model_name = "tts_models/multilingual/multi-dataset/xtts_v2"
+        model_path = os.path.join("models", model_name.replace("/", "--"))
         if not os.path.exists(model_path):
-            # download model
-            tts = TTS("tts_models/multilingual/multi-dataset/xtts_v1.1")
-            del tts
-            model_path = os.path.join(
-                get_user_data_dir("tts"), "tts_models--multilingual--multi-dataset--xtts_v1.1"
-            )
+            log(f"Downloading model: {model_name}")
+            ModelManager().download_model(model_name)
+            model_path = os.path.join(get_user_data_dir("tts"), model_name.replace("/", "--"))
+            log(f"Downloaded model: {model_name}")
         self.config = XttsConfig()
         self.config.load_json(os.path.join(model_path, "config.json"))
         self.model = Xtts.init_from_config(self.config)
@@ -48,6 +48,7 @@ class XTTS:
         )
         self.model.cuda()
         self.supported_languages = self.config.languages
+        log(f"Loaded model: {model_name}")
 
     def predict(self, prompt, language, voice_id):
         log(f"Received prompt: {prompt}, language: {language}, voice_id: {voice_id}")
@@ -126,12 +127,19 @@ class XTTS:
 
         t_latent = time.time()
 
-        gpt_cond_latent, _, speaker_embedding = self.model.get_conditioning_latents(
-            audio_path=speaker_wav
-        )
+        try:
+            gpt_cond_latent, speaker_embedding = self.model.get_conditioning_latents(
+                audio_path=speaker_wav, gpt_cond_len=30, max_ref_length=30
+            )
+        except Exception as e:
+            log(f"Speaker encoding error: {e}")
+            return
 
         latent_calculation_time = time.time() - t_latent
         metrics_text = f"Embedding calculation time: {latent_calculation_time:.2f} seconds\n"
+
+        # temporary comma fix
+        prompt= re.sub("([^\x00-\x7F]|\w)(\.|\。|\?)",r"\1 \2\2",prompt)
 
         wav_chunks = []
 
@@ -142,6 +150,8 @@ class XTTS:
             language,
             gpt_cond_latent,
             speaker_embedding,
+            #repetition_penalty=5.0,
+            temperature=0.85,
         )
 
         first_chunk = True

@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 
 
 import whisperx
-import opencc
 from whisperx.types import SingleWordSegment
 
 
@@ -61,6 +60,7 @@ load_dotenv()
 MODEL = os.getenv("MODEL", "base")
 DIARIZATION = os.getenv("DIARIZATION", "false").lower() == "true"
 HF_ACCESS_TOKEN = os.getenv("HF_ACCESS_TOKEN", "")
+OPENCC = os.getenv("OPENCC", "false").lower() == "true"
 
 
 def log(message: str):
@@ -96,7 +96,6 @@ class WhisperX:
         compute_type = "float16" if self.device.startswith("cuda") else "default"
         log(f"Loading [WhisperX Server] model: [{MODEL}]({self.device}) ...")
         self.model = whisperx.load_model(MODEL, self.device, compute_type=compute_type)
-        self.chinese_t2s = opencc.OpenCC("t2s.json")
         if DIARIZATION:
             self.align_model = {
                 language_code: whisperx.load_align_model(
@@ -108,6 +107,9 @@ class WhisperX:
                 device=self.device,
                 use_auth_token=HF_ACCESS_TOKEN,
             )
+        if OPENCC:
+            import opencc
+            self.chinese_t2s = opencc.OpenCC("t2s.json")
 
     @timed
     def transcribe(
@@ -180,7 +182,7 @@ class WhisperX:
         result = self.model.transcribe(audio, batch_size=1, language=language)
 
         # convert traditional chinese to simplified chinese
-        if result["language"] == "zh":
+        if result["language"] == "zh" and OPENCC:
             for seg in result["segments"]:
                 seg["text"] = self.chinese_t2s.convert(seg["text"])
 

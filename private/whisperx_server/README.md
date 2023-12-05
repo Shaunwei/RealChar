@@ -21,6 +21,8 @@ Self hosted whisperX endpoint.
     sudo apt update && sudo apt install ffmpeg
     ```
 
+    Make sure your `ffmpeg` version is `<4.4` to be compatible with pytorch.
+
 1. Install whisperX
 
     ```bash
@@ -33,7 +35,7 @@ Self hosted whisperX endpoint.
     pip install "fastapi[all]"
     ```
 
-1. Install opencc
+1. Install opencc (Apple Silicon skip this step)
 
     ```bash
     pip install opencc==1.1.6
@@ -43,6 +45,7 @@ Self hosted whisperX endpoint.
 
     -   `API_KEY`: the same as WHISPER_X_API_KEY in `.env` of RealChar backend
     -   `HF_ACCESS_TOKEN`:  Since [diarization models](https://github.com/m-bain/whisperX#speaker-diarization) are private repos, you need to apply for access to these models on Hugging Face and put your HF access token here.
+    -   `OPENCC`: set to `true` if you have `opencc` installed, apple silicon users should set to `false`
 
 1. Start the service
 

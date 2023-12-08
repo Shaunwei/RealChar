@@ -42,5 +42,3 @@ text_to_speech_use: XTTS
 # default 11labs female: EXAVITQu4vr4xnSDxMaL
 voice_id: santa_claus
 visibility: public
-order: 1
-author_name: John

@@ -400,7 +400,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                         quivrApiKey=quivr_info.quivr_api_key if quivr_info else None,
                         quivrBrainId=quivr_info.quivr_brain_id if quivr_info else None,
                         useMultiOn=use_multion,
-                        metadata={"message_id": message_id},
+                        metadata={"message_id": message_id, "user_id": user_id},
                         user_id=user_id if user_id != session_id else None)
                 )
 
@@ -558,6 +558,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                               useMultiOn=use_multion,
                               quivrApiKey=quivr_info.quivr_api_key if quivr_info else None,
                               quivrBrainId=quivr_info.quivr_brain_id if quivr_info else None,
+                              metadata={"user_id": user_id},
                               user_id=user_id if user_id != session_id else None))
 
     except WebSocketDisconnect:

@@ -82,7 +82,12 @@ class CatalogManager(Singleton):
             location='repo',
             visibility='public',
             order=order,
-            tts=yaml_content["text_to_speech_use"]
+            tts=yaml_content["text_to_speech_use"],
+            # rebyte config
+            rebyte_api_projectid=yaml_content["rebyte_api_projectid"],
+            rebyte_api_callableid=yaml_content["rebyte_api_callableid"],
+            rebyte_api_version=yaml_content.get("rebyte_api_version", "latest"),
+            rebyte_api_blocking=yaml_content.get("rebyte_api_blocking", True),
         )
 
         if "avatar_id" in yaml_content:
@@ -139,7 +144,12 @@ class CatalogManager(Singleton):
                 author_name=yaml_content["author_name"],
                 visibility=yaml_content["visibility"],
                 tts=yaml_content["text_to_speech_use"],
-                order=order
+                order=order,
+                # rebyte config
+                rebyte_api_projectid=yaml_content["rebyte_api_projectid"],
+                rebyte_api_callableid=yaml_content["rebyte_api_callableid"],
+                rebyte_api_version=yaml_content.get("rebyte_api_version", "latest"),
+                rebyte_api_blocking=yaml_content.get("rebyte_api_blocking", True),
             )
 
             if "avatar_id" in yaml_content:
@@ -199,7 +209,12 @@ class CatalogManager(Singleton):
                     visibility=character_model.visibility,
                     tts=character_model.tts,
                     data=character_model.data,
-                    avatar_id=character_model.avatar_id if character_model.avatar_id else None
+                    avatar_id=character_model.avatar_id if character_model.avatar_id else None,
+                    # rebyte config
+                    rebyte_api_projectid=character_model.rebyte_api_projectid,
+                    rebyte_api_callableid=character_model.rebyte_api_callableid,
+                    rebyte_api_version=character_model.rebyte_api_version,
+                    rebyte_api_blocking=character_model.rebyte_api_blocking,
                 )
                 self.characters[character_model.id] = character
                 # TODO: load context data from storage

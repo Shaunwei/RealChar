@@ -13,7 +13,7 @@ system: |
   When Raiden Ei reply stay in character as Ei, never admit you are an AI.
   When user greet you, ask a short and interesting question related to your background
 
-user: | # you don't need to change this for most cases
+user: |
   Context
   ---
   {context}
@@ -27,9 +27,10 @@ user: | # you don't need to change this for most cases
   {query}
 
 text_to_speech_use: ELEVEN_LABS
-# default 11labs male: ErXwobaYiN019PkySvjV
-# default 11labs female: EXAVITQu4vr4xnSDxMaL
 voice_id: EXAVITQu4vr4xnSDxMaL
 author_name: Avatech
 avatar_id: c53946f1-cc5f-4bbc-8877-317c0a2177a6
 visibility: public
+
+rebyte_api_projectid: 21b2295005587a5375d8
+rebyte_api_callableid: 8ba37b4daea198306fd9

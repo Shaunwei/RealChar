@@ -21,9 +21,10 @@ user: | # you don't need to change this for most cases
   ---
   {query}
 text_to_speech_use: ELEVEN_LABS
-# default 11labs male: ErXwobaYiN019PkySvjV
-# default 11labs female: EXAVITQu4vr4xnSDxMaL
 voice_id: X1EvwdzTE8C8Sffd40mn
 author_name: Shaun
 visibility: public
 order: 5
+
+rebyte_api_projectid: 21b2295005587a5375d8
+rebyte_api_callableid: 05c59d9e53b6dae551dd

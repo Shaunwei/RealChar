@@ -3,7 +3,7 @@ export const createSettingSlice = (set, get) => ({
   preferredLanguage: new Set(['English']),
   selectedSpeaker: new Set(['default']),
   selectedMicrophone: new Set(['default']),
-  selectedModel: new Set(['gpt-3.5-turbo-16k']),
+  selectedModel: new Set(['rebyte']),
   enableGoogle: false,
   enableQuivr: false,
   enableMultiOn: false,
@@ -23,6 +23,11 @@ export const createSettingSlice = (set, get) => ({
     'Korean',
   ],
   models: [
+    {
+      id: 'rebyte',
+      name: 'ReByte',
+      tooltip: 'ReByte platform model, good for most conversation',
+    },
     {
       id: 'gpt-3.5-turbo-16k',
       name: 'GPT-3.5',

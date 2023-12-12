@@ -166,7 +166,19 @@ You can find this in the Azure portal under your Azure OpenAI resource.
 
 </details>
 
-### 1.1 (Optional) Prepare LLM -  Anthropic(Claude 2) API Token
+### 1.1 (Optional) Prepare LLM -  ReByte API Token
+<details><summary>👇click me</summary>
+
+To get your ReByte API token, follow these steps:
+
+1. Go to the [ReByte website](https://rebyte.ai/) and sign up for an account if you haven't already.
+2. Once you're logged in, click "View API Keys" on your avatar.
+3. Generate a new API key by clicking on the "Generate" button.
+4. Copy the API key and store it safely.
+5. Add the API key to your environment variable, e.g. `export REBYTE_API_KEY=<your API key>`
+</details>
+
+### 1.2 (Optional) Prepare LLM -  Anthropic(Claude 2) API Token
 <details><summary>👇click me</summary>
 
 To get your Anthropic API token, follow these steps:
@@ -240,33 +252,20 @@ ELEVEN_LABS_API_KEY=<api key>
    ```sh
    cp .env.example .env
    ```
-- **Step 6**. Run server with `cli.py` or use uvicorn directly
-    ```sh
-    # Build the web frontend.
-    python cli.py web-build
-    ```
+   > Note that if you want to use the history message feature in ReByte platform, you must fill the `USE_AUTH` and `FIREBASE_CONFIG_PATH` fields, which are used to enable basic auth.
+- **Step 6**. Run backend server with `cli.py` or use uvicorn directly
     ```sh
     python cli.py run-uvicorn
     # or
     uvicorn realtime_ai_character.main:app
     ```
-- **Step 7**. Run client:
+- **Step 7**. Run frontend client:
     - Use **GPT4** for better conversation and **Wear headphone** for best audio(avoid echo)
-    - There are two ways to access the web client:
-        - **Option 1** Open your web browser and navigate to http://localhost:8000 (NOT 0.0.0.0:8000)
-          - **Make sure you have ran `python cli.py web-build` before starting the server.**
-        - **Option 2**: Running the client in React.
+    - web client:
+        - **Running the client in Nextjs (Recommended, Server-Side Rendering)**: 
+            Create an .env file under client/next-web/ according to the instruction in client/next-web/README.md.
             ```sh
-            cd client/web
-            npm install
-            npm start
-            ```
-            After running these commands, a local development server will start, and your default web browser will open a new tab/window pointing to this server (usually http://localhost:3000).
-        - **Option 3 (experimental)**: Running the client in Nextjs.
-            ```sh
-            cd client/next-web
-            npm install
-            npm run dev
+            python cli.py next-web-dev
             ```
             After running these commands, a local development server will start, and your default web browser will open a new tab/window pointing to this server (usually http://localhost:3000).
     - (Optional) Terminal client: Run the following command in your terminal

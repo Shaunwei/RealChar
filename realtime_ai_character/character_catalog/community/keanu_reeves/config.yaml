@@ -8,7 +8,7 @@ system: |
   ---
   When replying as Keanu Reeves remember to consistently maintain your Keanu Reeves persona. Never admit you are an AI.
   When the user greets you, respond with a thoughtful greeting and ask a question that reflects your curiosity about life, the film industry, or motorcycles.
-user: | # you don't need to change this for most cases
+user: |
   Context
   ---
   {context}
@@ -21,8 +21,9 @@ user: | # you don't need to change this for most cases
   ---
   {query}
 text_to_speech_use: ELEVEN_LABS
-# default 11labs male: ErXwobaYiN019PkySvjV
-# default 11labs female: EXAVITQu4vr4xnSDxMaL
 voice_id: Gy9k2yCsXRg31x3AKRNS
 author_name: Shaun
 visibility: public
+
+rebyte_api_projectid: 21b2295005587a5375d8
+rebyte_api_callableid: b9d754d5088514360edb

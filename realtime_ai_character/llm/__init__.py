@@ -25,6 +25,9 @@ def get_llm(model="gpt-3.5-turbo-16k") -> LLM:
         # Currently use Anyscale to support llama models
         from realtime_ai_character.llm.anyscale_llm import AnysacleLlm
         return AnysacleLlm(model=model)
+    elif "rebyte" in model:
+        from realtime_ai_character.llm.rebyte_llm import RebyteLlm
+        return RebyteLlm()
     else:
         raise ValueError(f'Invalid llm model: {model}')
 
@@ -40,4 +43,6 @@ def get_chatmodel_from_env() -> BaseChatModel:
         return get_llm(model='meta-llama/Llama-2-70b-chat-hf').chat_open_ai
     elif os.getenv('LOCAL_LLM_URL'):
         return get_llm(model=os.getenv('LOCAL_LLM_URL')).chat_open_ai
+    elif os.getenv('REBYTE_API_KEY'):
+        return get_llm(model='gpt-4').chat_open_ai # Use GPT-4 model directly
     raise ValueError('No llm api key found in env')

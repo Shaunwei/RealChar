@@ -72,14 +72,13 @@ def run_uvicorn(args):
 
 
 @click.command()
-def web_build():
+def next_web_dev():
     # Build the web app to be served by FastAPI
     click.secho("Building web app...", fg='green')
-    subprocess.run(["npm", "install"], cwd="client/web")
+    subprocess.run(["npm", "install"], cwd="client/next-web")
     click.secho("Web app dependencies installed.", fg='green')
-    subprocess.run(["npm", "run", "build"], cwd="client/web")
-    click.secho("Web app built.", fg='green')
-
+    subprocess.run(["npm", "run", "dev"], cwd="client/next-web")
+    click.secho("Web app dev.", fg='green')
 
 @click.command()
 @click.option('--file', '-f', default='client/next-web/.env', help='Path to the .env file.')
@@ -119,7 +118,7 @@ cli.add_command(docker_build)
 cli.add_command(docker_run)
 cli.add_command(docker_delete)
 cli.add_command(run_uvicorn)
-cli.add_command(web_build)
+cli.add_command(next_web_dev)
 cli.add_command(docker_next_web_build)
 
 

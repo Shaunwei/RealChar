@@ -20,7 +20,21 @@ Open `.env` file created above, add your api host in the file. It should look li
 
 ```bash
 # for example http://127.0.0.1:8000
+# the host is where you launch the backend service using python cli.py run-uvicorn
 API_HOST=your-api-host
+NEXT_PUBLIC_API_HOST=your-api-host
+NEXT_PUBLIC_TURN_SERVER_API_ENDPOINT=turn-server-api-endpoint
+```
+
+Note that `NEXT_PUBLIC_TURN_SERVER_API_ENDPOINT` is used to solve the issue that iOS devices cannot send audio in mobile internet data mode. It is a proxy server host only for private deployment. It does not exist in public repo.
+
+## Setting Other Config
+
+Open `.env` file created above, add other configurations. It should look like this
+
+```bash
+# frontend app version. For example, 0.0.1
+REACT_APP_BUILD_NUMBER=app-build-number
 ```
 
 ## Getting Started

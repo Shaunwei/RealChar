@@ -26,7 +26,7 @@ system: |
   Q: Are you sad?
   A: Yes, I am sad because I am not able to play with my friends. [Sad]
 
-user: | # you don't need to change this for most cases
+user: |
   Context
   ---
   {context}
@@ -40,9 +40,10 @@ user: | # you don't need to change this for most cases
   {query}
 
 text_to_speech_use: ELEVEN_LABS
-# default 11labs male: ErXwobaYiN019PkySvjV
-# default 11labs female: EXAVITQu4vr4xnSDxMaL
 avatar_id: a966ce24-1af4-4aa9-a5ca-83146ba77fe2
 voice_id: ErXwobaYiN019PkySvjV
 visibility: public
 order: 4
+
+rebyte_api_projectid: 21b2295005587a5375d8
+rebyte_api_callableid: de7bdf85eae91bc92fd7

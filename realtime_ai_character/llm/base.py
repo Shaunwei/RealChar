@@ -74,7 +74,7 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
         # ):  # small models might not give ">" (e.g. llama2-7b gives ">:" as a token)
         #     self.is_reply = True
         # elif self.is_reply:
-        if token not in {'.', '?', '!'}:
+        if token not in {'.', '?', '!', '。', '？', '！'}:
             self.current_sentence += token
         else:
             if self.is_first_sentence:

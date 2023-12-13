@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, JSON
+from sqlalchemy import Column, String, DateTime, JSON, Integer
 from sqlalchemy.inspection import inspect
 import datetime
 from realtime_ai_character.database.base import Base
@@ -21,7 +21,11 @@ class Character(Base):
     created_at = Column(DateTime(), nullable=False)
     updated_at = Column(DateTime(), nullable=False)
     tts = Column(String(64), nullable=True)
+    avatar_id = Column(String(100), nullable=True)
     background_text = Column(String(262144), nullable=True)
+    rebyte_api_project_id = Column(String(100), nullable=True)
+    rebyte_api_agent_id = Column(String(100), nullable=True)
+    rebyte_api_version = Column(Integer(), nullable=True)
 
     def to_dict(self):
         return {
@@ -45,7 +49,11 @@ class CharacterRequest(BaseModel):
     voice_id: Optional[str] = None
     visibility: Optional[str] = None
     data: Optional[dict] = None
+    avatar_id: Optional[str] = None
     background_text: Optional[str] = None
+    rebyte_api_project_id: Optional[str] = None
+    rebyte_api_agent_id: Optional[str] = None
+    rebyte_api_version: Optional[int] = None
 
 
 class EditCharacterRequest(BaseModel):
@@ -57,7 +65,11 @@ class EditCharacterRequest(BaseModel):
     voice_id: Optional[str] = None
     visibility: Optional[str] = None
     data: Optional[dict] = None
+    avatar_id: Optional[str] = None
     background_text: Optional[str] = None
+    rebyte_api_project_id: Optional[str] = None
+    rebyte_api_agent_id: Optional[str] = None
+    rebyte_api_version: Optional[int] = None
 
 
 class DeleteCharacterRequest(BaseModel):

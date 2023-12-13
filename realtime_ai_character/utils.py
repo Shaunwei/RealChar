@@ -1,7 +1,7 @@
 import asyncio
 from dataclasses import field
 from time import perf_counter
-from typing import List, Optional, Callable, TypedDict, Union
+from typing import List, Optional, Callable, TypedDict
 
 from langchain.schema import AIMessage, BaseMessage, HumanMessage, SystemMessage
 from pydantic.dataclasses import dataclass
@@ -22,14 +22,14 @@ class Character:
     voice_id: str = ''
     author_name: str = ''
     author_id: str = ''
+    avatar_id: Optional[str] = ''
     visibility: str = ''
     tts: Optional[str] = ''
     order: int = 999  # display order on the website
     data: Optional[dict] = None
-    rebyte_api_projectid: Optional[str] = ''
-    rebyte_api_callableid: Optional[str] = ''
-    rebyte_api_version: Optional[Union[str,int]] = "latest"
-    rebyte_api_blocking: Optional[bool] = True
+    rebyte_api_project_id: Optional[str] = None
+    rebyte_api_agent_id: Optional[str] = None
+    rebyte_api_version: Optional[int] = None
 
 
 @dataclass

@@ -1,8 +1,8 @@
-from typing import List, Union, Dict, Any
+from typing import List, Union
 import os
 
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from langchain.schema import BaseMessage, HumanMessage, SystemMessage, AIMessage
+from langchain.schema import BaseMessage, HumanMessage
 
 from realtime_ai_character.llm.base import (
     AsyncCallbackAudioHandler,
@@ -31,12 +31,10 @@ class RebyteLlm(LLM):
         return self.config
 
     def _set_character_config(self, character: Character):
-        self.chat_rebyte.project_id = character.rebyte_api_projectid
-        self.chat_rebyte.agent_id = character.rebyte_api_callableid
+        self.chat_rebyte.project_id = character.rebyte_api_project_id
+        self.chat_rebyte.agent_id = character.rebyte_api_agent_id
         if character.rebyte_api_version is not None:
             self.chat_rebyte.version = character.rebyte_api_version
-        if character.rebyte_api_blocking is not None:
-            self.chat_rebyte.blocking = character.rebyte_api_blocking
 
     def _set_user_config(self, user_id: str):
         self.chat_rebyte.session_id = user_id

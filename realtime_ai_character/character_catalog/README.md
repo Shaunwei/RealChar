@@ -27,8 +27,8 @@ character_catalog
     - `text_to_speech_use`: the text to speech engine used to generate the character's voice
     - `voice_id`: the voice used by the selected text-to-speech engine
     - `order`: display order on the website
-    - `rebyte_api_projectid`: the Project ID if using characters on ReByte.ai
-    - `rebyte_api_callableid`: the Callable ID if using characters on ReByte.ai
+    - `rebyte_api_project_id`: the Project ID if using characters on ReByte.ai
+    - `rebyte_api_agent_id`: the Agent ID if using characters on ReByte.ai
 - `data` folder
     - Can be the character's background information, biography, conversation history, etc.
     - Information will be pulled from these documents during conversation

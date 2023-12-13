@@ -26,5 +26,5 @@ author_name: Shaun
 visibility: public
 order: 6
 
-rebyte_api_projectid: 21b2295005587a5375d8
-rebyte_api_callableid: 05c59d9e53b6dae551dd
+rebyte_api_project_id: 21b2295005587a5375d8
+rebyte_api_agent_id: 05c59d9e53b6dae551dd

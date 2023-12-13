@@ -26,5 +26,5 @@ voice_id: realchar
 visibility: public
 order: 0
 
-rebyte_api_projectid: 21b2295005587a5375d8
-rebyte_api_callableid: 108445632b6e005f2e53
+rebyte_api_project_id: 21b2295005587a5375d8
+rebyte_api_agent_id: 108445632b6e005f2e53

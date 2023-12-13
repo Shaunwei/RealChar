@@ -84,10 +84,9 @@ class CatalogManager(Singleton):
             order=order,
             tts=yaml_content["text_to_speech_use"],
             # rebyte config
-            rebyte_api_projectid=yaml_content["rebyte_api_projectid"],
-            rebyte_api_callableid=yaml_content["rebyte_api_callableid"],
-            rebyte_api_version=yaml_content.get("rebyte_api_version", "latest"),
-            rebyte_api_blocking=yaml_content.get("rebyte_api_blocking", True),
+            rebyte_api_project_id=yaml_content["rebyte_api_project_id"],
+            rebyte_api_agent_id=yaml_content["rebyte_api_agent_id"],
+            rebyte_api_version=yaml_content.get("rebyte_api_version", None),
         )
 
         if "author_name" in yaml_content:
@@ -144,10 +143,9 @@ class CatalogManager(Singleton):
                 tts=yaml_content["text_to_speech_use"],
                 order=order,
                 # rebyte config
-                rebyte_api_projectid=yaml_content["rebyte_api_projectid"],
-                rebyte_api_callableid=yaml_content["rebyte_api_callableid"],
-                rebyte_api_version=yaml_content.get("rebyte_api_version", "latest"),
-                rebyte_api_blocking=yaml_content.get("rebyte_api_blocking", True),
+                rebyte_api_project_id=yaml_content["rebyte_api_project_id"],
+                rebyte_api_agent_id=yaml_content["rebyte_api_agent_id"],
+                rebyte_api_version=yaml_content.get("rebyte_api_version", None),
             )
 
             if overwrite:
@@ -204,11 +202,11 @@ class CatalogManager(Singleton):
                     visibility=character_model.visibility,
                     tts=character_model.tts,
                     data=character_model.data,
+                    avatar_id=character_model.avatar_id if character_model.avatar_id else None,
                     # rebyte config
-                    rebyte_api_projectid=character_model.rebyte_api_projectid,
-                    rebyte_api_callableid=character_model.rebyte_api_callableid,
+                    rebyte_api_project_id=character_model.rebyte_api_project_id,
+                    rebyte_api_agent_id=character_model.rebyte_api_agent_id,
                     rebyte_api_version=character_model.rebyte_api_version,
-                    rebyte_api_blocking=character_model.rebyte_api_blocking,
                 )
                 self.characters[character_model.id] = character
                 # TODO: load context data from storage

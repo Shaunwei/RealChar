@@ -2,15 +2,12 @@ import os
 import warnings
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, RedirectResponse
 
 from realtime_ai_character.audio.speech_to_text import get_speech_to_text
 from realtime_ai_character.audio.text_to_speech import get_text_to_speech
 from realtime_ai_character.character_catalog.catalog_manager import CatalogManager
-from realtime_ai_character.memory.memory_manager import MemoryManager
 from realtime_ai_character.restful_routes import router as restful_router
 from realtime_ai_character.twilio.websocket import twilio_router
 from realtime_ai_character.utils import ConnectionManager
@@ -37,7 +34,6 @@ app.include_router(twilio_router)
 overwrite_chroma = os.getenv("OVERWRITE_CHROMA", "True").lower() in ("true", "1")
 CatalogManager.initialize(overwrite=overwrite_chroma)
 ConnectionManager.initialize()
-MemoryManager.initialize()
 get_text_to_speech()
 get_speech_to_text()
 

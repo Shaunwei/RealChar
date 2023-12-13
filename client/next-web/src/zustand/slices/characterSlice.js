@@ -98,10 +98,6 @@ export const createCharacterSlice = (set, get) => ({
       text: 'Google TTS',
     },
     {
-      value: 'UNREAL_SPEECH',
-      text: 'Unreal Speech',
-    },
-    {
       value: 'EDGE_TTS',
       text: 'Edge TTS',
     },

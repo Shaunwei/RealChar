@@ -7,7 +7,6 @@ firebase_admin==6.2.0
 httpx==0.25.0
 langchain==0.0.308
 llama_index==0.8.39.post2
-multion==0.2.2
 numpy==1.26.0
 openai==0.27.8
 pgvector==0.2.3

@@ -88,9 +88,7 @@ export const createWebsocketSlice = (set, get) => ({
         ws_url +
         `/ws/${sessionId}?llm_model=${
           get().selectedModel.values().next().value
-        }&platform=web&use_search=${get().enableGoogle}&use_quivr=${
-          get().enableQuivr
-        }&use_multion=${get().enableMultiOn}&isJournalMode=${
+        }&platform=web&isJournalMode=${
           get().isJournalMode
         }&character_id=${
           get().character.character_id

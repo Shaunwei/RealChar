@@ -322,11 +322,6 @@ async def handle_receive(
                 platform="twilio",
             ),
             character=character,
-            useSearch=False,
-            useQuivr=False,
-            useMultiOn=False,
-            quivrApiKey=None,
-            quivrBrainId=None,
         )
 
     buffer.register_callback(llm_callback)

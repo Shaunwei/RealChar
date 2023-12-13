@@ -127,9 +127,6 @@ export default function Conversation() {
   const {
     preferredLanguage,
     selectedModel,
-    enableGoogle,
-    enableQuivr,
-    enableMultiOn,
   } = useAppStore();
   useEffect(() => {
     if (!mediaRecorder || !socketIsOpen || !rtcConnectionEstablished) {
@@ -142,9 +139,6 @@ export default function Conversation() {
   }, [
     preferredLanguage,
     selectedModel,
-    enableGoogle,
-    enableQuivr,
-    enableMultiOn,
   ]);
 
   useEffect(() => {

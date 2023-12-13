@@ -26,14 +26,13 @@ character_catalog
     Optional:
     - `text_to_speech_use`: the text to speech engine used to generate the character's voice
     - `voice_id`: the voice used by the selected text-to-speech engine
-    - `avatar_id`: the avatar from avatech.ai
-    - `order`: the order of the character shown on page
+    - `order`: display order on the website
     - `rebyte_api_projectid`: the Project ID if using characters on ReByte.ai
     - `rebyte_api_callableid`: the Callable ID if using characters on ReByte.ai
 - `data` folder
     - Can be the character's background information, biography, conversation history, etc.
     - Information will be pulled from these documents during conversation
-    - Automatically converted into vector database(Chroma) memory for fast retrieval
+    - Automatically converted into vector database (knowledge base) for fast retrieval
     - supports plain text, markdown, csv, pdf, docx, pptx, png, epub, mbox, ipynb
 
 ### Character checklist

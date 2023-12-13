@@ -4,9 +4,6 @@ export const createSettingSlice = (set, get) => ({
   selectedSpeaker: new Set(['default']),
   selectedMicrophone: new Set(['default']),
   selectedModel: new Set(['rebyte']),
-  enableGoogle: false,
-  enableQuivr: false,
-  enableMultiOn: false,
   isMute: false,
   isJournalMode: false,
   languageList: [
@@ -86,13 +83,6 @@ export const createSettingSlice = (set, get) => ({
   },
   handleModelChange: (e) => {
     set({ selectedModel: new Set([e.target.value])});
-  },
-  handleGoogle: (value) => {
-    set({ enableGoogle: value });
-    // todo
-  },
-  handleQuivr: (value) => {
-    set({ enableQuivr: value })
   },
   setIsMute: (v) => {
     set({isMute: v});

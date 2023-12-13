@@ -40,10 +40,9 @@ user: |
   {query}
 
 text_to_speech_use: ELEVEN_LABS
-avatar_id: a966ce24-1af4-4aa9-a5ca-83146ba77fe2
 voice_id: ErXwobaYiN019PkySvjV
 visibility: public
-order: 4
+order: 5
 
 rebyte_api_projectid: 21b2295005587a5375d8
 rebyte_api_callableid: de7bdf85eae91bc92fd7

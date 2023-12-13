@@ -30,7 +30,7 @@ user: |
 text_to_speech_use: ELEVEN_LABS
 voice_id: ErXwobaYiN019PkySvjV
 visibility: public
-order: 1
+order: 2
 
 rebyte_api_projectid: 21b2295005587a5375d8
 rebyte_api_callableid: 4cf5165c5ec6fa101da1

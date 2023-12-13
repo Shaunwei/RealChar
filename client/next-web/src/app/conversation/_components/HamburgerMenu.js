@@ -41,10 +41,6 @@ export default function HamburgerMenu() {
     preferredLanguage,
     languageList,
     handleLanguageChange,
-    enableGoogle,
-    enableQuivr,
-    handleGoogle,
-    handleQuivr,
     isJournalMode,
     setIsJournalMode,
   } = useAppStore();
@@ -177,30 +173,12 @@ export default function HamburgerMenu() {
           <section>
             <header className="text-sm font-light my-3">Advanced options</header>
             <div className="flex flex-row gap-4 justify-between my-3">
-              <p>Enable google search</p>
-              <Switch
-                size="sm"
-                isSelected={enableGoogle}
-                onValueChange={handleGoogle}
-                aria-label="google search"
-              />
-            </div>
-            <div className="flex flex-row gap-4 justify-between my-3">
-              <p>Enable Quivr Second Brain</p>
-              <Switch
-                size="sm"
-                isSelected={enableQuivr}
-                onValueChange={handleQuivr}
-                aria-label="google search"
-              />
-            </div>
-            <div className="flex flex-row gap-4 justify-between my-3">
               <p>Journal Mode</p>
               <Switch
                 size="sm"
                 isSelected={isJournalMode}
                 onValueChange={setIsJournalMode}
-                aria-label="google search"
+                aria-label="journal mode"
               />
             </div>
           </section>

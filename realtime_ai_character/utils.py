@@ -22,10 +22,9 @@ class Character:
     voice_id: str = ''
     author_name: str = ''
     author_id: str = ''
-    avatar_id: Optional[str] = ''
     visibility: str = ''
     tts: Optional[str] = ''
-    order: int = 10  # display order on the website
+    order: int = 999  # display order on the website
     data: Optional[dict] = None
     rebyte_api_projectid: Optional[str] = ''
     rebyte_api_callableid: Optional[str] = ''

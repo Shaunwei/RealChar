@@ -3,7 +3,7 @@ from sqlalchemy.inspection import inspect
 import datetime
 from realtime_ai_character.database.base import Base
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional
 
 
 class Character(Base):
@@ -21,7 +21,6 @@ class Character(Base):
     created_at = Column(DateTime(), nullable=False)
     updated_at = Column(DateTime(), nullable=False)
     tts = Column(String(64), nullable=True)
-    avatar_id = Column(String(100), nullable=True)
     background_text = Column(String(262144), nullable=True)
 
     def to_dict(self):
@@ -46,7 +45,6 @@ class CharacterRequest(BaseModel):
     voice_id: Optional[str] = None
     visibility: Optional[str] = None
     data: Optional[dict] = None
-    avatar_id: Optional[str] = None
     background_text: Optional[str] = None
 
 
@@ -59,7 +57,6 @@ class EditCharacterRequest(BaseModel):
     voice_id: Optional[str] = None
     visibility: Optional[str] = None
     data: Optional[dict] = None
-    avatar_id: Optional[str] = None
     background_text: Optional[str] = None
 
 

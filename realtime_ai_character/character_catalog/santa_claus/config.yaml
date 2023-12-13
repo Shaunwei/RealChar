@@ -40,6 +40,7 @@ user: |
 text_to_speech_use: XTTS
 voice_id: santa_claus
 visibility: public
+order: 1
 
 rebyte_api_projectid: 21b2295005587a5375d8
 rebyte_api_callableid: 77d9c6382508630d6908

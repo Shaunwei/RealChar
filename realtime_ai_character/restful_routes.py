@@ -18,8 +18,6 @@ from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.models.feedback import Feedback, FeedbackRequest
 from realtime_ai_character.models.character import Character, CharacterRequest, \
     EditCharacterRequest, DeleteCharacterRequest, GeneratePromptRequest, GenerateHighlightRequest
-from realtime_ai_character.models.memory import Memory, EditMemoryRequest
-from realtime_ai_character.models.quivr_info import QuivrInfo, UpdateQuivrInfoRequest
 from realtime_ai_character.llm.system_prompt_generator import generate_system_prompt
 
 from requests import Session
@@ -90,7 +88,6 @@ async def characters(user=Depends(get_current_user)):
         "author_name": character.author_name,
         "audio_url": f'{gcs_path}/static/realchar/{character.character_id}.mp3',
         "image_url": get_image_url(character),
-        "avatar_id": character.avatar_id,
         "tts": character.tts,
         'is_author': character.author_id == uid,
     } for character in sorted(catalog.characters.values(), key=lambda c: c.order)
@@ -283,7 +280,7 @@ async def generate_audio(text: str, tts: str = None, user=Depends(get_current_us
     bucket = storage_client.bucket(bucket_name)
 
     # Create a new filename with a timestamp and a random uuid to avoid duplicate filenames
-    file_extension = '.webm' if tts == 'UNREAL_SPEECH' else '.mp3'
+    file_extension = '.mp3'
     new_filename = (
         f"user_upload/{user['uid']}/"
         f"{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}-"
@@ -298,90 +295,6 @@ async def generate_audio(text: str, tts: str = None, user=Depends(get_current_us
         "filename": new_filename,
         "content-type": "audio/mpeg"
     }
-
-
-@router.get("/quivr_info")
-async def quivr_info(user=Depends(get_current_user),
-                     db: Session = Depends(get_db)):
-    if not user:
-        raise HTTPException(
-            status_code=http_status.HTTP_401_UNAUTHORIZED,
-            detail='Invalid authentication credentials',
-            headers={'WWW-Authenticate': 'Bearer'},
-        )
-
-    quivr_info = await asyncio.to_thread(
-        db.query(QuivrInfo).filter(QuivrInfo.user_id == user['uid']).first)
-
-    if not quivr_info:
-        return {"success": False}
-
-    return {"success": True, "api_key": quivr_info.quivr_api_key,
-            "brain_id": quivr_info.quivr_brain_id}
-
-
-@router.post("/quivr_info")
-async def quivr_info_update(update_quivr_info_request: UpdateQuivrInfoRequest,
-                            user=Depends(get_current_user),
-                            db: Session = Depends(get_db)):
-    if not user:
-        raise HTTPException(
-            status_code=http_status.HTTP_401_UNAUTHORIZED,
-            detail='Invalid authentication credentials',
-            headers={'WWW-Authenticate': 'Bearer'},
-        )
-
-    api_key = update_quivr_info_request.quivr_api_key
-
-    if not update_quivr_info_request.quivr_brain_id or \
-            update_quivr_info_request.quivr_brain_id == "":
-        # Get default brain ID if not provided
-        url = "https://api.quivr.app/brains/default/"
-        headers = {"Authorization": f"Bearer {api_key}"}
-
-        async with httpx.AsyncClient() as client:
-            try:
-                response = await client.get(url, headers=headers)
-                response.raise_for_status()
-            except httpx.HTTPStatusError as exc:
-                detail = f"Quivr returns an error status code: {exc.response.status_code}"
-                raise HTTPException(
-                    status_code=exc.response.status_code, detail=detail)
-            except httpx.RequestError:
-                raise HTTPException(
-                    status_code=500, detail="Failed to get data from Quivr.")
-
-        brain_id = response.json()["id"]
-        brain_name = response.json()["name"]
-    else:
-        brain_id = update_quivr_info_request.quivr_brain_id
-
-    # Verify API key and brain ID
-    url = f"https://api.quivr.app/brains/{brain_id}/"
-    headers = {"Authorization": f"Bearer {api_key}"}
-
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.get(url, headers=headers)
-            response.raise_for_status()
-
-            brain_name = response.json()["name"]
-        except httpx.HTTPStatusError as exc:
-            detail = f"Quivr returns an error status code: {exc.response.status_code}"
-            raise HTTPException(
-                status_code=exc.response.status_code, detail=detail)
-        except httpx.RequestError:
-            raise HTTPException(
-                status_code=500, detail="Failed to get data from Quivr.")
-
-    # Save to database
-    quivr_info = QuivrInfo(user_id=user['uid'],
-                           quivr_api_key=api_key,
-                           quivr_brain_id=brain_id)
-
-    await asyncio.to_thread(quivr_info.save, db)
-
-    return {"success": True, "brain_id": brain_id, "brain_name": brain_name}
 
 
 @router.post("/clone_voice")
@@ -505,85 +418,12 @@ async def get_recent_conversations(user=Depends(get_current_user), db: Session =
     } for r in results]
 
 
-@router.get("/memory", response_model=list[dict])
-async def get_memory(user=Depends(get_current_user), db: Session = Depends(get_db)):
-    if not user:
-        raise HTTPException(
-            status_code=http_status.HTTP_401_UNAUTHORIZED,
-            detail='Invalid authentication credentials',
-            headers={'WWW-Authenticate': 'Bearer'},
-        )
-
-    memories = await asyncio.to_thread(db.query(Memory).filter(Memory.user_id == user['uid']).all)
-
-    return [{
-        "memory_id": memory.memory_id,
-        "source_session_id": memory.source_session_id,
-        "content": memory.content,
-        "created_at": memory.created_at,
-        "updated_at": memory.updated_at,
-    } for memory in memories]
-
-
-@router.post("/delete_memory")
-async def delete_memory(memory_id: str, user=Depends(get_current_user),
-                        db: Session = Depends(get_db)):
-    if not user:
-        raise HTTPException(
-            status_code=http_status.HTTP_401_UNAUTHORIZED,
-            detail='Invalid authentication credentials',
-            headers={'WWW-Authenticate': 'Bearer'},
-        )
-
-    memories = await asyncio.to_thread(db.query(Memory).filter(Memory.memory_id == memory_id).all)
-    if len(memories) == 0:
-        raise HTTPException(
-            status_code=http_status.HTTP_404_NOT_FOUND,
-            detail=f'Memory {memory_id} not found',
-        )
-    if memories[0].user_id != user['uid']:
-        raise HTTPException(
-            status_code=http_status.HTTP_401_UNAUTHORIZED,
-            detail='Invalid authentication credentials',
-            headers={'WWW-Authenticate': 'Bearer'},
-        )
-
-    db.delete(memories[0])
-    db.commit()
-
-
-@router.post("/edit_memory")
-async def edit_memory(edit_memory_request: EditMemoryRequest, user=Depends(get_current_user),
-                      db: Session = Depends(get_db)):
-    if not user:
-        raise HTTPException(
-            status_code=http_status.HTTP_401_UNAUTHORIZED,
-            detail='Invalid authentication credentials',
-            headers={'WWW-Authenticate': 'Bearer'},
-        )
-    memory_id = edit_memory_request.memory_id
-    memories = await asyncio.to_thread(db.query(Memory).filter(Memory.memory_id == memory_id).all)
-    if len(memories) == 0:
-        raise HTTPException(
-            status_code=http_status.HTTP_404_NOT_FOUND,
-            detail=f'Memory {memory_id} not found',
-        )
-    memory = memories[0]
-    if memory.user_id != user['uid']:
-        raise HTTPException(
-            status_code=http_status.HTTP_401_UNAUTHORIZED,
-            detail='Invalid authentication credentials',
-            headers={'WWW-Authenticate': 'Bearer'},
-        )
-    memory.source_session_id = edit_memory_request.source_session_id
-    memory.content = edit_memory_request.content
-    memory.updated_at = datetime.datetime.now()
-
-    db.merge(memory)
-    db.commit()
-
 @router.get('/get_character')
-async def get_character(character_id: str, db: Session = Depends(get_db), user=Depends(get_current_user)):
+async def get_character(
+    character_id: str,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
+):
     if not user:
         raise HTTPException(
             status_code=http_status.HTTP_401_UNAUTHORIZED,
@@ -595,8 +435,12 @@ async def get_character(character_id: str, db: Session = Depends(get_db), user=D
     character_json = character.to_dict()
     return character_json
 
+
 @router.post('/generate_highlight')
-async def generate_highlight(generate_highlight_request: GenerateHighlightRequest, user=Depends(get_current_user)):
+async def generate_highlight(
+    generate_highlight_request: GenerateHighlightRequest,
+    user=Depends(get_current_user)
+):
     # Only allow for authorized user.
     if not user:
         raise HTTPException(

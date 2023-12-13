@@ -69,7 +69,7 @@ class CatalogManager(Singleton):
         character_id = yaml_content['character_id']
         character_name = yaml_content['character_name']
         voice_id = yaml_content['voice_id']
-        order = yaml_content.get('order', 10)
+        order = yaml_content.get('order', 999)
         if (os.getenv(character_id.upper() + "_VOICE_ID", "")):
             voice_id = os.getenv(character_id.upper() + "_VOICE_ID")
         self.characters[character_id] = Character(
@@ -90,8 +90,6 @@ class CatalogManager(Singleton):
             rebyte_api_blocking=yaml_content.get("rebyte_api_blocking", True),
         )
 
-        if "avatar_id" in yaml_content:
-            self.characters[character_id].avatar_id = yaml_content["avatar_id"]
         if "author_name" in yaml_content:
             self.characters[character_id].author_name = yaml_content["author_name"],
 
@@ -132,7 +130,7 @@ class CatalogManager(Singleton):
             character_id = yaml_content['character_id']
             character_name = yaml_content['character_name']
             logger.info('Loading data for character: ' + character_name)
-            order = yaml_content.get('order', 10)
+            order = yaml_content.get('order', 9999)
             self.characters[character_id] = Character(
                 character_id=character_id,
                 name=character_name,
@@ -151,9 +149,6 @@ class CatalogManager(Singleton):
                 rebyte_api_version=yaml_content.get("rebyte_api_version", "latest"),
                 rebyte_api_blocking=yaml_content.get("rebyte_api_blocking", True),
             )
-
-            if "avatar_id" in yaml_content:
-                self.characters[character_id].avatar_id = yaml_content["avatar_id"]
 
             if overwrite:
                 self.load_data(character_name, directory / 'data')
@@ -209,7 +204,6 @@ class CatalogManager(Singleton):
                     visibility=character_model.visibility,
                     tts=character_model.tts,
                     data=character_model.data,
-                    avatar_id=character_model.avatar_id if character_model.avatar_id else None,
                     # rebyte config
                     rebyte_api_projectid=character_model.rebyte_api_projectid,
                     rebyte_api_callableid=character_model.rebyte_api_callableid,

@@ -17,7 +17,7 @@
 #     apt-get update && \
 #     apt-get install -y ffmpeg=7:4.3.6-0+deb11u1
 
-FROM ghcr.io/shaunwei/realchar-private-base:main
+FROM ghcr.io/shaunwei/realchar-private-base:latest
 WORKDIR /realtime_ai_character
 
 # Install Python dependencies

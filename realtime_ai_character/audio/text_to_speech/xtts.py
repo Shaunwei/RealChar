@@ -27,6 +27,7 @@ class XTTS(Singleton, TextToSpeech):
         websocket,
         tts_event: asyncio.Event,
         voice_id="female",
+        first_sentence=False,
         language="en-US",
         sid="",
         platform="",

@@ -15,7 +15,9 @@ StreamingStdOutCallbackHandler.on_chat_model_start = lambda *args, **kwargs: Non
 
 
 class AsyncCallbackTextHandler(AsyncCallbackHandler):
-    def __init__(self, on_new_token=None, token_buffer=None, on_llm_end=None, tts_event=None, *args, **kwargs):
+    def __init__(
+        self, on_new_token=None, token_buffer=None, on_llm_end=None, tts_event=None, *args, **kwargs
+    ):
         super().__init__(*args, **kwargs)
         self.on_new_token = on_new_token
         self._on_llm_end = on_llm_end
@@ -70,9 +72,8 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
         # ):  # small models might not give ">" (e.g. llama2-7b gives ">:" as a token)
         #     self.is_reply = True
         # elif self.is_reply:
-        if token not in {'.', '?', '!', '。', '？', '！'}:
-            self.current_sentence += token
-        else:
+        self.current_sentence += token
+        if token in {'.', '?', '!', '。', '？', '！'}:
             if self.is_first_sentence:
                 timer.log("LLM First Sentence",
                           lambda: timer.start("TTS First Sentence"))

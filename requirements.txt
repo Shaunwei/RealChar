@@ -19,8 +19,6 @@ Requests==2.31.0
 simpleaudio==1.0.4
 SQLAlchemy==2.0.21
 starlette==0.27
-torch==2.1.0
-torchaudio==2.1.0
 python-dotenv==1.0.0
 twilio==8.9.0
 chromadb==0.4.13

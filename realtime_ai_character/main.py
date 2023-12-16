@@ -1,7 +1,5 @@
-import os
 import warnings
 
-from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -12,8 +10,6 @@ from realtime_ai_character.restful_routes import router as restful_router
 from realtime_ai_character.twilio.websocket import twilio_router
 from realtime_ai_character.utils import ConnectionManager
 from realtime_ai_character.websocket_routes import router as websocket_router
-
-load_dotenv()
 
 app = FastAPI()
 
@@ -31,8 +27,7 @@ app.include_router(websocket_router)
 app.include_router(twilio_router)
 
 # initializations
-overwrite_chroma = os.getenv("OVERWRITE_CHROMA", "True").lower() in ("true", "1")
-CatalogManager.initialize(overwrite=overwrite_chroma)
+CatalogManager.initialize()
 ConnectionManager.initialize()
 get_text_to_speech()
 get_speech_to_text()

@@ -14,8 +14,7 @@ logger = get_logger(__name__)
 DEBUG = False
 
 ELEVEN_LABS_MULTILINGUAL_MODEL = 'eleven_multilingual_v2' if os.getenv(
-    "ELEVEN_LABS_USE_V2",
-    'false').lower() in ('true', '1') else 'eleven_multilingual_v1'
+    "ELEVEN_LABS_USE_V2") == "true" else 'eleven_multilingual_v1'
 
 config = types.SimpleNamespace(**{
     'chunk_size': 1024,

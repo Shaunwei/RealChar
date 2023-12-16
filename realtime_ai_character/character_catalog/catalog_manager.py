@@ -22,9 +22,16 @@ logger = get_logger(__name__)
 
 
 class CatalogManager(Singleton):
-    def __init__(self, overwrite=True):
+    def __init__(self):
         super().__init__()
-        self.db = get_chroma()
+        overwrite = os.getenv("OVERWRITE_CHROMA") != "false"
+        # skip Chroma if Openai API key is not set
+        if os.getenv('OPENAI_API_KEY'):
+            self.db = get_chroma()
+        else:
+            self.db = None
+            overwrite = False
+            logger.warning("OVERWRITE_CHROMA disabled due to OPENAI_API_KEY not set")
         self.sql_db = next(get_db())
         self.sql_load_interval = 30
         self.sql_load_lock = rwlock.RWLockFair()
@@ -41,8 +48,8 @@ class CatalogManager(Singleton):
         if overwrite:
             logger.info('Persisting data in the chroma.')
             self.db.persist()
-        logger.info(
-            f"Total document load: {self.db._client.get_collection('llm').count()}")
+        if self.db:
+            logger.info(f"Total document load: {self.db._client.get_collection('llm').count()}")
         self.run_load_sql_db_thread = True
         self.load_sql_db_thread = threading.Thread(
             target=self.load_sql_db_loop)
@@ -185,7 +192,7 @@ class CatalogManager(Singleton):
                 if character_model.author_id not in self.author_name_cache:
                     author_name = auth.get_user(
                         character_model.author_id).display_name if os.getenv(
-                            'USE_AUTH', '') else "anonymous author"
+                            'USE_AUTH') == "true" else "anonymous author"
                     self.author_name_cache[character_model.author_id] = author_name
                 else:
                     author_name = self.author_name_cache[character_model.author_id]

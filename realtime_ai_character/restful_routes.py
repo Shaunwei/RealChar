@@ -26,7 +26,7 @@ from sqlalchemy import func
 
 router = APIRouter()
 
-if os.getenv('USE_AUTH', ''):
+if os.getenv('USE_AUTH') == "true":
     cred = credentials.Certificate(os.environ.get('FIREBASE_CONFIG_PATH'))
     firebase_admin.initialize_app(cred)
 
@@ -35,7 +35,7 @@ MAX_FILE_UPLOADS = 5
 
 async def get_current_user(request: Request):
     """Heler function for auth with Firebase."""
-    if os.getenv('USE_AUTH', ''):
+    if os.getenv('USE_AUTH') == "true":
         # Extracts the token from the Authorization header
         if 'Authorization' not in request.headers:
             # Anonymous users.
@@ -70,7 +70,12 @@ async def status():
 
 @router.get("/characters")
 async def characters(user=Depends(get_current_user)):
-    gcs_path = 'https://storage.googleapis.com/assistly'
+    gcs_path = os.getenv('GCP_STORAGE_URL')
+    if not gcs_path:
+        raise HTTPException(
+            status_code=http_status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='GCP_STORAGE_URL is not set',
+        )
 
     def get_image_url(character):
         if character.data and 'avatar_filename' in character.data:

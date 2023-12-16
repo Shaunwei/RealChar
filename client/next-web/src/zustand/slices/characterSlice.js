@@ -7,6 +7,7 @@ import {
   deleteCharacter,
   editCharacter,
 } from '@/util/apiClient';
+import { edgeTTSVoiceIds } from '../voiceIds';
 
 const user_prompt = `
 Context
@@ -61,16 +62,6 @@ const constructForm = async (get) => {
   return new_formData;
 };
 
-const isClonedVoice = (voice_id) => {
-  const array = [
-    'EXAVITQu4vr4xnSDxMaL',
-    'ErXwobaYiN019PkySvjV',
-    'en-US-Studio-O',
-    'en-US-Studio-M',
-  ];
-  return array.indexOf(voice_id) === -1;
-};
-
 export const createCharacterSlice = (set, get) => ({
   avatarURL: null,
   avatarFile: null,
@@ -92,38 +83,80 @@ export const createCharacterSlice = (set, get) => ({
     {
       value: 'ELEVEN_LABS',
       text: 'Eleven Labs',
+      selected_voice_id: 'EXAVITQu4vr4xnSDxMaL',
     },
     {
       value: 'GOOGLE_TTS',
       text: 'Google TTS',
+      selected_voice_id: 'en-US-Studio-O',
     },
     {
       value: 'EDGE_TTS',
       text: 'Edge TTS',
+      selected_voice_id: 'en-US-ChristopherNeural',
     },
   ],
   voiceOptions: {
     ELEVEN_LABS: [
       {
-        label: 'Female',
         voice_id: 'EXAVITQu4vr4xnSDxMaL',
+        gender: 'Female',
+        name: 'Default',
       },
       {
-        label: 'Male',
         voice_id: 'ErXwobaYiN019PkySvjV',
+        gender: 'Male',
+        name: 'Default',
       },
     ],
     GOOGLE_TTS: [
       {
-        label: 'Female',
         voice_id: 'en-US-Studio-O',
+        gender: 'Female',
+        name: 'Default',
       },
       {
-        label: 'Male',
         voice_id: 'en-US-Studio-M',
+        gender: 'Male',
+        name: 'Default',
+      },
+    ],
+    EDGE_TTS: edgeTTSVoiceIds.map((item) => ({
+      voice_id: item.voice_id,
+      lang: item.lang,
+      gender: item.gender,
+      name: item.name + ' (' + item.from + ')',
+      audio_url:
+        'https://storage.googleapis.com/assistly/static/edge-tts-samples/' + item.voice_id + '.mp3',
+    })),
+  },
+  voiceFilters: {
+    ELEVEN_LABS: [
+      {
+        label: 'gender',
+        value: 'Female',
+      },
+    ],
+    GOOGLE_TTS: [
+      {
+        label: 'gender',
+        value: 'Female',
+      },
+    ],
+    EDGE_TTS: [
+      {
+        label: 'lang',
+        value: 'English',
+      },
+      {
+        label: 'gender',
+        value: 'Male',
       },
     ],
   },
+  voiceOptionsMode: 'selectVoice',
+  voiceSamplePlayer: undefined,
+  voiceSampleUrl: '',
   setFormData: (newData) => {
     set((state) => ({
       formData: {
@@ -141,12 +174,39 @@ export const createCharacterSlice = (set, get) => ({
   setErrorMsg: (text) => {
     set({ errorMsg: text });
   },
+  setVoiceOptionsMode: (mode) => {
+    set({ voiceOptionsMode: mode });
+  },
+  setVoiceSamplePlayer: (player) => {
+    set({ voiceSamplePlayer: player });
+  },
+  getVoiceFilterOptions: (filter) => {
+    // get deduplicated options for a filter
+    return get()
+      .voiceOptions[get().formData.tts].map((option) => option[filter.label])
+      .filter((value, index, self) => self.indexOf(value) === index)
+      .sort();
+  },
+  getFilteredVoiceOptions: () => {
+    const { voiceOptions, voiceFilters, formData } = get();
+    let filteredVoiceOptions = voiceOptions[formData.tts];
+    voiceFilters[formData.tts]?.forEach((element) => {
+      filteredVoiceOptions = filteredVoiceOptions.filter(
+        (option) => option[element.label] === element.value
+      );
+    });
+    return filteredVoiceOptions.sort((a, b) => a.name.localeCompare(b.name));
+  },
+  getCurrentVoiceOption: () => {
+    const filteredVoiceOptions = get().getFilteredVoiceOptions();
+    const currentVoiceOption = filteredVoiceOptions.filter(
+      (option) => option.voice_id === get().formData.voice_id
+    )[0];
+    return currentVoiceOption ? currentVoiceOption : filteredVoiceOptions[0];
+  },
   addRecording: (recording) => {
     set({
-      voiceFiles: [
-        ...get().voiceFiles.filter((file) => file.name !== recording.name),
-        recording,
-      ],
+      voiceFiles: [...get().voiceFiles.filter((file) => file.name !== recording.name), recording],
     });
   },
   handleAvatarChange: (e) => {
@@ -180,9 +240,7 @@ export const createCharacterSlice = (set, get) => ({
   },
   handleDeleteFile: (name) => {
     set((state) => ({
-      backgroundFiles: state.backgroundFiles.filter(
-        (file) => file.name !== name
-      ),
+      backgroundFiles: state.backgroundFiles.filter((file) => file.name !== name),
     }));
   },
   handleVoiceFiles: (e) => {
@@ -211,6 +269,50 @@ export const createCharacterSlice = (set, get) => ({
       voiceFiles: state.voiceFiles.filter((file) => file.name !== name),
     }));
   },
+  handleTtsOptionsChange: (value) => {
+    get().setFormData({
+      tts: value,
+      voice_id: get().ttsOptions.filter((item) => item.value === value)[0].selected_voice_id,
+    });
+  },
+  handleVoiceFilterChange: (filter, value) => {
+    set({
+      voiceFilters: {
+        ...get().voiceFilters,
+        [get().formData.tts]: get().voiceFilters[get().formData.tts].map((item) => {
+          if (item.label === filter.label) {
+            return {
+              ...item,
+              value: value,
+            };
+          }
+          return item;
+        }),
+      },
+    });
+    get().setFormData({ voice_id: get().getCurrentVoiceOption().voice_id });
+  },
+  handleVoiceSelect: (value) => {
+    if (value) {
+      get().setFormData({ voice_id: value });
+      set({
+        ttsOptions: get().ttsOptions.map((item) => {
+          if (item.value === get().formData.tts) {
+            return {
+              ...item,
+              selected_voice_id: value,
+            };
+          }
+          return item;
+        }),
+      });
+    }
+    set({ voiceSampleUrl: get().getCurrentVoiceOption().audio_url });
+    !value && get().voiceSamplePlayer.play();
+  },
+  handleVoiceSampleLoad: () => {
+    get().voiceSamplePlayer.play();
+  },
   autoGenerate: async () => {
     if (get().formData.name === '') {
       alert('Please enter a name');
@@ -220,11 +322,7 @@ export const createCharacterSlice = (set, get) => ({
     try {
       let formData = { ...get().formData, system_prompt: 'Generating...' };
       get().setFormData({ ...formData, system_prompt: 'Generating...' });
-      let res = await generateSystemPrompt(
-        get().formData.name,
-        get().backgroundText,
-        get().token
-      );
+      let res = await generateSystemPrompt(get().formData.name, get().backgroundText, get().token);
       get().setFormData({ ...formData, system_prompt: res.system_prompt });
     } catch (error) {
       console.error(error);
@@ -235,12 +333,11 @@ export const createCharacterSlice = (set, get) => ({
   cloneVoice: () => {
     set({ clonedVoice: 'isLoading' });
     cloneVoice(get().voiceFiles, get().token).then((result) => {
-      set({ formData: { ...get().formData, voice_id: result.voice_id } });
+      get().setFormData({ voide_id: result.voice_id });
       set({ clonedVoice: result.voice_id });
       console.log('voice files uploaded.');
     });
   },
-
   submitForm: async () => {
     let new_formData = await constructForm(get);
     // call api to create character
@@ -270,6 +367,11 @@ export const createCharacterSlice = (set, get) => ({
       voiceErrorMsg: '',
       voiceFiles: [],
     });
+    get().initFilters();
+  },
+  isClonedVoice: (voice_id) => {
+    const array = get().voiceOptions[get().formData.tts].map((item) => item.voice_id);
+    return array.indexOf(voice_id) === -1;
   },
   getCharacterForEdit: async (character) => {
     try {
@@ -291,13 +393,59 @@ export const createCharacterSlice = (set, get) => ({
         clonedVoice: '',
         voiceFiles: [],
       });
-      if (isClonedVoice(res.voice_id)) {
+      get().initFilters();
+      if (get().isClonedVoice(res.voice_id)) {
         set({ clonedVoice: res.voice_id });
       }
     } catch (err) {
       console.error(err);
       alert('Error getting character data');
     }
+  },
+  initFilters: () => {
+    set({
+      ttsOptions: [
+        {
+          value: 'ELEVEN_LABS',
+          text: 'Eleven Labs',
+          selected_voice_id: 'EXAVITQu4vr4xnSDxMaL',
+        },
+        {
+          value: 'GOOGLE_TTS',
+          text: 'Google TTS',
+          selected_voice_id: 'en-US-Studio-O',
+        },
+        {
+          value: 'EDGE_TTS',
+          text: 'Edge TTS',
+          selected_voice_id: 'en-US-ChristopherNeural',
+        },
+      ],
+    });
+    set({
+      ttsOptions: get().ttsOptions.map((item) => {
+        if (item.value === get().formData.tts) {
+          return {
+            ...item,
+            selected_voice_id: get().formData.voice_id,
+          };
+        }
+        return item;
+      }),
+    });
+    set({
+      voiceFilters: Object.entries(get().voiceFilters).reduce((acc, [tts, filters]) => {
+        acc[tts] = filters.map((filter) => ({
+          ...filter,
+          value: get().voiceOptions[tts].find(
+            (item) =>
+              item.voice_id ===
+              get().ttsOptions.find((item) => item.value === tts).selected_voice_id
+          )[filter.label],
+        }));
+        return acc;
+      }, {}),
+    });
   },
   submitEdit: async (character_id) => {
     const new_formData = await constructForm(get);

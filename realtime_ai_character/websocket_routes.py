@@ -69,7 +69,7 @@ async def check_session_auth(session_id: str, user_id: str, db: Session) -> Sess
     """
     Helper function to check if the session is authenticated.
     """
-    if not os.getenv('USE_AUTH', ''):
+    if os.getenv('USE_AUTH') != 'true':
         return SessionAuthResult(
             is_existing_session=False,
             is_authenticated_user=True,
@@ -119,7 +119,7 @@ async def websocket_endpoint(
     # Default user_id to session_id. If auth is enabled and token is provided, use
     # the user_id from the token.
     user_id = str(session_id)
-    if os.getenv('USE_AUTH', ''):
+    if os.getenv('USE_AUTH') == "true":
         # Do not allow anonymous users to use non-GPT3.5 model.
         if not token and llm_model != 'gpt-3.5-turbo-16k':
             await websocket.close(code=1008, reason="Unauthorized")

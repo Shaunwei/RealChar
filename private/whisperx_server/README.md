@@ -35,10 +35,17 @@ Self hosted whisperX endpoint.
     pip install "fastapi[all]"
     ```
 
-1. Install opencc (Apple Silicon skip this step)
+1. Install opencc
 
     ```bash
     pip install opencc==1.1.6
+    ```
+    Apple Silicon:
+    ```sh
+    git clone https://github.com/BYVoid/OpenCC.git
+    cd OpenCC
+    make
+    pip install .
     ```
 
 1.  Copy `.env.example` to `.env` and configure

@@ -60,7 +60,7 @@ load_dotenv()
 MODEL = os.getenv("MODEL", "base")
 DIARIZATION = os.getenv("DIARIZATION", "false").lower() == "true"
 HF_ACCESS_TOKEN = os.getenv("HF_ACCESS_TOKEN", "")
-OPENCC = os.getenv("OPENCC", "false").lower() == "true"
+OPENCC = os.getenv("OPENCC")
 
 
 def log(message: str):
@@ -109,7 +109,9 @@ class WhisperX:
             )
         if OPENCC:
             import opencc
-            self.chinese_t2s = opencc.OpenCC("t2s.json")
+
+            assert OPENCC in ["t2s", "s2t"], 'OPENCC should be either "t2s" or "s2t"'
+            self.chinese_t2s = opencc.OpenCC(f"{OPENCC}.json")
 
     @timed
     def transcribe(

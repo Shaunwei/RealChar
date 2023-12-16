@@ -39,8 +39,12 @@ export const createWebRTCSlice = (set, get) => ({
         if (get().pc) {
             console.log('Should not call connectPeer if webrtc connection already established!');
         }
-        const response = await fetch(process.env.NEXT_PUBLIC_TURN_SERVER_API_ENDPOINT);
-        const iceServers = await response.json();
+        // Use turn server when NEXT_PUBLIC_TURN_SERVER_API_ENDPOINT is set.
+        let iceServers = [];
+        if (process.env.NEXT_PUBLIC_TURN_SERVER_API_ENDPOINT) {
+            const response = await fetch(process.env.NEXT_PUBLIC_TURN_SERVER_API_ENDPOINT);
+            iceServers = await response.json();
+        }
         let pc = new RTCPeerConnection({
             sdpSemantics: 'unified-plan',
             iceServers: iceServers

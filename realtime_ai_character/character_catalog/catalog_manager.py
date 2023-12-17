@@ -76,8 +76,8 @@ class CatalogManager(Singleton):
         character_id = yaml_content['character_id']
         character_name = yaml_content['character_name']
         voice_id = yaml_content['voice_id']
-        order = yaml_content.get('order', 999)
-        if (os.getenv(character_id.upper() + "_VOICE_ID", "")):
+        order = yaml_content.get('order', 10**9)
+        if (os.getenv(character_id.upper() + "_VOICE_ID")):
             voice_id = os.getenv(character_id.upper() + "_VOICE_ID")
         self.characters[character_id] = Character(
             character_id=character_id,
@@ -93,7 +93,7 @@ class CatalogManager(Singleton):
             # rebyte config
             rebyte_api_project_id=yaml_content["rebyte_api_project_id"],
             rebyte_api_agent_id=yaml_content["rebyte_api_agent_id"],
-            rebyte_api_version=yaml_content.get("rebyte_api_version", None),
+            rebyte_api_version=yaml_content.get("rebyte_api_version"),
         )
 
         if "author_name" in yaml_content:
@@ -136,7 +136,7 @@ class CatalogManager(Singleton):
             character_id = yaml_content['character_id']
             character_name = yaml_content['character_name']
             logger.info('Loading data for character: ' + character_name)
-            order = yaml_content.get('order', 9999)
+            order = yaml_content.get('order', 10**9)
             self.characters[character_id] = Character(
                 character_id=character_id,
                 name=character_name,
@@ -152,7 +152,7 @@ class CatalogManager(Singleton):
                 # rebyte config
                 rebyte_api_project_id=yaml_content["rebyte_api_project_id"],
                 rebyte_api_agent_id=yaml_content["rebyte_api_agent_id"],
-                rebyte_api_version=yaml_content.get("rebyte_api_version", None),
+                rebyte_api_version=yaml_content.get("rebyte_api_version"),
             )
 
             if overwrite:

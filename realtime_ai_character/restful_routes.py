@@ -34,12 +34,9 @@ MAX_FILE_UPLOADS = 5
 
 
 async def get_current_user(request: Request):
-    """Heler function for auth with Firebase."""
-    if os.getenv('USE_AUTH') == "true":
+    """Returns the current user if the request is authenticated, otherwise None."""
+    if os.getenv('USE_AUTH') == "true" and 'Authorization' in request.headers:
         # Extracts the token from the Authorization header
-        if 'Authorization' not in request.headers:
-            # Anonymous users.
-            return ""
         tokens = request.headers.get('Authorization').split("Bearer ")
         if not tokens or len(tokens) < 2:
             raise HTTPException(
@@ -57,10 +54,7 @@ async def get_current_user(request: Request):
                 detail='Invalid authentication credentials',
                 headers={'WWW-Authenticate': 'Bearer'},
             )
-
         return decoded_token
-    else:
-        return ""
 
 
 @router.get("/status")
@@ -94,7 +88,8 @@ async def characters(user=Depends(get_current_user)):
         "audio_url": f'{gcs_path}/static/realchar/{character.character_id}.mp3',
         "image_url": get_image_url(character),
         "tts": character.tts,
-        'is_author': character.author_id == uid,
+        "is_author": character.author_id == uid,
+        "location": character.location,
     } for character in sorted(catalog.characters.values(), key=lambda c: c.order)
         if character.author_id == uid or character.visibility == 'public']
 

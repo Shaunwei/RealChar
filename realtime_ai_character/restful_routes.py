@@ -197,19 +197,18 @@ async def edit_character(edit_character_request: EditCharacterRequest,
             headers={'WWW-Authenticate': 'Bearer'},
         )
     character_id = edit_character_request.id
-    characters = await asyncio.to_thread(
-        db.query(Character).filter(Character.id == character_id).all)
-    if len(characters) == 0:
+    character = await asyncio.to_thread(
+        db.query(Character).filter(Character.id == character_id).one)
+    if not character:
         raise HTTPException(
             status_code=http_status.HTTP_404_NOT_FOUND,
             detail=f'Character {character_id} not found',
         )
 
-    character = characters[0]
     if character.author_id != user['uid']:
         raise HTTPException(
             status_code=http_status.HTTP_401_UNAUTHORIZED,
-            detail='Invalid authentication credentials',
+            detail='Unauthorized to edit this character',
             headers={'WWW-Authenticate': 'Bearer'},
         )
     character = Character(**edit_character_request.dict())
@@ -229,19 +228,18 @@ async def delete_character(delete_character_request: DeleteCharacterRequest,
             headers={'WWW-Authenticate': 'Bearer'},
         )
     character_id = delete_character_request.character_id
-    characters = await asyncio.to_thread(
-        db.query(Character).filter(Character.id == character_id).all)
-    if len(characters) == 0:
+    character = await asyncio.to_thread(
+        db.query(Character).filter(Character.id == character_id).one)
+    if not character:
         raise HTTPException(
             status_code=http_status.HTTP_404_NOT_FOUND,
             detail=f'Character {character_id} not found',
         )
 
-    character = characters[0]
     if character.author_id != user['uid']:
         raise HTTPException(
             status_code=http_status.HTTP_401_UNAUTHORIZED,
-            detail='Invalid authentication credentials',
+            detail='Unauthorized to delete this character',
             headers={'WWW-Authenticate': 'Bearer'},
         )
     db.delete(character)
@@ -432,6 +430,17 @@ async def get_character(
         )
     character = await asyncio.to_thread(
         db.query(Character).filter(Character.id == character_id).one)
+    if not character:
+        raise HTTPException(
+            status_code=http_status.HTTP_404_NOT_FOUND,
+            detail=f'Character {character_id} not found',
+        )
+    if character.author_id != user['uid']:
+        raise HTTPException(
+            status_code=http_status.HTTP_401_UNAUTHORIZED,
+            detail='Unauthorized to access this character',
+            headers={'WWW-Authenticate': 'Bearer'},
+        )
     character_json = character.to_dict()
     return character_json
 

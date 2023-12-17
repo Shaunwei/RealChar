@@ -47,8 +47,6 @@ GREETING_TXT_MAP = {
 
 async def get_current_user(token: str):
     """Heler function for auth with Firebase."""
-    if not token:
-        return ""
     try:
         decoded_token = auth.verify_id_token(token)
     except FirebaseError as e:
@@ -120,13 +118,15 @@ async def websocket_endpoint(
     # the user_id from the token.
     user_id = str(session_id)
     if os.getenv('USE_AUTH') == "true":
-        # Do not allow anonymous users to use non-GPT3.5 model.
-        if not token and llm_model != 'gpt-3.5-turbo-16k':
-            await websocket.close(code=1008, reason="Unauthorized")
-            return
-        try:
-            user_id = await get_current_user(token)
-        except HTTPException:
+        # Do not allow anonymous users to use advanced model.
+        if token:
+            try:
+                user_id = await get_current_user(token)
+                logger.info(f"User #{user_id} is authenticated")
+            except HTTPException:
+                await websocket.close(code=1008, reason="Unauthorized")
+                return
+        elif llm_model != 'rebyte':
             await websocket.close(code=1008, reason="Unauthorized")
             return
     session_auth_result = await check_session_auth(session_id=session_id, user_id=user_id, db=db)
@@ -135,6 +135,7 @@ async def websocket_endpoint(
             f'User #{user_id} is not authorized to access session {session_id}')
         await websocket.close(code=1008, reason="Unauthorized")
         return
+    logger.info(f"User #{user_id} is authorized to access session {session_id}")
 
     llm = get_llm(model=llm_model)
     await manager.connect(websocket)

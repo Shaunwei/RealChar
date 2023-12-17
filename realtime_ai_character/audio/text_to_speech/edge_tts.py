@@ -27,7 +27,7 @@ class EdgeTTS(Singleton, TextToSpeech):
             voice = voices.find(ShortName=voice_id)[0]
         except IndexError:
             voice = voices.find(ShortName=EDGE_TTS_DEFAULT_VOICE)[0]
-        communicate = edge_tts.Communicate(text, voice["Name"])
+        communicate = edge_tts.Communicate(text, voice["Name"], rate="+20%")
         messages = []
         async for message in communicate.stream():
             if message["type"] == "audio":

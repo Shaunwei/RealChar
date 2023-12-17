@@ -22,7 +22,6 @@ class Character:
     voice_id: str = ''
     author_name: str = ''
     author_id: str = ''
-    avatar_id: Optional[str] = ''
     visibility: str = ''
     tts: Optional[str] = ''
     order: int = 999  # display order on the website

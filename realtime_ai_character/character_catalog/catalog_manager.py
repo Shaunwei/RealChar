@@ -209,7 +209,6 @@ class CatalogManager(Singleton):
                     visibility=character_model.visibility,
                     tts=character_model.tts,
                     data=character_model.data,
-                    avatar_id=character_model.avatar_id if character_model.avatar_id else None,
                     # rebyte config
                     rebyte_api_project_id=character_model.rebyte_api_project_id,
                     rebyte_api_agent_id=character_model.rebyte_api_agent_id,

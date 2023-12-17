@@ -176,6 +176,11 @@ export const createCharacterSlice = (set, get) => ({
   },
   setVoiceOptionsMode: (mode) => {
     set({ voiceOptionsMode: mode });
+    if (mode === 'selectVoice') {
+      get().setFormData({ voice_id: get().getCurrentVoiceOption().voice_id });
+    } else if (get().isClonedVoice(get().clonedVoice)) {
+      get().setFormData({ voice_id: get().clonedVoice });
+    }
   },
   setVoiceSamplePlayer: (player) => {
     set({ voiceSamplePlayer: player });
@@ -370,6 +375,9 @@ export const createCharacterSlice = (set, get) => ({
     get().initFilters();
   },
   isClonedVoice: (voice_id) => {
+    if (!voice_id || voice_id === 'isLoading') {
+      return false;
+    }
     const array = get().voiceOptions[get().formData.tts].map((item) => item.voice_id);
     return array.indexOf(voice_id) === -1;
   },
@@ -393,8 +401,9 @@ export const createCharacterSlice = (set, get) => ({
         clonedVoice: '',
         voiceFiles: [],
       });
-      get().initFilters();
-      if (get().isClonedVoice(res.voice_id)) {
+      const isCloned = get().isClonedVoice(res.voice_id);
+      get().initFilters(isCloned);
+      if (isCloned) {
         set({ clonedVoice: res.voice_id });
       }
     } catch (err) {
@@ -402,7 +411,7 @@ export const createCharacterSlice = (set, get) => ({
       alert('Error getting character data');
     }
   },
-  initFilters: () => {
+  initFilters: (isCloned) => {
     set({
       ttsOptions: [
         {
@@ -422,17 +431,19 @@ export const createCharacterSlice = (set, get) => ({
         },
       ],
     });
-    set({
-      ttsOptions: get().ttsOptions.map((item) => {
-        if (item.value === get().formData.tts) {
-          return {
-            ...item,
-            selected_voice_id: get().formData.voice_id,
-          };
-        }
-        return item;
-      }),
-    });
+    if (!isCloned) {
+      set({
+        ttsOptions: get().ttsOptions.map((item) => {
+          if (item.value === get().formData.tts) {
+            return {
+              ...item,
+              selected_voice_id: get().formData.voice_id,
+            };
+          }
+          return item;
+        }),
+      });
+    }
     set({
       voiceFilters: Object.entries(get().voiceFilters).reduce((acc, [tts, filters]) => {
         acc[tts] = filters.map((filter) => ({

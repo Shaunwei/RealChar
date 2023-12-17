@@ -58,6 +58,8 @@ jobs:
         location: 'us-west3'
 
     - id: 'deploy-to-cluster'
+      env:
+        IMAGE_TAG: ${{ steps.meta.outputs.version }}
       run: 'kubectl set image deployment/deployment-rc-api app-rc-api=$REGISTRY/$IMAGE_NAME:$IMAGE_TAG'
 
     - name: Slack Notification

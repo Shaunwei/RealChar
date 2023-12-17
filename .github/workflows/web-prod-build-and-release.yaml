@@ -73,6 +73,8 @@ jobs:
           location: 'us-central1'
 
       - id: 'deploy-to-cluster'
+        env:
+          IMAGE_TAG: ${{ steps.meta.outputs.version }}
         run: 'kubectl set image deployment/deployment-rc-frontend app-rc-frontend=$REGISTRY/$IMAGE_NAME:$IMAGE_TAG'
 
       - name: Slack Notification

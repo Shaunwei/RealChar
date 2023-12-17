@@ -1,6 +1,5 @@
 aioconsole==0.6.2
 beautifulsoup4==4.12.2
-bentoml==1.1.6
 fastapi==0.103.2
 faster_whisper==0.9.0
 firebase_admin==6.2.0

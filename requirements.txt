@@ -1,6 +1,6 @@
 aioconsole==0.6.2
 beautifulsoup4==4.12.2
-fastapi==0.103.2
+fastapi[all]==0.103.2
 faster_whisper==0.9.0
 firebase_admin==6.2.0
 httpx==0.25.0

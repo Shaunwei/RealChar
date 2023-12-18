@@ -119,7 +119,7 @@ class WhisperX:
         audio_bytes,
         platform="web",
         prompt="",
-        language="auto",
+        language="",
         suppress_tokens=[-1],
         diarization=False,
         speaker_audio_samples={},
@@ -176,8 +176,8 @@ class WhisperX:
         return audio
 
     @timed
-    def _transcribe(self, audio, prompt="", language="auto", suppress_tokens=[-1]):
-        language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, None)
+    def _transcribe(self, audio, prompt="", language="", suppress_tokens=[-1]):
+        language = WHISPER_LANGUAGE_CODE_MAPPING.get(language)
         self.model.options = self.model.options._replace(
             initial_prompt=prompt, suppress_tokens=suppress_tokens
         )

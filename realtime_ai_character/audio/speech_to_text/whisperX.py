@@ -114,7 +114,7 @@ class WhisperX(Singleton, SpeechToText):
 
     @timed
     def transcribe(
-        self, audio_bytes, platform="web", prompt="", language="auto", suppress_tokens=[-1]
+        self, audio_bytes, platform="web", prompt="", language="", suppress_tokens=[-1]
     ):
         logger.info("Transcribing audio...")
         result = self._transcribe(audio_bytes, platform, prompt, language, suppress_tokens)
@@ -131,7 +131,7 @@ class WhisperX(Singleton, SpeechToText):
         transcripts: list[Transcript],
         platform="web",
         prompt="",
-        language="auto",
+        language="",
         suppress_tokens=[-1],
         speaker_audio_samples={},
     ):
@@ -214,7 +214,7 @@ class WhisperX(Singleton, SpeechToText):
         audio_bytes,
         platform="web",
         prompt="",
-        language="auto",
+        language="",
         suppress_tokens=[-1],
         diarization=False,
         speaker_audio_samples={},
@@ -228,7 +228,7 @@ class WhisperX(Singleton, SpeechToText):
         audio = self.get_audio(audio_bytes, platform, verbose=True)
 
         # _transcribe
-        language = WHISPER_LANGUAGE_CODE_MAPPING.get(language, None)
+        language = WHISPER_LANGUAGE_CODE_MAPPING.get(language)
         self.model.options = self.model.options._replace(
             initial_prompt=prompt, suppress_tokens=suppress_tokens
         )
@@ -380,7 +380,7 @@ class WhisperX(Singleton, SpeechToText):
         audio_bytes,
         platform="web",
         prompt="",
-        language="auto",
+        language="",
         suppress_tokens=[-1],
         diarization=False,
         speaker_audio_samples={},

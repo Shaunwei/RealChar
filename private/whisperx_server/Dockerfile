@@ -5,10 +5,6 @@ RUN apt-get update && apt-get install -y git && apt-get clean
 
 WORKDIR /whisperx_server
 
-# Copy the project files
-COPY *.py /whisperx_server/
-COPY *.mp3 /whisperx_server/
-
 # Install Python dependencies
 # RUN bash -i /whisperx_server/setup.sh
 RUN pip install --upgrade pip
@@ -17,6 +13,10 @@ RUN pip install git+https://github.com/m-bain/whisperx.git@051047bb25b740fed2ea9
 RUN pip install opencc==1.1.6
 RUN pip install "fastapi[all]"
 RUN pip cache purge
+
+# Copy the project files
+COPY *.py /whisperx_server/
+COPY *.mp3 /whisperx_server/
 
 # Expose 8000 port from the docker image.
 EXPOSE 8000

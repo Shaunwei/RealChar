@@ -28,7 +28,7 @@ class XTTS(Singleton, TextToSpeech):
         tts_event: asyncio.Event,
         voice_id="default",
         first_sentence=False,
-        language="en-US",
+        language="",
         sid="",
         platform="",
         *args,
@@ -42,13 +42,13 @@ class XTTS(Singleton, TextToSpeech):
         headers = {"api-key": API_KEY}
         data = {
             "prompt": text,
-            # "language": language,
+            "language": language,
             "voice_id": voice_id,
             "stream": first_sentence,
             "max_ref_length": 30,
             "gpt_cond_len": 6,
             "gpt_cond_chunk_len": 4,
-            "speed": 1.0,
+            "speed": 1.2,
             "temperature": 0.01,
         }
         with requests.post(API_URL, json=data, headers=headers, stream=True) as response:

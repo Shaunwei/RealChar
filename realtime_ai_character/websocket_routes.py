@@ -102,13 +102,12 @@ async def check_session_auth(session_id: str, user_id: str, db: Session) -> Sess
 async def websocket_endpoint(
     websocket: WebSocket,
     session_id: str = Path(...),
-    llm_model: str = Query(default=os.getenv(
-        'LLM_MODEL_USE', 'gpt-3.5-turbo-16k')),
-    language: str = Query(default='en-US'),
+    llm_model: str = Query(os.getenv("LLM_MODEL_USE", "gpt-3.5-turbo-16k")),
+    language: str = Query("en-US"),
     token: str = Query(None),
     character_id: str = Query(None),
     platform: str = Query(None),
-    journal_mode: bool = Query(default=False),
+    journal_mode: bool = Query(False),
     db: Session = Depends(get_db),
     catalog_manager=Depends(get_catalog_manager),
     speech_to_text=Depends(get_speech_to_text),
@@ -237,7 +236,7 @@ async def handle_receive(
         token_buffer = []
 
         # Greet the user
-        greeting_text = GREETING_TXT_MAP[language]
+        greeting_text = GREETING_TXT_MAP[language if language else 'en-US']
         await manager.send_message(message=greeting_text, websocket=websocket)
         tts_task = asyncio.create_task(
             text_to_speech.stream(
@@ -361,7 +360,7 @@ async def handle_receive(
                         callback=AsyncCallbackTextHandler(
                             on_new_token, token_buffer, textmode_tts_task_done_call_back),
                         audioCallback=AsyncCallbackAudioHandler(
-                            _text_to_speech, websocket, tts_event, character.voice_id),
+                            _text_to_speech, websocket, tts_event, character.voice_id, language),
                         character=character,
                         metadata={"message_id": message_id, "user_id": user_id},
                         user_id=user_id if user_id != session_id else None)
@@ -390,6 +389,7 @@ async def handle_receive(
                             transcripts,
                             platform=platform,
                             prompt=prompt,
+                            language=language,
                             speaker_audio_samples=speaker_audio_samples,
                         )
                         for transcript in result:
@@ -432,7 +432,8 @@ async def handle_receive(
                             binary_data,
                             platform=platform,
                             prompt=current_speech,
-                            suppress_tokens=[0, 11, 13, 30],
+                            language=language,
+                            # suppress_tokens=[0, 11, 13, 30],
                         )
                     ).strip()
                     speech_recognition_interim = False
@@ -446,9 +447,15 @@ async def handle_receive(
                     continue
 
                 # 1. Transcribe audio
-                transcript: str = (await asyncio.to_thread(speech_to_text.transcribe,
-                                                           binary_data, platform=platform,
-                                                           prompt=character.name)).strip()
+                transcript: str = (
+                    await asyncio.to_thread(
+                        speech_to_text.transcribe,
+                        binary_data,
+                        platform=platform,
+                        prompt=character.name,
+                        language=language,
+                    )
+                ).strip()
 
                 # ignore audio that picks up background noise
                 if (not transcript or len(transcript) < 2):
@@ -498,7 +505,7 @@ async def handle_receive(
                                   audiomode_tts_task_done_call_back),
                               audioCallback=AsyncCallbackAudioHandler(
                                   _text_to_speech, websocket, tts_event,
-                                  character.voice_id),
+                                  character.voice_id, language),
                               character=character,
                               metadata={"user_id": user_id},
                               user_id=user_id if user_id != session_id else None))

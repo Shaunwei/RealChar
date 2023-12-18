@@ -74,7 +74,7 @@ class GoogleCloudTTS(Singleton, TextToSpeech):
         headers = config.headers
         # For customized voices
         if language != "en-US":
-            config.data["voice"]["languageCode"] = language
+            config.data["voice"]["languageCode"] = language if language else "en-US"
             config.data["voice"]["name"] = voice_id
         data = {
             "input": {"text": text},

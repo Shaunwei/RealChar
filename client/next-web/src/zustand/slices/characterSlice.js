@@ -19,7 +19,6 @@ Context
   - user's question isn't clear
   - seems unfinished
   - seems totally irrelevant
-  Remember to prefix your reply.
   ---
   {query}
 `;
@@ -178,7 +177,7 @@ export const createCharacterSlice = (set, get) => ({
     set({ voiceOptionsMode: mode });
     if (mode === 'selectVoice') {
       get().setFormData({ voice_id: get().getCurrentVoiceOption().voice_id });
-    } else if (get().isClonedVoice(get().clonedVoice)) {
+    } else if (get().isClonedVoice(get().clonedVoice) && mode === get().clonedVoice) {
       get().setFormData({ voice_id: get().clonedVoice });
     }
   },
@@ -405,6 +404,7 @@ export const createCharacterSlice = (set, get) => ({
       get().initFilters(isCloned);
       if (isCloned) {
         set({ clonedVoice: res.voice_id });
+        get().setVoiceOptionsMode(res.voice_id);
       }
     } catch (err) {
       console.error(err);

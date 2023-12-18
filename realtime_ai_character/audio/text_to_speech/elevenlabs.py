@@ -52,7 +52,7 @@ class ElevenLabs(Singleton, TextToSpeech):
             voice_id = "21m00Tcm4TlvDq8ikWAM"
         headers = config.headers
         if language != 'en-US':
-            config.data["model_id"] = 'eleven_multilingual_v1'
+            config.data["model_id"] = ELEVEN_LABS_MULTILINGUAL_MODEL
         data = {
             "text": text,
             **config.data,

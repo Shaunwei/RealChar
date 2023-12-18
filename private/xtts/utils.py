@@ -27,7 +27,7 @@ STREAM = os.getenv("STREAM", "true") == "true"
 class Data(BaseModel):
     prompt: str
     voice_id: str
-    language: Optional[str] = None
+    language: str
     max_ref_length: int = MAX_REF_LENGTH
     gpt_cond_len: int = GPT_COND_LEN
     gpt_cond_chunk_len: int = GPT_COND_CHUNK_LEN

@@ -6,7 +6,7 @@ export const createWebsocketSlice = (set, get) => ({
   socket: null,
   socketIsOpen: false,
 
-  sendOverSocket: data => {
+  sendOverSocket: (data) => {
     if (get().socket && get().socket.readyState === WebSocket.OPEN) {
       get().socket.send(data);
       console.log('message sent to server');
@@ -15,7 +15,7 @@ export const createWebsocketSlice = (set, get) => ({
     }
   },
 
-  socketOnMessageHandler: event => {
+  socketOnMessageHandler: (event) => {
     if (typeof event.data === 'string') {
       const message = event.data;
       if (message === '[end]\n' || message.match(/\[end=([a-zA-Z0-9]+)]/)) {
@@ -39,9 +39,7 @@ export const createWebsocketSlice = (set, get) => ({
         get().appendInterimChatContent(msg[1]);
         get().appendChatContent();
         get().clearSpeechInterim();
-      } else if (
-        message.startsWith('[=]' || message.match(/\[=([a-zA-Z0-9]+)]/))
-      ) {
+      } else if (message.startsWith('[=]' || message.match(/\[=([a-zA-Z0-9]+)]/))) {
         // [=] or [=id] indicates the response is done
         get().appendChatContent();
       } else if (message.startsWith('[+&]')) {
@@ -83,14 +81,14 @@ export const createWebsocketSlice = (set, get) => ({
       get().setSessionId(sessionId);
       const ws_url = getWsServerUrl(window.location.origin);
       const language =
-        languageCode[get().preferredLanguage.values().next().value];
+        get().preferredLanguage.values().next().value === 'Auto Detect'
+          ? ''
+          : languageCode[get().preferredLanguage.values().next().value];
       const ws_path =
         ws_url +
         `/ws/${sessionId}?llm_model=${
           get().selectedModel.values().next().value
-        }&platform=web&isJournalMode=${
-          get().isJournalMode
-        }&character_id=${
+        }&platform=web&isJournalMode=${get().isJournalMode}&character_id=${
           get().character.character_id
         }&language=${language}&token=${get().token}`;
       let socket = new WebSocket(ws_path);
@@ -99,11 +97,11 @@ export const createWebsocketSlice = (set, get) => ({
         set({ socketIsOpen: true });
       };
       socket.onmessage = get().socketOnMessageHandler;
-      socket.onerror = error => {
+      socket.onerror = (error) => {
         console.log(`WebSocket Error: `);
         console.log(error);
       };
-      socket.onclose = event => {
+      socket.onclose = (event) => {
         console.log('Socket closed');
         set({ socketIsOpen: false });
       };
@@ -115,12 +113,12 @@ export const createWebsocketSlice = (set, get) => ({
     set({ socket: null, socketIsOpen: false });
   },
   sessionId: '',
-  setSessionId: id => {
+  setSessionId: (id) => {
     set({ sessionId: id });
   },
 
   token: '',
-  setToken: token => {
+  setToken: (token) => {
     set({ token: token });
   },
 });

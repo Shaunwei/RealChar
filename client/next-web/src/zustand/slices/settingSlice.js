@@ -1,12 +1,13 @@
 export const createSettingSlice = (set, get) => ({
   character: {},
-  preferredLanguage: new Set(['English']),
+  preferredLanguage: new Set(['Auto Detect']),
   selectedSpeaker: new Set(['default']),
   selectedMicrophone: new Set(['default']),
   selectedModel: new Set(['rebyte']),
   isMute: false,
   isJournalMode: false,
   languageList: [
+    'Auto Detect',
     'English',
     'Spanish',
     'French',
@@ -49,46 +50,46 @@ export const createSettingSlice = (set, get) => ({
   speakerList: [],
   microphoneList: [],
   getAudioList: async () => {
-    await navigator.mediaDevices.getUserMedia({audio: true, video: false});
+    await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
     const res = await navigator.mediaDevices.enumerateDevices();
-    const audioInputDevices = res.filter(device =>
-      device.kind === 'audioinput'
-    );
-    const audioOutputDevices = res.filter(device =>
-      device.kind === 'audiooutput'
-    );
+    const audioInputDevices = res.filter((device) => device.kind === 'audioinput');
+    const audioOutputDevices = res.filter((device) => device.kind === 'audiooutput');
     if (audioInputDevices.length === 0) {
       console.log('No audio input devices found');
     } else {
-      set({microphoneList: audioInputDevices});
+      set({ microphoneList: audioInputDevices });
     }
     if (audioOutputDevices.length === 0) {
       console.log('No audio output devices found');
     } else {
-      set({speakerList: audioOutputDevices});
+      set({ speakerList: audioOutputDevices });
     }
   },
   setCharacter: (obj) => {
-    set({ character: obj});
+    set({ character: obj });
+    // rebyte not supported for database characters yet
+    if (obj.location === 'database' && get().selectedModel.has('rebyte')) {
+      set({ selectedModel: new Set(['gpt-3.5-turbo-16k']) });
+    }
   },
   handleLanguageChange: (e) => {
-    set({ preferredLanguage: new Set([e.target.value])});
+    set({ preferredLanguage: new Set([e.target.value]) });
     // to do
   },
   handleSpeakerSelect: (keys) => {
-    set({ selectedSpeaker: new Set(keys)});
+    set({ selectedSpeaker: new Set(keys) });
   },
   handleMicrophoneSelect: (keys) => {
-    set({ selectedMicrophone: new Set(keys)});
+    set({ selectedMicrophone: new Set(keys) });
   },
   handleModelChange: (e) => {
-    set({ selectedModel: new Set([e.target.value])});
+    set({ selectedModel: new Set([e.target.value]) });
   },
   setIsMute: (v) => {
-    set({isMute: v});
+    set({ isMute: v });
   },
   setIsJournalMode: (v) => {
-    set({isJournalMode: v});
-    get().sendOverSocket("[!JOURNAL_MODE]" + v)
+    set({ isJournalMode: v });
+    get().sendOverSocket('[!JOURNAL_MODE]' + v);
   },
-})
+});

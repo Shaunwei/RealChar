@@ -1,16 +1,18 @@
-import os
 import io
+import langid
+import os
 import time
 import torch
 import torchaudio
-import re
 import wave
 
-import langid
 from TTS.tts.configs.xtts_config import XttsConfig
 from TTS.tts.models.xtts import Xtts
 from TTS.utils.generic_utils import get_user_data_dir
 from TTS.utils.manage import ModelManager
+
+from utils import Data, log
+
 
 XTTS_LANGUAGE_CODE_MAPPING = {
     "en-US": "en",
@@ -24,30 +26,9 @@ XTTS_LANGUAGE_CODE_MAPPING = {
     "ja-JP": "ja",
 }
 
-MAX_REF_LENGTH = os.getenv("MAX_REF_LENGTH", "30")
-GPT_COND_LEN = os.getenv("GPT_COND_LEN", "6")
-GPT_COND_CHUNK_LEN = os.getenv("GPT_COND_CHUNK_LEN", "6")
-SOUND_NORM_REFS = os.getenv("SOUND_NORM_REFS", "false")
-LOAD_SR = os.getenv("LOAD_SR")
-STREAM_CHUNK_SIZE = os.getenv("STREAM_CHUNK_SIZE", "20")
-OVERLAP_WAV_LEN = os.getenv("OVERLAP_WAV_LEN", "1024")
-TEMPERATURE = os.getenv("TEMPERATURE", "0.75")
-LENGTH_PENALTY = os.getenv("LENGTH_PENALTY", "1")
-REPETITION_PENALTY = os.getenv("REPETITION_PENALTY", "10")
-TOP_K = os.getenv("TOP_K", "50")
-TOP_P = os.getenv("TOP_P", "0.85")
-DO_SAMPLE = os.getenv("DO_SAMPLE", "true")
-SPEED = os.getenv("SPEED", "1.0")
-ENABLE_TEXT_SPLITTING = os.getenv("ENABLE_TEXT_SPLITTING", "false")
-STREAM = os.getenv("STREAM", "true")
-
 # By using XTTS you agree to CPML license https://coqui.ai/cpml
 os.environ["COQUI_TOS_AGREED"] = "1"
 
-
-def log(message: str):
-    print(f"\033[36m[{time.strftime('%Y-%m-%d %H:%M:%S')}] {message}\033[0m")
-    
 
 def get_sample_rate_wav(file_path):
     with wave.open(file_path, 'r') as wav_file:
@@ -74,38 +55,45 @@ class XTTS:
         self.model.cuda()
         self.supported_languages = self.config.languages
         log(f"Loaded model: {model_name}")
-        log(f"max_ref_length: {MAX_REF_LENGTH}")
-        log(f"gpt_cond_len: {GPT_COND_LEN}")
-        log(f"gpt_cond_chunk_len: {GPT_COND_CHUNK_LEN}")
-        log(f"sound_norm_refs: {SOUND_NORM_REFS}")
-        log(f"load_sr: {LOAD_SR}")
-        log(f"stream_chunk_size: {STREAM_CHUNK_SIZE}")
-        log(f"overlap_wav_len: {OVERLAP_WAV_LEN}")
-        log(f"temperature: {TEMPERATURE}")
-        log(f"length_penalty: {LENGTH_PENALTY}")
-        log(f"repetition_penalty: {REPETITION_PENALTY}")
-        log(f"top_k: {TOP_K}")
-        log(f"top_p: {TOP_P}")
-        log(f"do_sample: {DO_SAMPLE}")
-        log(f"speed: {SPEED}")
-        log(f"enable_text_splitting: {ENABLE_TEXT_SPLITTING}")
-        log(f"stream: {STREAM}")
 
-    def predict(self, prompt, language, voice_id):
-        log(f"Received prompt: {prompt}, language: {language}, voice_id: {voice_id}")
+    def predict(self, data: Data):
+        print(f"MAX_REF_LENGTH: {data.max_ref_length}")
+        print(f"GPT_COND_LEN: {data.gpt_cond_len}")
+        print(f"GPT_COND_CHUNK_LEN: {data.gpt_cond_chunk_len}")
+        print(f"SOUND_NORM_REFS: {data.sound_norm_refs}")
+        print(f"LOAD_SR: {data.load_sr}")
+        print(f"STREAM_CHUNK_SIZE: {data.stream_chunk_size}")
+        print(f"OVERLAP_WAV_LEN: {data.overlap_wav_len}")
+        print(f"TEMPERATURE: {data.temperature}")
+        print(f"LENGTH_PENALTY: {data.length_penalty}")
+        print(f"REPETITION_PENALTY: {data.repetition_penalty}")
+        print(f"TOP_K: {data.top_k}")
+        print(f"TOP_P: {data.top_p}")
+        print(f"DO_SAMPLE: {data.do_sample}")
+        print(f"SPEED: {data.speed}")
+        print(f"ENABLE_TEXT_SPLITTING: {data.enable_text_splitting}")
+        print(f"STREAM: {data.stream}")
+
+        prompt = data.prompt
+        language = data.language
+        voice_id = data.voice_id
+        log(f"Received prompt: {repr(prompt)}, language: {language}, voice_id: {voice_id}")
+        # print prompt with showing non-ascii characters
+        log(f"Unicode Escaped Prompt: {prompt.encode('unicode_escape').decode('utf-8')}")
 
         # detect language
         language = XTTS_LANGUAGE_CODE_MAPPING.get(language)
-        try:
-            language_predicted = langid.classify(prompt)[0].strip()
-            # tts expects chinese as zh-cn
-            if language_predicted == "zh":
-                # we use zh-cn
-                language_predicted = "zh-cn"
-            log(f"Detected language:{language_predicted}")
-            language = language_predicted
-        except Exception as e:
-            log(f"Language detection error: {e}")
+        if not language:
+            try:
+                language_predicted = langid.classify(prompt)[0].strip()
+                # tts expects chinese as zh-cn
+                if language_predicted == "zh":
+                    # we use zh-cn
+                    language_predicted = "zh-cn"
+                log(f"Detected language:{language_predicted}")
+                language = language_predicted
+            except Exception as e:
+                log(f"Language detection error: {e}")
 
         if language not in self.supported_languages:
             language = "en"
@@ -169,8 +157,8 @@ class XTTS:
         t_latent = time.time()
 
         # load sample rate from env and from source
-        if LOAD_SR:
-            load_sr = int(LOAD_SR)
+        if data.load_sr:
+            load_sr = int(data.load_sr)
         else:
             try:
                 # this is 1000X faster than torchaudio.load
@@ -182,10 +170,10 @@ class XTTS:
         try:
             gpt_cond_latent, speaker_embedding = self.model.get_conditioning_latents(
                 audio_path=speaker_wav,
-                max_ref_length=int(MAX_REF_LENGTH),
-                gpt_cond_len=int(GPT_COND_LEN),
-                gpt_cond_chunk_len=int(GPT_COND_CHUNK_LEN),
-                sound_norm_refs=(SOUND_NORM_REFS == "true"),
+                max_ref_length=data.max_ref_length,
+                gpt_cond_len=data.gpt_cond_len,
+                gpt_cond_chunk_len=data.gpt_cond_chunk_len,
+                sound_norm_refs=data.sound_norm_refs,
                 load_sr=load_sr,
             )
         except Exception as e:
@@ -195,29 +183,26 @@ class XTTS:
         latent_calculation_time = time.time() - t_latent
         metrics_text = f"Embedding calculation time: {latent_calculation_time:.2f} seconds\n"
 
-        # temporary comma fix
-        prompt = re.sub("([^\x00-\x7F]|\w)(\.|\。|\?)", r"\1 \2\2", prompt)
-
         wav_chunks = []
 
         t_inference = time.time()
 
-        if STREAM == "true":
+        if data.stream == "true":
             chunks = self.model.inference_stream(
                 prompt,
                 language,
                 gpt_cond_latent,
                 speaker_embedding,
-                stream_chunk_size=int(STREAM_CHUNK_SIZE),
-                overlap_wav_len=int(OVERLAP_WAV_LEN),
-                temperature=float(TEMPERATURE),
-                length_penalty=float(LENGTH_PENALTY),
-                repetition_penalty=float(REPETITION_PENALTY),
-                top_k=int(TOP_K),
-                top_p=float(TOP_P),
-                do_sample=(DO_SAMPLE == "true"),
-                speed=float(SPEED),
-                enable_text_splitting=(ENABLE_TEXT_SPLITTING == "true"),
+                stream_chunk_size=data.stream_chunk_size,
+                overlap_wav_len=data.overlap_wav_len,
+                temperature=data.temperature,
+                length_penalty=data.length_penalty,
+                repetition_penalty=data.repetition_penalty,
+                top_k=data.top_k,
+                top_p=data.top_p,
+                do_sample=data.do_sample,
+                speed=data.speed,
+                enable_text_splitting=data.enable_text_splitting,
             )
         else:
             result = self.model.inference(
@@ -225,14 +210,14 @@ class XTTS:
                 language,
                 gpt_cond_latent,
                 speaker_embedding,
-                temperature=float(TEMPERATURE),
-                length_penalty=float(LENGTH_PENALTY),
-                repetition_penalty=float(REPETITION_PENALTY),
-                top_k=int(TOP_K),
-                top_p=float(TOP_P),
-                do_sample=(DO_SAMPLE == "true"),
-                speed=float(SPEED),
-                enable_text_splitting=(ENABLE_TEXT_SPLITTING == "true"),
+                temperature=data.temperature,
+                length_penalty=data.length_penalty,
+                repetition_penalty=data.repetition_penalty,
+                top_k=data.top_k,
+                top_p=data.top_p,
+                do_sample=data.do_sample,
+                speed=data.speed,
+                enable_text_splitting=data.enable_text_splitting,
             )
             chunks = [torch.Tensor(result["wav"])]
 

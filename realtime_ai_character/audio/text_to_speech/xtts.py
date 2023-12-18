@@ -1,6 +1,6 @@
 import asyncio
 import os
-import httpx
+import requests
 import base64
 
 from realtime_ai_character.logger import get_logger
@@ -26,7 +26,7 @@ class XTTS(Singleton, TextToSpeech):
         text,
         websocket,
         tts_event: asyncio.Event,
-        voice_id="female",
+        voice_id="default",
         first_sentence=False,
         language="en-US",
         sid="",
@@ -37,18 +37,25 @@ class XTTS(Singleton, TextToSpeech):
         if DEBUG:
             return
         if voice_id == "":
-            logger.info("voice_id is not found in .env file, using XTTS default voice")
-            voice_id = "female"
+            logger.info("XTTS voice_id is not set, using default voice")
+            voice_id = "default"
         headers = {"api-key": API_KEY}
         data = {
             "prompt": text,
-            "language": language,
+            # "language": language,
             "voice_id": voice_id,
+            "stream": first_sentence,
+            "max_ref_length": 30,
+            "gpt_cond_len": 6,
+            "gpt_cond_chunk_len": 4,
+            "speed": 1.0,
+            "temperature": 0.01,
         }
-        with httpx.stream("POST", API_URL, data=data, headers=headers) as response:
-            if response.status_code != 200:
-                logger.error(f"XTTS server returns response {response.status_code}")
-            for chunk in response.iter_bytes():
+        with requests.post(API_URL, json=data, headers=headers, stream=True) as response:
+            response.raise_for_status()
+            for chunk in response.iter_content(chunk_size=None):
+                if not chunk:
+                    continue
                 if tts_event.is_set():
                     # stop streaming audio
                     break

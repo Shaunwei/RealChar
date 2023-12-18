@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 import asyncio
+import emoji
+import re
 
 from langchain.callbacks.base import AsyncCallbackHandler
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -67,16 +69,18 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
 
     async def on_llm_new_token(self, token: str, *args, **kwargs):
         timer.log("LLM First Token", lambda: timer.start("LLM First Sentence"))
-        # if (
-        #     not self.is_reply and ">" in token
-        # ):  # small models might not give ">" (e.g. llama2-7b gives ">:" as a token)
-        #     self.is_reply = True
-        # elif self.is_reply:
+        # skip emojis
+        token = emoji.replace_emoji(token, "")
+        token = self.text_regulator(token)
+        if not token:
+            return
+        # send to TTS in sentences
         self.current_sentence += token
         if token in {'.', '?', '!', '。', '？', '！'}:
             if self.is_first_sentence:
                 timer.log("LLM First Sentence",
                           lambda: timer.start("TTS First Sentence"))
+            self.current_sentence = self.current_sentence.strip()
             await self.text_to_speech.stream(
                 self.current_sentence,
                 self.websocket,
@@ -92,6 +96,7 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
             timer.log("TTS First Sentence")
 
     async def on_llm_end(self, *args, **kwargs):
+        self.current_sentence = self.current_sentence.strip()
         if self.current_sentence != "":
             await self.text_to_speech.stream(
                 self.current_sentence,
@@ -100,6 +105,16 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
                 self.voice_id,
                 self.is_first_sentence,
                 self.language)
+            
+    def text_regulator(self, text):
+        pattern = (
+        r'[\u200B\u200C\u200D\u200E\u200F\uFEFF\u00AD\u2060\uFFFC\uFFFD]'  # Format characters
+        r'|[\uFE00-\uFE0F]'  # Variation selectors
+        r'|[\uE000-\uF8FF]'  # Private use area
+        r'|[\uFFF0-\uFFFF]'  # Specials
+        )
+        filtered_text = re.sub(pattern, '', text)
+        return filtered_text
 
 
 class LLM(ABC):

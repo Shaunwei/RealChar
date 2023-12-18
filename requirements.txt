@@ -27,3 +27,4 @@ psycopg2-binary==2.9.9
 pypdf==3.16.2
 edge-tts==6.1.9
 rebyte-langchain>=0.0.5
+emoji==2.9.0

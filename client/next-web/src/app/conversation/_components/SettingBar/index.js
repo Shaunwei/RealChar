@@ -40,6 +40,13 @@ export default function SettingBar({
       </div>
       <div className="hidden md:flex flex-row-reverse justify-between">
         <div className="flex gap-8">
+          <div className="flex justify-end gap-1 items-center">
+            {character.rebyte_project_id && character.rebyte_agent_id && (
+              <span>
+                <a href={`https://rebyte.ai/p/${character.rebyte_project_id}/callable/${character.rebyte_agent_id}/editor`}>Agent Link</a>
+              </span>
+            )}
+          </div>
           <LanguageModelControl />
           <ShareButton />
           <SettingsButton />

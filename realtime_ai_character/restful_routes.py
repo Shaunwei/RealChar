@@ -90,6 +90,8 @@ async def characters(user=Depends(get_current_user)):
         "tts": character.tts,
         "is_author": character.author_id == uid,
         "location": character.location,
+        "rebyte_project_id": character.rebyte_api_project_id,
+        "rebyte_agent_id": character.rebyte_api_agent_id,
     } for character in sorted(catalog.characters.values(), key=lambda c: c.order)
         if character.author_id == uid or character.visibility == 'public']
 

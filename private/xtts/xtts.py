@@ -187,7 +187,7 @@ class XTTS:
 
         t_inference = time.time()
 
-        if data.stream == "true":
+        if data.stream:
             chunks = self.model.inference_stream(
                 prompt,
                 language,

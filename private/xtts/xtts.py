@@ -79,7 +79,7 @@ class XTTS:
         voice_id = data.voice_id
         log(f"Received prompt: {repr(prompt)}, language: {language}, voice_id: {voice_id}")
         # print prompt with showing non-ascii characters
-        log(f"Unicode Escaped Prompt: {prompt.encode('unicode_escape').decode('utf-8')}")
+        log(f"Unicode Escaped Prompt: {repr(prompt.encode('unicode_escape').decode('utf-8'))}")
 
         # detect language
         language = XTTS_LANGUAGE_CODE_MAPPING.get(language)

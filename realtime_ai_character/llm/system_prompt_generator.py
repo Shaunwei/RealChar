@@ -1,5 +1,8 @@
 # flake8: noqa
 from realtime_ai_character.llm import get_chatmodel_from_env
+from rebyte_langchain.rebyte_langchain import RebyteEndpoint
+from langchain.schema.messages import ChatMessage
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 prompt_to_generate_system = '''
 Write a system promopt for {name} based on {name}'s highlights and characteristics. {background}
@@ -33,6 +36,18 @@ async def generate_system_prompt(name, background):
     chat_model = get_chatmodel_from_env()
     if background is not None and background != "":
         background = f"Background: {background}"
-    prompt = prompt_to_generate_system.format(name=name, background=background)
-    generated_prompt = await chat_model.apredict(prompt)
-    return generated_prompt
+
+    if isinstance(chat_model,RebyteEndpoint):
+        chat_model.project_id   = "d4e521a67bb8189c2189"
+        chat_model.agent_id     = "3ccb398ca17a303f5d67"
+        chat_model.streaming    = True
+
+        system_prompt_messages = [ChatMessage(role=name,content=background)]
+        response = await chat_model.agenerate(
+            messages=[system_prompt_messages],
+        )
+        return response.generations[0][0].text
+    else:
+        prompt = prompt_to_generate_system.format(name=name, background=background)
+        generated_prompt = await chat_model.apredict(prompt)
+        return generated_prompt

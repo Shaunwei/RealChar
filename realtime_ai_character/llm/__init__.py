@@ -35,7 +35,10 @@ def get_llm(model="gpt-3.5-turbo-16k") -> LLM:
 @cache
 def get_chatmodel_from_env() -> BaseChatModel:
     """GPT-4 has the best performance while generating system prompt."""
-    if os.getenv('OPENAI_API_KEY'):
+    
+    if os.getenv('REBYTE_API_KEY'):
+        return get_llm(model='rebyte').chat_rebyte
+    elif os.getenv('OPENAI_API_KEY'):
         return get_llm(model='gpt-4').chat_open_ai
     elif os.getenv('ANTHROPIC_API_KEY'):
         return get_llm(model='claude-2').chat_anthropic
@@ -43,6 +46,5 @@ def get_chatmodel_from_env() -> BaseChatModel:
         return get_llm(model='meta-llama/Llama-2-70b-chat-hf').chat_open_ai
     elif os.getenv('LOCAL_LLM_URL'):
         return get_llm(model=os.getenv('LOCAL_LLM_URL')).chat_open_ai
-    elif os.getenv('REBYTE_API_KEY'):
-        return get_llm(model='gpt-4').chat_open_ai # Use GPT-4 model directly
+
     raise ValueError('No llm api key found in env')

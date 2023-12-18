@@ -5,6 +5,7 @@ import ShareButton from './ShareButton';
 import SettingsButton from './SettingsButton';
 import { Avatar } from '@nextui-org/avatar';
 import { useAppStore } from '@/zustand/store';
+import { FaExternalLinkAlt } from "react-icons/fa";
 
 export default function SettingBar({
   isTextMode,
@@ -40,11 +41,11 @@ export default function SettingBar({
       </div>
       <div className="hidden md:flex flex-row-reverse justify-between">
         <div className="flex gap-8">
-          <div className="flex justify-end gap-1 items-center">
+          <div className="flex gap-1 items-center">
             {character.rebyte_project_id && character.rebyte_agent_id && (
-              <span>
-                <a href={`https://rebyte.ai/p/${character.rebyte_project_id}/callable/${character.rebyte_agent_id}/editor`}>Agent Link</a>
-              </span>
+              <a href={`https://rebyte.ai/p/${character.rebyte_project_id}/callable/${character.rebyte_agent_id}/editor`} className="flex items-center gap-1">
+                <FaExternalLinkAlt />Agent
+              </a>
             )}
           </div>
           <LanguageModelControl />

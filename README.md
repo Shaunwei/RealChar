@@ -366,6 +366,16 @@ Note if you want to remotely connect to a RealChar server, SSL set up is require
 
 <br/>
 
+## (Optional) 🔥 Create Your Own Characters
+<details><summary>👇click me</summary>
+
+### Create Characters Locally
+see [realtime_ai_character/character_catalog/README.md](realtime_ai_character/character_catalog/README.md)
+
+### Create Characters on ReByte.ai
+see [docs/rebyte_agent_clone_instructions.md](docs/rebyte_agent_clone_instructions.md)
+</details>
+
 ## 🆕! Anyscale and LangSmith integration
 <details><summary>👇click me</summary>
 
@@ -396,7 +406,7 @@ And it should work out of the box.
 - [x] Lower conversation latency
 - [x] Support Twilio
 - [x] Support ReByte
-- [-] Persistent conversation*
+- [x] Persistent conversation*
 - [ ] Session management*
 - [ ] Support RAG*
 - [ ] Support Agents/GPTs*
@@ -404,7 +414,7 @@ And it should work out of the box.
 - [ ] Better UI/UX for home page
 - [ ] Better UI/UX for conversation page
 
-$*$ These features will be backed by [ReByte](https://rebyte.ai/) platform.
+$*$ These features are powered by [ReByte](https://rebyte.ai/) platform.
 
 ## 🫶 Contribute to RealChar
 Please check out our [Contribution Guide](contribute.md)!

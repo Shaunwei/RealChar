@@ -24,7 +24,7 @@ text_to_speech_use: ELEVEN_LABS
 voice_id: X1EvwdzTE8C8Sffd40mn
 author_name: Shaun
 visibility: public
-order: 6
+order: 7
 
 rebyte_api_project_id: d4e521a67bb8189c2189
 rebyte_api_agent_id: a38ec8c60c3925696385

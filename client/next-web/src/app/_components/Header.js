@@ -18,12 +18,17 @@ export default function Header() {
 
   return (
     <Navbar className='h-20 bg-header'>
-      <NavbarBrand>
-        <Link href='/'>
-          <Image priority src={logo} alt='RealChar.ai' />
-        </Link>
-      </NavbarBrand>
-      <NavbarContent justify='end'>
+      <div className="flex items-end"> {/* Align items to the bottom */}
+        <NavbarBrand>
+          <Link href='/'>
+            <Image priority src={logo} alt='RealChar.ai' className="block" />
+          </Link>
+        </NavbarBrand>
+        <span className="ml-2 flex items-end text-sm"> {/* Space after the image */}
+          powered by&nbsp;<a href="https://rebyte.ai/" className="text-base"> ReByte.ai</a>
+        </span>
+      </div>
+      <NavbarContent justify='end' className="h-full flex items-center">
         <NavbarItem>
           {user == null ? <SignIn /> : <UserDropdown user={user} />}
         </NavbarItem>

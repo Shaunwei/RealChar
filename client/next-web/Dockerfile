@@ -41,6 +41,7 @@ RUN npm install
 COPY ./ ./
 
 # Build app
+RUN env
 RUN npm run build
 
 # Run phase

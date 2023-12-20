@@ -220,7 +220,7 @@ class CatalogManager(Singleton):
             f'Loaded {len(character_models)} characters from sql database')
 
 
-def get_catalog_manager():
+def get_catalog_manager() -> CatalogManager:
     return CatalogManager.get_instance()
 
 

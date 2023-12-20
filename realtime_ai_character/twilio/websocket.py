@@ -11,7 +11,6 @@ from functools import reduce
 from fastapi import (
     APIRouter,
     HTTPException,
-    Depends,
     Request,
     Response,
     WebSocket,
@@ -25,12 +24,9 @@ from twilio.rest import Client
 import torch
 from typing import Callable
 
-from realtime_ai_character.audio.speech_to_text import SpeechToText, get_speech_to_text
-from realtime_ai_character.audio.text_to_speech import TextToSpeech, get_text_to_speech
-from realtime_ai_character.character_catalog.catalog_manager import (
-    get_catalog_manager,
-    CatalogManager,
-)
+from realtime_ai_character.audio.speech_to_text import get_speech_to_text
+from realtime_ai_character.audio.text_to_speech import get_text_to_speech
+from realtime_ai_character.character_catalog.catalog_manager import get_catalog_manager
 from realtime_ai_character.llm import get_llm, LLM
 from realtime_ai_character.llm.base import (
     AsyncCallbackAudioHandler,
@@ -51,8 +47,24 @@ twilio_router = APIRouter(
     prefix="/twilio",
 )
 
-character_list = ["elon_musk", "steve_jobs", "sam_altman", "bruce_wayne",
-                  "realchar", "helen_inhabitants_zone", "the_cat", "keanu_reeves"]
+character_list = [
+    "bruce_wayne",
+    "arnold_schwarzenegger",
+    "helen_inhabitants_zone",
+    "ion_stoica",
+    "keanu_reeves",
+    "mark_zuckerberg",
+    "the_cat",
+    "the_dolphin",
+    "elon_musk",
+    "loki",
+    "raiden_shogun_and_ei",
+    "realchar",
+    "rebyte",
+    "sam_altman",
+    "santa_claus",
+    "steve_jobs",
+]
 
 manager = get_connection_manager()
 
@@ -99,8 +111,9 @@ async def call_websocket(request: Request, req: MakeTwilioOutgoingCallRequest):
     _ = client.calls.create(
         to=to,
         from_=from_,
-        url=f"https://{request.url.hostname}/twilio/voice" +
-            ("?character_id={}".format(character_id) if character_id else "") + ("&vad_threshold={}".format(vad_threshold) if vad_threshold else ""),
+        url=f"https://{request.url.hostname}/twilio/voice"
+        + ("?character_id={}".format(character_id) if character_id else "")
+        + ("&vad_threshold={}".format(vad_threshold) if vad_threshold else ""),
         method="GET"
     )
 
@@ -253,9 +266,6 @@ async def websocket_endpoint(
     llm_model: str = Query(default=os.getenv(
         "LLM_MODEL_USE", "gpt-3.5-turbo-16k")),
     language: str = Query(default="en-US"),
-    catalog_manager=Depends(get_catalog_manager),
-    speech_to_text=Depends(get_speech_to_text),
-    default_text_to_speech=Depends(get_text_to_speech),
 ):
     llm = get_llm(model=llm_model)
     await manager.connect(websocket)
@@ -265,9 +275,6 @@ async def websocket_endpoint(
                 websocket,
                 llm,
                 language,
-                speech_to_text,
-                default_text_to_speech,
-                catalog_manager
             )
         )
         await asyncio.gather(main_task)
@@ -280,10 +287,9 @@ async def handle_receive(
     websocket: WebSocket,
     llm: LLM,
     language: str,
-    speech_to_text: SpeechToText,
-    default_text_to_speech: TextToSpeech,
-    catalog_manager: CatalogManager,
 ):
+    catalog_manager = get_catalog_manager()
+    speech_to_text = get_speech_to_text()
     buffer = TwilioConversationEngine(websocket, speech_to_text)
     conversation_history = ConversationHistory()
     random_character = random.choice(character_list)
@@ -292,7 +298,7 @@ async def handle_receive(
     user_input_template = character.llm_user_prompt
     tts_event = asyncio.Event()
     token_buffer = []
-    text_to_speech = default_text_to_speech
+    text_to_speech = get_text_to_speech("ELEVEN_LABS")
     sid = None
 
     async def on_new_token(token):

@@ -7,7 +7,6 @@ import base64
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Singleton, timed
 from realtime_ai_character.audio.text_to_speech.base import TextToSpeech
-from realtime_ai_character.audio.text_to_speech.utils import MP3ToUlaw
 
 logger = get_logger(__name__)
 
@@ -58,8 +57,9 @@ class ElevenLabs(Singleton, TextToSpeech):
             **config.data,
         }
         url = config.url.format(voice_id=voice_id)
+        url += "?output_format=" + ("ulaw_8000" if platform == "twilio" else "mp3_44100_128")
         if first_sentence:
-            url = url + '?optimize_streaming_latency=4'
+            url += "&optimize_streaming_latency=4"
         async with httpx.AsyncClient() as client:
             response = await client.post(url, json=data, headers=headers)
             if response.status_code != 200:
@@ -73,8 +73,7 @@ class ElevenLabs(Singleton, TextToSpeech):
                 if platform != "twilio":
                     await websocket.send_bytes(chunk)
                 else:
-                    audio_bytes = MP3ToUlaw(chunk)
-                    audio_b64 = base64.b64encode(audio_bytes).decode()
+                    audio_b64 = base64.b64encode(chunk).decode()
                     media_response = {
                         "event": "media",
                         "streamSid": sid,

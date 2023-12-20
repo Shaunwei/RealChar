@@ -17,8 +17,12 @@ jobs:
 
     steps:
       - name: add env IMAGE_NAME to keep it lowercase
+        env:
+              GY_TEST: ${{github.ref}}
         run: |
           echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}-web-dev" >>${GITHUB_ENV}
+          echo $GY_TEST
+          env
 
       - name: Check out code
         uses: actions/checkout@v3
@@ -47,7 +51,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            REACT_APP_BUILD_NUMBER=${{ github.ref }}
+            REACT_APP_BUILD_NUMBER=${{ steps.meta.outputs.version }}
             NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyAVqhwbdB8I56HAMVVlgJKZcfrBkKI2AhQ
             NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=assistly-kubernetes.firebaseapp.com
             NEXT_PUBLIC_FIREBASE_PROJECT_ID=assistly-kubernetes

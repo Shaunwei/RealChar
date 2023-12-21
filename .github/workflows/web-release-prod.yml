@@ -1,4 +1,4 @@
-name: Release API image to Production
+name: Web deploy to PROD
 
 on:
   workflow_dispatch:
@@ -66,4 +66,3 @@ jobs:
           SLACK_WEBHOOK: https://hooks.slack.com/services/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
           SLACK_FOOTER: realchar.ai
           MSG_MINIMAL: true
-

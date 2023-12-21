@@ -1,4 +1,4 @@
-name: Build Push and Deploy Docker Image
+name: zDOCKERHUB build API
 
 on:
   release:
@@ -35,28 +35,28 @@ jobs:
         push: true
         tags: shaunly/real_char:latest
 
-    - id: 'auth'
-      name: 'Authenticate to Google Cloud'
-      uses: 'google-github-actions/auth@v1'
-      with:
-        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS_REBYTE }}'
+    # - id: 'auth'
+    #   name: 'Authenticate to Google Cloud'
+    #   uses: 'google-github-actions/auth@v1'
+    #   with:
+    #     credentials_json: '${{ secrets.GOOGLE_CREDENTIALS_REBYTE }}'
 
-    - id: 'get-credentials'
-      uses: 'google-github-actions/get-gke-credentials@v1'
-      with:
-        cluster_name: 're-dev'
-        location: 'us-west3'
+    # - id: 'get-credentials'
+    #   uses: 'google-github-actions/get-gke-credentials@v1'
+    #   with:
+    #     cluster_name: 're-dev'
+    #     location: 'us-west3'
 
-    - id: 'deploy-to-cluster'
-      run: 'kubectl rollout restart deployment deployment-rc-api'
+    # - id: 'deploy-to-cluster'
+    #   run: 'kubectl rollout restart deployment deployment-rc-api'
 
-    - name: Slack Notification
-      uses: rtCamp/action-slack-notify@v2
-      env:
-        SLACK_COLOR: '#fb5c05'
-        SLACK_MESSAGE: new version has been updated for realchar api server in dev env
-        SLACK_TITLE: dev realchar api server (backend) update
-        SLACK_WEBHOOK: https://hooks.slack.com/services/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
+    # - name: Slack Notification
+    #   uses: rtCamp/action-slack-notify@v2
+    #   env:
+    #     SLACK_COLOR: '#fb5c05'
+    #     SLACK_MESSAGE: new version has been updated for realchar api server in dev env
+    #     SLACK_TITLE: dev realchar api server (backend) update
+    #     SLACK_WEBHOOK: https://hooks.slack.com/services/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
 
     # - name: Install and configure kubectl
     #   uses: azure/setup-kubectl@v1

@@ -1,4 +1,4 @@
-name: Build API Base image
+name: base python image build
 
 on:
   push:

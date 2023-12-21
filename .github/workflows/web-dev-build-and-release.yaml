@@ -1,4 +1,4 @@
-name: Build Web Image and Release to Dev
+name: Web[DEV] build and deploy
 
 on:
   push:
@@ -17,12 +17,9 @@ jobs:
 
     steps:
       - name: add env IMAGE_NAME to keep it lowercase
-        env:
-              GY_TEST: ${{github.ref}}
         run: |
           echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}-web-dev" >>${GITHUB_ENV}
-          echo $GY_TEST
-          env
+
 
       - name: Check out code
         uses: actions/checkout@v3

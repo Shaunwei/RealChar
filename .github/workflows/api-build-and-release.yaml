@@ -1,4 +1,4 @@
-name: Build API Image and Release to Dev
+name: API build and deploy to DEV
 
 on:
   push:
@@ -69,4 +69,3 @@ jobs:
         SLACK_MESSAGE: api.dev.realchar.ai -- ${{ github.event.head_commit.message }}
         SLACK_TITLE: api -> ${{ steps.meta.outputs.version }}
         SLACK_WEBHOOK: https://hooks.slack.com/services/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
-

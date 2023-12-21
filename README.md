@@ -55,7 +55,7 @@ alias gpp='git push private'
 </p>
 
 <div align="center">
-    <a href="https://discord.gg/e4AYNnFg2F">
+    <a href="https://discord.gg/YV4U7Am2Xn">
     <img src="https://img.shields.io/badge/discord-join%20chat-blue.svg?style=for-the-badge" alt="Join our Discord" height="20">
     </a>
     <a href="https://twitter.com/agishaun">

@@ -1,4 +1,4 @@
-name: Push Kubernetes Frontend Prod Deployment
+name: zDOCKERHUB build web dev
 
 on:
   workflow_dispatch:
@@ -47,34 +47,34 @@ jobs:
             NEXT_PUBLIC_API_HOST=https://api.realchar.ai
             NEXT_PUBLIC_TURN_SERVER_API_ENDPOINT=https://testrtcturn.metered.live/api/v1/turn/credentials?apiKey=1061f118b12c30023acb17aafcf8c224c8f1
  
-  k8s-deployment:
-    needs: [docker-push]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-    - id: 'auth'
-      name: 'Authenticate to Google Cloud'
-      uses: 'google-github-actions/auth@v1'
-      with:
-        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS_ASSISTLY}}'
+  # k8s-deployment:
+  #   needs: [docker-push]
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: read
+  #     packages: write
+  #   steps:
+  #   - id: 'auth'
+  #     name: 'Authenticate to Google Cloud'
+  #     uses: 'google-github-actions/auth@v1'
+  #     with:
+  #       credentials_json: '${{ secrets.GOOGLE_CREDENTIALS_ASSISTLY}}'
 
-    - id: 'get-credentials'
-      uses: 'google-github-actions/get-gke-credentials@v1'
-      with:
-        cluster_name: 'rc-prod'
-        location: 'us-central1'
+  #   - id: 'get-credentials'
+  #     uses: 'google-github-actions/get-gke-credentials@v1'
+  #     with:
+  #       cluster_name: 'rc-prod'
+  #       location: 'us-central1'
 
-    - name: Deploy to Kubernetes
-      run: kubectl rollout restart deployment deployment-rc-frontend
+  #   - name: Deploy to Kubernetes
+  #     run: kubectl rollout restart deployment deployment-rc-frontend
 
-    - name: Slack Notification
-      uses: rtCamp/action-slack-notify@v2
-      env:
-        SLACK_COLOR: '#335c05'
-        SLACK_MESSAGE: realchar.ai -- ${{ github.event.head_commit.message }}
-        SLACK_TITLE: frontend update
-        SLACK_FOOTER: realchar.ai
-        MSG_MINIMAL: true
-        SLACK_WEBHOOK: https://hooks.slack.com/services/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
+  #   - name: Slack Notification
+  #     uses: rtCamp/action-slack-notify@v2
+  #     env:
+  #       SLACK_COLOR: '#335c05'
+  #       SLACK_MESSAGE: realchar.ai -- ${{ github.event.head_commit.message }}
+  #       SLACK_TITLE: frontend update
+  #       SLACK_FOOTER: realchar.ai
+  #       MSG_MINIMAL: true
+  #       SLACK_WEBHOOK: https://hooks.slack.com/services/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

@@ -1,4 +1,4 @@
-name: Build Web Image and Release to Production
+name: Web[PROD] build and deploy
 
 on:
   push:

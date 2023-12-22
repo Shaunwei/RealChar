@@ -1,6 +1,7 @@
 import asyncio
 import edge_tts
 from edge_tts import VoicesManager
+import os
 
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Singleton, timed
@@ -9,6 +10,8 @@ from realtime_ai_character.audio.text_to_speech.base import TextToSpeech
 logger = get_logger(__name__)
 DEBUG = False
 
+EDGE_TTS_DEFAULT_VOICE = os.getenv("EDGE_TTS_DEFAULT_VOICE", "en-US-ChristopherNeural")
+
 class EdgeTTS(Singleton, TextToSpeech):
     def __init__(self):
         super().__init__()
@@ -16,12 +19,15 @@ class EdgeTTS(Singleton, TextToSpeech):
 
     @timed
     async def stream(self, text, websocket, tts_event: asyncio.Event, voice_id="",
-                     first_sentence=False, language='en-US') -> None:
+                     first_sentence=False, language='en-US', *args, **kwargs) -> None:
         if DEBUG:
             return
         voices = await VoicesManager.create()
-        voice = voices.find(Gender="Male", Language="en")[0]
-        communicate = edge_tts.Communicate(text, voice["Name"])
+        try:
+            voice = voices.find(ShortName=voice_id)[0]
+        except IndexError:
+            voice = voices.find(ShortName=EDGE_TTS_DEFAULT_VOICE)[0]
+        communicate = edge_tts.Communicate(text, voice["Name"], rate="+20%")
         messages = []
         async for message in communicate.stream():
             if message["type"] == "audio":
@@ -30,14 +36,12 @@ class EdgeTTS(Singleton, TextToSpeech):
                 messages.extend(message["data"])
         await websocket.send_bytes(bytes(messages))
 
-
-    async def generate_audio(self, text, voice_id = "", language='en-US') -> bytes:
+    async def generate_audio(self, text, voice_id="", language='en-US') -> bytes:
         voices = await VoicesManager.create()
-        voice = voices.find(Gender="Male", Language="en")[0]
-        communicate = edge_tts.Communicate(text, voice["Name"])
+        voice = voices.find(ShortName=voice_id)[0]
+        communicate = edge_tts.Communicate(text, voice["Name"], rate="+20%")
         messages = []
         async for message in communicate.stream():
             if message["type"] == "audio":
                 messages.extend(message["data"])
         return bytes(messages)
-

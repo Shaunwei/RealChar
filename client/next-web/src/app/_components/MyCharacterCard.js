@@ -6,6 +6,7 @@ import {
   Button,
   Link
 } from '@nextui-org/react';
+import NextLink from 'next/link';
 import { BiEdit } from 'react-icons/bi';
 import { useRouter } from 'next/navigation';
 import lz from 'lz-string';
@@ -25,8 +26,15 @@ export default function CharacterCard({
         />
         <div className="grow md:ml-0">
           <p className="name text-base text-center h-12 flex flex-row justify-center items-center"><span>{character.name}</span></p>
-          <div className="flex justify-center mt-1 relative h-10 w-[180px]">
-            <Link underline="hover" className="text-real-silver-500">
+          <div className="flex justify-center mt-1 relative h-10">
+            <Link
+              href={{
+                pathname: '/edit',
+                query: {character: lz.compressToEncodedURIComponent(JSON.stringify(character))}
+              }}
+              as={NextLink}
+              underline="hover"
+              className="text-real-blue-500">
               <BiEdit size="1.2em" className="mr-1"/>
               Edit details
             </Link>

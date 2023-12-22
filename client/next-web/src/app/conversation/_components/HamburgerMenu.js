@@ -13,7 +13,7 @@ import {
 import { RxHamburgerMenu, RxCross2 } from 'react-icons/rx';
 import { BiSolidLockAlt } from 'react-icons/bi';
 import styles from './HamburgerMenu.module.css';
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 import { useAuthContext } from '@/context/AuthContext';
 
 export default function HamburgerMenu() {
@@ -41,10 +41,8 @@ export default function HamburgerMenu() {
     preferredLanguage,
     languageList,
     handleLanguageChange,
-    enableGoogle,
-    enableQuivr,
-    handleGoogle,
-    handleQuivr
+    isJournalMode,
+    setIsJournalMode,
   } = useAppStore();
   const { user } = useAuthContext();
 
@@ -175,21 +173,12 @@ export default function HamburgerMenu() {
           <section>
             <header className="text-sm font-light my-3">Advanced options</header>
             <div className="flex flex-row gap-4 justify-between my-3">
-              <p>Enable google search</p>
+              <p>Journal Mode</p>
               <Switch
                 size="sm"
-                isSelected={enableGoogle}
-                onValueChange={handleGoogle}
-                aria-label="google search"
-              />
-            </div>
-            <div className="flex flex-row gap-4 justify-between my-3">
-              <p>Enable Quivr Second Brain</p>
-              <Switch
-                size="sm"
-                isSelected={enableQuivr}
-                onValueChange={handleQuivr}
-                aria-label="google search"
+                isSelected={isJournalMode}
+                onValueChange={setIsJournalMode}
+                aria-label="journal mode"
               />
             </div>
           </section>

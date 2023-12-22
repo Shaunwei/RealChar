@@ -9,7 +9,6 @@ from realtime_ai_character.llm.base import (
     AsyncCallbackAudioHandler,
     AsyncCallbackTextHandler,
     LLM,
-    SearchAgent,
 )
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Character, timed
@@ -29,8 +28,6 @@ class LocalLlm(LLM):
         )
         self.config = {"model": "Local LLM", "temperature": 0.5, "streaming": True}
         self.db = get_chroma()
-        self.search_agent = None
-        self.search_agent = SearchAgent()
 
     def get_config(self):
         return self.config
@@ -44,16 +41,12 @@ class LocalLlm(LLM):
         callback: AsyncCallbackTextHandler,
         audioCallback: AsyncCallbackAudioHandler,
         character: Character,
-        useSearch: bool = False,
         metadata: dict = None,
         *args,
         **kwargs,
     ) -> str:
         # 1. Generate context
         context = self._generate_context(user_input, character)
-        # Get search result if enabled
-        if useSearch:
-            context += self.search_agent.search(user_input)
         
         # 2. Add user input to history
         history.append(

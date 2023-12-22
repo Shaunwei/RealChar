@@ -9,4 +9,4 @@ repos:
     hooks:
       - id: prettier
         types_or: [css, javascript, jsx, ts, tsx]
-        args: [--config, client/web/.prettierrc]
+        args: [--config, client/next-web/.prettierrc]

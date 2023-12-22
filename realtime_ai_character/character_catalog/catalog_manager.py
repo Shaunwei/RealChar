@@ -22,9 +22,16 @@ logger = get_logger(__name__)
 
 
 class CatalogManager(Singleton):
-    def __init__(self, overwrite=True):
+    def __init__(self):
         super().__init__()
-        self.db = get_chroma()
+        overwrite = os.getenv("OVERWRITE_CHROMA") != "false"
+        # skip Chroma if Openai API key is not set
+        if os.getenv('OPENAI_API_KEY'):
+            self.db = get_chroma()
+        else:
+            self.db = None
+            overwrite = False
+            logger.warning("OVERWRITE_CHROMA disabled due to OPENAI_API_KEY not set")
         self.sql_db = next(get_db())
         self.sql_load_interval = 30
         self.sql_load_lock = rwlock.RWLockFair()
@@ -41,10 +48,11 @@ class CatalogManager(Singleton):
         if overwrite:
             logger.info('Persisting data in the chroma.')
             self.db.persist()
-        logger.info(
-            f"Total document load: {self.db._client.get_collection('llm').count()}")
+        if self.db:
+            logger.info(f"Total document load: {self.db._client.get_collection('llm').count()}")
         self.run_load_sql_db_thread = True
-        self.load_sql_db_thread = threading.Thread(target=self.load_sql_db_loop)
+        self.load_sql_db_thread = threading.Thread(
+            target=self.load_sql_db_loop)
         self.load_sql_db_thread.daemon = True
         self.load_sql_db_thread.start()
 
@@ -68,6 +76,7 @@ class CatalogManager(Singleton):
         character_id = yaml_content['character_id']
         character_name = yaml_content['character_name']
         voice_id = str(yaml_content['voice_id'])
+        order = yaml_content.get('order', 10**9)
         if (os.getenv(character_id.upper() + "_VOICE_ID", "")):
             voice_id = os.getenv(character_id.upper() + "_VOICE_ID")
         self.characters[character_id] = Character(
@@ -79,11 +88,14 @@ class CatalogManager(Singleton):
             source='default',
             location='repo',
             visibility='public',
-            tts=yaml_content["text_to_speech_use"]
+            order=order,
+            tts=yaml_content["text_to_speech_use"],
+            # rebyte config
+            rebyte_api_project_id=yaml_content["rebyte_api_project_id"],
+            rebyte_api_agent_id=yaml_content["rebyte_api_agent_id"],
+            rebyte_api_version=yaml_content.get("rebyte_api_version"),
         )
 
-        if "avatar_id" in yaml_content:
-            self.characters[character_id].avatar_id = yaml_content["avatar_id"]
         if "author_name" in yaml_content:
             self.characters[character_id].author_name = yaml_content["author_name"],
 
@@ -105,6 +117,7 @@ class CatalogManager(Singleton):
         for directory in directories:
             character_name = self.load_character(directory)
             if overwrite:
+                logger.info('Loading data for character: ' + character_name)
                 self.load_data(character_name, directory / 'data')
                 logger.info('Loaded data for character: ' + character_name)
         logger.info(
@@ -122,6 +135,8 @@ class CatalogManager(Singleton):
                 yaml_content = yaml.safe_load(f_yaml)
             character_id = yaml_content['character_id']
             character_name = yaml_content['character_name']
+            logger.info('Loading data for character: ' + character_name)
+            order = yaml_content.get('order', 10**9)
             self.characters[character_id] = Character(
                 character_id=character_id,
                 name=character_name,
@@ -132,11 +147,13 @@ class CatalogManager(Singleton):
                 location='repo',
                 author_name=yaml_content["author_name"],
                 visibility=yaml_content["visibility"],
-                tts=yaml_content["text_to_speech_use"]
+                tts=yaml_content["text_to_speech_use"],
+                order=order,
+                # rebyte config
+                rebyte_api_project_id=yaml_content["rebyte_api_project_id"],
+                rebyte_api_agent_id=yaml_content["rebyte_api_agent_id"],
+                rebyte_api_version=yaml_content.get("rebyte_api_version"),
             )
-
-            if "avatar_id" in yaml_content:
-                self.characters[character_id].avatar_id = yaml_content["avatar_id"]
 
             if overwrite:
                 self.load_data(character_name, directory / 'data')
@@ -157,7 +174,6 @@ class CatalogManager(Singleton):
             } for d in documents])
         self.db.add_documents(docs)
 
-
     def load_character_from_sql_database(self):
         logger.info('Started loading characters from SQL database')
         character_models = self.sql_db.query(CharacterModel).all()
@@ -176,7 +192,7 @@ class CatalogManager(Singleton):
                 if character_model.author_id not in self.author_name_cache:
                     author_name = auth.get_user(
                         character_model.author_id).display_name if os.getenv(
-                            'USE_AUTH', '') else "anonymous author"
+                            'USE_AUTH') == "true" else "anonymous author"
                     self.author_name_cache[character_model.author_id] = author_name
                 else:
                     author_name = self.author_name_cache[character_model.author_id]
@@ -193,7 +209,10 @@ class CatalogManager(Singleton):
                     visibility=character_model.visibility,
                     tts=character_model.tts,
                     data=character_model.data,
-                    avatar_id=character_model.avatar_id if character_model.avatar_id else None
+                    # rebyte config
+                    rebyte_api_project_id=character_model.rebyte_api_project_id,
+                    rebyte_api_agent_id=character_model.rebyte_api_agent_id,
+                    rebyte_api_version=character_model.rebyte_api_version,
                 )
                 self.characters[character_model.id] = character
                 # TODO: load context data from storage
@@ -201,7 +220,7 @@ class CatalogManager(Singleton):
             f'Loaded {len(character_models)} characters from sql database')
 
 
-def get_catalog_manager():
+def get_catalog_manager() -> CatalogManager:
     return CatalogManager.get_instance()
 
 

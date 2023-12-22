@@ -1,5 +1,4 @@
-import Chat from './Chat';
-import { useAppStore } from '@/lib/store'
+import { useAppStore } from '@/zustand/store'
 import {
   motion,
   AnimatePresence
@@ -8,7 +7,7 @@ import {
 export default function HandsFreeMode({
   isDisplay
 }) {
-  const { character, isRecording, speechInterim } = useAppStore();
+  const { isRecording, speechInterim } = useAppStore();
   const display = isDisplay ? 'flex' : 'hidden';
 
   return (

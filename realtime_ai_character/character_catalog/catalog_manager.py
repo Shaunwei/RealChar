@@ -75,9 +75,9 @@ class CatalogManager(Singleton):
 
         character_id = yaml_content['character_id']
         character_name = yaml_content['character_name']
-        voice_id = yaml_content['voice_id']
+        voice_id = str(yaml_content['voice_id'])
         order = yaml_content.get('order', 10**9)
-        if (os.getenv(character_id.upper() + "_VOICE_ID")):
+        if (os.getenv(character_id.upper() + "_VOICE_ID", "")):
             voice_id = os.getenv(character_id.upper() + "_VOICE_ID")
         self.characters[character_id] = Character(
             character_id=character_id,

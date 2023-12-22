@@ -44,7 +44,7 @@ export default function CharacterCard({
               variant="bordered"
               radius="full"
               color="white"
-              className="opacity-70 absolute"
+              className="opacity-70 absolute hover:opacity-80 hover:scale-105 hover:-translate-y-0.5 transform transition-transform"
               onPress={handlePress}
             >
             {!isPlaying ? (
@@ -58,7 +58,7 @@ export default function CharacterCard({
       </CardBody>
       <CardFooter className="mt-5">
         <Button
-          className="w-full font-light bg-default/40"
+          className="w-full font-light bg-default/40 hover:opacity-80"
           onPress={() => {
             const compressedCharacter = lz.compressToEncodedURIComponent(
               JSON.stringify(character)

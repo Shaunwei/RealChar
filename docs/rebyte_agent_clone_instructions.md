@@ -8,7 +8,7 @@ In this tutorial, you'll learn how to replicate a ReByte community agent into yo
 To start, establish your presence on ReByte by registering an account at their official site: [ReByte](https://rebyte.ai/).
 
 ### Step 2: Choosing a Pre-built Community Agent
-Within the platform, locate the Community Tab in the menu. Scan through the available public agents and pick one that aligns with your interests, such as the 'chat_with_elon_musk_with_knowledge_memory'.
+Within the platform, visit the [Public RealChar Characters's Agents](https://rebyte.ai/p/d4e521a67bb8189c2189/callable). Scan through the available public agents and pick one that aligns with your interests, such as the 'chat_with_elon_musk_with_knowledge_memory'. Or you can choose one Character on the [RealChar.ai](https://realchar.ai/) and visit its Agent link.
 
 ### Step 3: Cloning the Selected Agent
 Employ the `Clone` function to replicate the chosen agent into your project workspace or an alternative project if preferred.

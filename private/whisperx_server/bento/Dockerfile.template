@@ -1,9 +1,0 @@
-{% extends bento_base_template %}
-{% block SETUP_BENTO_BASE_IMAGE %}
-
-{{ super() }}
-
-# Install system-level dependencies
-RUN apt-get update && apt-get install -y git && apt-get clean
-
-{% endblock %}

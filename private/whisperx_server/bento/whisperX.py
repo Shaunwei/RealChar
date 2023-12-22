@@ -1,1 +1,0 @@
-../whisperX.py

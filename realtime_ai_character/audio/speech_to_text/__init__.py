@@ -17,5 +17,13 @@ def get_speech_to_text() -> SpeechToText:
         from realtime_ai_character.audio.speech_to_text.whisper import Whisper
         Whisper.initialize(use='api')
         return Whisper.get_instance()
+    elif use == 'LOCAL_WHISPER_X':
+        from realtime_ai_character.audio.speech_to_text.whisperX import WhisperX
+        WhisperX.initialize(use='local')
+        return WhisperX.get_instance()
+    elif use == 'WHISPER_X_API':
+        from realtime_ai_character.audio.speech_to_text.whisperX import WhisperX
+        WhisperX.initialize(use='api')
+        return WhisperX.get_instance()
     else:
         raise NotImplementedError(f'Unknown speech to text engine: {use}')

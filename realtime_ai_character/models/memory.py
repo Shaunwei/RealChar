@@ -1,8 +1,10 @@
+import os
 import datetime
 
 from pydantic import BaseModel
 from realtime_ai_character.database.base import Base
 from sqlalchemy import Column, String, DateTime, Unicode
+from pgvector.sqlalchemy import Vector
 from sqlalchemy.inspection import inspect
 from typing import Optional
 
@@ -16,6 +18,8 @@ class Memory(Base):
     content = Column(Unicode(65535), nullable=True)
     created_at = Column(DateTime(), nullable=False)
     updated_at = Column(DateTime(), nullable=False)
+    if 'postgres' in os.environ.get('DATABASE_URL', ''):
+        content_embedding = Column(Vector(1536), nullable=True)
 
     def to_dict(self):
         return {

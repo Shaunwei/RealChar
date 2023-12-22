@@ -72,13 +72,40 @@ def run_uvicorn(args):
 
 
 @click.command()
-def web_build():
+def next_web_dev():
     # Build the web app to be served by FastAPI
     click.secho("Building web app...", fg='green')
-    subprocess.run(["npm", "install"], cwd="client/web")
+    subprocess.run(["npm", "install"], cwd="client/next-web")
     click.secho("Web app dependencies installed.", fg='green')
-    subprocess.run(["npm", "run", "build"], cwd="client/web")
-    click.secho("Web app built.", fg='green')
+    subprocess.run(["npm", "run", "dev"], cwd="client/next-web")
+    click.secho("Web app dev.", fg='green')
+
+@click.command()
+@click.option('--file', '-f', default='client/next-web/.env', help='Path to the .env file.')
+@click.option('--image-name', '-i', default='realchar-next-web', help='Name of the Docker image.')
+def docker_next_web_build(file, image_name):
+    """Build docker image using client/next-web/.env file for build arguments."""
+    build_args = ""
+
+    if not os.path.exists(file):
+        click.echo(f"File '{file}' does not exist.")
+        return
+
+    with open(file, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#"):
+                key, value = line.split("=", 1)
+                build_args += f" --build-arg {key}={value}"
+
+    docker_command = f"docker build {build_args} -t {image_name} client/next-web"
+    click.echo("Executing: " + docker_command)
+    result = subprocess.run(docker_command.split())
+
+    if result.returncode == 0:
+        click.secho("Docker image built successfully.", fg='green')
+    else:
+        click.secho("Failed to build Docker image.", fg='red')
 
 
 @click.command()
@@ -119,7 +146,7 @@ cli.add_command(docker_build)
 cli.add_command(docker_run)
 cli.add_command(docker_delete)
 cli.add_command(run_uvicorn)
-cli.add_command(web_build)
+cli.add_command(next_web_dev)
 cli.add_command(docker_next_web_build)
 
 

@@ -2,13 +2,13 @@ version: '3'
 
 services:
   backend:
-    build: .
+    build: 
+      context: .
     ports:
       - "8000:8000"
     env_file:
       - ./.env
-    networks:
-      - realchar
+
   web:
     build:
       context: ./client/next-web/
@@ -21,16 +21,16 @@ services:
         NEXT_PUBLIC_FIREBASE_APP_ID: 1:806733379891:web:48bf124c0d9b90298e6646
         NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: G-XVWF8XDKS5
         REACT_APP_BUILD_NUMBER: 0.0.1
-        NEXT_PUBLIC_API_HOST: http://backend:8000
-        API_HOST: http://backend:8000
+        NEXT_PUBLIC_API_HOST: http://127.0.0.1:8000
+        API_HOST: http://127.0.0.1:8000
     ports:
       - "80:80"
     depends_on:
       - backend
     env_file:
       - ./client/next-web/.env
-    networks:
-      - realchar
 
 networks:
-  realchar:
+  default:
+    driver: bridge
+

@@ -74,9 +74,13 @@ class AsyncCallbackAudioHandler(AsyncCallbackHandler):
         token = self.text_regulator(token)
         if not token:
             return
+        for char in token:
+            await self._on_llm_new_character(char)
+
+    async def _on_llm_new_character(self, char: str):
         # send to TTS in sentences
-        self.current_sentence += token
-        if token in {'.', '?', '!', '。', '？', '！'}:
+        self.current_sentence += char
+        if char in {'.', '?', '!', '。', '？', '！', '\n', '\r', '\t'}:
             if self.is_first_sentence:
                 timer.log("LLM First Sentence",
                           lambda: timer.start("TTS First Sentence"))

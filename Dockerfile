@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN echo "deb http://deb.debian.org/debian/ bullseye main\ndeb-src http://deb.debian.org/debian/ bullseye main" | tee /etc/apt/sources.list.d/ffmpeg.list  &&\
     apt-get update && \
-    apt-get install -y ffmpeg=7:4.3.5-0+deb11u1
+    apt-get install -y ffmpeg
 
 
 WORKDIR /realtime_ai_character
@@ -23,6 +23,10 @@ WORKDIR /realtime_ai_character
 # Install Python dependencies
 COPY requirements.txt /realtime_ai_character
 RUN pip install -r /realtime_ai_character/requirements.txt
+COPY requirements-torch-cpu.txt /realtime_ai_character
+RUN pip install -r /realtime_ai_character/requirements-torch-cpu.txt
+
+RUN pip install git+https://github.com/m-bain/whisperx.git
 
 # Copy the project files
 COPY ./ /realtime_ai_character
@@ -35,3 +39,4 @@ RUN chmod +x /realtime_ai_character/entrypoint.sh
 
 # Run the application
 CMD ["/bin/sh", "/realtime_ai_character/entrypoint.sh"]
+

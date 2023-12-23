@@ -23,10 +23,6 @@ WORKDIR /realtime_ai_character
 # Install Python dependencies
 COPY requirements.txt /realtime_ai_character
 RUN pip install -r /realtime_ai_character/requirements.txt
-COPY requirements-torch-cpu.txt /realtime_ai_character
-RUN pip install -r /realtime_ai_character/requirements-torch-cpu.txt
-
-RUN pip install git+https://github.com/m-bain/whisperx.git
 
 # Copy the project files
 COPY ./ /realtime_ai_character

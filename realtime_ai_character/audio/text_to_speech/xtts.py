@@ -1,7 +1,8 @@
 import asyncio
+import base64
 import os
 import requests
-import base64
+from fastapi import WebSocket
 
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Singleton, timed
@@ -23,14 +24,14 @@ class XTTS(Singleton, TextToSpeech):
     @timed
     async def stream(
         self,
-        text,
-        websocket,
+        text: str,
+        websocket: WebSocket,
         tts_event: asyncio.Event,
-        voice_id="default",
-        first_sentence=False,
-        language="",
-        sid="",
-        platform="",
+        voice_id: str = "default",
+        first_sentence: bool = False,
+        language: str = "",
+        sid: str = "",
+        platform: str = "",
         *args,
         **kwargs,
     ) -> None:
@@ -61,6 +62,7 @@ class XTTS(Singleton, TextToSpeech):
                     break
                 if platform != "twilio":
                     await websocket.send_bytes(chunk)
+                    await asyncio.sleep(0.001)  # don't remove! this avoids sending in a batch
                 else:
                     audio_bytes = MP3ToUlaw(chunk)
                     audio_b64 = base64.b64encode(audio_bytes).decode()

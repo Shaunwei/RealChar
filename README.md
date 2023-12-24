@@ -293,22 +293,29 @@ Note if you want to remotely connect to a RealChar server, SSL set up is require
 ## (Optional) 📀 Installation via Docker
 <details><summary>👇click me</summary>
 
-1. Docker image: you can use our docker image directly (if you are not using Apple M1/M2 CPUs)
+1. Docker images: you can use our docker image directly (if you are not using Apple M1/M2 CPUs)
     ```sh
     docker pull shaunly/real_char:latest
     docker tag shaunly/real_char:latest realtime-ai-character
     ```
-    (Or you want build yourself) Build docker image
+    ```sh
+    docker pull shaunly/real_char_frontend_next:latest
+    docker tag shaunly/real_char_frontend_next:latest realtime-ai-character-frontend-next
+    ```
+    (Or you want build yourself) Build docker images
     ```sh
     python cli.py docker-build
+    python cli.py docker-next-web-build
+    ```
     ```
     If you have issues with docker (especially on a non-Linux machine), please refer to https://docs.docker.com/get-docker/ (installation) and https://docs.docker.com/desktop/troubleshoot/overview/ (troubleshooting).
-2. Run docker image with `.env` file
+1. Run docker images with `.env` file
     ```sh
     python cli.py docker-run
+    python cli.py docker-next-web-run
     ```
 
-3. Go to http://localhost:8000 (NOT 0.0.0.0:8000) to start talking or use terminal    client
+1. Go to http://localhost:3000 to start talking or use terminal    client
     ```sh
     python client/cli.py
     ```

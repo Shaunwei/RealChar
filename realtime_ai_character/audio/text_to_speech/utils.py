@@ -1,9 +1,10 @@
 import io
 
-import torch
-import torchaudio
 
 def MP3ToUlaw(src: bytes) -> bytes:
+    import torch
+    import torchaudio
+
     waveform, sample_rate = torchaudio.load(io.BytesIO(src), normalize=True)
     waveform = torchaudio.functional.resample(waveform, sample_rate, 8000)
     waveform = torchaudio.functional.highpass_biquad(waveform, sample_rate=8000, cutoff_freq=500)

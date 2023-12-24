@@ -5,8 +5,6 @@ import uuid
 import time
 import requests
 import numpy as np
-import torch
-import torchaudio
 from copy import deepcopy
 from dotenv import load_dotenv
 
@@ -85,6 +83,7 @@ class WhisperX(Singleton, SpeechToText):
     def __init__(self, use: str = "local"):
         super().__init__()
         if use == "local":
+            import torch
             import whisperx
 
             self.device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -135,6 +134,8 @@ class WhisperX(Singleton, SpeechToText):
         suppress_tokens=[-1],
         speaker_audio_samples={},
     ):
+        import torch
+
         logger.info("Transcribing audio...")
 
         # initial attempt, transcribe with diarization
@@ -267,6 +268,8 @@ class WhisperX(Singleton, SpeechToText):
         return response
 
     def get_audio(self, audio_bytes: bytes, platform: str, verbose: bool = False):
+        import torchaudio
+        
         if platform == "twilio":
             reader = torchaudio.io.StreamReader(
                 io.BytesIO(audio_bytes), format="mulaw", option={"sample_rate": "8000"}

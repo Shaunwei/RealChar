@@ -21,7 +21,6 @@ from fastapi import (
 import numpy as np
 from twilio.twiml.voice_response import VoiceResponse, Connect
 from twilio.rest import Client
-import torch
 from typing import Callable
 
 from realtime_ai_character.audio.speech_to_text import get_speech_to_text
@@ -145,6 +144,8 @@ class TwilioConversationEngine:
     SILENCE_THRESHOLD = 0.2
 
     def __init__(self, websocket, speech_to_text):
+        import torch
+
         self._speech_to_text = speech_to_text
         self._websocket = websocket
         self._transcript_buffer = []  # streamed transcripts
@@ -177,6 +178,8 @@ class TwilioConversationEngine:
         logger.info(f"Transcripting: {self._transcript_buffer}")
 
     async def add_bytes(self, chunk: bytes):
+        import torch
+        
         self._vad_buffer.append(chunk)
         if len(self._vad_buffer) > self._vad_buffer_size:
             self._vad_buffer.popleft()

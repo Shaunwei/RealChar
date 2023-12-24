@@ -133,8 +133,9 @@ def docker_next_web_build(file, image_name, rebuild):
                 line = line.strip()
                 if line and not line.startswith("#"):
                     key, value = line.split("=", 1)
-                    value.replace("localhost", "host.docker.internal")
-                    value.replace("127.0.0.1", "host.docker.internal")
+                    value = value.replace("localhost", "host.docker.internal").replace(
+                        "127.0.0.1", "host.docker.internal"
+                    )
                     build_args += f" --build-arg {key}={value}"
 
         docker_command = (

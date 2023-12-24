@@ -55,7 +55,6 @@ def docker_run(name, db_file):
             [
                 "docker",
                 "run",
-                "--net=host",
                 "--env-file",
                 ".env",
                 "--name",
@@ -134,15 +133,11 @@ def docker_next_web_build(file, image_name, rebuild):
                 line = line.strip()
                 if line and not line.startswith("#"):
                     key, value = line.split("=", 1)
-                    value = value.replace("localhost", "host.docker.internal").replace(
-                        "127.0.0.1", "host.docker.internal"
-                    )
-                    if value:
-                        build_args += f" --build-arg {key}={value}"
+                    build_args += f" --build-arg {key}={value}"
 
         docker_command = (
             f"docker build {build_args} -t {image_name}"
-            + " --add-host=host.docker.internal:host-gateway client/next-web"
+            + " client/next-web"
         )
         click.echo("Executing: " + docker_command)
         result = subprocess.run(docker_command.split())
@@ -177,46 +172,20 @@ def docker_next_web_run(file, image_name):
             "Warning: .env file not found. Running without environment variables.", fg="yellow"
         )
 
-    run_args = ""
-    with open(file, "r") as f:
-        for line in f:
-            line = line.strip()
-            if line and not line.startswith("#"):
-                key, value = line.split("=", 1)
-                # value = value.replace("localhost", "host.docker.internal").replace(
-                #     "127.0.0.1", "host.docker.internal"
-                # )
-                if value:
-                    run_args += f" --env {key}={value}"
-
-    print(
-        " ".join(
-            ["docker", "run"]
-            + run_args.strip().split()
-            + [
-                "--name",
-                image_name,
-                "-p",
-                "3000:80",
-                "--add-host=host.docker.internal:host-gateway",
-                image_name,
-            ]
-        )
-    )
     # Remove existing container if it exists
     subprocess.run(
         ["docker", "rm", "-f", image_name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
     )
     subprocess.run(
-        ["docker", "run"]
-        + run_args.strip().split()
-        + [
-            "--net=host",
+        [
+            "docker",
+            "run",
+            "--env-file",
+            file,
             "--name",
             image_name,
             "-p",
-            "3000:80",
-            "--add-host=host.docker.internal:host-gateway",
+            "80:80",
             image_name,
         ]
     )

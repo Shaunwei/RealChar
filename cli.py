@@ -180,8 +180,9 @@ def docker_next_web_run(file, image_name):
             line = line.strip()
             if line and not line.startswith("#"):
                 key, value = line.split("=", 1)
-                value.replace("localhost", "host.docker.internal")
-                value.replace("127.0.0.1", "host.docker.internal")
+                value = value.replace("localhost", "host.docker.internal").replace(
+                    "127.0.0.1", "host.docker.internal"
+                )
                 run_args += f" --env {key}={value}"
 
     # Remove existing container if it exists
@@ -196,7 +197,7 @@ def docker_next_web_run(file, image_name):
             "--name",
             image_name,
             "-p",
-            "3000:3000",
+            "3000:80",
             "--add-host=host.docker.internal:host-gateway",
             image_name,
         ]

@@ -216,6 +216,7 @@ cli.add_command(docker_delete)
 cli.add_command(run_uvicorn)
 cli.add_command(next_web_dev)
 cli.add_command(docker_next_web_build)
+cli.add_command(docker_next_web_run)
 
 
 if __name__ == "__main__":

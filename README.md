@@ -31,8 +31,6 @@
 ## ✨ Demo
 Try our site at [RealChar.ai](https://realchar.ai/)
 
-We are also beta-testing our [iOS mobile app](https://apps.apple.com/us/app/realchar-your-ai-companion/id6466730972)📱!
-
 Not sure how to pronounce RealChar? Listen to this 👉 [audip](https://github.com/Shaunwei/RealChar/assets/6148473/45d4773c-eb4f-41e5-a162-f9513d650b76)
 
 ### Demo 1 - with AI Elon about cage fight!
@@ -79,10 +77,6 @@ __Demo settings: Web, GPT4, ElevenLabs with voice clone, Chroma, Google Speech t
 ## 👨‍🚀 Prerequisites
 
 Before setting up this project, follow these instructions to meet the prerequisites:
-
-### 0. Setup Tutorial
-
-- [Tutorial - YouTube](https://www.youtube.com/watch?v=Q16ZH3kJWxw) (Deprecated)
 
 ### 1. Large Language Models
 
@@ -224,20 +218,6 @@ Edge TTS is the default and is free to use.
     ```sh
     pip install git+https://github.com/m-bain/whisperx.git
     ```
-    Conversion between Traditional and Simplified Chinese is supported by [OpenCC](https://github.com/BYVoid/OpenCC):
-    <details><summary>👇opencc installation</summary>
-
-    ```sh
-    pip install opencc==1.1.6
-    ```
-    `opencc` did not provide an arm64 wheel, so you may need to install it from source:
-    ```sh
-    git clone https://github.com/BYVoid/OpenCC.git
-    cd OpenCC
-    make
-    pip install .
-    ```
-    </details>
 - **Step 3**. Create an empty [sqlite](https://www.sqlite.org/index.html) database if you have not done so before
     ```sh
     sqlite3 test.db "VACUUM;"
@@ -383,8 +363,6 @@ And it should work out of the box.
 - [ ] Support RAG*
 - [ ] Support Agents/GPTs*
 - [ ] Add additional TTS service*
-- [ ] Better UI/UX for home page
-- [ ] Better UI/UX for conversation page
 
 $*$ These features are powered by [ReByte](https://rebyte.ai/) platform.
 

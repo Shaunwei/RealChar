@@ -116,29 +116,44 @@ def next_web_dev():
 @click.command()
 @click.option("--file", "-f", default="client/next-web/.env", help="Path to the .env file.")
 @click.option("--image-name", "-i", default="realchar-next-web", help="Name of the Docker image.")
-def docker_next_web_build(file, image_name):
+@click.option(
+    "--rebuild", is_flag=True, help="Flag to indicate whether to rebuild the Docker image."
+)
+def docker_next_web_build(file, image_name, rebuild):
     """Build docker image using client/next-web/.env file for build arguments."""
-    build_args = ""
+    if rebuild or not image_exists(image_name):
+        build_args = ""
 
-    if not os.path.exists(file):
-        click.echo(f"File '{file}' does not exist.")
-        return
+        if not os.path.exists(file):
+            click.echo(f"File '{file}' does not exist.")
+            return
 
-    with open(file, "r") as f:
-        for line in f:
-            line = line.strip()
-            if line and not line.startswith("#"):
-                key, value = line.split("=", 1)
-                build_args += f" --build-arg {key}={value}"
+        with open(file, "r") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#"):
+                    key, value = line.split("=", 1)
+                    value.replace("localhost", "host.docker.internal")
+                    value.replace("127.0.0.1", "host.docker.internal")
+                    build_args += f" --build-arg {key}={value}"
 
-    docker_command = f"docker build {build_args} -t {image_name} client/next-web"
-    click.echo("Executing: " + docker_command)
-    result = subprocess.run(docker_command.split())
+        docker_command = (
+            f"docker build {build_args} -t {image_name}"
+            + " --add-host=host.docker.internal:host-gateway client/next-web"
+        )
+        click.echo("Executing: " + docker_command)
+        result = subprocess.run(docker_command.split())
 
-    if result.returncode == 0:
-        click.secho("Docker image built successfully.", fg="green")
+        if result.returncode == 0:
+            click.secho("Docker image built successfully.", fg="green")
+        else:
+            click.secho("Failed to build Docker image.", fg="red")
     else:
-        click.secho("Failed to build Docker image.", fg="red")
+        click.secho(
+            f"Docker image: {image_name} already exists. Skipping build. "
+            + "To rebuild, use --rebuild option",
+            fg="yellow",
+        )
 
 
 @click.command()
@@ -158,12 +173,33 @@ def docker_next_web_run(file, image_name):
         click.secho(
             "Warning: .env file not found. Running without environment variables.", fg="yellow"
         )
+
+    run_args = ""
+    with open(file, "r") as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#"):
+                key, value = line.split("=", 1)
+                value.replace("localhost", "host.docker.internal")
+                value.replace("127.0.0.1", "host.docker.internal")
+                run_args += f" --env {key}={value}"
+
     # Remove existing container if it exists
     subprocess.run(
         ["docker", "rm", "-f", image_name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
     )
     subprocess.run(
-        ["docker", "run", "--env-file", ".env", "--name", image_name, "-p", "3000:3000", image_name]
+        [
+            "docker",
+            "run",
+            run_args,
+            "--name",
+            image_name,
+            "-p",
+            "3000:3000",
+            "--add-host=host.docker.internal:host-gateway",
+            image_name,
+        ]
     )
 
 

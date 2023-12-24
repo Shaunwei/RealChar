@@ -136,7 +136,8 @@ def docker_next_web_build(file, image_name, rebuild):
                     value = value.replace("localhost", "host.docker.internal").replace(
                         "127.0.0.1", "host.docker.internal"
                     )
-                    build_args += f" --build-arg {key}={value}"
+                    if value:
+                        build_args += f" --build-arg {key}={value}"
 
         docker_command = (
             f"docker build {build_args} -t {image_name}"
@@ -184,14 +185,14 @@ def docker_next_web_run(file, image_name):
                 value = value.replace("localhost", "host.docker.internal").replace(
                     "127.0.0.1", "host.docker.internal"
                 )
-                run_args += f" --env {key}={value}"
+                if value:
+                    run_args += f" --env {key}={value}"
 
     print(
         " ".join(
-            [
-                "docker",
-                "run",
-                run_args,
+            ["docker", "run"]
+            + run_args.strip().split()
+            + [
                 "--name",
                 image_name,
                 "-p",

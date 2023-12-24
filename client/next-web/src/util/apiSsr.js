@@ -1,7 +1,12 @@
 const host = process.env.API_HOST;
 
 export async function getCharacters() {
-  const res = await fetch(`${host}/characters`, { next: { revalidate: 30 } });
+  if (!host) {
+    // skip fetching during build
+    return [];
+  }
+
+  const res = await fetch(`${host}/characters`, { next: { revalidate: 5 } });
 
   if (!res.ok) {
     // This will activate the closest `error.js` Error Boundary

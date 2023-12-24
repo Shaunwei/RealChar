@@ -268,6 +268,7 @@ class WhisperX(Singleton, SpeechToText):
         return response
 
     def get_audio(self, audio_bytes: bytes, platform: str, verbose: bool = False):
+        import torch
         import torchaudio
         
         if platform == "twilio":

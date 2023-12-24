@@ -55,6 +55,7 @@ def docker_run(name, db_file):
             [
                 "docker",
                 "run",
+                "--net=host",
                 "--env-file",
                 ".env",
                 "--name",
@@ -182,9 +183,9 @@ def docker_next_web_run(file, image_name):
             line = line.strip()
             if line and not line.startswith("#"):
                 key, value = line.split("=", 1)
-                value = value.replace("localhost", "host.docker.internal").replace(
-                    "127.0.0.1", "host.docker.internal"
-                )
+                # value = value.replace("localhost", "host.docker.internal").replace(
+                #     "127.0.0.1", "host.docker.internal"
+                # )
                 if value:
                     run_args += f" --env {key}={value}"
 
@@ -210,6 +211,7 @@ def docker_next_web_run(file, image_name):
         ["docker", "run"]
         + run_args.strip().split()
         + [
+            "--net=host",
             "--name",
             image_name,
             "-p",

@@ -11,6 +11,7 @@ export default function Footer() {
           href='https://github.com/Shaunwei/RealChar'
           target='_blank'
           rel='noreferrer'
+          aria-label="link to Github"
           color="foreground">
           <VscGithub size={24}/>
         </Link>
@@ -19,6 +20,7 @@ export default function Footer() {
           href='https://discord.gg/e4AYNnFg2F'
           target='_blank'
           rel='noreferrer'
+          aria-label="link to Discord"
           color="foreground">
           <FaDiscord size={24}/>
         </Link>
@@ -27,6 +29,7 @@ export default function Footer() {
           href='https://twitter.com/agishaun'
           target='_blank'
           rel='noreferrer'
+          aria-label="link to Twitter"
           color="foreground">
           <FaTwitter size={24}/>
         </Link>
@@ -34,7 +37,7 @@ export default function Footer() {
       <p className='copyright text-xs text-center my-7'>
         Copyright © 2023 RealChar. All rights reserved. Any AI character&apos;s
         statements are fictional and don&apos;t represent actual beliefs or
-        opinions.
+        opinions. Ver: {process.env.NEXT_PUBLIC_RC_BUILD_NUMBER}
       </p>
     </footer>
   )

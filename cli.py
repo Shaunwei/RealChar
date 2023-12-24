@@ -202,17 +202,14 @@ def docker_next_web_run(file, image_name):
             ]
         )
     )
-    print("step 1")
     # Remove existing container if it exists
     subprocess.run(
         ["docker", "rm", "-f", image_name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
     )
-    print("step 2")
     subprocess.run(
-        [
-            "docker",
-            "run",
-            run_args,
+        ["docker", "run"]
+        + run_args.strip().split()
+        + [
             "--name",
             image_name,
             "-p",

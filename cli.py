@@ -186,10 +186,27 @@ def docker_next_web_run(file, image_name):
                 )
                 run_args += f" --env {key}={value}"
 
+    print(
+        " ".join(
+            [
+                "docker",
+                "run",
+                run_args,
+                "--name",
+                image_name,
+                "-p",
+                "3000:80",
+                "--add-host=host.docker.internal:host-gateway",
+                image_name,
+            ]
+        )
+    )
+    print("step 1")
     # Remove existing container if it exists
     subprocess.run(
         ["docker", "rm", "-f", image_name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
     )
+    print("step 2")
     subprocess.run(
         [
             "docker",

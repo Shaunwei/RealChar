@@ -220,7 +220,7 @@ Edge TTS is the default and is free to use.
     ```sh
     pip install -r requirements.txt
     ```
-    If you need local speech to text, install whisperX
+    If you need a faster local speech to text, install whisperX
     ```sh
     pip install git+https://github.com/m-bain/whisperx.git
     ```
@@ -332,6 +332,20 @@ see [realtime_ai_character/character_catalog/README.md](realtime_ai_character/ch
 
 ### Create Characters on ReByte.ai
 see [docs/rebyte_agent_clone_instructions.md](docs/rebyte_agent_clone_instructions.md)
+</details>
+
+## (Optional) ☎️ Twilio Integration
+<details><summary>👇click me</summary>
+
+To use [Twilio](https://www.twilio.com/en-us) with RealChar, you need to set up a Twilio account. Then, fill in the following environment variables in your `.env` file:
+```sh
+TWILIO_ACCOUNT_SID=YOUR_TWILIO_ACCOUNT_SID
+TWILIO_ACCESS_TOKEN=YOUR_TWILIO_ACCESS_TOKEN
+DEFAULT_CALLOUT_NUMBER=YOUR_PHONE_NUMBER
+```
+Then, you can receive phone calls from your characters by typing `/call YOURNUMBER` in the text box when chatting with your character.
+
+Note: only US phone numbers and Elevenlabs voiced characters are supported at the moment.
 </details>
 
 ## 🆕! Anyscale and LangSmith integration

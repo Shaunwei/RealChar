@@ -225,7 +225,7 @@ Edge TTS is the default and is free to use.
     pip install git+https://github.com/m-bain/whisperx.git
     ```
     Conversion between Traditional and Simplified Chinese is supported by [OpenCC](https://github.com/BYVoid/OpenCC):
-    <details><summary>👇click me</summary>
+    <details><summary>👇opencc installation</summary>
 
     ```sh
     pip install opencc==1.1.6
@@ -253,9 +253,6 @@ Edge TTS is the default and is free to use.
     ```
     Update API keys and configs following the instructions in the `.env` file.
     > Note that some features require a working login system. You can get your own OAuth2 login for free with [Firebase](https://firebase.google.com/) if needed. To enable, set `USE_AUTH` to `true` and fill in the `FIREBASE_CONFIG_PATH` field. Also fill in Firebase configs in `client/next-web/.env`.
-    <details><summary>👇How to get Firebase configs and firebase_credentials.json</summary>
-    TODO
-    </details>
 - **Step 6**. Run backend server with `cli.py` or use uvicorn directly
     ```sh
     python cli.py run-uvicorn

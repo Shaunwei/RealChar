@@ -1,13 +1,11 @@
 aioconsole==0.6.2
 beautifulsoup4==4.12.2
-bentoml==1.1.6
-fastapi==0.103.2
+fastapi[all]==0.103.2
 faster_whisper==0.9.0
 firebase_admin==6.2.0
 httpx==0.25.0
 langchain==0.0.308
 llama_index==0.8.39.post2
-multion==0.2.2
 numpy==1.26.0
 openai==0.27.8
 pgvector==0.2.3
@@ -20,8 +18,6 @@ Requests==2.31.0
 simpleaudio==1.0.4
 SQLAlchemy==2.0.21
 starlette==0.27
-torch==2.1.0
-torchaudio==2.1.0
 python-dotenv==1.0.0
 twilio==8.9.0
 chromadb==0.4.13
@@ -29,3 +25,6 @@ SpeechRecognition==3.10.0
 alembic==1.11.1
 psycopg2-binary==2.9.9
 pypdf==3.16.2
+edge-tts==6.1.9
+rebyte-langchain>=0.0.5
+emoji==2.9.0

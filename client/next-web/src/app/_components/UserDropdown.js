@@ -6,7 +6,7 @@ import {
 } from '@nextui-org/dropdown';
 import { Avatar } from '@nextui-org/avatar';
 import signout from '@/firebase/auth/signout';
-import {useAppStore} from "@/lib/store";
+import {useAppStore} from "@/zustand/store";
 import {useEffect} from "react";
 
 export default function UserDropdown({ user }) {

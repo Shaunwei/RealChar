@@ -1,6 +1,7 @@
 import asyncio
 import os
 import uuid
+import time
 
 from dataclasses import dataclass
 from fastapi import APIRouter, Depends, HTTPException, Path, WebSocket, WebSocketDisconnect, Query
@@ -9,20 +10,16 @@ from firebase_admin.exceptions import FirebaseError
 
 from requests import Session
 
-from realtime_ai_character.audio.speech_to_text import (SpeechToText,
-                                                        get_speech_to_text)
-from realtime_ai_character.audio.text_to_speech import (TextToSpeech,
-                                                        get_text_to_speech)
-from realtime_ai_character.character_catalog.catalog_manager import (
-    CatalogManager, get_catalog_manager)
-from realtime_ai_character.memory.memory_manager import (MemoryManager, get_memory_manager)
+from realtime_ai_character.audio.speech_to_text import SpeechToText, get_speech_to_text
+from realtime_ai_character.audio.text_to_speech import TextToSpeech, get_text_to_speech
+from realtime_ai_character.character_catalog.catalog_manager import (CatalogManager,
+                                                                     get_catalog_manager)
 from realtime_ai_character.database.connection import get_db
 from realtime_ai_character.llm import get_llm, LLM
 from realtime_ai_character.llm.base import AsyncCallbackAudioHandler, AsyncCallbackTextHandler
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.models.interaction import Interaction
-from realtime_ai_character.models.quivr_info import QuivrInfo
-from realtime_ai_character.utils import (ConversationHistory, build_history,
+from realtime_ai_character.utils import (ConversationHistory, Transcript, build_history,
                                          get_connection_manager, get_timer)
 
 logger = get_logger(__name__)
@@ -50,8 +47,6 @@ GREETING_TXT_MAP = {
 
 async def get_current_user(token: str):
     """Heler function for auth with Firebase."""
-    if not token:
-        return ""
     try:
         decoded_token = auth.verify_id_token(token)
     except FirebaseError as e:
@@ -60,6 +55,7 @@ async def get_current_user(token: str):
                             detail="Invalid authentication credentials")
 
     return decoded_token['uid']
+
 
 @dataclass
 class SessionAuthResult:
@@ -71,7 +67,7 @@ async def check_session_auth(session_id: str, user_id: str, db: Session) -> Sess
     """
     Helper function to check if the session is authenticated.
     """
-    if not os.getenv('USE_AUTH', ''):
+    if os.getenv('USE_AUTH') != 'true':
         return SessionAuthResult(
             is_existing_session=False,
             is_authenticated_user=True,
@@ -97,55 +93,59 @@ async def check_session_auth(session_id: str, user_id: str, db: Session) -> Sess
             is_authenticated_user=True,
         )
     return SessionAuthResult(
-            is_existing_session=True,
-            is_authenticated_user=False,
+        is_existing_session=True,
+        is_authenticated_user=False,
     )
 
+
 @router.websocket("/ws/{session_id}")
-async def websocket_endpoint(websocket: WebSocket,
-                             session_id: str = Path(...),
-                             api_key: str = Query(None),
-                             llm_model: str = Query(default=os.getenv(
-                                 'LLM_MODEL_USE', 'gpt-3.5-turbo-16k')),
-                             language: str = Query(default='en-US'),
-                             token: str = Query(None),
-                             character_id: str = Query(None),
-                             platform: str = Query(None),
-                             use_search: bool = Query(default=False),
-                             use_quivr: bool = Query(default=False),
-                             use_multion: bool = Query(default=False),
-                             db: Session = Depends(get_db),
-                             catalog_manager=Depends(get_catalog_manager),
-                             memory_manager=Depends(get_memory_manager),
-                             speech_to_text=Depends(get_speech_to_text),
-                             default_text_to_speech=Depends(get_text_to_speech)):
+async def websocket_endpoint(
+    websocket: WebSocket,
+    session_id: str = Path(...),
+    llm_model: str = Query(os.getenv("LLM_MODEL_USE", "gpt-3.5-turbo-16k")),
+    language: str = Query("en-US"),
+    token: str = Query(None),
+    character_id: str = Query(None),
+    platform: str = Query(None),
+    journal_mode: bool = Query(False),
+    db: Session = Depends(get_db),
+    catalog_manager=Depends(get_catalog_manager),
+    speech_to_text=Depends(get_speech_to_text),
+    default_text_to_speech=Depends(get_text_to_speech)
+):
     # Default user_id to session_id. If auth is enabled and token is provided, use
     # the user_id from the token.
     user_id = str(session_id)
-    if os.getenv('USE_AUTH', ''):
-        # Do not allow anonymous users to use non-GPT3.5 model.
-        if not token and llm_model != 'gpt-3.5-turbo-16k':
-            await websocket.close(code=1008, reason="Unauthorized")
-            return
-        try:
-            user_id = await get_current_user(token)
-        except HTTPException:
+    if os.getenv('USE_AUTH') == "true":
+        # Do not allow anonymous users to use advanced model.
+        if token:
+            try:
+                user_id = await get_current_user(token)
+                logger.info(f"User #{user_id} is authenticated")
+            except HTTPException:
+                await websocket.close(code=1008, reason="Unauthorized")
+                return
+        elif llm_model != 'rebyte':
             await websocket.close(code=1008, reason="Unauthorized")
             return
     session_auth_result = await check_session_auth(session_id=session_id, user_id=user_id, db=db)
     if not session_auth_result.is_authenticated_user:
-        logger.info(f'User #{user_id} is not authorized to access session {session_id}')
+        logger.info(
+            f'User #{user_id} is not authorized to access session {session_id}')
         await websocket.close(code=1008, reason="Unauthorized")
         return
+    logger.info(f"User #{user_id} is authorized to access session {session_id}")
 
     llm = get_llm(model=llm_model)
     await manager.connect(websocket)
     try:
         main_task = asyncio.create_task(
-            handle_receive(websocket, session_id, user_id, db, llm, catalog_manager,
-                           memory_manager, character_id, platform, use_search, use_quivr,
-                           use_multion, speech_to_text, default_text_to_speech, language,
-                           session_auth_result.is_existing_session))
+            handle_receive(
+                websocket, session_id, user_id, db, llm, catalog_manager, character_id, platform,
+                journal_mode, speech_to_text, default_text_to_speech, language,
+                session_auth_result.is_existing_session
+            )
+        )
 
         await asyncio.gather(main_task)
 
@@ -154,16 +154,26 @@ async def websocket_endpoint(websocket: WebSocket,
         await manager.broadcast_message(f"User #{user_id} left the chat")
 
 
-async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db: Session,
-                         llm: LLM, catalog_manager: CatalogManager, memory_manager: MemoryManager,
-                         character_id: str, platform: str, use_search: bool, use_quivr: bool,
-                         use_multion: bool, speech_to_text: SpeechToText,
-                         default_text_to_speech: TextToSpeech,
-                         language: str, load_from_existing_session: bool = False):
+async def handle_receive(
+    websocket: WebSocket,
+    session_id: str,
+    user_id: str,
+    db: Session,
+    llm: LLM,
+    catalog_manager: CatalogManager,
+    character_id: str,
+    platform: str,
+    journal_mode: bool,
+    speech_to_text: SpeechToText,
+    default_text_to_speech: TextToSpeech,
+    language: str,
+    load_from_existing_session: bool = False
+):
     try:
         conversation_history = ConversationHistory()
         if load_from_existing_session:
-            logger.info(f"User #{user_id} is loading from existing session {session_id}")
+            logger.info(
+                f"User #{user_id} is loading from existing session {session_id}")
             await asyncio.to_thread(conversation_history.load_from_db, session_id=session_id, db=db)
 
         # 0. Receive client platform info (web, mobile, terminal)
@@ -226,7 +236,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
         token_buffer = []
 
         # Greet the user
-        greeting_text = GREETING_TXT_MAP[language]
+        greeting_text = GREETING_TXT_MAP[language if language else 'en-US']
         await manager.send_message(message=greeting_text, websocket=websocket)
         tts_task = asyncio.create_task(
             text_to_speech.stream(
@@ -261,10 +271,22 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
         speech_recognition_interim = False
         current_speech = ''
 
+        journal_mode = False
+        journal_history: list[Transcript] = []
+        audio_cache: list[Transcript] = []
+        speaker_audio_samples = {}
+
         while True:
             data = await websocket.receive()
             if data['type'] != 'websocket.receive':
                 raise WebSocketDisconnect('disconnected')
+            
+            # Handle journal mode text-to-speech
+            _text_to_speech = None if journal_mode else text_to_speech
+
+            # show latency info
+            timer.report()
+
             # handle text message
             if 'text' in data:
                 timer.start("LLM First Token")
@@ -274,28 +296,21 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     command_end = msg_data.find(']')
                     command = msg_data[2:command_end]
                     command_content = msg_data[command_end + 1:]
-                    if command == 'USE_SEARCH':
-                        use_search = (command_content == 'true')
+                    if command == "JOURNAL_MODE":
+                        journal_mode = (command_content == 'true')
+                    elif command == "ADD_SPEAKER":
+                        speaker_audio_samples[command_content] = None
+                    elif command == "DELETE_SPEAKER":
+                        if command_content in speaker_audio_samples:
+                            del speaker_audio_samples[command_content]
+                            logger.info(f"Deleted speaker: {command_content}")
                     continue
-                # 0. itermidiate transcript starts with [&]
-                if msg_data.startswith('[&]'):
-                    logger.info(f'intermediate transcript: {msg_data}')
-                    if not os.getenv('EXPERIMENT_CONVERSATION_UTTERANCE', ''):
-                        continue
-                    asyncio.create_task(stop_audio())
-                    asyncio.create_task(
-                        llm.achat_utterances(
-                            history=build_history(conversation_history),
-                            user_input=msg_data,
-                            callback=AsyncCallbackTextHandler(
-                                on_new_token, []),
-                            audioCallback=AsyncCallbackAudioHandler(
-                                text_to_speech, websocket, tts_event,
-                                character.voice_id)))
-                    continue
+
                 # 1. Whether client will send speech interim audio clip in the next message.
                 if msg_data.startswith('[&Speech]'):
                     speech_recognition_interim = True
+                    # stop the previous audio stream, if new transcript is received
+                    await stop_audio()
                     continue
 
                 # 2. If client finished speech, use the sentence as input.
@@ -312,66 +327,103 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                         message=f'[+]You said: {current_speech}', websocket=websocket)
                     current_speech = ''
 
-                # 2. Send "thinking" status over websocket
-                if use_search or use_quivr:
-                    await manager.send_message(message='[thinking]\n',
-                                               websocket=websocket)
-
                 # 3. Send message to LLM
-                if use_quivr:
-                    quivr_info = await asyncio.to_thread(
-                        db.query(QuivrInfo).filter(QuivrInfo.user_id == user_id).first)
-                else:
-                    quivr_info = None
                 message_id = str(uuid.uuid4().hex)[:16]
-                response = await llm.achat(
-                    history=build_history(conversation_history),
-                    user_input=msg_data,
-                    user_input_template=user_input_template,
-                    callback=AsyncCallbackTextHandler(on_new_token,
-                                                      token_buffer),
-                    audioCallback=AsyncCallbackAudioHandler(
-                        text_to_speech, websocket, tts_event, character.voice_id),
-                    character=character,
-                    useSearch=use_search,
-                    useQuivr=use_quivr,
-                    quivrApiKey=quivr_info.quivr_api_key if quivr_info else None,
-                    quivrBrainId=quivr_info.quivr_brain_id if quivr_info else None,
-                    useMultiOn=use_multion,
-                    metadata={"message_id": message_id})
+                async def textmode_tts_task_done_call_back(response):
+                    # Send response to client, indicates the response is done
+                    await manager.send_message(message=f'[end={message_id}]\n',
+                                               websocket=websocket)
+                    # Update conversation history
+                    conversation_history.user.append(msg_data)
+                    conversation_history.ai.append(response)
+                    token_buffer.clear()
+                    # Persist interaction in the database
+                    tools = []
+                    interaction = Interaction(user_id=user_id,
+                                              session_id=session_id,
+                                              client_message_unicode=msg_data,
+                                              server_message_unicode=response,
+                                              platform=platform,
+                                              action_type='text',
+                                              character_id=character_id,
+                                              tools=','.join(tools),
+                                              language=language,
+                                              message_id=message_id,
+                                              llm_config=llm.get_config())
+                    await asyncio.to_thread(interaction.save, db)
 
-                # 3. Send response to client
-                await manager.send_message(message=f'[end={message_id}]\n',
-                                           websocket=websocket)
+                tts_task = asyncio.create_task(
+                    llm.achat(
+                        history=build_history(conversation_history),
+                        user_input=msg_data,
+                        user_input_template=user_input_template,
+                        callback=AsyncCallbackTextHandler(
+                            on_new_token, token_buffer, textmode_tts_task_done_call_back),
+                        audioCallback=AsyncCallbackAudioHandler(
+                            _text_to_speech, websocket, tts_event, character.voice_id, language),
+                        character=character,
+                        metadata={"message_id": message_id, "user_id": user_id},
+                        user_id=user_id if user_id != session_id else None)
+                )
 
-                # 4. Update conversation history
-                conversation_history.user.append(msg_data)
-                conversation_history.ai.append(response)
-                token_buffer.clear()
                 # 5. Persist interaction in the database
-                tools = []
-                if use_search:
-                    tools.append('search')
-                if use_quivr:
-                    tools.append('quivr')
-                if use_multion:
-                    tools.append('multion')
-                interaction = Interaction(user_id=user_id,
-                            session_id=session_id,
-                            client_message_unicode=msg_data,
-                            server_message_unicode=response,
-                            platform=platform,
-                            action_type='text',
-                            character_id=character_id,
-                            tools=','.join(tools),
-                            language=language,
-                            message_id=message_id,
-                            llm_config=llm.get_config())
-                await asyncio.to_thread(interaction.save, db)
 
             # handle binary message(audio)
             elif 'bytes' in data:
                 binary_data = data['bytes']
+                # Handle journal mode
+                if journal_mode:
+                    # check whether adding new speaker
+                    did_add_speaker = False
+                    for speaker_id, sample in speaker_audio_samples.items():
+                        if not sample:
+                            speaker_audio_samples[speaker_id] = binary_data
+                            logger.info(f"Added speaker: {speaker_id}")
+                            did_add_speaker = True
+                            break
+                    if did_add_speaker:
+                        continue
+                    async def journal_transcribe(transcripts: list[Transcript], prompt: str = ''):
+                        result: list[Transcript] = await asyncio.to_thread(
+                            speech_to_text.transcribe_diarize,  # type: ignore
+                            transcripts,
+                            platform=platform,
+                            prompt=prompt,
+                            language=language,
+                            speaker_audio_samples=speaker_audio_samples,
+                        )
+                        for transcript in result:
+                            for slice in transcript.slices:
+                                timestamp = transcript.timestamp + slice.start
+                                duration = slice.end - slice.start
+                                await manager.send_message(
+                                    message=f"[+transcript]?id={slice.id}"
+                                            f"&speakerId={slice.speaker_id}"
+                                            f"&text={slice.text}"
+                                            f"&timestamp={timestamp}"
+                                            f"&duration={duration}",
+                                    websocket=websocket
+                                )
+                                logger.info(
+                                    f"Message sent to client: transcript_id = {slice.id}, "
+                                    f"speaker_id = {slice.speaker_id}, "
+                                    f"text = {slice.text}"
+                                )
+                        return result
+                    # transcribe
+                    transcripts = await journal_transcribe([Transcript(
+                        id="", audio_bytes=binary_data, slices=[], timestamp=0, duration=0
+                    )])
+                    if transcripts:
+                        audio_cache += transcripts
+                    cached_duration = sum([transcript.duration for transcript in audio_cache])
+                    cached_elapse = time.time() - audio_cache[0].timestamp if audio_cache else 0
+                    if cached_duration > 30 or cached_elapse > 60:
+                        audio_cache = await journal_transcribe(audio_cache)
+                        journal_history += audio_cache
+                        audio_cache = []
+                    continue
+
                 # 0. Handle interim speech.
                 if speech_recognition_interim:
                     interim_transcript: str = (
@@ -380,21 +432,30 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                             binary_data,
                             platform=platform,
                             prompt=current_speech,
-                            suppress_tokens=[0, 11, 13, 30],
+                            language=language,
+                            # suppress_tokens=[0, 11, 13, 30],
                         )
                     ).strip()
                     speech_recognition_interim = False
                     # Filter noises.
                     if not interim_transcript:
                         continue
+                    await manager.send_message(
+                        message=f'[+&]{interim_transcript}', websocket=websocket)
                     logger.info(f"Speech interim: {interim_transcript}")
                     current_speech = current_speech + ' ' + interim_transcript
                     continue
 
                 # 1. Transcribe audio
-                transcript: str = (await asyncio.to_thread(speech_to_text.transcribe,
-                    binary_data, platform=platform,
-                    prompt=character.name)).strip()
+                transcript: str = (
+                    await asyncio.to_thread(
+                        speech_to_text.transcribe,
+                        binary_data,
+                        platform=platform,
+                        prompt=character.name,
+                        language=language,
+                    )
+                ).strip()
 
                 # ignore audio that picks up background noise
                 if (not transcript or len(transcript) < 2):
@@ -412,7 +473,7 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
 
                 previous_transcript = transcript
 
-                async def tts_task_done_call_back(response):
+                async def audiomode_tts_task_done_call_back(response):
                     # Send response to client, [=] indicates the response is done
                     await manager.send_message(message='[=]',
                                                websocket=websocket)
@@ -422,58 +483,35 @@ async def handle_receive(websocket: WebSocket, session_id: str, user_id: str, db
                     token_buffer.clear()
                     # Persist interaction in the database
                     tools = []
-                    if use_search:
-                        tools.append('search')
-                    if use_quivr:
-                        tools.append('quivr')
-                    if use_multion:
-                        tools.append('multion')
                     interaction = Interaction(user_id=user_id,
-                                session_id=session_id,
-                                client_message_unicode=transcript,
-                                server_message_unicode=response,
-                                platform=platform,
-                                action_type='audio',
-                                character_id=character_id,
-                                tools=','.join(tools),
-                                language=language,
-                                llm_config=llm.get_config())
+                                              session_id=session_id,
+                                              client_message_unicode=transcript,
+                                              server_message_unicode=response,
+                                              platform=platform,
+                                              action_type='audio',
+                                              character_id=character_id,
+                                              tools=','.join(tools),
+                                              language=language,
+                                              llm_config=llm.get_config())
                     await asyncio.to_thread(interaction.save, db)
 
-                # 4. Send "thinking" status over websocket
-                if use_search or use_quivr:
-                    await manager.send_message(message='[thinking]\n',
-                                               websocket=websocket)
-
                 # 5. Send message to LLM
-                if use_quivr:
-                    quivr_info = await asyncio.to_thread(
-                        db.query(QuivrInfo).filter(QuivrInfo.user_id == user_id).first)
-                else:
-                    quivr_info = None
                 tts_task = asyncio.create_task(
                     llm.achat(history=build_history(conversation_history),
                               user_input=transcript,
                               user_input_template=user_input_template,
                               callback=AsyncCallbackTextHandler(
                                   on_new_token, token_buffer,
-                                  tts_task_done_call_back),
+                                  audiomode_tts_task_done_call_back),
                               audioCallback=AsyncCallbackAudioHandler(
-                                  text_to_speech, websocket, tts_event,
-                                  character.voice_id),
+                                  _text_to_speech, websocket, tts_event,
+                                  character.voice_id, language),
                               character=character,
-                              useSearch=use_search,
-                              useQuivr=use_quivr,
-                              useMultiOn=use_multion,
-                              quivrApiKey=quivr_info.quivr_api_key if quivr_info else None,
-                              quivrBrainId=quivr_info.quivr_brain_id if quivr_info else None))
-                
-            # log latency info
-            timer.report()
+                              metadata={"user_id": user_id},
+                              user_id=user_id if user_id != session_id else None))
 
     except WebSocketDisconnect:
         logger.info(f"User #{user_id} closed the connection")
         timer.reset()
         await manager.disconnect(websocket)
-        await memory_manager.process_session(session_id)
         return

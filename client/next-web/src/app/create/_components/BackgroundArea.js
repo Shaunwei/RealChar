@@ -1,7 +1,7 @@
 import { Button, Textarea } from '@nextui-org/react';
 import { TbTrash } from 'react-icons/tb';
 import { useRef } from 'react';
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 
 export default function BackgroundArea() {
   const uploaderRef = useRef(null);
@@ -25,12 +25,13 @@ export default function BackgroundArea() {
         labelPlacement="outside"
         placeholder="Provide some background information about your character"
         classNames={{
-          label: "text-base",
+          label: 'text-lg',
           inputWrapper: [
             'bg-white/10',
             'data-[hover=true]:bg-white/10',
             'group-data-[focus=true]:bg-white/10'
-          ]
+          ],
+          input: 'text-base',
         }}
         value={backgroundText}
         onValueChange={setBackgroundText}

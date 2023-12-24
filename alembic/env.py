@@ -1,11 +1,21 @@
-from realtime_ai_character.database.base import Base  # import the Base model
+import os
+import sys
+from dotenv import load_dotenv
+from logging.config import fileConfig
+
+from alembic import context
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-from alembic import context
-from logging.config import fileConfig
-import sys
-import os
-from dotenv import load_dotenv
+
+from realtime_ai_character.database.base import Base  # import the Base model
+# dummy import to support alembic revision --autogenerate
+from realtime_ai_character.models.character import Character
+from realtime_ai_character.models.feedback import Feedback
+from realtime_ai_character.models.interaction import Interaction
+from realtime_ai_character.models.memory import Memory
+from realtime_ai_character.models.quivr_info import QuivrInfo
+from realtime_ai_character.models.user import User  
+
 
 load_dotenv()
 

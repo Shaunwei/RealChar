@@ -3,7 +3,7 @@ import {
   RiThumbDownLine
 } from 'react-icons/ri';
 import { Button } from '@nextui-org/button';
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 import { useRef, useEffect } from 'react';
 
 export default function Chat() {
@@ -21,24 +21,17 @@ export default function Chat() {
   return (
     <div className={`flex flex-col gap-5 overflow-y-scroll min-h-25`}>
       {
-        [...chatContent, interimChat].sort((a, b) => {
-          if (!a) {
-            return 1;
-          } else if (!b) {
-            return -1;
-          } else {
-            return a.timestamp > b.timestamp ? 1 : -1;
-          }
-        })?.map((line) => {
+        [...chatContent, interimChat].map((line) => {
           if (line && line.hasOwnProperty('from') && line.from === 'character') {
             return (
               <div
                 key={line.hasOwnProperty('timestamp') ? line.timestamp: 0}
                 className="flex flex-col md:flex-row self-start items-start md:items-stretch"
               >
-                <p className="w-fit max-w-[450px] py-2 px-5 font-light flex-none rounded-3xl md:mr-3 rounded-bl-none bg-real-navy/20">{line.content}</p>
+                <p className="w-fit max-w-[450px] py-2 px-5 font-light flex-none rounded-3xl md:mr-3 rounded-bl-none bg-real-blue-500/20">{line.content}</p>
                 <div><Button
                   isIconOnly
+                  aria-label="thumb up"
                   radius="full"
                   variant="light"
                   className="text-white/50 hover:text-white hover:bg-button min-w-fit md:min-w-10 md:h-10"
@@ -47,6 +40,7 @@ export default function Chat() {
                 </Button>
                 <Button
                   isIconOnly
+                  aria-label="thumb down"
                   radius="full"
                   variant="light"
                   className="text-white/50 hover:text-white hover:bg-button min-w-fit md:min-w-10 md:h-10"
@@ -62,7 +56,16 @@ export default function Chat() {
                 key={line.timestamp}
                 className="self-end"
               >
-                <p className="w-fit max-w-[450px] py-2 px-5 font-light flex-none rounded-3xl rounded-br-none bg-real-navy/50">{line.content}</p>
+                <p className="w-fit max-w-[450px] py-2 px-5 font-light flex-none rounded-3xl rounded-br-none bg-real-blue-500/50">{line.content}</p>
+              </div>
+            )
+          } else if (line && line.hasOwnProperty('from') && line.from === 'message') {
+            return (
+              <div
+                key={line.timestamp}
+                className="self-center"
+              >
+                <p className="text-tiny text-real-silver-500">{line.content}</p>
               </div>
             )
           }

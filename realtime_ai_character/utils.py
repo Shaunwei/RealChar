@@ -1,7 +1,7 @@
 import asyncio
 from dataclasses import field
 from time import perf_counter
-from typing import List, Optional, Callable
+from typing import List, Optional, Callable, TypedDict
 
 from langchain.schema import AIMessage, BaseMessage, HumanMessage, SystemMessage
 from pydantic.dataclasses import dataclass
@@ -22,10 +22,13 @@ class Character:
     voice_id: str = ''
     author_name: str = ''
     author_id: str = ''
-    avatar_id: Optional[str] = ''
     visibility: str = ''
     tts: Optional[str] = ''
+    order: int = 999  # display order on the website
     data: Optional[dict] = None
+    rebyte_api_project_id: Optional[str] = None
+    rebyte_api_agent_id: Optional[str] = None
+    rebyte_api_version: Optional[int] = None
 
 
 @dataclass
@@ -41,7 +44,8 @@ class ConversationHistory:
             yield ai_message
 
     def load_from_db(self, session_id: str, db: Session):
-        conversations = db.query(Interaction).filter(Interaction.session_id == session_id).all()
+        conversations = db.query(Interaction).filter(
+            Interaction.session_id == session_id).all()
         for conversation in conversations:
             self.user.append(conversation.client_message_unicode)
             self.ai.append(conversation.server_message_unicode)
@@ -57,6 +61,45 @@ def build_history(conversation_history: ConversationHistory) -> List[BaseMessage
         else:
             history.append(HumanMessage(content=message))
     return history
+
+
+@dataclass
+class TranscriptSlice:
+    id: str
+    audio_id: str
+    start: float
+    end: float
+    speaker_id: str
+    text: str
+
+
+@dataclass
+class Transcript:
+    id: str
+    audio_bytes: bytes
+    slices: list[TranscriptSlice]
+    timestamp: float
+    duration: float
+
+
+class DiarizedSingleSegment(TypedDict):
+    start: float
+    end: float
+    text: str
+    speaker: str
+
+
+class SingleWordSegment(TypedDict):
+    word: str
+    start: float
+    end: float
+    score: float
+
+
+class WhisperXResponse(TypedDict):
+    segments: List[DiarizedSingleSegment]
+    language: str
+    word_segments: List[SingleWordSegment]
 
 
 class Singleton:

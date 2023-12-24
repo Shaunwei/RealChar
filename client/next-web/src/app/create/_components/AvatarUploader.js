@@ -1,6 +1,6 @@
 import { Avatar, Button } from '@nextui-org/react';
 import { useRef } from 'react';
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/zustand/store';
 
 export default function AvatarUploader() {
   const uploaderRef = useRef(null);

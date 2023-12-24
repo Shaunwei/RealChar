@@ -1,12 +1,12 @@
 import io
 import os
+import subprocess
 import types
 import wave
 
 import speech_recognition as sr
 from faster_whisper import WhisperModel
 from pydub import AudioSegment
-from torch.cuda import is_available as is_cuda_available
 
 from realtime_ai_character.audio.speech_to_text.base import SpeechToText
 from realtime_ai_character.logger import get_logger
@@ -43,7 +43,11 @@ class Whisper(Singleton, SpeechToText):
     def __init__(self, use="local"):
         super().__init__()
         if use == "local":
-            device = 'cuda' if is_cuda_available() else 'cpu'
+            try:
+                subprocess.check_output(['nvidia-smi'])
+                device = "cuda"
+            except Exception:
+                device = "cpu"
             logger.info(
                 f"Loading [Local Whisper] model: [{config.model}]({device}) ...")
             self.model = WhisperModel(

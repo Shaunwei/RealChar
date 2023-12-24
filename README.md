@@ -323,7 +323,9 @@ TWILIO_ACCOUNT_SID=YOUR_TWILIO_ACCOUNT_SID
 TWILIO_ACCESS_TOKEN=YOUR_TWILIO_ACCESS_TOKEN
 DEFAULT_CALLOUT_NUMBER=YOUR_PHONE_NUMBER
 ```
-Then, you can receive phone calls from your characters by typing `/call YOURNUMBER` in the text box when chatting with your character.
+You'll also need to install `torch` and `torchaudio` to use Twilio.
+
+Now, you can receive phone calls from your characters by typing `/call YOURNUMBER` in the text box when chatting with your character.
 
 Note: only US phone numbers and Elevenlabs voiced characters are supported at the moment.
 </details>

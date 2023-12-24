@@ -300,7 +300,7 @@ Note if you want to remotely connect to a RealChar server, SSL set up is require
     ```
     ```sh
     docker pull shaunly/real_char_frontend_next:latest
-    docker tag shaunly/real_char_frontend_next:latest realtime-ai-character-frontend-next
+    docker tag shaunly/real_char_frontend_next:latest realchar-next-web
     ```
     (Or you want build yourself) Build docker images
     ```sh

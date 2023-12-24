@@ -55,7 +55,7 @@ __Demo settings: Web, GPT4, ElevenLabs with voice clone, Chroma, Google Speech t
 
 ## 🔬 Tech stack
 <div align="center">
-    <img src="https://storage.googleapis.com/assistly/static/realchar/techstackv003.jpeg" alt="RealChar-tech-stack" width="100%"  style="padding: 20px"/>
+    <img src="https://storage.googleapis.com/assistly/static/realchar/techstackv004.jpg" alt="RealChar-tech-stack" width="100%"  style="padding: 20px"/>
 </div>
 
 - ✅**Web**: [React JS](https://react.dev/), [Vanilla JS](http://vanilla-js.com/), [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)

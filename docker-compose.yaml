@@ -12,15 +12,17 @@ services:
   web:
     build:
       context: ./client/next-web/
+      dockerfile: Dockerfile.dev
       args:
         NEXT_PUBLIC_FIREBASE_API_KEY: AIzaSyAVqhwbdB8I56HAMVVlgJKZcfrBkKI2AhQ
         NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: assistly-kubernetes.firebaseapp.com
         NEXT_PUBLIC_FIREBASE_PROJECT_ID: assistly-kubernetes
         NEXT_PUBLIC_FIREBASE_APP_ID: 1:806733379891:web:48bf124c0d9b90298e6646
         REACT_APP_BUILD_NUMBER: 0.0.1
-        NEXT_PUBLIC_API_HOST: http://127.0.0.1:8000
+        NEXT_PUBLIC_API_HOST: http://localhost:8000
+        API_HOST: http://backend:8000
     ports:
-      - "80:80"
+      - "3000:3000"
     depends_on:
       - backend
     environment:
@@ -32,7 +34,7 @@ services:
       - NEXT_PUBLIC_FIREBASE_APP_ID=1:806733379891:web:48bf124c0d9b90298e6646
       - NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-XVWF8XDKS5
       - REACT_APP_BUILD_NUMBER=0.0.1
-      - NEXT_PUBLIC_API_HOST=http://backend:8000
+      - NEXT_PUBLIC_API_HOST=http://localhost:8000
       - API_HOST=http://backend:8000
 
 networks:

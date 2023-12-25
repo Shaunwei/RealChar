@@ -365,4 +365,4 @@ Please check out our [Contribution Guide](contribute.md)!
 </a>
 
 ## 🎲 Community
-- Join us on [Discord](https://discord.gg/e4AYNnFg2F)
+- Join us on [Discord](https://discord.gg/YV4U7Am2Xn)

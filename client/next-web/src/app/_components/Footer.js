@@ -17,7 +17,7 @@ export default function Footer() {
         </Link>
         <Link
           className="basis-14 flex justify-center mr-5"
-          href='https://discord.gg/e4AYNnFg2F'
+          href='https://discord.gg/YV4U7Am2Xn'
           target='_blank'
           rel='noreferrer'
           aria-label="link to Discord"

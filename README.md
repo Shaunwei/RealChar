@@ -277,17 +277,25 @@ Note if you want to remotely connect to a RealChar server, SSL set up is require
 ## (Optional) 📀 Installation via Docker
 <details><summary>👇click me</summary>
 
-1. Use the `docker-compose.yaml` to run the app. Run the following command after configuring your `.env` file in the root directory:
+1. Initialize and update the database
     ```sh
-    docker-compose up
+    sqlite3 test.db "VACUUM;"
+    alembic upgrade head
+    ```
+
+1. Configure `.env`
+    ```sh
+    cp .env.example .env
+    ```
+    Update API keys and configs following the instructions in the `.env` file.
+
+1. Start the app with `docker-compose.yaml`
+    ```sh
+    docker compose up
     ```
     If you have issues with docker (especially on a non-Linux machine), please refer to https://docs.docker.com/get-docker/ (installation) and https://docs.docker.com/desktop/troubleshoot/overview/ (troubleshooting).
 
-1. Go to http://localhost:3000 to start talking or use terminal client with
-    ```sh
-    python client/cli.py
-    ```
-
+1. Open http://localhost:3000 to access the web app
 </details>
 
 <br/>

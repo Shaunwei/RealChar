@@ -35,11 +35,35 @@ export const playAudios = async (
     audioSourceNode,
     popAudioQueueFront
 ) => {
-    while (audioQueueRef.current.length > 0 && isPlaying) {
+    console.log('playAudios called');
+    if (!audioContext) {
+        console.log('audioContext not available, play cancelled.');
+        return;
+    }
+    if (!audioPlayerRef.current) {
+        console.log('audioPlayer not available, play cancelled.');
+        return;
+    }
+    if (!audioSourceNode) {
+        console.log('audioSourceNode not available, play cancelled.');
+        return;
+    }
+    if (isPlaying) {
+        console.log('Already playing, play cancelled.');
+        return;
+    }
+    if (audioQueueRef.current?.length === 0) {
+        console.log('Queue is empty, play cancelled.');
+        return;
+    }
+    setIsPlaying(true);
+    while (audioContext && audioPlayerRef.current && audioSourceNode && audioQueueRef.current?.length > 0) {
         // If the user leaves the page and buffer got deteched.
         if (audioQueueRef.current[0].detached) {
+            console.log('Audio buffer detached, play cancelled.');
             return;
         }
+        console.log('Playing audio ', audioQueueRef.current[0].byteLength, ' bytes...');
         const audioBuffer = await audioContext.decodeAudioData(
             audioQueueRef.current[0]
         );
@@ -54,5 +78,6 @@ export const playAudios = async (
         popAudioQueueFront();
     }
     // done playing audios
+    console.log('Done playing audios')
     setIsPlaying(false);
 };

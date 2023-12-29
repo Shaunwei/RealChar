@@ -1,21 +1,19 @@
+import os
+
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
-import os
+
 
 load_dotenv()
 
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "")
 
-connect_args = {"check_same_thread": False} if SQLALCHEMY_DATABASE_URL.startswith(
-    "sqlite") else {}
+connect_args = {"check_same_thread": False} if SQLALCHEMY_DATABASE_URL.startswith("sqlite") else {}
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args=connect_args
-)
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args=connect_args)
 
-SessionLocal = sessionmaker(
-    autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 def get_db():
@@ -29,6 +27,7 @@ def get_db():
 if __name__ == "__main__":
     print(SQLALCHEMY_DATABASE_URL)
     from realtime_ai_character.models.user import User
+
     with SessionLocal() as session:
         print(session.query(User).all())
         session.delete(User(name="Test", email="text@gmail.com"))

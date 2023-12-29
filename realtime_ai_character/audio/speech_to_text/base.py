@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from realtime_ai_character.utils import timed
 
 

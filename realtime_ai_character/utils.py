@@ -1,14 +1,18 @@
 import asyncio
 from dataclasses import field
 from time import perf_counter
-from typing import List, Optional, Callable, TypedDict
+from typing import Callable, Optional, TypedDict
 
 from langchain.schema import AIMessage, BaseMessage, HumanMessage, SystemMessage
 from pydantic.dataclasses import dataclass
 from starlette.websockets import WebSocket, WebSocketState
 from sqlalchemy.orm import Session
+
 from realtime_ai_character.models.interaction import Interaction
 from realtime_ai_character.logger import get_logger
+
+
+logger = get_logger(__name__)
 
 
 @dataclass
@@ -17,14 +21,14 @@ class Character:
     name: str
     llm_system_prompt: str
     llm_user_prompt: str
-    source: str = ''
-    location: str = ''
-    voice_id: str = ''
-    author_name: str = ''
-    author_id: str = ''
-    visibility: str = ''
-    tts: Optional[str] = ''
-    order: int = 999  # display order on the website
+    source: str = ""
+    location: str = ""
+    voice_id: str = ""
+    author_name: str = ""
+    author_id: str = ""
+    visibility: str = ""
+    tts: Optional[str] = ""
+    order: int = 10**9  # display order on the website
     data: Optional[dict] = None
     rebyte_api_project_id: Optional[str] = None
     rebyte_api_agent_id: Optional[str] = None
@@ -33,7 +37,7 @@ class Character:
 
 @dataclass
 class ConversationHistory:
-    system_prompt: str = ''
+    system_prompt: str = ""
     user: list[str] = field(default_factory=list)
     ai: list[str] = field(default_factory=list)
 
@@ -44,14 +48,13 @@ class ConversationHistory:
             yield ai_message
 
     def load_from_db(self, session_id: str, db: Session):
-        conversations = db.query(Interaction).filter(
-            Interaction.session_id == session_id).all()
+        conversations = db.query(Interaction).filter(Interaction.session_id == session_id).all()
         for conversation in conversations:
-            self.user.append(conversation.client_message_unicode)
-            self.ai.append(conversation.server_message_unicode)
+            self.user.append(conversation.client_message_unicode)  # type: ignore
+            self.ai.append(conversation.server_message_unicode)  # type: ignore
 
 
-def build_history(conversation_history: ConversationHistory) -> List[BaseMessage]:
+def build_history(conversation_history: ConversationHistory) -> list[BaseMessage]:
     history = []
     for i, message in enumerate(conversation_history):
         if i == 0:
@@ -97,9 +100,9 @@ class SingleWordSegment(TypedDict):
 
 
 class WhisperXResponse(TypedDict):
-    segments: List[DiarizedSingleSegment]
+    segments: list[DiarizedSingleSegment]
     language: str
-    word_segments: List[SingleWordSegment]
+    word_segments: list[SingleWordSegment]
 
 
 class Singleton:
@@ -107,7 +110,7 @@ class Singleton:
 
     @classmethod
     def get_instance(cls, *args, **kwargs):
-        """ Static access method. """
+        """Static access method."""
         if cls not in cls._instances:
             cls._instances[cls] = cls(*args, **kwargs)
 
@@ -115,14 +118,14 @@ class Singleton:
 
     @classmethod
     def initialize(cls, *args, **kwargs):
-        """ Static access method. """
+        """Static access method."""
         if cls not in cls._instances:
             cls._instances[cls] = cls(*args, **kwargs)
 
 
 class ConnectionManager(Singleton):
     def __init__(self):
-        self.active_connections: List[WebSocket] = []
+        self.active_connections: list[WebSocket] = []
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
@@ -151,7 +154,6 @@ class Timer(Singleton):
     def __init__(self):
         self.start_time: dict[str, float] = {}
         self.elapsed_time = {}
-        self.logger = get_logger("Timer")
 
     def start(self, id: str):
         self.start_time[id] = perf_counter()
@@ -169,7 +171,7 @@ class Timer(Singleton):
 
     def report(self):
         for id, t in self.elapsed_time.items():
-            self.logger.info(
+            logger.info(
                 f"{id:<30s}: {sum(t)/len(t):.3f}s [{min(t):.3f}s - {max(t):.3f}s] "
                 f"({len(t)} samples)"
             )
@@ -185,18 +187,28 @@ def get_timer() -> Timer:
 
 def timed(func):
     if asyncio.iscoroutinefunction(func):
+
         async def async_wrapper(*args, **kwargs):
             timer = get_timer()
             timer.start(func.__qualname__)
             result = await func(*args, **kwargs)
             timer.log(func.__qualname__)
             return result
+
         return async_wrapper
     else:
+
         def sync_wrapper(*args, **kwargs):
             timer = get_timer()
             timer.start(func.__qualname__)
             result = func(*args, **kwargs)
             timer.log(func.__qualname__)
             return result
+
         return sync_wrapper
+
+
+def task_done_callback(task: asyncio.Task):
+    exception = task.exception()
+    if exception:
+        logger.error(f"Error in task {task.get_name()}: {exception}")

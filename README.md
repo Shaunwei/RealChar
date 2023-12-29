@@ -9,7 +9,7 @@
 </p>
 
 <div align="center">
-    <a href="https://discord.gg/YV4U7Am2Xn">
+    <a href="https://realchar.ai/join-discord">
     <img src="https://img.shields.io/badge/discord-join%20chat-blue.svg?style=for-the-badge" alt="Join our Discord" height="20">
     </a>
     <a href="https://twitter.com/agishaun">
@@ -77,116 +77,25 @@ __Demo settings: Web, GPT4, ElevenLabs with voice clone, Chroma, Google Speech t
     <img src="https://storage.googleapis.com/assistly/static/realchar/compare.png">
 </div>
 
+## 📀 Quick Start - Installation via Docker
 
-## 👨‍🚀 Prerequisites
+1.  Create a new `.env` file
+    ```sh
+    cp .env.example .env
+    ```
+    Paste your API keys in `.env` file. A single [ReByte](#11-rebyte-api-key) or [OpenAI](#12-optional-openai-api-token) API key is enough to get started.
+    
+    You can also configure other API keys if you have them.
 
-Before setting up this project, follow these instructions to meet the prerequisites:
+1.  Start the app with `docker-compose.yaml`
+    ```sh
+    docker compose up
+    ```
+    If you have issues with docker (especially on a non-Linux machine), please refer to https://docs.docker.com/get-docker/ (installation) and https://docs.docker.com/desktop/troubleshoot/overview/ (troubleshooting).
 
-### 1. Large Language Models
+1.  Open http://localhost:3000 and enjoy the app!
 
-### 1.1 ReByte API Key
-To get your ReByte API key, follow these steps:
-
-1. Go to the [ReByte website](https://rebyte.ai/) and sign up for an account if you haven't already.
-1. Once you're logged in, go to Settings > API Keys.
-1. Generate a new API key by clicking on the "Generate" button.
-1. Prepare to use it during configuration.
-
-### 1.2 (Optional) OpenAI API Token
-<details><summary>👇click me</summary>
-This application utilizes the OpenAI API to access its powerful language model capabilities. In order to use the OpenAI API, you will need to obtain an API token.
-
-To get your OpenAI API token, follow these steps:
-
-1. Go to the [OpenAI website](https://beta.openai.com/signup/) and sign up for an account if you haven't already.
-1. Once you're logged in, navigate to the [API keys page](https://beta.openai.com/account/api-keys).
-1. Generate a new API key by clicking on the "Create API Key" button.
-1. Prepare to use it during configuration.
-
-(Optional) To use Azure OpenAI API instead, refer to the following section:
-
-1. Set API type in your `.env` file:
-`OPENAI_API_TYPE=azure`
-
-If you want to use the earlier version `2023-03-15-preview`:
-
-`OPENAI_API_VERSION=2023-03-15-preview`
-
-2. To set the base URL for your Azure OpenAI resource.
-You can find this in the Azure portal under your Azure OpenAI resource.
-
-`OPENAI_API_BASE=https://your-base-url.openai.azure.com`
-
-3. To set the OpenAI model deployment name for your Azure OpenAI resource.
-
-`OPENAI_API_MODEL_DEPLOYMENT_NAME=gpt-35-turbo-16k`
-
-4. To set the OpenAIEmbeddings model deployment name for your Azure OpenAI resource.
-
-`OPENAI_API_EMBEDDING_DEPLOYMENT_NAME=text-embedding-ada-002`
-
-</details>
-
-### 1.3 (Optional) Anthropic(Claude 2) API Token
-<details><summary>👇click me</summary>
-
-To get your Anthropic API token, follow these steps:
-
-1. Go to the [Anthropic website](https://docs.anthropic.com/claude/docs/getting-started-with-claude) and sign up for an account if you haven't already.
-1. Once you're logged in, navigate to the [API keys page](https://console.anthropic.com/account/keys).
-1. Generate a new API key by clicking on the "Create Key" button.
-1. Prepare to use it during configuration.
-</details>
-
-### 1.4 (Optional) Anyscale API Token
-<details><summary>👇click me</summary>
-
-To get your Anyscale API token, follow these steps:
-
-1. Go to the [Anyscale website](https://www.anyscale.com/) and sign up for an account if you haven't already.
-1. Once you're logged in, navigate to the [Credentials page](https://app.endpoints.anyscale.com/credentials).
-1. Generate a new API key by clicking on the "Generate credential" button.
-1. Prepare to use it during configuration.
-</details>
-
-### 2. Speech to Text
-
-We support [whisperX](https://github.com/m-bain/whisperX) as the local speech to text engine. Work with CPU and NVIDIA GPU.
-
-### 2.1 (Optional) Google Speech-to-Text API
-<details><summary>👇click me</summary>
-
-To get your Google Cloud API credentials.json, follow these steps:
-
-1. Go to the [GCP website](https://cloud.google.com/speech-to-text/docs/before-you-begin) and sign up for an account if you haven't already.
-2. Follow the guide to create a project and enable Speech to Text API
-3. Put `google_credentials.json` in the root folder of this project. Check [GCP website](https://cloud.google.com/speech-to-text/docs/before-you-begin#set_your_authentication_environment_variable)
-4. Change `SPEECH_TO_TEXT_USE` to use `GOOGLE` in your `.env` file
-</details>
-
-### 2.2 (Optional) OpenAI Whisper API
-<details><summary>👇click me</summary>
-</details>
-
-### 3. Text to Speech
-
-Edge TTS is the default and is free to use.
-
-### 3.1 (Optional) ElevenLabs API Key
-<details><summary>👇click me</summary>
-
-1. Creating an ElevenLabs Account
-
-    Visit [ElevenLabs](https://beta.elevenlabs.io/) to create an account. You'll need this to access the text to speech and voice cloning features.
-
-1. In your Profile Setting, you can get an API Key.
-1. Prepare to use it during configuration.
-
-</details>
-
-### 3.2 (Optional) Google Text-to-Speech API
-
-## 💿 Installation via Python
+## 💿 Developers - Installation via Python
 - **Step 1**. Clone the repo
    ```sh
    git clone https://github.com/Shaunwei/RealChar.git && cd RealChar
@@ -274,31 +183,117 @@ Edge TTS is the default and is free to use.
 
 Note if you want to remotely connect to a RealChar server, SSL set up is required to establish the audio connection. 
 
-## (Optional) 📀 Installation via Docker
+## 👨‍🚀 API Keys and Configurations
+
+### 1. LLMs
+
+### 1.1 ReByte API Key
+To get your ReByte API key, follow these steps:
+
+1. Go to the [ReByte website](https://rebyte.ai/) and sign up for an account if you haven't already.
+1. Once you're logged in, go to Settings > API Keys.
+1. Generate a new API key by clicking on the "Generate" button.
+
+### 1.2 (Optional) OpenAI API Token
 <details><summary>👇click me</summary>
+This application utilizes the OpenAI API to access its powerful language model capabilities. In order to use the OpenAI API, you will need to obtain an API token.
 
-1. Initialize and update the database
-    ```sh
-    sqlite3 test.db "VACUUM;"
-    alembic upgrade head
-    ```
+To get your OpenAI API token, follow these steps:
 
-1. Configure `.env`
-    ```sh
-    cp .env.example .env
-    ```
-    Update API keys and configs following the instructions in the `.env` file.
+1. Go to the [OpenAI website](https://beta.openai.com/signup/) and sign up for an account if you haven't already.
+1. Once you're logged in, navigate to the [API keys page](https://beta.openai.com/account/api-keys).
+1. Generate a new API key by clicking on the "Create API Key" button.
 
-1. Start the app with `docker-compose.yaml`
-    ```sh
-    docker compose up
-    ```
-    If you have issues with docker (especially on a non-Linux machine), please refer to https://docs.docker.com/get-docker/ (installation) and https://docs.docker.com/desktop/troubleshoot/overview/ (troubleshooting).
+(Optional) To use Azure OpenAI API instead, refer to the following section:
 
-1. Open http://localhost:3000 to access the web app
+1. Set API type in your `.env` file:
+`OPENAI_API_TYPE=azure`
+
+If you want to use the earlier version `2023-03-15-preview`:
+
+`OPENAI_API_VERSION=2023-03-15-preview`
+
+2. To set the base URL for your Azure OpenAI resource.
+You can find this in the Azure portal under your Azure OpenAI resource.
+
+`OPENAI_API_BASE=https://your-base-url.openai.azure.com`
+
+3. To set the OpenAI model deployment name for your Azure OpenAI resource.
+
+`OPENAI_API_MODEL_DEPLOYMENT_NAME=gpt-35-turbo-16k`
+
+4. To set the OpenAIEmbeddings model deployment name for your Azure OpenAI resource.
+
+`OPENAI_API_EMBEDDING_DEPLOYMENT_NAME=text-embedding-ada-002`
+
 </details>
 
-<br/>
+### 1.3 (Optional) Anthropic(Claude 2) API Token
+<details><summary>👇click me</summary>
+
+To get your Anthropic API token, follow these steps:
+
+1. Go to the [Anthropic website](https://docs.anthropic.com/claude/docs/getting-started-with-claude) and sign up for an account if you haven't already.
+1. Once you're logged in, navigate to the [API keys page](https://console.anthropic.com/account/keys).
+1. Generate a new API key by clicking on the "Create Key" button.
+</details>
+
+### 1.4 (Optional) Anyscale API Token
+<details><summary>👇click me</summary>
+
+To get your Anyscale API token, follow these steps:
+
+1. Go to the [Anyscale website](https://www.anyscale.com/) and sign up for an account if you haven't already.
+1. Once you're logged in, navigate to the [Credentials page](https://app.endpoints.anyscale.com/credentials).
+1. Generate a new API key by clicking on the "Generate credential" button.
+</details>
+
+### 2. Speech to Text
+
+We support [faster-whisper](https://github.com/SYSTRAN/faster-whisper) and [whisperX](https://github.com/m-bain/whisperX) as the local speech to text engines. Work with CPU and NVIDIA GPU.
+
+### 2.1 (Optional) Google Speech-to-Text API
+<details><summary>👇click me</summary>
+
+To get your Google Cloud API credentials.json, follow these steps:
+
+1. Go to the [GCP website](https://cloud.google.com/speech-to-text/docs/before-you-begin) and sign up for an account if you haven't already.
+2. Follow the guide to create a project and enable Speech to Text API
+3. Put `google_credentials.json` in the root folder of this project. Check [Create and delete service account keys](https://cloud.google.com/iam/docs/keys-create-delete#iam-service-account-keys-create-console)
+4. Change `SPEECH_TO_TEXT_USE` to use `GOOGLE` in your `.env` file
+</details>
+
+### 2.2 (Optional) OpenAI Whisper API
+<details><summary>👇click me</summary>
+
+Same as [OpenAI API Token](#12-optional-openai-api-token)
+</details>
+
+### 3. Text to Speech
+
+Edge TTS is the default and is free to use.
+
+### 3.1 (Optional) ElevenLabs API Key
+<details><summary>👇click me</summary>
+
+1. Creating an ElevenLabs Account
+
+    Visit [ElevenLabs](https://beta.elevenlabs.io/) to create an account. You'll need this to access the text to speech and voice cloning features.
+
+1. In your Profile Setting, you can get an API Key.
+
+</details>
+
+### 3.2 (Optional) Google Text-to-Speech API
+
+<details><summary>👇click me</summary>
+
+To get your Google Cloud API credentials.json, follow these steps:
+
+1. Go to the [GCP website](https://cloud.google.com/text-to-speech/docs/quickstart-client-libraries) and sign up for an account if you haven't already.
+2. Follow the guide to create a project and enable Text to Speech API
+3. Put `google_credentials.json` in the root folder of this project. Check [Create and delete service account keys](https://cloud.google.com/iam/docs/keys-create-delete#iam-service-account-keys-create-console)
+</details>
 
 ## (Optional) 🔥 Create Your Own Characters
 <details><summary>👇click me</summary>
@@ -373,4 +368,4 @@ Please check out our [Contribution Guide](contribute.md)!
 </a>
 
 ## 🎲 Community
-- Join us on [Discord](https://discord.gg/YV4U7Am2Xn)
+- Join us on [Discord](https://realchar.ai/join-discord)

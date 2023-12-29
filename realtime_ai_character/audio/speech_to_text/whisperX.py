@@ -1,11 +1,12 @@
+import json
 import io
 import os
-import json
-import uuid
 import time
-import requests
-import numpy as np
+import uuid
 from copy import deepcopy
+
+import numpy as np
+import requests
 from dotenv import load_dotenv
 
 from realtime_ai_character.audio.speech_to_text.base import SpeechToText
@@ -14,11 +15,12 @@ from realtime_ai_character.utils import (
     DiarizedSingleSegment,
     Singleton,
     SingleWordSegment,
+    timed,
     Transcript,
     TranscriptSlice,
     WhisperXResponse,
-    timed,
 )
+
 
 logger = get_logger(__name__)
 
@@ -72,11 +74,11 @@ load_dotenv()
 MODEL = os.getenv("LOCAL_WHISPER_MODEL", "base")
 DIARIZATION = os.getenv("JOURNAL_MODE", "false").lower() == "true"
 HF_ACCESS_TOKEN = os.getenv("HF_ACCESS_TOKEN", "")
-OPENCC = os.getenv("OPENCC")
+OPENCC = os.getenv("OPENCC", "")
 
-WHISPER_X_API_KEY = os.getenv("WHISPER_X_API_KEY")
-WHISPER_X_API_URL = os.getenv("WHISPER_X_API_URL")
-WHISPER_X_API_URL_JOURNAL = os.getenv("WHISPER_X_API_URL_JOURNAL")
+WHISPER_X_API_KEY = os.getenv("WHISPER_X_API_KEY", "")
+WHISPER_X_API_URL = os.getenv("WHISPER_X_API_URL", "")
+WHISPER_X_API_URL_JOURNAL = os.getenv("WHISPER_X_API_URL_JOURNAL", "")
 
 
 class WhisperX(Singleton, SpeechToText):
@@ -112,9 +114,7 @@ class WhisperX(Singleton, SpeechToText):
             self._transcribe = self._transcribe_api
 
     @timed
-    def transcribe(
-        self, audio_bytes, platform="web", prompt="", language="", suppress_tokens=[-1]
-    ):
+    def transcribe(self, audio_bytes, platform="web", prompt="", language="", suppress_tokens=[-1]):
         logger.info("Transcribing audio...")
         result = self._transcribe(audio_bytes, platform, prompt, language, suppress_tokens)
         if isinstance(result, dict):
@@ -270,7 +270,7 @@ class WhisperX(Singleton, SpeechToText):
     def get_audio(self, audio_bytes: bytes, platform: str, verbose: bool = False):
         import torch
         import torchaudio
-        
+
         if platform == "twilio":
             reader = torchaudio.io.StreamReader(
                 io.BytesIO(audio_bytes), format="mulaw", option={"sample_rate": "8000"}

@@ -1,9 +1,11 @@
-from sqlalchemy import Column, String, DateTime, JSON, Integer
-from sqlalchemy.inspection import inspect
 import datetime
-from realtime_ai_character.database.base import Base
-from pydantic import BaseModel
 from typing import Optional
+
+from pydantic import BaseModel
+from sqlalchemy import Column, DateTime, Integer, JSON, String
+from sqlalchemy.inspection import inspect
+
+from realtime_ai_character.database.base import Base
 
 
 class Character(Base):
@@ -29,10 +31,9 @@ class Character(Base):
 
     def to_dict(self):
         return {
-            c.key:
-            getattr(self, c.key).isoformat() if isinstance(
-                getattr(self, c.key), datetime.datetime) else getattr(
-                    self, c.key)
+            c.key: getattr(self, c.key).isoformat()
+            if isinstance(getattr(self, c.key), datetime.datetime)
+            else getattr(self, c.key)
             for c in inspect(self).mapper.column_attrs
         }
 
@@ -75,9 +76,11 @@ class EditCharacterRequest(BaseModel):
 class DeleteCharacterRequest(BaseModel):
     character_id: str
 
+
 class GeneratePromptRequest(BaseModel):
     name: str
     background: Optional[str] = None
+
 
 class GenerateHighlightRequest(BaseModel):
     context: str

@@ -2,7 +2,6 @@
 
 import { Button } from '@nextui-org/button';
 import { Tooltip } from '@nextui-org/tooltip';
-import { Avatar } from '@nextui-org/avatar';
 import SettingBar from './_components/SettingBar';
 import Chat from './_components/Chat';
 import HandsFreeMode from './_components/HandsFreeMode';
@@ -151,7 +150,7 @@ export default function Conversation() {
 
   // Audio Playback
   useEffect(() => {
-    if (isPlaying && audioContext) {
+    if (audioContext, !isPlaying && audioQueueRef.current?.length > 0) {
       playAudios(
         audioContext,
         audioPlayerRef,
@@ -162,10 +161,9 @@ export default function Conversation() {
         popAudioQueueFront
       );
     }
-  }, [isPlaying]);
+  }, [audioContext, audioQueueRef.current?.length]);
 
-  const { isMute, setIsMute } = useAppStore();
-  const [disableMic, setDisableMic] = useState(false);
+  const { isMute, setIsMute, disableMic, setDisableMic } = useAppStore();
 
   function handsFreeMode() {
     setIsTextMode(false);
@@ -198,6 +196,7 @@ export default function Conversation() {
   const cleanUpStates = () => {
     disableVAD();
     closeVAD();
+    stopAudioPlayback();
     closeMediaRecorder();
     closePeer();
     closeSocket();

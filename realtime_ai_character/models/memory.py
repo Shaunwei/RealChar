@@ -1,12 +1,13 @@
-import os
 import datetime
-
-from pydantic import BaseModel
-from realtime_ai_character.database.base import Base
-from sqlalchemy import Column, String, DateTime, Unicode
-from pgvector.sqlalchemy import Vector
-from sqlalchemy.inspection import inspect
+import os
 from typing import Optional
+
+from pgvector.sqlalchemy import Vector
+from pydantic import BaseModel
+from sqlalchemy import Column, DateTime, String, Unicode
+from sqlalchemy.inspection import inspect
+
+from realtime_ai_character.database.base import Base
 
 
 class Memory(Base):
@@ -18,15 +19,14 @@ class Memory(Base):
     content = Column(Unicode(65535), nullable=True)
     created_at = Column(DateTime(), nullable=False)
     updated_at = Column(DateTime(), nullable=False)
-    if 'postgres' in os.environ.get('DATABASE_URL', ''):
+    if "postgres" in os.environ.get("DATABASE_URL", ""):
         content_embedding = Column(Vector(1536), nullable=True)
 
     def to_dict(self):
         return {
-            c.key:
-            getattr(self, c.key).isoformat() if isinstance(
-                getattr(self, c.key), datetime.datetime) else getattr(
-                    self, c.key)
+            c.key: getattr(self, c.key).isoformat()
+            if isinstance(getattr(self, c.key), datetime.datetime)
+            else getattr(self, c.key)
             for c in inspect(self).mapper.column_attrs
         }
 

@@ -1,13 +1,43 @@
-version: '3'
+version: '3.8'
 
 services:
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /var/lib/postgresql/data/realchar
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     build: 
       context: .
+      dockerfile: Dockerfile.dev
     ports:
       - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
     env_file:
       - ./.env
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   web:
     build:
@@ -24,7 +54,10 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+      db:
+        condition: service_healthy
     environment:
       - NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyAVqhwbdB8I56HAMVVlgJKZcfrBkKI2AhQ
       - NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=assistly-kubernetes.firebaseapp.com
@@ -37,3 +70,7 @@ services:
 networks:
   default:
     driver: bridge
+
+volumes:
+  db:
+    driver: local

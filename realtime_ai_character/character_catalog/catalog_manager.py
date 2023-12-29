@@ -1,21 +1,23 @@
 import os
 import threading
 import time
-import yaml
-from pathlib import Path
 from contextlib import ExitStack
+from pathlib import Path
+from typing import cast, Optional
 
+import yaml
 from dotenv import load_dotenv
 from firebase_admin import auth
-from llama_index import SimpleDirectoryReader
 from langchain.text_splitter import CharacterTextSplitter
-
-from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Singleton, Character
-from realtime_ai_character.database.chroma import get_chroma
+from llama_index import SimpleDirectoryReader
 from readerwriterlock import rwlock
+
+from realtime_ai_character.database.chroma import get_chroma
 from realtime_ai_character.database.connection import get_db
+from realtime_ai_character.logger import get_logger
 from realtime_ai_character.models.character import Character as CharacterModel
+from realtime_ai_character.utils import Character, Singleton
+
 
 load_dotenv()
 logger = get_logger(__name__)
@@ -26,10 +28,10 @@ class CatalogManager(Singleton):
         super().__init__()
         overwrite = os.getenv("OVERWRITE_CHROMA") != "false"
         # skip Chroma if Openai API key is not set
-        if os.getenv('OPENAI_API_KEY'):
+        if os.getenv("OPENAI_API_KEY"):
             self.db = get_chroma()
         else:
-            self.db = None
+            self.db = get_chroma(embedding=False)
             overwrite = False
             logger.warning("OVERWRITE_CHROMA disabled due to OPENAI_API_KEY not set")
         self.sql_db = next(get_db())
@@ -37,22 +39,20 @@ class CatalogManager(Singleton):
         self.sql_load_lock = rwlock.RWLockFair()
 
         if overwrite:
-            logger.info('Overwriting existing data in the chroma.')
+            logger.info("Overwriting existing data in the chroma.")
             self.db.delete_collection()
             self.db = get_chroma()
 
-        self.characters = {}
-        self.author_name_cache = {}
-        self.load_characters_from_community(overwrite)
-        self.load_characters(overwrite)
+        self.characters: dict[str, Character] = {}
+        self.author_name_cache: dict[str, str] = {}
+        self.load_characters("default", overwrite)
+        self.load_characters("community", overwrite)
         if overwrite:
-            logger.info('Persisting data in the chroma.')
+            logger.info("Persisting data in the chroma.")
             self.db.persist()
-        if self.db:
-            logger.info(f"Total document load: {self.db._client.get_collection('llm').count()}")
+        logger.info(f"Total document load: {self.db._client.get_collection('llm').count()}")
         self.run_load_sql_db_thread = True
-        self.load_sql_db_thread = threading.Thread(
-            target=self.load_sql_db_loop)
+        self.load_sql_db_thread = threading.Thread(target=self.load_sql_db_loop)
         self.load_sql_db_thread.daemon = True
         self.load_sql_db_thread.start()
 
@@ -64,89 +64,30 @@ class CatalogManager(Singleton):
     def stop_load_sql_db_loop(self):
         self.run_load_sql_db_thread = False
 
-    def get_character(self, name) -> Character:
+    def get_character(self, name) -> Optional[Character]:
         with self.sql_load_lock.gen_rlock():
             return self.characters.get(name)
 
-    def load_character(self, directory):
+    def load_character(self, directory: Path, source: str):
         with ExitStack() as stack:
-            f_yaml = stack.enter_context(open(directory / 'config.yaml'))
-            yaml_content = yaml.safe_load(f_yaml)
+            f_yaml = stack.enter_context(open(directory / "config.yaml"))
+            yaml_content = cast(dict, yaml.safe_load(f_yaml))
 
-        character_id = yaml_content['character_id']
-        character_name = yaml_content['character_name']
-        voice_id = str(yaml_content['voice_id'])
-        order = yaml_content.get('order', 10**9)
-        if (os.getenv(character_id.upper() + "_VOICE_ID", "")):
-            voice_id = os.getenv(character_id.upper() + "_VOICE_ID")
-        self.characters[character_id] = Character(
-            character_id=character_id,
-            name=character_name,
-            llm_system_prompt=yaml_content["system"],
-            llm_user_prompt=yaml_content["user"],
-            voice_id=voice_id,
-            source='default',
-            location='repo',
-            visibility='public',
-            order=order,
-            tts=yaml_content["text_to_speech_use"],
-            # rebyte config
-            rebyte_api_project_id=yaml_content["rebyte_api_project_id"],
-            rebyte_api_agent_id=yaml_content["rebyte_api_agent_id"],
-            rebyte_api_version=yaml_content.get("rebyte_api_version"),
-        )
-
-        if "author_name" in yaml_content:
-            self.characters[character_id].author_name = yaml_content["author_name"],
-
-        return character_name
-
-    def load_characters(self, overwrite):
-        """
-        Load characters from the character_catalog directory. Use /data to create
-        documents and add them to the chroma.
-
-        :overwrite: if True, overwrite existing data in the chroma.
-        """
-        path = Path(__file__).parent
-        excluded_dirs = {'__pycache__', 'archive', 'community'}
-
-        directories = [d for d in path.iterdir() if d.is_dir()
-                       and d.name not in excluded_dirs]
-
-        for directory in directories:
-            character_name = self.load_character(directory)
-            if overwrite:
-                logger.info('Loading data for character: ' + character_name)
-                self.load_data(character_name, directory / 'data')
-                logger.info('Loaded data for character: ' + character_name)
-        logger.info(
-            f'Loaded {len(self.characters)} characters: IDs {list(self.characters.keys())}')
-
-    def load_characters_from_community(self, overwrite):
-        path = Path(__file__).parent / 'community'
-        excluded_dirs = {'__pycache__', 'archive'}
-
-        directories = [d for d in path.iterdir() if d.is_dir()
-                       and d.name not in excluded_dirs]
-        for directory in directories:
-            with ExitStack() as stack:
-                f_yaml = stack.enter_context(open(directory / 'config.yaml'))
-                yaml_content = yaml.safe_load(f_yaml)
-            character_id = yaml_content['character_id']
-            character_name = yaml_content['character_name']
-            logger.info('Loading data for character: ' + character_name)
-            order = yaml_content.get('order', 10**9)
+            character_id = yaml_content["character_id"]
+            character_name = yaml_content["character_name"]
+            voice_id_env = os.getenv(character_id.upper() + "_VOICE_ID")
+            voice_id = voice_id_env or str(yaml_content["voice_id"])
+            order = yaml_content.get("order", 10**6)
             self.characters[character_id] = Character(
                 character_id=character_id,
                 name=character_name,
                 llm_system_prompt=yaml_content["system"],
                 llm_user_prompt=yaml_content["user"],
-                voice_id=str(yaml_content["voice_id"]),
-                source='community',
-                location='repo',
-                author_name=yaml_content["author_name"],
-                visibility=yaml_content["visibility"],
+                source=source,
+                location="repo",
+                voice_id=voice_id,
+                author_name=yaml_content.get("author_name", ""),
+                visibility="public" if source == "default" else yaml_content["visibility"],
                 tts=yaml_content["text_to_speech_use"],
                 order=order,
                 # rebyte config
@@ -155,34 +96,61 @@ class CatalogManager(Singleton):
                 rebyte_api_version=yaml_content.get("rebyte_api_version"),
             )
 
-            if overwrite:
-                self.load_data(character_name, directory / 'data')
-                logger.info('Loaded data for character: ' + character_name)
+            return character_name
 
-    def load_data(self, character_name: str, data_path: str):
-        loader = SimpleDirectoryReader(Path(data_path))
+    def load_data(self, character_name: str, data_path: Path):
+        loader = SimpleDirectoryReader(data_path.absolute().as_posix())
         documents = loader.load_data()
-        text_splitter = CharacterTextSplitter(
-            separator='\n',
-            chunk_size=500,
-            chunk_overlap=100)
+        text_splitter = CharacterTextSplitter(separator="\n", chunk_size=500, chunk_overlap=100)
         docs = text_splitter.create_documents(
             texts=[d.text for d in documents],
-            metadatas=[{
-                'character_name': character_name,
-                'id': d.id_,
-            } for d in documents])
+            metadatas=[
+                {
+                    "character_name": character_name,
+                    "id": d.id_,
+                }
+                for d in documents
+            ],
+        )
         self.db.add_documents(docs)
 
+    def load_characters(self, source: str, overwrite: bool):
+        """
+        Load characters from the character_catalog directory. Use /data to create
+        documents and add them to the chroma.
+
+        :param source: 'default' or 'community'
+
+        :param overwrite: if True, overwrite existing data in the chroma.
+        """
+        if source == "default":
+            path = Path(__file__).parent
+            excluded_dirs = {"__pycache__", "archive", "community"}
+        elif source == "community":
+            path = Path(__file__).parent / "community"
+            excluded_dirs = {"__pycache__", "archive"}
+        else:
+            raise ValueError(f"Invalid source: {source}")
+
+        directories = [d for d in path.iterdir() if d.is_dir() and d.name not in excluded_dirs]
+
+        for directory in directories:
+            character_name = self.load_character(directory, source)
+            if character_name and overwrite:
+                logger.info("Overwriting data for character: " + character_name)
+                self.load_data(character_name, directory / "data")
+
+        logger.info(f"Loaded {len(self.characters)} characters: IDs {list(self.characters.keys())}")
+
     def load_character_from_sql_database(self):
-        logger.info('Started loading characters from SQL database')
+        logger.info("Started loading characters from SQL database")
         character_models = self.sql_db.query(CharacterModel).all()
 
         with self.sql_load_lock.gen_wlock():
             # delete all characters with location == 'database'
             keys_to_delete = []
             for character_id in self.characters.keys():
-                if self.characters[character_id].location == 'database':
+                if self.characters[character_id].location == "database":
                     keys_to_delete.append(character_id)
             for key in keys_to_delete:
                 del self.characters[key]
@@ -190,39 +158,40 @@ class CatalogManager(Singleton):
             # add all characters from sql database
             for character_model in character_models:
                 if character_model.author_id not in self.author_name_cache:
-                    author_name = auth.get_user(
-                        character_model.author_id).display_name if os.getenv(
-                            'USE_AUTH') == "true" else "anonymous author"
-                    self.author_name_cache[character_model.author_id] = author_name
+                    author_name = (
+                        auth.get_user(character_model.author_id).display_name
+                        if os.getenv("USE_AUTH") == "true"
+                        else "anonymous author"
+                    )
+                    self.author_name_cache[character_model.author_id] = author_name  # type: ignore
                 else:
                     author_name = self.author_name_cache[character_model.author_id]
                 character = Character(
-                    character_id=character_model.id,
-                    name=character_model.name,
-                    llm_system_prompt=character_model.system_prompt,
-                    llm_user_prompt=character_model.user_prompt,
-                    voice_id=character_model.voice_id,
-                    source='community',
-                    location='database',
-                    author_id=character_model.author_id,
+                    character_id=character_model.id,  # type: ignore
+                    name=character_model.name,  # type: ignore
+                    llm_system_prompt=character_model.system_prompt,  # type: ignore
+                    llm_user_prompt=character_model.user_prompt,  # type: ignore
+                    source="community",
+                    location="database",
+                    voice_id=character_model.voice_id,  # type: ignore
                     author_name=author_name,
-                    visibility=character_model.visibility,
-                    tts=character_model.tts,
-                    data=character_model.data,
+                    author_id=character_model.author_id,  # type: ignore
+                    visibility=character_model.visibility,  # type: ignore
+                    tts=character_model.tts,  # type: ignore
+                    data=character_model.data,  # type: ignore
                     # rebyte config
-                    rebyte_api_project_id=character_model.rebyte_api_project_id,
-                    rebyte_api_agent_id=character_model.rebyte_api_agent_id,
-                    rebyte_api_version=character_model.rebyte_api_version,
+                    rebyte_api_project_id=character_model.rebyte_api_project_id,  # type: ignore
+                    rebyte_api_agent_id=character_model.rebyte_api_agent_id,  # type: ignore
+                    rebyte_api_version=character_model.rebyte_api_version,  # type: ignore
                 )
-                self.characters[character_model.id] = character
+                self.characters[character_model.id] = character  # type: ignore
                 # TODO: load context data from storage
-        logger.info(
-            f'Loaded {len(character_models)} characters from sql database')
+        logger.info(f"Loaded {len(character_models)} characters from sql database")
 
 
 def get_catalog_manager() -> CatalogManager:
     return CatalogManager.get_instance()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     manager = CatalogManager.get_instance()

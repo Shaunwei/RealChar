@@ -56,15 +56,13 @@ export const createRecorderSlice = (set, get) => ({
   },
   startRecording: () => {
     console.log('start recording');
-    if (!get().mediaRecorder) return;
-    get().mediaRecorder.start();
+    get().mediaRecorder?.start();
     get().setIsRecording(true);
   },
 
   stopRecording: () => {
     console.log('stop recording');
-    if (!get().mediaRecorder) return;
-    get().mediaRecorder.stop();
+    get().mediaRecorder?.stop();
     get().setIsRecording(false);
   },
   closeMediaRecorder: () => {
@@ -109,9 +107,7 @@ export const createRecorderSlice = (set, get) => ({
     get().vadEvents?.resume();
   },
   disableVAD: () => {
-    if (get().vadEvents) {
-      get().vadEvents.suspend();
-    }
+    get().vadEvents?.suspend();
   },
   closeVAD: () => {
     get().vadEvents?.stop();

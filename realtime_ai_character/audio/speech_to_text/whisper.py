@@ -2,7 +2,6 @@ import io
 import os
 import subprocess
 import types
-import wave
 
 import speech_recognition as sr
 from faster_whisper import WhisperModel
@@ -12,15 +11,16 @@ from realtime_ai_character.audio.speech_to_text.base import SpeechToText
 from realtime_ai_character.logger import get_logger
 from realtime_ai_character.utils import Singleton, timed
 
-DEBUG = False
 
 logger = get_logger(__name__)
 
-config = types.SimpleNamespace(**{
-    'model': os.getenv("LOCAL_WHISPER_MODEL", "base"),
-    'language': 'en',
-    'api_key': os.getenv("OPENAI_API_KEY"),
-})
+config = types.SimpleNamespace(
+    **{
+        "model": os.getenv("LOCAL_WHISPER_MODEL", "base"),
+        "language": "en",
+        "api_key": os.getenv("OPENAI_API_KEY"),
+    }
+)
 
 # Whisper use a shorter version for language code. Provide a mapping to convert
 # from the standard language code to the whisper language code.
@@ -33,9 +33,9 @@ WHISPER_LANGUAGE_CODE_MAPPING = {
     "pt-PT": "pt",
     "hi-IN": "hi",
     "pl-PL": "pl",
-    'zh-CN': 'zh',
-    'ja-JP': 'jp',
-    'ko-KR': 'ko',
+    "zh-CN": "zh",
+    "ja-JP": "jp",
+    "ko-KR": "ko",
 }
 
 
@@ -44,12 +44,11 @@ class Whisper(Singleton, SpeechToText):
         super().__init__()
         if use == "local":
             try:
-                subprocess.check_output(['nvidia-smi'])
+                subprocess.check_output(["nvidia-smi"])
                 device = "cuda"
             except Exception:
                 device = "cpu"
-            logger.info(
-                f"Loading [Local Whisper] model: [{config.model}]({device}) ...")
+            logger.info(f"Loading [Local Whisper] model: [{config.model}]({device}) ...")
             self.model = WhisperModel(
                 model_size_or_path=config.model,
                 device="auto",
@@ -57,11 +56,6 @@ class Whisper(Singleton, SpeechToText):
             )
         self.recognizer = sr.Recognizer()
         self.use = use
-        if DEBUG:
-            self.wf = wave.open("output.wav", "wb")
-            self.wf.setnchannels(1)  # Assuming mono audio
-            self.wf.setsampwidth(2)  # Assuming 16-bit audio
-            self.wf.setframerate(44100)  # Assuming 44100Hz sample rate
 
     @timed
     def transcribe(self, audio_bytes, platform, prompt="", language="en-US", suppress_tokens=[-1]):
@@ -71,8 +65,7 @@ class Whisper(Singleton, SpeechToText):
         elif platform == "twilio":
             audio = self._ulaw_to_wav(audio_bytes, self.use == "local")
         else:
-            audio = self._convert_bytes_to_wav(
-                audio_bytes, self.use == "local")
+            audio = self._convert_bytes_to_wav(audio_bytes, self.use == "local")
         if self.use == "local":
             return self._transcribe(audio, prompt, suppress_tokens=suppress_tokens)
         elif self.use == "api":
@@ -98,8 +91,7 @@ class Whisper(Singleton, SpeechToText):
         return text
 
     def _convert_webm_to_wav(self, webm_data, local=True):
-        webm_audio = AudioSegment.from_file(
-            io.BytesIO(webm_data))
+        webm_audio = AudioSegment.from_file(io.BytesIO(webm_data))
         wav_data = io.BytesIO()
         webm_audio.export(wav_data, format="wav")
         if local:
@@ -110,18 +102,12 @@ class Whisper(Singleton, SpeechToText):
 
     def _convert_bytes_to_wav(self, audio_bytes, local=True):
         if local:
-            audio = io.BytesIO(sr.AudioData(
-                audio_bytes, 44100, 2).get_wav_data())
+            audio = io.BytesIO(sr.AudioData(audio_bytes, 44100, 2).get_wav_data())
             return audio
         return sr.AudioData(audio_bytes, 44100, 2)
 
     def _ulaw_to_wav(self, audio_bytes, local=True):
-        sound = AudioSegment(
-            data=audio_bytes,
-            sample_width=1,
-            frame_rate=8000,
-            channels=1
-        )
+        sound = AudioSegment(data=audio_bytes, sample_width=1, frame_rate=8000, channels=1)
 
         audio = io.BytesIO()
         sound.export(audio, format="wav")

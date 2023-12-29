@@ -5,6 +5,7 @@ export const createSettingSlice = (set, get) => ({
   selectedMicrophone: new Set(['default']),
   selectedModel: new Set(['rebyte']),
   isMute: false,
+  disableMic: false,
   isJournalMode: false,
   languageList: [
     'Auto Detect',
@@ -88,8 +89,13 @@ export const createSettingSlice = (set, get) => ({
   setIsMute: (v) => {
     set({ isMute: v });
   },
+  setDisableMic: (v) => {
+    set({ disableMic: v });
+  },
   setIsJournalMode: (v) => {
     set({ isJournalMode: v });
-    get().sendOverSocket('[!JOURNAL_MODE]' + v);
+    if (get().socketIsOpen) {
+      get().sendOverSocket('[!JOURNAL_MODE]' + v);
+    }
   },
 });

@@ -1,10 +1,11 @@
 import datetime
-
-from sqlalchemy import Column, String, DateTime, Unicode
-from sqlalchemy.inspection import inspect
-from pydantic import BaseModel
-from realtime_ai_character.database.base import Base
 from typing import Optional
+
+from pydantic import BaseModel
+from sqlalchemy import Column, DateTime, String, Unicode
+from sqlalchemy.inspection import inspect
+
+from realtime_ai_character.database.base import Base
 
 
 class Feedback(Base):
@@ -20,10 +21,9 @@ class Feedback(Base):
 
     def to_dict(self):
         return {
-            c.key:
-            getattr(self, c.key).isoformat() if isinstance(
-                getattr(self, c.key), datetime.datetime) else getattr(
-                    self, c.key)
+            c.key: getattr(self, c.key).isoformat()
+            if isinstance(getattr(self, c.key), datetime.datetime)
+            else getattr(self, c.key)
             for c in inspect(self).mapper.column_attrs
         }
 

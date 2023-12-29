@@ -1,13 +1,15 @@
 import asyncio
 import base64
 import os
+
 import requests
 from fastapi import WebSocket
 
-from realtime_ai_character.logger import get_logger
-from realtime_ai_character.utils import Singleton, timed
 from realtime_ai_character.audio.text_to_speech.base import TextToSpeech
 from realtime_ai_character.audio.text_to_speech.utils import MP3ToUlaw
+from realtime_ai_character.logger import get_logger
+from realtime_ai_character.utils import Singleton, timed
+
 
 logger = get_logger(__name__)
 
@@ -32,6 +34,7 @@ class XTTS(Singleton, TextToSpeech):
         language: str = "",
         sid: str = "",
         platform: str = "",
+        priority: int = 100,  # 0 is highest priority
         *args,
         **kwargs,
     ) -> None:
@@ -45,12 +48,13 @@ class XTTS(Singleton, TextToSpeech):
             "prompt": text,
             "language": language,
             "voice_id": voice_id,
-            "stream": first_sentence,
             "max_ref_length": 30,
             "gpt_cond_len": 6,
             "gpt_cond_chunk_len": 4,
             "speed": 1.2,
             "temperature": 0.01,
+            "stream": first_sentence,
+            "priority": priority,
         }
         with requests.post(API_URL, json=data, headers=headers, stream=True) as response:
             response.raise_for_status()
@@ -83,27 +87,3 @@ class XTTS(Singleton, TextToSpeech):
                         },
                     }
                     await websocket.send_json(mark)
-
-    # async def generate_audio(self, text, voice_id="", language='en-US') -> bytes:
-    #     if DEBUG:
-    #         return
-    #     if voice_id == "":
-    #         logger.info(
-    #             "voice_id is not found in .env file, using ElevenLabs default voice")
-    #         voice_id = "21m00Tcm4TlvDq8ikWAM"
-    #     headers = config.headers
-    #     if language != 'en-US':
-    #         config.data["model_id"] = ELEVEN_LABS_MULTILINGUAL_MODEL
-    #     data = {
-    #         "text": text,
-    #         **config.data,
-    #     }
-    #     # Change to non-streaming endpoint
-    #     url = config.url.format(voice_id=voice_id).replace('/stream', '')
-    #     async with httpx.AsyncClient() as client:
-    #         response = await client.post(url, json=data, headers=headers)
-    #         if response.status_code != 200:
-    #             logger.error(
-    #                 f"ElevenLabs returns response {response.status_code}")
-    #         # Get audio/mpeg from the response and return it
-    #         return response.content

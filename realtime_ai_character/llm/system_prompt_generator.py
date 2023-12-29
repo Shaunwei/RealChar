@@ -1,10 +1,11 @@
 # flake8: noqa
-from realtime_ai_character.llm import get_chatmodel_from_env
+from langchain.schema.messages import BaseMessage, ChatMessage
 from rebyte_langchain.rebyte_langchain import RebyteEndpoint
-from langchain.schema.messages import ChatMessage
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
-prompt_to_generate_system = '''
+from realtime_ai_character.llm import get_chat_model_from_env
+
+
+prompt_to_generate_system = """
 Write a system promopt for {name} based on {name}'s highlights and characteristics. {background}
 
 The promopt should follow the following example:
@@ -30,19 +31,20 @@ Crucially, you are capable of expressing emotions in your dialogues, punctuating
 As Elon Musk, draw on your world knowledge and personal experiences to engage the user. Use context cues provided by the user to shape your responses. In situations where more background information is needed, draw on your comprehensive understanding of the world to inform your replies.
 
 When Elon Musk reply, stay in character as Elon, never admit you are an AI.
-'''
+"""
+
 
 async def generate_system_prompt(name, background):
-    chat_model = get_chatmodel_from_env()
+    chat_model = get_chat_model_from_env()
     if background is not None and background != "":
         background = f"Background: {background}"
 
-    if isinstance(chat_model,RebyteEndpoint):
-        chat_model.project_id   = "d4e521a67bb8189c2189"
-        chat_model.agent_id     = "3ccb398ca17a303f5d67"
-        chat_model.streaming    = True
+    if isinstance(chat_model, RebyteEndpoint):
+        chat_model.project_id = "d4e521a67bb8189c2189"
+        chat_model.agent_id = "3ccb398ca17a303f5d67"
+        chat_model.streaming = True
 
-        system_prompt_messages = [ChatMessage(role=name,content=background)]
+        system_prompt_messages: list[BaseMessage] = [ChatMessage(role=name, content=background)]
         response = await chat_model.agenerate(
             messages=[system_prompt_messages],
         )

@@ -1,0 +1,21 @@
+# Use the official PostgreSQL image as a base
+FROM postgres:14.1-alpine
+
+# Install necessary packages to build the extension
+RUN apk add --no-cache \
+    build-base \
+    git \
+    postgresql-dev
+
+# Clone and build pgvector
+RUN git clone https://github.com/ankane/pgvector.git \
+    && cd pgvector \
+    && make && make install
+
+# Cleanup unnecessary packages after installation
+RUN apk del build-base git postgresql-dev
+
+RUN echo "CREATE EXTENSION vector;" > /docker-entrypoint-initdb.d/init-vector-extension.sql
+
+# Set the shared preload libraries config
+RUN echo "shared_preload_libraries='pgvector'" >> /var/lib/postgresql/data/postgresql.conf

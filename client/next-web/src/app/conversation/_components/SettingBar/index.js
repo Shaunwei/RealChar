@@ -43,7 +43,7 @@ export default function SettingBar({
         <div className="flex gap-8">
           <div className="flex gap-1 items-center">
             {character.rebyte_project_id && character.rebyte_agent_id && (
-              <a href={`https://rebyte.ai/p/${character.rebyte_project_id}/callable/${character.rebyte_agent_id}/editor`} className="flex items-center gap-1">
+              <a href={`https://rebyte.ai/p/${character.rebyte_project_id}/callable/${character.rebyte_agent_id}/editor`} target="_blank" className="flex items-center gap-1">
                 <FaExternalLinkAlt />Agent
               </a>
             )}

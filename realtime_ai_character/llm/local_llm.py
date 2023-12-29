@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Optional
 
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chat_models import ChatOpenAI
@@ -24,7 +24,6 @@ class LocalLlm(LLM):
             temperature=0.5,
             streaming=True,
             openai_api_base=url,
-            
         )
         self.config = {"model": "Local LLM", "temperature": 0.5, "streaming": True}
         self.db = get_chroma()
@@ -35,30 +34,33 @@ class LocalLlm(LLM):
     @timed
     async def achat(
         self,
-        history: Union[List[BaseMessage], List[str]],
+        history: list[BaseMessage],
         user_input: str,
-        user_input_template: str,
-        callback: AsyncCallbackTextHandler,
-        audioCallback: AsyncCallbackAudioHandler,
+        user_id: str,
         character: Character,
-        metadata: dict = None,
+        callback: AsyncCallbackTextHandler,
+        audioCallback: Optional[AsyncCallbackAudioHandler] = None,
+        metadata: Optional[dict] = None,
         *args,
         **kwargs,
     ) -> str:
         # 1. Generate context
         context = self._generate_context(user_input, character)
-        
+
         # 2. Add user input to history
         history.append(
             HumanMessage(
-                content=user_input_template.format(context=context, query=user_input)
+                content=character.llm_user_prompt.format(context=context, query=user_input)
             )
         )
 
         # 3. Generate response
+        callbacks = [callback, StreamingStdOutCallbackHandler()]
+        if audioCallback is not None:
+            callbacks.append(audioCallback)
         response = await self.chat_open_ai.agenerate(
             [history],
-            callbacks=[callback, audioCallback, StreamingStdOutCallbackHandler()],
+            callbacks=callbacks,
             metadata=metadata,
         )
         logger.info(f"Response: {response}")

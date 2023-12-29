@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String
+
 from realtime_ai_character.database.base import Base
 
 

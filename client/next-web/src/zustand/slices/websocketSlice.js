@@ -66,9 +66,24 @@ export const createWebsocketSlice = (set, get) => ({
         return;
       }
       get().pushAudioQueue(event.data);
-      if (get().audioQueue.length === 1) {
-        get().setIsPlaying(true); // this will trigger playAudios in CallView.
-      }
+      console.log(
+        'audio arrival: ',
+        event.data.byteLength,
+        ' bytes, speaker: ',
+        get().selectedSpeaker.values().next().value,
+        ' mute: ',
+        get().isMute,
+        ' mic: ',
+        get().selectedMicrophone.values().next().value,
+        ' mute: ',
+        get().disableMic,
+        ' isPlaying: ',
+        get().isPlaying,
+        ' isPlaying(player): ',
+        get().audioPlayerRef.current ? !get().audioPlayerRef.current.paused : undefined,
+        ' audios in queue: ',
+        get().audioQueue.length
+      );
     }
   },
 
@@ -109,7 +124,7 @@ export const createWebsocketSlice = (set, get) => ({
     }
   },
   closeSocket: () => {
-    get().socket.close();
+    get().socket?.close();
     set({ socket: null, socketIsOpen: false });
   },
   sessionId: '',

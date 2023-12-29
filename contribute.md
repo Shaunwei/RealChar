@@ -57,6 +57,6 @@ If you're adding a new feature or fixing a bug, make sure to add or update an is
 By participating in this project, you're expected to uphold our Code of Conduct.
 
 # Where to Get Help
-If you run into problems or need help, check out our [discord](https://discord.gg/UYeQAUfaAX).
+If you run into problems or need help, check out our [discord](https://realchar.ai/join-discord).
 
 Thank you for considering contributing to RealChar! Your time and expertise is greatly appreciated by the community.

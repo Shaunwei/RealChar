@@ -1,7 +1,9 @@
-from sqlalchemy import Column, Integer, String
-from realtime_ai_character.database.base import Base
-from pydantic import BaseModel
 from typing import Optional
+
+from pydantic import BaseModel
+from sqlalchemy import Column, Integer, String
+
+from realtime_ai_character.database.base import Base
 
 
 class QuivrInfo(Base):
@@ -15,6 +17,7 @@ class QuivrInfo(Base):
     def save(self, db):
         db.add(self)
         db.commit()
+
 
 class UpdateQuivrInfoRequest(BaseModel):
     quivr_api_key: Optional[str] = None

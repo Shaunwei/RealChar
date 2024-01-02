@@ -41,7 +41,7 @@ class PreferenceSettings: ObservableObject {
             print("Saved use search preference: \(useSearch)")
         }
     }
-    @Published var llmOption: LlmOption = LlmOption(rawValue: UserDefaults.standard.string(forKey: Constants.llmOptionKey) ?? LlmOption.gpt35.rawValue) ?? .gpt35 {
+    @Published var llmOption: LlmOption = LlmOption(rawValue: UserDefaults.standard.string(forKey: Constants.llmOptionKey) ?? LlmOption.rebyte.rawValue) ?? .rebyte {
         didSet {
             guard llmOption != oldValue else { return }
             UserDefaults.standard.set(llmOption.rawValue, forKey: Constants.llmOptionKey)
@@ -78,7 +78,7 @@ class PreferenceSettings: ObservableObject {
 
     func loadSettings(isUserLoggedIn: Bool) {
         if !isUserLoggedIn {
-            self.llmOption = .gpt35
+            self.llmOption = .rebyte
         }
     }
 }

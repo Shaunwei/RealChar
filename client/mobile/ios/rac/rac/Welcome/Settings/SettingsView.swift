@@ -11,7 +11,7 @@ import Firebase
 
 enum LlmOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Codable {
 
-    case gpt35, gpt4, claude, llama, rebyte
+    case rebyte, gpt35, gpt4, claude, llama
 
     init?(rawValue: String) {
         for option in LlmOption.allCases {
@@ -26,6 +26,8 @@ enum LlmOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Codable 
     var id: String { rawValue }
     var rawValue: String {
         switch self {
+        case .rebyte:
+            return "rebyte"
         case .gpt35:
             return "gpt-3.5-turbo-16k"
         case .gpt4:
@@ -34,13 +36,13 @@ enum LlmOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Codable 
             return "claude-2"
         case .llama:
             return "meta-llama/Llama-2-70b-chat-hf"
-        case .rebyte:
-            return "rebyte"
         }
     }
 
     var displayName: String {
         switch self {
+        case .rebyte:
+            return "rebyte"
         case .gpt35:
             return "gpt-3.5"
         case .gpt4:
@@ -49,8 +51,6 @@ enum LlmOption: RawRepresentable, Hashable, CaseIterable, Identifiable, Codable 
             return "claude-2"
         case .llama:
             return "LLaMA-2-70b"
-        case .rebyte:
-            return "rebyte"
         }
     }
 }
@@ -280,11 +280,11 @@ struct SettingsView: View {
         }
         .onChange(of: userSettings.isLoggedIn) { newValue in
             if !newValue {
-                preferenceSettings.llmOption = .gpt35
+                preferenceSettings.llmOption = .rebyte
             }
         }
         .onChange(of: preferenceSettings.llmOption) { newValue in
-            if newValue != .gpt35 && !userSettings.isLoggedIn {
+            if newValue != .rebyte && !userSettings.isLoggedIn {
                 showAuth = true
             }
         }
@@ -328,7 +328,7 @@ struct SettingsView: View {
                 signIn()
             }
             if !newValue && !userSettings.isLoggedIn {
-                preferenceSettings.llmOption = .gpt35
+                preferenceSettings.llmOption = .rebyte
                 preferenceSettings.quivrMeta = .init(apiKey: "", brainId: "", brainName: "")
             }
         }

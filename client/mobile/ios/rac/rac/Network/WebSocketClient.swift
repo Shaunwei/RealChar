@@ -47,7 +47,7 @@ class WebSocketClient: NSObject, WebSocket, URLSessionWebSocketDelegate {
     private lazy var session = URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue())
 
     private var lastUsedLanguageOption: LanguageOption = .english
-    private var lastUsedLlmOption: LlmOption = .gpt35
+    private var lastUsedLlmOption: LlmOption = .rebyte
     private var lastUsedUseSearch: Bool = false
     private var lastUsedUseQuivr: Bool = false
     private var lastUsedCharacterId: String = ""

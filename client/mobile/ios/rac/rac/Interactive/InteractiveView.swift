@@ -50,7 +50,7 @@ struct InteractiveView: View {
                 })
                     .padding(.horizontal, 48)
                     .preferredColorScheme(.dark)
-                    .background(Constants.realBlack)
+//                    .background(Constants.realBlack)
             case .voice:
                 VoiceMessageView(openMic: openMic,
                                  character: character,
@@ -95,7 +95,7 @@ struct InteractiveView: View {
                 })
                 .padding(.horizontal, 48)
                 .preferredColorScheme(.dark)
-                .background(Constants.realBlack)
+//                .background(Constants.realBlack)
             }
 
             HStack(alignment: .center, spacing: 28) {
@@ -146,9 +146,9 @@ struct InteractiveView: View {
             .padding(.top, 20)
             .padding(.bottom, 40)
             .frame(maxWidth: .infinity)
-            .background(Constants.realBlack)
+//            .background(Constants.realBlack)
         }
-        .background(Constants.realBlack)
+//        .background(Constants.realBlack)
         .onAppear {
             prepareHaptics()
             webSocket.send(message: "[!USE_SEARCH]\(preferenceSettings.useSearch)")
@@ -247,15 +247,19 @@ struct InteractiveView: View {
     }
 
     private func simpleSuccess() {
+#if !os(visionOS)
         guard hapticFeedback else { return }
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)
+#endif
     }
 
     private func simpleError() {
+#if !os(visionOS)
         guard hapticFeedback else { return }
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.error)
+#endif
     }
 
     private func prepareHaptics() {

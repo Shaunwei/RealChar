@@ -101,7 +101,7 @@ struct VoiceMessageView: View {
                     }) {
                         UserMessage(message: lastUserMessage.content)
                             .listRowSeparator(.hidden)
-                            .listRowBackground(Constants.realBlack)
+//                            .listRowBackground(Constants.realBlack)
                             .id(0)
                     }
 
@@ -110,7 +110,7 @@ struct VoiceMessageView: View {
                     }) {
                         CharacterMessage(message: lastCharacterMessage)
                             .listRowSeparator(.hidden)
-                            .listRowBackground(Constants.realBlack)
+//                            .listRowBackground(Constants.realBlack)
                             .id(1)
                     }
 
@@ -123,7 +123,7 @@ struct VoiceMessageView: View {
                             speechRecognizer.startTranscribing()
                         })
                         .listRowSeparator(.hidden)
-                        .listRowBackground(Constants.realBlack)
+//                        .listRowBackground(Constants.realBlack)
                         .id(0)
                     }
                 }

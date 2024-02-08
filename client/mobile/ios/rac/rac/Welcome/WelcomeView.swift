@@ -81,11 +81,11 @@ struct WelcomeView: View {
                         .onTapGesture {
                             tab = .config
                         }
-
-                    CustomTabView(text: "Settings", currentTab: $tab, tab: .settings)
-                        .onTapGesture {
-                            tab = .settings
-                        }
+//
+//                    CustomTabView(text: "Settings", currentTab: $tab, tab: .settings)
+//                        .onTapGesture {
+//                            tab = .settings
+//                        }
                 }
                 .padding(.horizontal, 32)
                 .padding(.top, 24)
@@ -116,9 +116,9 @@ struct WelcomeView: View {
                         }
                     })
                         .padding(.horizontal, 48)
-                case .settings:
-                    SettingsView()
-                        .padding(.horizontal, 48)
+//                case .settings:
+//                    SettingsView()
+//                        .padding(.horizontal, 48)
                 }
 
                 if webSocketConnectionStatusObserver.debouncedStatus != .connected {

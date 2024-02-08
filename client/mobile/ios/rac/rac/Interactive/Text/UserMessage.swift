@@ -33,7 +33,11 @@ struct UserMessage: View {
                 .buttonStyle(CustomButtonStyle())
             }
         }
+        #if os(visionOS)
+        .background(.regularMaterial)
+        #else
         .background(Color(red: 0.4, green: 0.52, blue: 0.83).opacity(0.25))
+        #endif
         .roundedCorner(20, corners: [.bottomLeft, .topLeft, .topRight])
         .frame(maxWidth: .infinity, alignment: .topTrailing)
     }
@@ -57,7 +61,11 @@ struct CustomTextFieldStyle: TextFieldStyle {
             .foregroundColor(.white)
             .padding(.horizontal, 20)
             .padding(.vertical, 11)
+            #if os(visionOS)
+            .background(.regularMaterial)
+            #else
             .background(Color(red: 0.4, green: 0.52, blue: 0.83).opacity(0.25))
+            #endif
             .roundedCorner(20, corners: [.bottomLeft, .topLeft, .topRight])
     }
 }

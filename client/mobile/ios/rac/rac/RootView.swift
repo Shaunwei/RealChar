@@ -66,7 +66,7 @@ struct RootView: View {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button {
                             withAnimation {
-                                welcomeTab = .settings
+                                welcomeTab = .about
                                 interactive.toggle()
                             }
                         } label: {

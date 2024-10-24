@@ -31,7 +31,7 @@
 ## ✨ Demo
 Try our site at [RealChar.ai](https://realchar.ai/)
 
-Not sure how to pronounce RealChar? Listen to this 👉 [audip](https://github.com/Shaunwei/RealChar/assets/6148473/45d4773c-eb4f-41e5-a162-f9513d650b76)
+Not sure how to pronounce RealChar? Listen to this 👉 [audio](https://github.com/Shaunwei/RealChar/assets/6148473/45d4773c-eb4f-41e5-a162-f9513d650b76)
 
 ### Demo 1 - with Santa Claus!
 

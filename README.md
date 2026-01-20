@@ -400,3 +400,7 @@ For more detailed guidelines, please check out our [Contribution Guide](contribu
 
 ## 🎲 Community
 - Join us on [Discord](https://realchar.ai/join-discord)
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

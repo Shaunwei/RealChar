@@ -359,8 +359,39 @@ And it should work out of the box.
 
 $*$ These features are powered by [ReByte](https://rebyte.ai/) platform.
 
-## 🫶 Contribute to RealChar
-Please check out our [Contribution Guide](contribute.md)!
+## 🫶 Contributing
+
+We welcome contributions from the community! Here's how you can help:
+
+### Getting Started
+1. **Fork** the repository and clone it locally
+2. **Set up** your development environment following the [installation guide](#-developers---installation-via-python)
+3. **Install pre-commit hooks** to ensure code quality:
+   ```sh
+   pip install pre-commit
+   pre-commit install
+   ```
+
+### Making Contributions
+1. Create a new branch for your feature or bug fix:
+   ```sh
+   git checkout -b feature/your-feature-name
+   ```
+2. Make your changes following our coding standards:
+   - Follow existing code style and conventions
+   - Write clear, readable, and maintainable code
+   - Include comments where necessary
+   - Test your changes thoroughly
+3. Commit your changes with a descriptive message
+4. Push to your fork and submit a **Pull Request**
+
+### Ways to Contribute
+- **Bug Reports**: Found a bug? Open an issue with details to reproduce it
+- **Feature Requests**: Have an idea? We'd love to hear it in the issues
+- **Code**: Submit PRs for bug fixes, features, or documentation improvements
+- **Documentation**: Help improve our docs and README
+
+For more detailed guidelines, please check out our [Contribution Guide](contribute.md)!
 
 ## 💪 Contributors
 <a href="https://github.com/Shaunwei/RealChar">

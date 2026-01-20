@@ -367,5 +367,9 @@ Please check out our [Contribution Guide](contribute.md)!
   <img src="https://contrib.rocks/image?repo=Shaunwei/RealChar" />
 </a>
 
+## 🧪 Testing
+
+RealChar includes a test suite to ensure code quality and reliability. Before submitting contributions, please run the tests to verify your changes don't break existing functionality. We encourage contributors to add tests for new features and bug fixes to maintain comprehensive test coverage.
+
 ## 🎲 Community
 - Join us on [Discord](https://realchar.ai/join-discord)

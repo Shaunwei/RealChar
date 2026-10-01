@@ -295,6 +295,34 @@ To get your Google Cloud API credentials.json, follow these steps:
 3. Put `google_credentials.json` in the root folder of this project. Check [Create and delete service account keys](https://cloud.google.com/iam/docs/keys-create-delete#iam-service-account-keys-create-console)
 </details>
 
+### 3.3 (Optional) 60db Text-to-Speech
+
+Set `SIXTYDB_API_KEY` in your server environment. Obtain an actual voice ID from
+[`GET /voices`](https://docs.60db.ai/api-reference/voices/get-voices) for your
+authenticated workspace, then update your character's existing `config.yaml`:
+
+```yaml
+text_to_speech_use: SIXTYDB
+voice_id: YOUR_WORKSPACE_VOICE_ID
+```
+
+The existing `<CHARACTER_ID>_VOICE_ID` environment override still applies.
+Set `SIXTYDB_VOICE_ID` when using `/generate_audio`, which does not pass a character
+voice. Optionally set `SIXTYDB_MODEL` to a provider model ID. No voices are fetched
+at import, and no synthetic default voice is used. The character editor's provider
+menu is unchanged; configure 60db through the character catalog.
+
+The adapter requests documented MP3 output and sends one complete audio asset per
+sentence for browser decoding. HTTP failures, empty audio, and incompatible output
+(including LINEAR16 NDJSON) fail before any audio is sent. The
+[60db TTS reference](https://docs.60db.ai/api-reference/tts/text-to-speech) describes
+LINEAR16 streaming while the [format guide](https://docs.60db.ai/features/text-to-speech)
+documents MP3 output; the adapter checks the returned format rather than assuming it.
+Cancellation closes the HTTP response through the async context; an event-only
+stop waits for the current read, subject to the 60-second HTTP timeout. Twilio
+continues using ElevenLabs; the 60db adapter rejects direct Twilio use because that
+route requires raw 8 kHz mu-law audio. No new dependencies are required.
+
 ## (Optional) 🔥 Create Your Own Characters
 <details><summary>👇click me</summary>
 

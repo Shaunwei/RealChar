@@ -17,6 +17,11 @@ def get_text_to_speech(tts: Optional[str] = None) -> TextToSpeech:
 
         ElevenLabs.initialize()
         return ElevenLabs.get_instance()
+    elif tts == "SIXTYDB":
+        from realtime_ai_character.audio.text_to_speech.sixtydb import SixtyDB
+
+        SixtyDB.initialize()
+        return SixtyDB.get_instance()
     elif tts == "GOOGLE_TTS":
         from realtime_ai_character.audio.text_to_speech.google_cloud_tts import GoogleCloudTTS
 
